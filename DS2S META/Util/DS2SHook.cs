@@ -1071,15 +1071,16 @@ namespace DS2S_META
                 case DS2SItem.ItemType.Ring:
                 case DS2SItem.ItemType.Weapon:
                 case DS2SItem.ItemType.Armor:
+                    // return GetHeldInInventoryUnstackable(item.ID); // TODO
                     return 0;
                 case DS2SItem.ItemType.Item:
-                    return GetHeldInInventory(item.ID);
+                    return GetHeldInInventoryStackable(item.ID);
             }
 
             return 0;
         }
         
-        private int GetHeldInInventory(int id)
+        private int GetHeldInInventoryStackable(int id)
         {
             var inventorySlot = 0x30;
             var itemOffset = 0x0;
@@ -1092,39 +1093,64 @@ namespace DS2S_META
 
             var inventory = AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
 
-            while (inventorySlot < bagSize)
+           while (inventorySlot < bagSize)
             {
+                // Get next item in inventory
                 var itemID = BitConverter.ToInt32(inventory, inventorySlot + itemOffset);
-                if (itemID != id)
-                {
-                    inventorySlot += nextOffset;
-                    continue;
-                }
-                var boxValue = BitConverter.ToInt32(inventory, inventorySlot + boxOffset);
-                var held = BitConverter.ToInt32(inventory, inventorySlot + heldOffset);
 
                 if (itemID == id)
+                {
+                    var boxValue = BitConverter.ToInt32(inventory, inventorySlot + boxOffset);
+                    var held = BitConverter.ToInt32(inventory, inventorySlot + heldOffset);
+
                     if (boxValue == 0)
                         return held;
-
+                }
                 inventorySlot += nextOffset;
             }
 
+            return 0;
+        }
+
+        private int GetHeldInInventoryUnstackable(int id)
+        {
+            // For non-stackable items, e.g. armour, spells need to count how many instances of their ids are found.
+            // Currently this isn't called for armour, and spells are returning the "uses" value rather than "held".
+
+            // TODO Armour / Spells etc.
+            //var inventorySlot = 0x30;
+            //var itemOffset = 0x0;
+            //var boxOffset = 0x4;
+            //var heldOffset = 0x8;
+            //var nextOffset = 0x10;
+
+            //var endPointer = AvailableItemBag.ReadIntPtr(0x10).ToInt64();
+            //var bagSize = endPointer - AvailableItemBag.Resolve().ToInt64();
+
+            //var inventory = AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
+
             //while (inventorySlot < bagSize)
             //{
-            //    var itemID = AvailableItemBag.ReadInt32(inventorySlot + itemOffset);
-            //    var boxValue = AvailableItemBag.ReadInt32(inventorySlot + boxOffset);
-            //    var held = AvailableItemBag.ReadInt32(inventorySlot + heldOffset);
+            //    // For non-stackable items, e.g. armour, spells need to count how many instances of their ids are found.
+            //    // Currently this isn't called for armour, and spells are returning the "uses" value rather than "held".
+
+            //    // Get next item in inventory
+            //    var itemID = BitConverter.ToInt32(inventory, inventorySlot + itemOffset);
 
             //    if (itemID == id)
-            //        if (boxValue == 0)
-            //            return held;
+            //    {
+            //        var boxValue = BitConverter.ToInt32(inventory, inventorySlot + boxOffset);
+            //        var held = BitConverter.ToInt32(inventory, inventorySlot + heldOffset);
 
+            //        if (boxValue == 0) // consumables?
+            //            return held;
+            //    }
             //    inventorySlot += nextOffset;
             //}
 
             return 0;
         }
+
         private int GetArmorMaxUpgrade(int id)
         {
             if  (!Setup) return 0;
