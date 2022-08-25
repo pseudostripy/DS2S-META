@@ -1,0 +1,25 @@
+﻿<local:METAControl x:Class="DS2S_META.RandomizerControl"
+                   x:Name="RandoCon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DS2S_META"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+    <Grid>
+        <StackPanel Margin="25">
+            <Label Content="Randomizer!" FontSize="20" HorizontalAlignment="Center"/>
+            <Border BorderBrush="Gray" BorderThickness="1" />
+            <Grid>
+                <TextBox x:Name="txtSeed" Height="22" TextWrapping="Wrap" Width="177" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0" TextChanged="txtSeed_TextChanged"/>
+                <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="163" Margin="0,8,0,0"/>
+            </Grid>
+            <CheckBox Content="test" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" IsChecked="True" Visibility="Visible" FontWeight="Normal" Background="#FF15B2D0">
+                <CheckBox.Style>
+                    <Style/>
+                </CheckBox.Style>
+            </CheckBox>
+        </StackPanel>
+    </Grid>
+</local:METAControl>

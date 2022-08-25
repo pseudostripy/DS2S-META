@@ -251,6 +251,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="List Items\DS2SCovenant.cs" />
+    <Compile Include="TabControls\RandomizerControl.xaml.cs">
+      <DependentUpon>RandomizerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TabControls\CovenantControl.xaml.cs">
       <DependentUpon>CovenantControl.xaml</DependentUpon>
     </Compile>
@@ -374,6 +377,10 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Include="TabControls\RandomizerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="TabControls\CovenantControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

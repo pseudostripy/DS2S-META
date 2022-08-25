@@ -139,7 +139,11 @@
                 </TabItem>
                 <TabItem Header="Internal">
                     <Grid Background="LightGray">
-                        <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="95*"/>
+                            <ColumnDefinition Width="16*"/>
+                        </Grid.ColumnDefinitions>
+                        <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem x:Name="tabSettings" Header="Settings">
@@ -251,6 +255,11 @@
                                 </Grid>
                             </TabItem>
                         </TabControl>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Randomizer" >
+                    <Grid Background="LightGray">
+                        <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
             </TabControl>
