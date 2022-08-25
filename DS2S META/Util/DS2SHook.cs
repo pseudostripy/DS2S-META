@@ -70,6 +70,8 @@ namespace DS2S_META
         private PHPointer ArmorReinforceParam;
         private PHPointer ItemParam;
         private PHPointer ItemUseageParam;
+        private PHPointer ItemLotDropsParam; // Enemy drop tables
+        private PHPointer ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
 
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
@@ -155,6 +157,8 @@ namespace DS2S_META
             ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ItemParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
+            ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
+            ItemLotOtherParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamItemLotOtherOffset);
 
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
             Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
@@ -172,6 +176,9 @@ namespace DS2S_META
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
             ItemParamOffsetDict = BuildOffsetDictionary(ItemParam, "ITEM_PARAM");
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
+            ItemLotOtherPODict = BuildOffsetDictionary(ItemLotDropsParam, "ITEM_LOT_PARAM2");
+            ItemLotOtherPODict = BuildOffsetDictionary(ItemLotOtherParam, "ITEM_LOT_PARAM2");
+
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
             Setup = true;
@@ -372,7 +379,6 @@ namespace DS2S_META
             var readInt = pointer.ReadInt32(DS2SOffsets.BasePtrOffset1);
             return pointer.ReadIntPtr(readInt + DS2SOffsets.BasePtrOffset2);
         }
-
         public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
         {
             return pointer.ReadIntPtr(0x0121D4D0 + DS2SOffsets.BasePtrOffset2);
@@ -1009,6 +1015,9 @@ namespace DS2S_META
         private static Dictionary<int, int> ArmorReinforceParamOffsetDict;
         private static Dictionary<int, int> ItemParamOffsetDict;
         private static Dictionary<int, int> ItemUsageParamOffsetDict;
+        private static Dictionary<int, int> ItemLotParam_Drops; 
+        private static Dictionary<int, int> ItemLotOtherPODict;
+
 
 
         private Dictionary<int, int> BuildOffsetDictionary(PHPointer pointer, string expectedParamName)
@@ -1037,6 +1046,7 @@ namespace DS2S_META
 
             return dictionary;
         }
+
         internal int GetMaxUpgrade(DS2SItem item)
         {
             switch (item.Type)
@@ -1113,7 +1123,6 @@ namespace DS2S_META
 
             return 0;
         }
-
         private int GetHeldInInventoryUnstackable(int id)
         {
             // For non-stackable items, e.g. armour, spells need to count how many instances of their ids are found.
@@ -1199,6 +1208,13 @@ namespace DS2S_META
 
             return (bitField & 4) != 0;
         }
+
+        // testing
+        internal int GetItemLotOtherOffset(int paramid)
+        {
+            return 5;
+        }
+        
 
         #endregion
 

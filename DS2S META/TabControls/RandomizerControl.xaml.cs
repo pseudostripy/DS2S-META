@@ -41,5 +41,22 @@ namespace DS2S_META
         {
             FixSeedVisibility();
         }
+
+        
+        private void cbSlabIt_Checked(object sender, RoutedEventArgs e)
+        {
+            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
+            if (!Hook.Hooked)
+            {
+                cbSlabIt.IsChecked = false;
+                return;
+            }
+
+            // Test getting some parameter values with the Hook:
+            var metalchestPID = 10105070;
+            var testoffset = Hook.GetItemLotOtherOffset(metalchestPID);
+
+            txtOutput.Text = $"Offset = {testoffset}";
+        }
     }
 }

@@ -15,11 +15,12 @@
                 <TextBox x:Name="txtSeed" Height="22" TextWrapping="Wrap" Width="177" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0" TextChanged="txtSeed_TextChanged"/>
                 <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="163" Margin="0,8,0,0"/>
             </Grid>
-            <CheckBox Content="test" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" IsChecked="True" Visibility="Visible" FontWeight="Normal" Background="#FF15B2D0">
+            <CheckBox x:Name="cbSlabIt" Content="MakeItASlab" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0" Visibility="Visible" FontWeight="Normal" Background="White" Checked="cbSlabIt_Checked">
                 <CheckBox.Style>
                     <Style/>
                 </CheckBox.Style>
             </CheckBox>
+            <TextBox x:Name="txtOutput" Height="23" TextWrapping="Wrap" Text="Output" Width="169" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextAlignment="Center" Margin="0,20,0,0"/>
         </StackPanel>
     </Grid>
 </local:METAControl>

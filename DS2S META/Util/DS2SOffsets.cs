@@ -313,6 +313,9 @@ namespace DS2S_META
         public const int ParamDataOffset1 = 0x18;
         public const int ParamDataOffset2 = 0xD8;
         public const int ParamDataOffset3 = 0xA8;
+        public const int ParamDataOffset4 = 0x50;
+
+        public const int ParamItemLotOtherOffset = 0x1F8;
 
         public const int LevelUpSoulsParamOffset = 0x580;
         public const int WeaponParamOffset = 0x420;
