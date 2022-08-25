@@ -1019,18 +1019,20 @@ namespace DS2S_META
                 throw new InvalidOperationException($"Incorrect Param Pointer: {expectedParamName}");
 
             var tableLength = pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
-            var param = 0x40;
-            var paramID = 0x0;
-            var paramOffset = 0x8;
-            var nextParam = 0x18;
+            var paramStartOffset = 0x40;
+            var paramLength = 0x18;
 
+            var paramIDOffset = 0x0;
+            var paramDataOffset = 0x8;
+            
+            var param = paramStartOffset;
             while (param < tableLength)
             {
-                var itemID = pointer.ReadInt32(param + paramID);
-                var itemParamOffset = pointer.ReadInt32(param + paramOffset);
-                dictionary.Add(itemID, itemParamOffset);
+                var paramID = pointer.ReadInt32(param + paramIDOffset);
+                var dataOffset = pointer.ReadInt32(param + paramDataOffset);
+                dictionary.Add(paramID, dataOffset);
 
-                param += nextParam;
+                param += paramLength;
             }
 
             return dictionary;
