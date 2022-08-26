@@ -87,10 +87,8 @@ namespace DS2S_META
             // Make into new lots:
             foreach (var kvp in VanillaLots)
             {
-                int Ndrops = kvp.Value.Lot.Count();
-
                 ItemLot IL = new ItemLot();
-                for (int row = 0; row < Ndrops; row++)
+                for (int row = 0; row < kvp.Value.NumDrops; row++)
                 {
                     IL.AddDrop(flatlist[0]);
                     flatlist.RemoveAt(0); // pop

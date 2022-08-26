@@ -1227,15 +1227,19 @@ namespace DS2S_META
             {
                 int itemid = ItemLotOtherParam.ReadInt32(lotstart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i);
 
-                // check to see if we've finished reading them all
-                bool bEndID = (itemid == 10 || itemid == 60510000);
-                if (i > 0 && bEndID)
+                // Traps for end of table data
+                if (itemid == 10)
+                    break;
+                if (itemid == 60510000 && i > 0)
                     break;
 
-                // Read remaining params
-                int quantity = ItemLotOtherParam.ReadInt32(lotstart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i);
 
-                // Store in item lot:
+                // Read remaining params
+                int quantity = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i);
+                if (quantity == 0)
+                    continue; // we're not interested in these.
+
+                // Valid Item: Store in item lot:
                 lot.AddDrop(itemid, quantity);
             }
             return lot;
@@ -1247,7 +1251,7 @@ namespace DS2S_META
             int lotStart = ItemLotOtherPODict[paramID];
 
             // Get ItemLot address:
-            for (int i = 0; i < itemlot.Lot.Count(); i++)
+            for (int i = 0; i < itemlot.NumDrops; i++)
             {
                 ItemLotOtherParam.WriteInt32(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i, itemlot.Lot[i].ItemID);
                 ItemLotOtherParam.WriteByte(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i, itemlot.Lot[i].Quantity);
