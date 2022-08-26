@@ -201,8 +201,6 @@ namespace DS2S_META
             OnPropertyChanged(nameof(Online));
             //OnPropertyChanged(nameof(LastBonfireObj));
         }
-
-
         public void UpdateStatsProperties()
         {
             OnPropertyChanged(nameof(SoulLevel));
@@ -222,7 +220,6 @@ namespace DS2S_META
             OnPropertyChanged(nameof(Intelligence));
             OnPropertyChanged(nameof(Faith));
         }
-
         public void UpdatePlayerProperties()
         {
             OnPropertyChanged(nameof(Health));
@@ -245,7 +242,6 @@ namespace DS2S_META
             OnPropertyChanged(nameof(StableZ));
             OnPropertyChanged(nameof(LastBonfireAreaID));
         }
-
         public void UpdateBonfireProperties()
         {
             OnPropertyChanged(nameof(FireKeepersDwelling));
@@ -326,7 +322,6 @@ namespace DS2S_META
             OnPropertyChanged(nameof(LowerGarrison));
             OnPropertyChanged(nameof(GrandCathedral));
         }
-
         public void UpdateCovenantProperties()
         {
             OnPropertyChanged(nameof(CurrentCovenant));
@@ -1210,11 +1205,22 @@ namespace DS2S_META
         }
 
         // testing
-        internal int GetItemLotOtherOffset(int paramid)
+        internal bool WriteItemLotTable(int paramID, ItemLot itemlot)
         {
-            return 5;
+            // TODO: Perhaps this should be somewhere else?
+
+            int lotStart = ItemLotOtherPODict[paramID];
+
+            // Get ItemLot address:
+            for (int i = 0; i < itemlot.Lot.Count(); i++)
+            {
+                ItemLotOtherParam.WriteInt32(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i, itemlot.Lot[i].ItemID);
+                ItemLotOtherParam.WriteByte(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i, itemlot.Lot[i].Quantity);
+            }
+            
+
+            return true;
         }
-        
 
         #endregion
 

@@ -357,6 +357,18 @@ namespace DS2S_META
             Bitfield = 0x6
         }
 
+        public enum ItemLotOffsets : int
+        {
+            // The 1 is the first of 10 slots for each of the following
+            Item1 = 0x2C,
+            Quantity1 = 0x4,
+            Reinforcement1 = 0xE,
+            Infusion1 = 0x18,
+            Unk3_1 = 0x22, // TODO: investigate
+            Chance1 = 0x54
+        }
+
+
         #endregion
 
         #region Internals

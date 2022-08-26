@@ -52,11 +52,27 @@ namespace DS2S_META
                 return;
             }
 
-            // Test getting some parameter values with the Hook:
+            // Some IDs to play with:
             var metalchestPID = 10105070;
-            var testoffset = Hook.GetItemLotOtherOffset(metalchestPID);
+            var lightningurnID = 60560000;
+            var dungpieID = 60595000;
+            var sunlightmedalID = 62120000;
 
-            txtOutput.Text = $"Offset = {testoffset}";
+            // make a fake itemlot for testing:
+            ItemLot testlot = new ItemLot();
+            testlot.AddDrop(lightningurnID, 18);
+            testlot.AddDrop(dungpieID, 40);
+            testlot.AddDrop(sunlightmedalID);
+
+            // Rewrite the parameters in the itemlot table
+            Hook.WriteItemLotTable(metalchestPID, testlot);
+
+            txtOutput.Text = $"Success?";
+        }
+
+        private void cbSlabIt_Unchecked(object sender, RoutedEventArgs e)
+        {
+            txtOutput.Text = "Output";
         }
     }
 }
