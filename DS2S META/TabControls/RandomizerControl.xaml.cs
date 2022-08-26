@@ -65,14 +65,53 @@ namespace DS2S_META
             testlot.AddDrop(sunlightmedalID);
 
             // Rewrite the parameters in the itemlot table
-            Hook.WriteItemLotTable(metalchestPID, testlot);
+            //Hook.WriteItemLotTable(metalchestPID, testlot);
+            
+            randomize();
 
             txtOutput.Text = $"Success?";
+        }
+
+        private void randomize()
+        {
+            // Need to get a list of the vanilla item lots
+            Dictionary<int,ItemLot> VanillaLots = Hook.GetVanillaLots();
+            Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
+
+            // Make into flat list of stuff:
+            var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
+
+            
+            flatlist.Shuffle();
+
+            // Make into new lots:
+            foreach (var kvp in VanillaLots)
+            {
+                int Ndrops = kvp.Value.Lot.Count();
+
+                ItemLot IL = new ItemLot();
+                for (int row = 0; row < Ndrops; row++)
+                {
+                    IL.AddDrop(flatlist[0]);
+                    flatlist.RemoveAt(0); // pop
+                }
+                ShuffledLots[kvp.Key] = IL; // add to new dictionary
+            }
+
+            
+            // Implement randomness:
+            foreach(var kvp in ShuffledLots)
+                Hook.WriteItemLotTable(kvp.Key, kvp.Value);
+            
+            int debug = 1;
         }
 
         private void cbSlabIt_Unchecked(object sender, RoutedEventArgs e)
         {
             txtOutput.Text = "Output";
         }
+
+        
+
     }
 }

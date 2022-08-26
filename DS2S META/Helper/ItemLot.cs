@@ -38,7 +38,11 @@ namespace DS2S_META
         }
         internal void AddDrop(int itemID, int quantity)
         {
-            Lot.Add(new DropInfo(itemID, (byte)quantity));
+            AddDrop(new DropInfo(itemID, (byte)quantity));
+        }
+        internal void AddDrop(DropInfo data)
+        {
+            Lot.Add(data);
         }
 
     }

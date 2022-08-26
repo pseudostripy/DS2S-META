@@ -1205,6 +1205,41 @@ namespace DS2S_META
         }
 
         // testing
+        internal Dictionary<int,ItemLot> GetVanillaLots()
+        {
+            Dictionary<int, ItemLot> vanlots = new Dictionary<int, ItemLot>();
+            
+            // Loop over all the params and read the itemlot tables
+            foreach( var kvp in ItemLotOtherPODict)
+                vanlots.Add(kvp.Key, ReadItemLot(kvp));
+            
+            return vanlots;
+        }
+        internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
+        {
+            // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
+            int lotstart = kvp.Value;
+
+            ItemLot lot = new ItemLot();
+
+            // Read populated lots until we hit a breakcondition or reach 10 total
+            for (int i = 0; i < 10; i++)
+            {
+                int itemid = ItemLotOtherParam.ReadInt32(lotstart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i);
+
+                // check to see if we've finished reading them all
+                bool bEndID = (itemid == 10 || itemid == 60510000);
+                if (i > 0 && bEndID)
+                    break;
+
+                // Read remaining params
+                int quantity = ItemLotOtherParam.ReadInt32(lotstart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i);
+
+                // Store in item lot:
+                lot.AddDrop(itemid, quantity);
+            }
+            return lot;
+        }
         internal bool WriteItemLotTable(int paramID, ItemLot itemlot)
         {
             // TODO: Perhaps this should be somewhere else?
