@@ -1277,16 +1277,15 @@ namespace DS2S_META
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
-            // TODO: Perhaps this should be somewhere else?
-
             int lotStart = ItemLotOtherPODict[paramID];
 
-            // Get ItemLot address:
-            for (int i = 0; i < itemlot.NumDrops; i++)
-            {
-                ItemLotOtherParam.WriteInt32(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i, itemlot.Lot[i].ItemID);
-                ItemLotOtherParam.WriteByte(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i, itemlot.Lot[i].Quantity);
-            }
+            // Pack relevant data together first:
+            var itembytes = itemlot.Items.SelectMany(id => BitConverter.GetBytes(id)).ToArray();
+            var quantbytes = itemlot.Quantities.SelectMany(q => BitConverter.GetBytes(q)).ToArray();
+
+            // Write to game:
+            ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1, itembytes);
+            ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1, quantbytes);
         }
 
         #endregion

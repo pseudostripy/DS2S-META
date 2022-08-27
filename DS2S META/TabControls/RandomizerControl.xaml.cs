@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+using System.Diagnostics;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DS2S_META
 {
@@ -20,8 +13,13 @@ namespace DS2S_META
     /// </summary>
     public partial class RandomizerControl : METAControl
     {
+        private Color PURPLE = Color.FromArgb(0xFF, 0xB1, 0x59, 0xCC);
+        private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
+        private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
+        
         private Dictionary<int, ItemLot> VanillaLots;
         internal bool isRandomized = false;
+
 
         public RandomizerControl()
         {
@@ -77,8 +75,13 @@ namespace DS2S_META
         }
         private void unrandomize()
         {
+            var timer = new Stopwatch();
+            timer.Start();
             Hook.WriteAllLots(VanillaLots);
             isRandomized = false;
+
+            timer.Stop();
+            Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
         }
 
         
@@ -96,8 +99,12 @@ namespace DS2S_META
             // Force an area reload. TODO add warning:
             Hook.WarpLast();
 
-            // Update UI button:
+            // Update UI:
             btnRandomize.Content = isRandomized ? "Unrandomize!" : "Randomize!";
+            Color bkg = isRandomized ? PURPLE : LIGHTGREEN;
+            lblGameRandomization.Background = new SolidColorBrush(bkg);
+            string gamestate = isRandomized ? "Randomized" : "Normal";
+            lblGameRandomization.Content = $"Game is {gamestate}!";
         }
     }
 }
