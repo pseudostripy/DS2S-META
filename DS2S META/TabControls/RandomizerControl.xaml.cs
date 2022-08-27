@@ -21,6 +21,7 @@ namespace DS2S_META
     public partial class RandomizerControl : METAControl
     {
         private Dictionary<int, ItemLot> VanillaLots;
+        internal bool isRandomized = false;
 
         public RandomizerControl()
         {
@@ -45,41 +46,8 @@ namespace DS2S_META
         }
 
         
-        private void cbSlabIt_Checked(object sender, RoutedEventArgs e)
-        {
-            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
-            if (!Hook.Hooked)
-            {
-                cbSlabIt.IsChecked = false;
-                return;
-            }
-
-            // Some IDs to play with:
-            var metalchestPID = 10105070;
-            var lightningurnID = 60560000;
-            var dungpieID = 60595000;
-            var sunlightmedalID = 62120000;
-
-            // make a fake itemlot for testing:
-            ItemLot testlot = new ItemLot();
-            testlot.AddDrop(lightningurnID, 18);
-            testlot.AddDrop(dungpieID, 40);
-            testlot.AddDrop(sunlightmedalID);
-
-            // Rewrite the parameters in the itemlot table
-            //Hook.WriteItemLotTable(metalchestPID, testlot);
-            
-            randomize();
-
-            txtOutput.Text = $"Success?";
-        }
-
         private void randomize()
         {
-            Hook.Warp(2650);
-            //Hook.Warp(Hook.LastBonfireID);
-            return;
-
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
             if (VanillaLots==null)
                 VanillaLots = Hook.GetVanillaLots();
@@ -105,19 +73,31 @@ namespace DS2S_META
 
 
             Hook.WriteAllLots(ShuffledLots);
+            isRandomized = true;
         }
         private void unrandomize()
         {
             Hook.WriteAllLots(VanillaLots);
-        }
-
-        private void cbSlabIt_Unchecked(object sender, RoutedEventArgs e)
-        {
-            unrandomize();
-            txtOutput.Text = "Output";
+            isRandomized = false;
         }
 
         
+        private void btnRandomize_Click(object sender, RoutedEventArgs e)
+        {
+            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
+            if (!Hook.Hooked)
+                return;
 
+            if (isRandomized)
+                unrandomize();
+            else
+                randomize();
+
+            // Force an area reload. TODO add warning:
+            Hook.WarpLast();
+
+            // Update UI button:
+            btnRandomize.Content = isRandomized ? "Unrandomize!" : "Randomize!";
+        }
     }
 }

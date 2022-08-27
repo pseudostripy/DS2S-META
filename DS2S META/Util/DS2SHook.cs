@@ -588,6 +588,22 @@ namespace DS2S_META
         public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
         public bool Online => Loaded ? ConnectionType > 0 : true;
         public int ConnectionType => Hooked && Connection != null ? Connection.ReadInt32((int)DS2SOffsets.Connection.Online) : 0;
+        
+        internal bool WarpLast()
+        {
+            // TO TIDY with bonfire objects
+
+            // Handle betwixt start warps:
+            bool PrevBonfireSet = (LastBonfireAreaID != 0 && LastBonfireID != 0);
+            if (PrevBonfireSet)
+                return Warp(LastBonfireID);
+
+            // Handle first area warp:
+            int BETWIXTAREA = 167903232;
+            ushort BETWIXTBFID = 2650;
+            LastBonfireAreaID = BETWIXTAREA;
+            return Warp(BETWIXTBFID, true);
+        }
         internal bool Warp(ushort id, bool areadefault = false)
         {
             // area default means warp to the 0,0 part of the map (like a wrong warp)
