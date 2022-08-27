@@ -588,8 +588,13 @@ namespace DS2S_META
         public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
         public bool Online => Loaded ? ConnectionType > 0 : true;
         public int ConnectionType => Hooked && Connection != null ? Connection.ReadInt32((int)DS2SOffsets.Connection.Online) : 0;
-        internal bool Warp(ushort id)
+        internal bool Warp(ushort id, bool areadefault = false)
         {
+            // area default means warp to the 0,0 part of the map (like a wrong warp)
+            // areadefault = false is a normal "warp to bonfire"
+            int WARPAREADEFAULT = 2;
+            int WARPBONFIRE = 3;
+
             var value = Allocate(sizeof(short));
             Kernel32.WriteBytes(Handle, value, BitConverter.GetBytes(id));
 
@@ -602,6 +607,10 @@ namespace DS2S_META
             Array.Copy(bytes, 0x0, asm, 0x2E, bytes.Length);
             bytes = BitConverter.GetBytes(WarpFunc.Resolve().ToInt64());
             Array.Copy(bytes, 0x0, asm, 0x3B, bytes.Length);
+
+            int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
+            bytes = BitConverter.GetBytes(flag);
+            Array.Copy(bytes, 0x0, asm, 0x45, bytes.Length);
 
             var warped = false;
             if (!Multiplayer)
@@ -1244,7 +1253,13 @@ namespace DS2S_META
             }
             return lot;
         }
-        internal bool WriteItemLotTable(int paramID, ItemLot itemlot)
+        internal void WriteAllLots(Dictionary<int, ItemLot> all_lots)
+        {
+            // Implement randomness:
+            foreach (var kvp in all_lots)
+                WriteItemLotTable(kvp.Key, kvp.Value);
+        }
+        internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
             // TODO: Perhaps this should be somewhere else?
 
@@ -1256,9 +1271,6 @@ namespace DS2S_META
                 ItemLotOtherParam.WriteInt32(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i, itemlot.Lot[i].ItemID);
                 ItemLotOtherParam.WriteByte(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i, itemlot.Lot[i].Quantity);
             }
-            
-
-            return true;
         }
 
         #endregion

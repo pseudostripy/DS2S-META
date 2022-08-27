@@ -35,7 +35,7 @@ namespace DS2S_META
             PlayerState.Set = false;
             foreach (var bonfire in DS2SBonfire.All)
                 cbxBonfire.Items.Add(bonfire);
-            LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: None"); //last set bonfire (default values)
+            LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: _Game Start"); //last set bonfire (default values) // TODO cleaner.
             cbxBonfire.Items.Add(LastSetBonfire); //add to end of filter
             Positions = SavedPos.GetSavedPositions();
             cmbStoredPositions.Items.Add(new SavedPos());
@@ -323,8 +323,17 @@ namespace DS2S_META
             }
 
             var bonfire = cbxBonfire.SelectedItem as DS2SBonfire;
-            if (bonfire.ID == 0 || bonfire.AreaID == 0 || bonfire == null)
+            
+            // Handle betwixt start warps:
+            bool NoPrevBonfire = (bonfire.ID == 0 || bonfire.AreaID == 0 || bonfire == null);
+            if (NoPrevBonfire)
+            {
+                int BETWIXTAREA = 167903232;
+                ushort BETWIXTBFID = 2650;
+                Hook.LastBonfireAreaID = BETWIXTAREA;
+                Hook.Warp(BETWIXTBFID, true);
                 return;
+            }
 
             Hook.LastBonfireID = bonfire.ID;
             Hook.LastBonfireAreaID = bonfire.AreaID;

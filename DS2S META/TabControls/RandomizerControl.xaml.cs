@@ -20,6 +20,8 @@ namespace DS2S_META
     /// </summary>
     public partial class RandomizerControl : METAControl
     {
+        private Dictionary<int, ItemLot> VanillaLots;
+
         public RandomizerControl()
         {
             InitializeComponent();
@@ -74,8 +76,13 @@ namespace DS2S_META
 
         private void randomize()
         {
-            // Need to get a list of the vanilla item lots
-            Dictionary<int,ItemLot> VanillaLots = Hook.GetVanillaLots();
+            Hook.Warp(2650);
+            //Hook.Warp(Hook.LastBonfireID);
+            return;
+
+            // Need to get a list of the vanilla item lots C#.8 pleeeease :(
+            if (VanillaLots==null)
+                VanillaLots = Hook.GetVanillaLots();
             Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
 
             // Make into flat list of stuff:
@@ -96,16 +103,17 @@ namespace DS2S_META
                 ShuffledLots[kvp.Key] = IL; // add to new dictionary
             }
 
-            
-            // Implement randomness:
-            foreach(var kvp in ShuffledLots)
-                Hook.WriteItemLotTable(kvp.Key, kvp.Value);
-            
-            int debug = 1;
+
+            Hook.WriteAllLots(ShuffledLots);
+        }
+        private void unrandomize()
+        {
+            Hook.WriteAllLots(VanillaLots);
         }
 
         private void cbSlabIt_Unchecked(object sender, RoutedEventArgs e)
         {
+            unrandomize();
             txtOutput.Text = "Output";
         }
 

@@ -1,5 +1,5 @@
 ﻿//Format: Area ID; Bonfire ID; Name [arbitrary]
-0 0 _None (Placeholder, Does not work)
+0 0 _Game Start
 167903232 2650 Fire Keepers' Dwelling
 168034304 4650 The Far Fire
 168427520 10670 The Crestfallen's Retreat
