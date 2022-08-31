@@ -16,7 +16,9 @@ namespace DS2S_META
         private Color PURPLE = Color.FromArgb(0xFF, 0xB1, 0x59, 0xCC);
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
-        
+
+        private List<int> placedKeys;
+
         private Dictionary<int, ItemLot> VanillaLots;
         internal bool isRandomized = false;
 
@@ -43,19 +45,64 @@ namespace DS2S_META
             FixSeedVisibility();
         }
 
-        
+        private bool CheckValidPlacement(int paramID, DropInfo loot)
+        {
+            // paramID represents a specific pickup in the game.
+            // DropInfo contains what we want to put into it.
+
+
+            return false;
+        }
+
         private void randomize()
         {
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
             if (VanillaLots==null)
                 VanillaLots = Hook.GetVanillaLots();
-            Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
+            Dictionary<int, ItemLot> NewLots = new Dictionary<int, ItemLot>();
 
             // Make into flat list of stuff:
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
 
             
-            flatlist.Shuffle();
+            //flatlist.Shuffle();
+
+            int seed = 1;
+            Random rng = new Random(seed);
+
+            foreach (var kvp in VanillaLots)
+            {
+                // unpack:
+                int paramID = kvp.Key;
+                ItemLot lot = kvp.Value;
+                
+                // At some point, should sort the lots to place them in a more sensible order...
+                if (lot.NumDrops == 0)
+                    continue;
+
+                List<DropInfo> dropList = new List<DropInfo>();
+                for (int i = 0; i < lot.NumDrops; i++)
+                {
+                    while (remainingitemindex)
+                    {
+                        int index = rng.Next(flatlist.Count());
+                        DropInfo randdrop = flatlist[index]; // get the item we want to place here
+
+                        // Ensure we don't softlock the game because of keys blocks
+                        if (CheckValidPlacement(paramID, randdrop))
+                        {
+                            dropList.Add(randdrop);
+                            flatlist.RemoveAt(index); // don't place twice
+                        }
+                        else
+                        {
+                            // TODO full softlock reset tests.
+                        }
+                    }
+                }
+            }
+
+
 
             // Make into new lots:
             foreach (var kvp in VanillaLots)

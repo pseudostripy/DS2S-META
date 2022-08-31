@@ -253,6 +253,7 @@
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Helper\ItemLot.cs" />
     <Compile Include="List Items\DS2SCovenant.cs" />
+    <Compile Include="Resources\Randomizer\RandoInfo.cs" />
     <Compile Include="TabControls\RandomizerControl.xaml.cs">
       <DependentUpon>RandomizerControl.xaml</DependentUpon>
     </Compile>
@@ -290,6 +291,7 @@
       <DependentUpon>HotkeyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\User32.cs" />
+    <Resource Include="Resources\Randomizer\LocationInfo.txt" />
     <None Include="Resources\DLLs\Speedhack.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
