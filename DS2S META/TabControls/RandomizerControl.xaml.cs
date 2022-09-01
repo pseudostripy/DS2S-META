@@ -64,7 +64,10 @@ namespace DS2S_META
             // Make into flat list of stuff:
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
 
-            
+            // find all the items which can be considered keys in the most loose sense:
+
+
+
             //flatlist.Shuffle();
 
             int seed = 1;

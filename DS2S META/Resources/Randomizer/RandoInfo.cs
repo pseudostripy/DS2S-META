@@ -58,6 +58,8 @@ namespace DS2S_META.Resources.Randomizer
         BLACKSMITH      = 50870000, // (Lenigrast's key)
         DULLEMBER       = 50990000,
         TORCH           = 60420000,
+        PHARROSLOCKSTONE = 60536000,
+        FRAGRANTBRANCH  = 60537000,
         PETRIFIEDEGG    = 62190000,
         WHISPERS        = 40610000,
         SOULOFAGIANT    = 50920000,
@@ -75,6 +77,7 @@ namespace DS2S_META.Resources.Randomizer
         NONVOLATILE, // this is basically corpse pickups now
         BOSS,
         NGPLUS,
+        EXOTIC,     // Cannot possibly expect a casual to figure these out
         UNRESOLVED,
     }
 
@@ -128,6 +131,10 @@ namespace DS2S_META.Resources.Randomizer
         {
             return new RandoInfo(desc, PICKUPTYPE.UNRESOLVED, new KeySet(reqkey));
         }
+        internal RandoInfo ExoticInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.EXOTIC, new KeySet(reqkey));
+        }
         internal RandoInfo BossInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
@@ -176,6 +183,10 @@ namespace DS2S_META.Resources.Randomizer
         {
             return new RandoInfo(desc, PICKUPTYPE.NONVOLATILE, keysets);
         }
+        internal RandoInfo ExoticInfo(string desc, params KeySet[] keysets)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.EXOTIC, keysets);
+        }
         internal RandoInfo VolInfo(string desc, params KeySet[] keysets)
         {
             return new RandoInfo(desc, PICKUPTYPE.VOLATILE, keysets);
@@ -211,7 +222,7 @@ namespace DS2S_META.Resources.Randomizer
         // Main info setup (no skips):
         internal void setupLootInfoDictionary()
         {
-            // Multi-location events:
+            // Misc:
             D.Add(1726000, NpcInfo("Gift from Gavlan after spending 16000 souls"));
             D.Add(1752010, NpcInfo("Gift from Lucatiel after speaking to her the second time"));
             D.Add(1752020, NpcInfo("Gift from Lucatiel after speaking to her the third time"));
@@ -226,12 +237,47 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(2005011, CovInfo("Rat King covenant 1st rank price"));
             D.Add(2005012, CovInfo("Rat King covenant 2nd rank price"));
             D.Add(2005013, CovInfo("Rat King covenant 3rd rank price"));
+
+            // Misc special:
             D.Add(60006000, NpcInfo("Reward for killing Licia using the Crushed Eye Orb", KSO(KEYID.CRUSHEDEYEORB, KEYID.BRANCH))); // consider branch number todo
-            D.Add(60007000, CovInfo("Vanilla Lingering Dragoncrest +2: reward for killing 1000 invading Red Phantoms"));
-            D.Add(60007100, CovInfo("Vanilla Ring of Thorns +2: reward for invading and killing 1000 other worlds"));
-            D.Add(60007200, VolInfo("Vanilla Illusory Ring of a Conqueror: reward for completing the game without dying", KEYID.CREDITS));
-            D.Add(60007300, VolInfo("Vanilla Illusory Ring of the Exalted: reward for completing the game without taking a bonfire", KEYID.CREDITS));
-            D.Add(99996000, UnresolvedInfo("One soul of a lost undead for something?"));
+            D.Add(60015000, SafeInfo("Full Soul of Nadalia, Bride of Ash after combining fragments", KSO(KEYID.NADALIA, KEYID.FUME, KEYID.BLUESMELTER)));
+            D.Add(60007000, ExoticInfo("Vanilla Lingering Dragoncrest +2: reward for killing 1000 invading Red Phantoms"));
+            D.Add(60007100, ExoticInfo("Vanilla Ring of Thorns +2: reward for invading and killing 1000 other worlds"));
+            D.Add(60007200, ExoticInfo("Vanilla Illusory Ring of a Conqueror: reward for completing the game without dying", KEYID.CREDITS));
+            D.Add(60007300, ExoticInfo("Vanilla Illusory Ring of the Exalted: reward for completing the game without taking a bonfire", KEYID.CREDITS));
+            D.Add(70000000, ExoticInfo("Pre-order bonus: Black Flamestone dagger + Black Flamestone Parma"));
+            D.Add(60010000, ExoticInfo("Reward for killing Last Giant when crammed (Soldier key only)"));
+            D.Add(60011000, ExoticInfo("Reward for killing Ancient Dragon (Ashen Mist only) when crammed", KEYID.ALDIASKEEP));
+            D.Add(60043000, ExoticInfo("Reward for killing Giant Lord when crammed (Kinship only)", KEYID.ASHENMIST));
+            D.Add(60042000, ExoticInfo("Reward for killing Gulch Giants when crammed (Forgotten Key only)"));
+            D.Add(60045000, ExoticInfo("Reward for killing Licia using the Crushed Eye Orb whilst crammed (Rotunda only)", KSO(KEYID.CRUSHEDEYEORB, KEYID.BRANCH)));
+            D.Add(60040000, ExoticInfo("Last Giant Soul drop by itself, dropped only when crammed after defeating Last Giant", KEYID.ASHENMIST));
+            D.Add(60044000, ExoticInfo("Giant Lord Soul drop by itself, dropped only when crammed after defeating Giant Lord in base NG", KEYID.ASHENMIST));
+            D.Add(60044001, ExoticInfo("Giant Lord Soul and Ring of Giants +2. Dropped only when crammed after defeating Giant Lord in NG+", KEYID.ASHENMIST));
+            D.Add(60050000, ExoticInfo("Ancient Dragon Soul drop by itself, dropped only when crammed after defeating Ancient Dragon. Likely an oversight.", KEYID.ALDIASKEEP));
+            D.Add(60046000, UnresolvedInfo("Key to the Embedded by itself?, possibly related to when Key to Embedded was a key and cramming"));
+            D.Add(60046001, UnresolvedInfo("Demon of Song Soul by itself? Possibly related to when Key to Embedded was a key and cramming"));
+            D.Add(60030000, UnresolvedInfo("Soul of Aava + Garrison ward key?? Cut content??"));
+            D.Add(90000000, UnresolvedInfo("10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 0,3 instead of 3,1???"));
+            D.Add(90000001, UnresolvedInfo("10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 3,3 instead of 3,1???"));
+            D.Add(99995000, UnresolvedInfo("One lifegem?"));
+            D.Add(99995001, UnresolvedInfo("Three lifegems??"));
+            D.Add(99995002, UnresolvedInfo("One radiant lifegems"));
+            D.Add(99995003, UnresolvedInfo("Three radiant lifegems"));
+            D.Add(99995004, UnresolvedInfo("One old radiant lifegem"));
+            D.Add(99995005, UnresolvedInfo("Three old radiant lifegems"));
+            D.Add(99995006, UnresolvedInfo("One Elizabeth mushroom?"));
+            D.Add(99995007, UnresolvedInfo("One divine blessing?"));
+            D.Add(99995007, UnresolvedInfo("One human effigy?"));
+            D.Add(99996000, UnresolvedInfo("One Soul of a Lost Undead?"));
+            D.Add(99996001, UnresolvedInfo("One Large Soul of a Lost Undead?"));
+            D.Add(99996002, UnresolvedInfo("One Soul of a Nameless Soldier?"));
+            D.Add(99996003, UnresolvedInfo("One Large Soul of a Nameless Soldier?"));
+            D.Add(99996004, UnresolvedInfo("One Soul of a Proud Knight?"));
+            D.Add(99996005, UnresolvedInfo("One Large Soul of a Proud Knight?"));
+            D.Add(99996006, UnresolvedInfo("One Soul of a Brave Warrior?"));
+            D.Add(99996007, UnresolvedInfo("One Large Soul of a Brave Warrior?"));
+            D.Add(99996008, UnresolvedInfo("One Soul of a Hero?"));
 
             // Betwixt things:
             D.Add(1705000, NpcInfo("Gift from the fire keepers after getting the King's Ring", KEYID.DRANGLEIC));
@@ -860,7 +906,7 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10336070, SafeInfo("Upper level, hidden behind small stairs near Rat Authrotiy", KEYID.BRANCH));
             D.Add(10336080, SafeInfo("On 2nd floor next to dwarf statues", KEYID.BRANCH));
 
-            // Tseldora:
+            // Brightstone Cove Tseldora:
             D.Add(106000, BossInfo("Prowling Magus and Congregation drop", KEYID.BRANCH));
             D.Add(603000, BossInfo("Duke's Dear Freja drop", KEYID.BRANCH));
             D.Add(603001, BossNGPlusInfo("Duke's Dear Freja drop in NG+", KEYID.BRANCH));
