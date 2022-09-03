@@ -16,6 +16,16 @@ namespace DS2S_META
 
         private const int SINGLE = 1;
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < NumDrops; i++)
+            {
+                sb.Append($"Item[{i}] x{Quantities[i]}: {Items[i]:X} / {Items[i]}\n");
+            }
+            return sb.ToString().TrimEnd('\n');
+        }
+
         // Constructors:
         internal ItemLot() { }
         internal ItemLot(IEnumerable<int> itemIDs)

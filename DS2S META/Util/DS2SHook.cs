@@ -1230,6 +1230,7 @@ namespace DS2S_META
         }
 
         // testing
+        internal int GetItemLotOffset(int paramid) => ItemLotOtherPODict[paramid];
         internal Dictionary<int,ItemLot> GetVanillaLots()
         {
             Dictionary<int, ItemLot> vanlots = new Dictionary<int, ItemLot>();
@@ -1237,9 +1238,12 @@ namespace DS2S_META
             // Loop over all the params and read the itemlot tables
             foreach( var kvp in ItemLotOtherPODict)
                 vanlots.Add(kvp.Key, ReadItemLot(kvp));
-            
-            return vanlots;
+
+            // Remove lots which are all empty
+            return vanlots.Where(kvp => kvp.Value.NumDrops != 0)
+                             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
+
         internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
         {
             // kvp = KeyValuePair (paramID vs. itemlotdata_offset)

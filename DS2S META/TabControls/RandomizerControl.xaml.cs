@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
 using System.Windows.Media;
+using DS2S_META.Resources.Randomizer;
 
 namespace DS2S_META
 {
@@ -59,69 +60,88 @@ namespace DS2S_META
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
             if (VanillaLots==null)
                 VanillaLots = Hook.GetVanillaLots();
+
+
+            ItemSetBase CasInfo = new CasualItemSet();
             Dictionary<int, ItemLot> NewLots = new Dictionary<int, ItemLot>();
+
+
+            // First check that everything is accounted for:
+            var test = VanillaLots.Where(lot => (!CasInfo.D.ContainsKey(lot.Key))).ToArray();
+
+            // Write undefined paramIDs to file:
+            //string[] missed_params = test.Select(kvp => $"{kvp.Key} (Offset {Hook.GetItemLotOffset(kvp.Key):X}) : {kvp.Value}").ToArray();
+            //System.IO.File.WriteAllLines("missing_params.txt", missed_params);
+
+
+            // Remove anything disregarded from settings:
+
 
             // Make into flat list of stuff:
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
 
-            // find all the items which can be considered keys in the most loose sense:
+            
+
+            
+
+            // Find all the items that lock anything behind them:
 
 
 
             //flatlist.Shuffle();
 
-            int seed = 1;
-            Random rng = new Random(seed);
+            //int seed = 1;
+            //Random rng = new Random(seed);
 
-            foreach (var kvp in VanillaLots)
-            {
-                // unpack:
-                int paramID = kvp.Key;
-                ItemLot lot = kvp.Value;
+            //foreach (var kvp in VanillaLots)
+            //{
+            //    // unpack:
+            //    int paramID = kvp.Key;
+            //    ItemLot lot = kvp.Value;
                 
-                // At some point, should sort the lots to place them in a more sensible order...
-                if (lot.NumDrops == 0)
-                    continue;
+            //    // At some point, should sort the lots to place them in a more sensible order...
+            //    if (lot.NumDrops == 0)
+            //        continue;
 
-                List<DropInfo> dropList = new List<DropInfo>();
-                for (int i = 0; i < lot.NumDrops; i++)
-                {
-                    while (remainingitemindex)
-                    {
-                        int index = rng.Next(flatlist.Count());
-                        DropInfo randdrop = flatlist[index]; // get the item we want to place here
+            //    List<DropInfo> dropList = new List<DropInfo>();
+            //    for (int i = 0; i < lot.NumDrops; i++)
+            //    {
+            //        while (remainingitemindex)
+            //        {
+            //            int index = rng.Next(flatlist.Count());
+            //            DropInfo randdrop = flatlist[index]; // get the item we want to place here
 
-                        // Ensure we don't softlock the game because of keys blocks
-                        if (CheckValidPlacement(paramID, randdrop))
-                        {
-                            dropList.Add(randdrop);
-                            flatlist.RemoveAt(index); // don't place twice
-                        }
-                        else
-                        {
-                            // TODO full softlock reset tests.
-                        }
-                    }
-                }
-            }
-
-
-
-            // Make into new lots:
-            foreach (var kvp in VanillaLots)
-            {
-                ItemLot IL = new ItemLot();
-                for (int row = 0; row < kvp.Value.NumDrops; row++)
-                {
-                    IL.AddDrop(flatlist[0]);
-                    flatlist.RemoveAt(0); // pop
-                }
-                ShuffledLots[kvp.Key] = IL; // add to new dictionary
-            }
+            //            // Ensure we don't softlock the game because of keys blocks
+            //            if (CheckValidPlacement(paramID, randdrop))
+            //            {
+            //                dropList.Add(randdrop);
+            //                flatlist.RemoveAt(index); // don't place twice
+            //            }
+            //            else
+            //            {
+            //                // TODO full softlock reset tests.
+            //            }
+            //        }
+            //    }
+            //}
 
 
-            Hook.WriteAllLots(ShuffledLots);
-            isRandomized = true;
+
+            //// Make into new lots:
+            //foreach (var kvp in VanillaLots)
+            //{
+            //    ItemLot IL = new ItemLot();
+            //    for (int row = 0; row < kvp.Value.NumDrops; row++)
+            //    {
+            //        IL.AddDrop(flatlist[0]);
+            //        flatlist.RemoveAt(0); // pop
+            //    }
+            //    ShuffledLots[kvp.Key] = IL; // add to new dictionary
+            //}
+
+
+            //Hook.WriteAllLots(ShuffledLots);
+            //isRandomized = true;
         }
         private void unrandomize()
         {
