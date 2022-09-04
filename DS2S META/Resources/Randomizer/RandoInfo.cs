@@ -8,6 +8,7 @@ namespace DS2S_META.Resources.Randomizer
 {
     internal enum KEYID : int
     {
+        // Area shorthands:
         NONE = 0x0,                 // default
         BELFRYLUNA      = 0xBB0,    // Shorthand: Branch && Pharros
         SINNERSRISE     = 0xBB1,    // Shorthand: Branch || Antiquated 
@@ -24,12 +25,16 @@ namespace DS2S_META.Resources.Randomizer
         DLC3            = 0xBBC,    // Shorthand: DLC3 + Drangleic
         FRIGIDOUTSKIRTS = 0xBBD,    // Shorthand: DLC3 + Garrison Ward Key
         CREDITS         = 0xBBE,    // Shorthand: Everything required to beat Nash
+        VENDRICK        = 0xBBF,    // Shorthand: Amana && SoaG x3
+        BELFRYSOL       = 0xBC0,    // Shorthand: Rotunda && BigPharros
 
-        BRANCH          = 0xAA0,    // Shorthand: Enough Branches available
+        BRANCH          = 0xAA0,    // Shorthand: Require at least 3 branches
         PHARROS         = 0xAA1,    // Shorthand: Enough Pharros Lockstones available
         NADALIA         = 0xAA2,    // Shorthand: DLC2 + enough Smelter Wedges 
+        TENBRANCHLOCK   = 0xAA4,    // Shorthand: Require at least 10 branches
+        BIGPHARROS      = 0xAA5,    // Shorthand: Require at least two lockstones
         
-
+        // Actual Key Item IDs:
         SOLDIER         = 50600000,
         FORGOTTEN       = 50820000,
         TOWER           = 52400000,
@@ -64,7 +69,7 @@ namespace DS2S_META.Resources.Randomizer
         WHISPERS        = 40610000,
         SOULOFAGIANT    = 50920000,
         CRUSHEDEYEORB   = 51000000,
-
+        SMELTERWEDGE    = 53200000,
     }
 
     internal enum PICKUPTYPE : int
@@ -84,12 +89,22 @@ namespace DS2S_META.Resources.Randomizer
 
     internal class RandoInfo
     {
+        internal string Description;
+        internal PICKUPTYPE[] Types;
+        internal KeySet[] KeySet;
+        
         // Main class constructor
         internal RandoInfo(string desc, PICKUPTYPE type, params KeySet[] reqkeys)
         {
+            Description = desc;
+            Types = new PICKUPTYPE[] { type };
+            KeySet = reqkeys;
         }
-        internal RandoInfo(string desc, PICKUPTYPE[] flags, params KeySet[] reqkeys)
+        internal RandoInfo(string desc, PICKUPTYPE[] types, params KeySet[] reqkeys)
         {
+            Description = desc;
+            Types = types;
+            KeySet = reqkeys;
         }
     };
 
@@ -100,5 +115,28 @@ namespace DS2S_META.Resources.Randomizer
         {
             Keys = keys;
         }
+    }
+
+    internal class RandoDicts
+    {
+        // Encapsulating various fields used in Rando setup
+        internal Dictionary<int, RandoInfo> RemKeyPlaces = new Dictionary<int, RandoInfo>();
+        internal Dictionary<int, RandoInfo> SoftlockSpots = new Dictionary<int, RandoInfo>();
+        internal List<int> PlacedSoFar = new List<int>();
+        internal Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
+        internal Dictionary<int, RandoInfo> ValidKeyPlaces;
+
+        // Constructors
+        internal RandoDicts() { }
+        internal RandoDicts(Dictionary<int, RandoInfo> validkeyplaces)
+        {
+            ValidKeyPlaces = validkeyplaces;
+        }
+        internal RandoDicts(Dictionary<int, RandoInfo> validkeyplaces, Dictionary<int, RandoInfo> remKeyPlaces)
+        {
+            ValidKeyPlaces = validkeyplaces;
+            RemKeyPlaces = remKeyPlaces;
+        }
+
     }
 }

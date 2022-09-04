@@ -18,15 +18,20 @@ namespace DS2S_META
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
 
-        private List<int> placedKeys;
+        Random RNG = new Random();
 
         private Dictionary<int, ItemLot> VanillaLots;
+        internal RandoDicts RD = new RandoDicts();
         internal bool isRandomized = false;
 
 
         public RandomizerControl()
         {
             InitializeComponent();
+
+            // TODO
+            int seed = 1;
+            RNG = new Random(seed);
         }
 
 
@@ -46,14 +51,6 @@ namespace DS2S_META
             FixSeedVisibility();
         }
 
-        private bool CheckValidPlacement(int paramID, DropInfo loot)
-        {
-            // paramID represents a specific pickup in the game.
-            // DropInfo contains what we want to put into it.
-
-
-            return false;
-        }
 
         private void randomize()
         {
@@ -65,40 +62,77 @@ namespace DS2S_META
             ItemSetBase CasInfo = new CasualItemSet();
             Dictionary<int, ItemLot> NewLots = new Dictionary<int, ItemLot>();
 
-
-            // First check that everything is accounted for:
-            var test = VanillaLots.Where(lot => (!CasInfo.D.ContainsKey(lot.Key))).ToArray();
-
             // Write undefined paramIDs to file:
+            //var test = VanillaLots.Where(lot => (!CasInfo.D.ContainsKey(lot.Key))).ToArray();
             //string[] missed_params = test.Select(kvp => $"{kvp.Key} (Offset {Hook.GetItemLotOffset(kvp.Key):X}) : {kvp.Value}").ToArray();
             //System.IO.File.WriteAllLines("missing_params.txt", missed_params);
 
-
             // Remove anything disregarded from settings:
+            var BanKeyTypes = new List<PICKUPTYPE>()
+            {
+                PICKUPTYPE.NPC,
+                PICKUPTYPE.VOLATILE,
 
+                PICKUPTYPE.EXOTIC,
+                PICKUPTYPE.COVENANT, // To split into cheap/annoying
+                PICKUPTYPE.UNRESOLVED,
+                PICKUPTYPE.REMOVED,
+                PICKUPTYPE.NGPLUS,
+            };
+            var BanGeneralTypes = new List<PICKUPTYPE>()
+            {
+                PICKUPTYPE.EXOTIC,
+                PICKUPTYPE.COVENANT, // To split into cheap/annoying
+                PICKUPTYPE.UNRESOLVED,
+                PICKUPTYPE.REMOVED,
+                PICKUPTYPE.NGPLUS,
+            };
 
             // Make into flat list of stuff:
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
+            // Need to add shops here.
+
+            var ShuffledLots = new Dictionary<int, ItemLot>();
+
+
+            // List of any key related item:
+            var allkeys = flatlist.Where(DI => Enum.IsDefined(typeof(KEYID), DI.ItemID)).ToList();
+            var keysrem = new List<DropInfo>(allkeys); // clone
+
+            // Go through and place the keys randomly:
+            
+            
+            var test = allkeys.Where(DI => DI.ItemID == (int)KEYID.FRAGRANTBRANCH).Count();
+
+            // Get list of places where keys can go:
+            var validKeyPlaces = CasInfo.D.Where(kvp => IsValidKeyPickup(kvp, BanKeyTypes))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            var remKeyPlaces = new Dictionary<int, RandoInfo>(validKeyPlaces); // clone
+            RD.ValidKeyPlaces = validKeyPlaces;
+            RD.RemKeyPlaces = remKeyPlaces;
+
+            var Nkeyrem = keysrem.Count();
+            while (Nkeyrem > 0)
+            {
+                int keyid = RNG.Next(Nkeyrem);
+                DropInfo item = keysrem[keyid]; // get key to place
+                PlaceItem(item, RD);
+                Nkeyrem--;
+            }
+
+            var testing = RD.ShuffledLots.Where(kvp => kvp.Value.NumDrops > 1).ToList();
+
 
             
 
-            
 
-            // Find all the items that lock anything behind them:
-
-
-
-            //flatlist.Shuffle();
-
-            //int seed = 1;
-            //Random rng = new Random(seed);
-
+            var debug = 1;
             //foreach (var kvp in VanillaLots)
             //{
             //    // unpack:
             //    int paramID = kvp.Key;
             //    ItemLot lot = kvp.Value;
-                
+
             //    // At some point, should sort the lots to place them in a more sensible order...
             //    if (lot.NumDrops == 0)
             //        continue;
@@ -143,6 +177,214 @@ namespace DS2S_META
             //Hook.WriteAllLots(ShuffledLots);
             //isRandomized = true;
         }
+        private void PlaceItem(DropInfo item, RandoDicts RD)
+        {
+            bool keyPlaced = false;
+            RD.SoftlockSpots = new Dictionary<int, RandoInfo>(); // resets each time a key is placed
+            while (!keyPlaced)
+            {
+                int Nsr = RD.RemKeyPlaces.Count();
+                if (Nsr == 0)
+                    break; // hits exception below
+
+                // Choose random place for key:
+                int pindex = RNG.Next(Nsr);
+                var place = RD.RemKeyPlaces.ElementAt(pindex);
+
+                // Check viability:
+                HandleSoftlockCheck(out bool isSoftLocked, place, RD);
+                if (isSoftLocked)
+                    continue; // handled inside function
+
+                // Accept solution:
+                RD.PlacedSoFar.Add(item.ItemID);
+                AddToLots(RD.ShuffledLots, place, item);
+                if (IsPlaceSaturated(RD.ShuffledLots, place.Key))
+                    RD.RemKeyPlaces.Remove(place.Key);
+
+                // Prepare for next item:
+                keyPlaced = true;
+                foreach (var kvp in RD.SoftlockSpots)
+                    RD.RemKeyPlaces.Add(kvp.Key, kvp.Value);
+            }
+
+
+        }
+        private void HandleSoftlockCheck(out bool isSoftLocked, KeyValuePair<int, RandoInfo> place, RandoDicts RD)
+        {
+            isSoftLocked = CheckIsSoftlockPlacement(place, RD.PlacedSoFar);
+            if (!isSoftLocked)
+                return;
+
+            // This place is not valid for the current item.
+            // Store it in temp array and restore later for next item checks.
+            // This is for performance to avoid excessively drawing a bad place.
+            RD.SoftlockSpots[place.Key] = place.Value;
+            RD.RemKeyPlaces.Remove(place.Key);
+        }
+        private bool CheckIsSoftlockPlacement(KeyValuePair<int, RandoInfo> place, List<int> placedSoFar)
+        {
+            // Can only place item in slot if the keyconditions have been met
+            var keysets = place.Value.KeySet;
+
+            // Try each different option for key requirements
+            foreach (var keyset in keysets)
+            {
+                if (keyset.Keys.All(kid => IsPlaced(kid, placedSoFar)))
+                    return true; // all required keys are placed for at least one Keyset
+            }
+            return false;
+        }
+        private bool IsPlaced(KEYID kid, List<int> placedSoFar)
+        {
+            // Function to handle different checks depending on KeyTypes I guess:
+            switch (kid)
+            {
+                case KEYID.BELFRYLUNA:
+                    // Branch && Pharros Lockstone x2
+                    return condLuna();
+
+                case KEYID.SINNERSRISE:
+                    // Branch || Antiquated
+                    return condSinner();
+                    
+                case KEYID.DRANGLEIC:
+                    // Branch && Rotunda && Sinner's Rise
+                    return condDrangleic();
+
+                case KEYID.AMANA:
+                    // Drangleic && King's passage
+                    return condAmana();
+
+                case KEYID.ALDIASKEEP:
+                    // Branch && King's Ring
+                    return condAldias();
+
+                case KEYID.MEMORYJEIGH:
+                    // King's Ring && Ashen Mist
+                    return condJeigh();
+
+                case KEYID.GANKSQUAD:
+                    // DLC1 && Eternal Sanctum
+                    return condGankSquad();
+
+                case KEYID.PUZZLINGSWORD:
+                    // DLC1 (TODO Bow/Arrow as keys)
+                    return condDLC1();
+
+                case KEYID.ELANA:
+                    // DLC1 && Dragon Stone
+                    return condElana();
+
+                case KEYID.FUME:
+                    // DLC2 && Scorching Sceptor
+                    return condFume();
+
+                case KEYID.BLUESMELTER:
+                    // DLC2 && Tower Key
+                    return condBlueSmelter();
+
+                case KEYID.ALONNE:
+                    // DLC2 && Tower Key && Scorching Scepter && Ashen Mist
+                    return condAlonne();
+
+                case KEYID.DLC3:
+                    // DLC3key && Drangleic
+                    return condDLC3();
+
+                case KEYID.FRIGIDOUTSKIRTS:
+                    // DLC3 && Garrison Ward Key
+                    return condFrigid();
+
+                case KEYID.CREDITS:
+                    // Drangleic & Memory of Jeigh
+                    return condCredits();
+
+                case KEYID.VENDRICK:
+                    // Amana + SoaG x3
+                    return condVendrick();
+
+                case KEYID.BRANCH:
+                    // Three branches available
+                    return condBranch();
+
+                case KEYID.TENBRANCHLOCK:
+                    // Ten branches available
+                    return condTenBranch();
+
+                case KEYID.NADALIA:
+                    // DLC2 && Scepter && Tower Key && 12x Smelter Wedge
+                    return condNadalia();
+
+                case KEYID.PHARROS:
+                    // Eight Pharros lockstones available
+                    return condPharros();
+
+                case KEYID.BELFRYSOL:
+                    // Rotunda Lockstone && Pharros Lockstone x2
+                    return condSol();
+
+                default:
+                    return condKey(kid); // Simple Key check
+            }
+            
+            // Conditions wrappers:
+            int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();
+            int countPharros() => placedSoFar.Where(i => i == (int)KEYID.PHARROSLOCKSTONE).Count();
+            bool condKey(KEYID keyid) => placedSoFar.Contains((int)keyid);
+            bool condBranch() => countBranches() >= 3;
+            bool condTenBranch() => countBranches() >= 10;
+            bool condRotunda() => condKey(KEYID.ROTUNDA);
+            bool condAshen() => condKey(KEYID.ASHENMIST);
+            bool condKingsRing() => condKey(KEYID.KINGSRING);
+            bool condDLC1() => condKey(KEYID.DLC1);
+            bool condDLC2() => condKey(KEYID.DLC2);
+            bool condSinner() => condBranch() || condKey(KEYID.ANTIQUATED);
+            bool condDrangleic() => condBranch() && condRotunda() && condSinner();
+            bool condAmana() => condDrangleic() && condKey(KEYID.KINGSPASSAGE);
+            bool condAldias() => condBranch() && condKingsRing();
+            bool condJeigh() => condAshen() && condKingsRing();
+            bool condGankSquad() => condDLC1() && condKey(KEYID.ETERNALSANCTUM);
+            bool condElana() => condDLC1() && condKey(KEYID.DRAGONSTONE);
+            bool condFume() => condDLC2() && condKey(KEYID.SCEPTER);
+            bool condBlueSmelter() => condDLC2() && condKey(KEYID.TOWER);
+            bool condAlonne() => condDLC2() && condKey(KEYID.TOWER) && condKey(KEYID.SCEPTER) && condAshen();
+            bool condDLC3() => condKey(KEYID.DLC3KEY) && condDrangleic();
+            bool condFrigid() => condDLC3() && condKey(KEYID.GARRISONWARD);
+            bool condCredits() => condDrangleic() && condJeigh();
+            bool condWedges() => placedSoFar.Where(i => i == (int)KEYID.SMELTERWEDGE).Count() == 12;
+            bool condNadalia() => condFume() && condBlueSmelter() && condWedges();
+            bool condVendrick() => condAmana() && (placedSoFar.Where(i => i == (int)KEYID.SOULOFAGIANT).Count() >= 3);
+            bool condBigPharros() => countPharros() >= 2;
+            bool condPharros() => countPharros() >= 8; // surely enough
+            bool condLuna() => condBranch() && condBigPharros();
+            bool condSol() => condRotunda() && condBigPharros();
+        }
+
+            
+
+        // Utility checks:
+        private bool IsPlaceSaturated(Dictionary<int, ItemLot> shuflots, int placeid)
+        {
+            return shuflots[placeid].NumDrops == VanillaLots[placeid].NumDrops;
+        }
+
+        private void AddToLots(Dictionary<int, ItemLot> shuflots, KeyValuePair<int, RandoInfo> place, DropInfo item)
+        {
+            // ShuffledLots passed in by ref since dictionary
+            int pkey = place.Key;
+            if (shuflots.ContainsKey(pkey))
+                shuflots[pkey].AddDrop(item);
+            else
+                shuflots[pkey] = new ItemLot(item);
+        }
+        private bool IsValidKeyPickup(KeyValuePair<int, RandoInfo> kvp_pickup, List<PICKUPTYPE> bannedtypes)
+        {
+            PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
+            return !PTs.Any(bannedtypes.Contains);
+        }
+
+
         private void unrandomize()
         {
             var timer = new Stopwatch();

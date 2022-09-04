@@ -28,6 +28,10 @@ namespace DS2S_META
 
         // Constructors:
         internal ItemLot() { }
+        internal ItemLot(DropInfo dropInfo)
+        {
+            Lot.Add(dropInfo);
+        }
         internal ItemLot(IEnumerable<int> itemIDs)
         {
             // Assumes that all these items are only 1 quantity.

@@ -28,10 +28,10 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(1754000, NpcInfo("Gift from Melentia after spending 10000 souls"));
             D.Add(1766000, NpcInfo("Gift from Carhillion when over 30INT"));
             D.Add(1769000, NpcInfo("Gift from Licia when over 30FTH"));
-            D.Add(1753020, CovInfo("Bell Keepers join"));
-            D.Add(2004011, CovInfo("Bell Keepers 1st rank reward", KEYID.PHARROS));
-            D.Add(2004012, CovInfo("Bell Keepers 2nd rank reward", KEYID.PHARROS));
-            D.Add(2004013, CovInfo("Bell Keepers 3rd rank reward", KEYID.PHARROS));
+            D.Add(1753020, CovInfo("Bell Keepers join", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
+            D.Add(2004011, CovInfo("Bell Keepers 1st rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
+            D.Add(2004012, CovInfo("Bell Keepers 2nd rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
+            D.Add(2004013, CovInfo("Bell Keepers 3rd rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
             D.Add(2005000, CovInfo("Rat King covenant join"));
             D.Add(2005011, CovInfo("Rat King covenant 1st rank reward"));
             D.Add(2005012, CovInfo("Rat King covenant 2nd rank reward"));
@@ -47,11 +47,9 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(50000202, VolInfo("Set of 10 drops (only 6 active) for the Petrified Something table at crows"));
             D.Add(50000303, VolInfo("Set of 10 drops for the Prism Stone table at crows"));
 
-            
-
-            // Betwixt things:
+            // Things Betwixt:
             D.Add(1705000, NpcInfo("Gift from the fire keepers after getting the King's Ring", KEYID.DRANGLEIC));
-            D.Add(1723000, NpcInfo("Gift from Milibeth after killing 3 hippos", KEYID.BRANCH));
+            D.Add(1723000, NpcInfo("Gift from Milibeth after killing 3 hippos", KEYID.TENBRANCHLOCK));
             D.Add(10025010, WChestInfo("Wooden chest at the attic of Fire Keeper's cottage"));
             D.Add(10026000, SafeInfo("On the right side ledge before Fire Keeper's cottage"));
             D.Add(10026001, NGPlusInfo("On the right side ledge before Fire Keeper's cottage in NG+"));
@@ -64,9 +62,9 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10026070, SafeInfo("On path after the backstab tutorial"));
             D.Add(10026080, SafeInfo("Next to fog gate and archer"));
             D.Add(10026090, SafeInfo("Other side of the jumpable gap"));
-            D.Add(10026100, SafeInfo("In the basilisk pit", KEYID.BRANCH));
-            D.Add(60008100, SafeInfo("Betwixt Pursuer drop"));
-            D.Add(60008110, NGPlusInfo("Betwixt Pursuer drop in NG+"));
+            D.Add(10026100, SafeInfo("In the basilisk pit", KEYID.TENBRANCHLOCK));
+            D.Add(60008100, SafeInfo("Betwixt Pursuer drop", KEYID.TENBRANCHLOCK));
+            D.Add(60008110, NGPlusInfo("Betwixt Pursuer drop in NG+", KEYID.TENBRANCHLOCK));
 
             // Majula:
             D.Add(1700000, NpcInfo("Gift from the Emerald Herald"));
@@ -197,12 +195,12 @@ namespace DS2S_META.Resources.Randomizer
             // Heide's Tower of Flame:
             D.Add(611000, BossInfo("Dragonrider boss drop"));
             D.Add(625000, BossInfo("Old Dragonslayer boss drop"));
-            D.Add(10305010, MChestInfo("Metal chest behind petrified hollow after Dragonrider", KEYID.BRANCH));
+            D.Add(10305010, MChestInfo("Metal chest behind petrified hollow after Dragonrider", KEYID.TENBRANCHLOCK));
             D.Add(10305020, MChestInfo("Vanilla bone dust: Metal chest guarded by syan soldier after Dragonrider"));
             D.Add(10306000, SafeInfo("In alcove, far end of top floor after Dragonrider"));
             D.Add(10306010, SafeInfo("Corpse on railing, far end of top floor after Dragonrider"));
             D.Add(10306020, SafeInfo("In alcove, far end of top floor after Dragonrider"));
-            D.Add(10306030, SafeInfo("On railing behind petrified hollow", KEYID.BRANCH));
+            D.Add(10306030, SafeInfo("On railing behind petrified hollow", KEYID.TENBRANCHLOCK));
             D.Add(10315000, MChestInfo("Metal chest before Dragonrider"));
             D.Add(10315001, MChestNGPlusInfo("Metal chest before Dragonrider in NG+"));
             D.Add(10316010, SafeInfo("On the railing near first bonfire"));
@@ -255,61 +253,64 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10186170, SafeInfo("In alcove behind the poison jars"));
 
             // Lost Bastille:
-            D.Add(325000, BossInfo("Ruin sentinels drop", KEYID.BRANCH));
-            D.Add(1768000, NpcInfo("Gift from Straid after trading 4 boss souls", KEYID.BRANCH)); // TODO: consider how many branches
-            D.Add(10165000, MChestInfo("First metal chest in Pharros/elevator room"));
-            D.Add(10165010, WChestInfo("Wooden chest behind Pharros' contraption in Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10165020, MChestInfo("Second metal chest near in Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10165040, WChestInfo("Wooden chest behind illusory wall from stairs after Sentinels", KEYID.BRANCH));
-            D.Add(10165041, WChestNGPlusInfo("Wooden chest behind illusory wall from stairs after Sentinels in NG+", KEYID.BRANCH));
-            D.Add(10165050, MChestInfo("Vanilla estus shard: metal chest behind in the dog/Pursuer courtyard"));
-            D.Add(10165070, MChestInfo("Third metal chest in Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10165080, WChestInfo("Wooden chest behind illusory wall from Sentinel's room", KEYID.BRANCH));
-            D.Add(10165110, MChestInfo("Metal chest next to elevator in Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10165130, MChestInfo("Metal chest in the room under Servants' Quarters bonfire", KEYID.BRANCH));
-            D.Add(10165140, MChestInfo("Metal chest where Pursuer attacks near the Tower Apart", KEYID.SOLDIER));
-            D.Add(10165150, MChestInfo("Metal chest in McDuff's workshop", KSO(KEYID.TORCH), KSO(KEYID.DULLEMBER))); // TODO check this edge case!));
+            D.Add(10166460, SafeInfo("In a cell at top of elevator ride after Flexile"));
+            D.Add(10166470, SafeInfo("In hidden tunnel after riding down on top of the elevator after Flexile"));
+            D.Add(10166300, SafeInfo("Cell near Exile Holding Cells bonfire"));
+            D.Add(10166310, SafeInfo("In a room with explosive hollows near Antiquated door"));
+            D.Add(10166010, SafeInfo("On top of the scaffolding in dog courtyard"));
+            D.Add(10166040, SafeInfo("On the ledge above Mcduff's workshop"));
+            D.Add(10166070, SafeInfo("Vanilla gold pine resin: on the left-hand-side on the way to McDuff"));
+            D.Add(10165240, MChestInfo("Metal chest next to Lucatiel"));
+            D.Add(10166420, SafeInfo("Upper floor of tower above Lucatiel"));
+            D.Add(10166421, NGPlusInfo("Upper floor of tower above Lucatiel in NG+"));
             D.Add(10165160, WChestInfo("First wooden chest in McDuff's workshop"));
             D.Add(10165170, WChestInfo("Second wooden chest in McDuff's workshop"));
             D.Add(10165180, WChestInfo("Third wooden chest in McDuff's workshop"));
             D.Add(10165190, WChestInfo("Fourth wooden chest in McDuff's workshop"));
-            D.Add(10165210, MChestInfo("Vanilla Hush: metal chest behind illusory wall in Sentinel's room", KEYID.BRANCH));
-            D.Add(10165240, MChestInfo("Metal chest next to Lucatiel"));
+            D.Add(10165150, MChestInfo("Metal chest in McDuff's workshop", KSO(KEYID.TORCH), KSO(KEYID.DULLEMBER))); // TODO check this edge case!;
+            //
+            D.Add(10165140, MChestInfo("Metal chest where Pursuer attacks near the Tower Apart", KEYID.SOLDIER));
+            D.Add(10166080, SafeInfo("On ledge near tower apart bonfire", KEYID.SOLDIER));
             D.Add(10165250, MChestInfo("Vanilla effigies: metal chest next to Tower Apart bonfire", KEYID.SOLDIER));
             D.Add(10165260, MChestInfo("Vanilla: Dull ember: metal chest next to Tower Apart bonfire", KEYID.SOLDIER));
-            D.Add(10166000, SafeInfo("On upper ledge in Sentinel's room", KEYID.BRANCH));
-            D.Add(10166010, SafeInfo("On top of the scaffolding in dog courtyard"));
             D.Add(10166020, SafeInfo("Item hidden immediately behind door after Servants' Quarters bonfire", KEYID.BRANCH));
             D.Add(10166030, SafeInfo("End of the rubble path, on mid-level above dog/Pursuer courtyard"));
-            D.Add(10166040, SafeInfo("On the ledge above Mcduff's workshop"));
-            D.Add(10166050, SafeInfo("Corpse up the ladder, looking into Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166070, SafeInfo("Vanilla gold pine resin: on the left-hand-side on the way to McDuff"));
-            D.Add(10166080, SafeInfo("On ledge near tower apart bonfire", KEYID.SOLDIER));
+            D.Add(10166050, SafeInfo("Corpse up the ladder, looking into Pharros/elevator room", KEYID.SINNERSRISE));
             D.Add(10166100, SafeInfo("Corpse behind illusory wall in Sentinel's room", KEYID.BRANCH));
-            D.Add(10166130, SafeInfo("Corpse at top of elevator", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
             D.Add(10166150, SafeInfo("In a cell in the narrow corridor after Sentinels", KEYID.BRANCH));
-            D.Add(10166180, SafeInfo("Vanilla Bastille Key: on ledge behind boxes, turn left after Servants' Quarters door", KEYID.BRANCH));
-            D.Add(10166190, SafeInfo("Behind the corner at beginning of the bridge to Sinner's Rise", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166191, NGPlusInfo("Behind the corner at beginning of the bridge to Sinner's Rise in NG+", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166200, SafeInfo("End of the path after double illusory wall above dog/Pursuer courtyard", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166260, SafeInfo("On corpse after jumping gap after the illusory wall", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166270, SafeInfo("At bottom of ladder before ruin sentinels", KEYID.BRANCH));
-            D.Add(10166290, SafeInfo("Vanilla flame butterflies: on roof after Servants' Quarters", KEYID.BRANCH));
-            D.Add(10166300, SafeInfo("Cell near Exile Holding Cells bonfire"));
-            D.Add(10166310, SafeInfo("In a room with explosive hollows near Antiquated door"));
+            //
+            D.Add(325000, BossInfo("Ruin sentinels drop", KEYID.BRANCH));
             D.Add(10166320, SafeInfo("In a cell before Sentinels", KEYID.BRANCH));
+            D.Add(10166270, SafeInfo("At bottom of ladder before ruin sentinels", KEYID.BRANCH));
+            D.Add(10166000, SafeInfo("On upper ledge in Sentinel's room", KEYID.BRANCH));
+            D.Add(10165040, WChestInfo("Wooden chest behind illusory wall from stairs after Sentinels", KEYID.BRANCH));
+            D.Add(10165210, MChestInfo("Vanilla Hush: metal chest behind illusory wall in Sentinel's room", KEYID.BRANCH));
             D.Add(10166370, SafeInfo("On opposite roof (jump) after Servants' Quarters", KEYID.BRANCH));
+            D.Add(10165041, WChestNGPlusInfo("Wooden chest behind illusory wall from stairs after Sentinels in NG+", KEYID.BRANCH));
+            D.Add(10165050, MChestInfo("Vanilla estus shard: metal chest behind in the dog/Pursuer courtyard"));
+            D.Add(10165080, WChestInfo("Wooden chest behind illusory wall from Sentinel's room", KEYID.BRANCH));
+            D.Add(10165130, MChestInfo("Metal chest in the room under Servants' Quarters bonfire", KEYID.BRANCH));
             D.Add(10166380, SafeInfo("In the room under the Servants' Quarters bonfire", KEYID.BRANCH));
-            D.Add(10166410, SafeInfo("Vanilla ascetic: on ledge halfway up elevator shaft", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166420, SafeInfo("Upper floor of tower above Lucatiel"));
-            D.Add(10166421, NGPlusInfo("Upper floor of tower above Lucatiel in NG+"));
-            D.Add(10166430, SafeInfo("Vanilla Archdrake shield: Blow up wall by Pharros/elevator room", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166440, SafeInfo("In a cell next to Straid's cell", KSO(KEYID.ANTIQUATED, KEYID.BASTILLEKEY), KSO(KEYID.BRANCH, KEYID.BASTILLEKEY)));
+            D.Add(10166180, SafeInfo("Vanilla Bastille Key: on ledge behind boxes, turn left after Servants' Quarters door", KEYID.BRANCH));
+            D.Add(10166290, SafeInfo("Vanilla flame butterflies: on roof after Servants' Quarters", KEYID.BRANCH));
+            //
+            D.Add(10166490, SafeInfo("In the well", KEYID.SINNERSRISE));
+            D.Add(10166430, SafeInfo("Vanilla Archdrake shield: Blow up wall by Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10165010, WChestInfo("Wooden chest behind Pharros' contraption in Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10165000, MChestInfo("First metal chest in Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10165020, MChestInfo("Second metal chest near in Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10165070, MChestInfo("Third metal chest in Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10165110, MChestInfo("Metal chest next to elevator in Pharros/elevator room", KEYID.SINNERSRISE));
+            D.Add(10166410, SafeInfo("Vanilla ascetic: on ledge halfway up elevator shaft", KEYID.SINNERSRISE));
+            D.Add(10166130, SafeInfo("Corpse at top of elevator", KEYID.SINNERSRISE));
+            D.Add(10166480, SafeInfo("In the corridor after one illusory wall, two level's below Straid", KEYID.SINNERSRISE));
+            D.Add(10166200, SafeInfo("End of the path after double illusory wall above dog/Pursuer courtyard", KEYID.SINNERSRISE));
+            D.Add(10166260, SafeInfo("On corpse after jumping gap after the illusory wall", KEYID.SINNERSRISE));
+            D.Add(10166440, SafeInfo("In a cell next to Straid's cell", KSO(KEYID.SINNERSRISE, KEYID.BASTILLEKEY)));
             D.Add(10166441, NGPlusInfo("In a cell next to straid's cell in NG+", KEYID.BASTILLEKEY));
-            D.Add(10166460, SafeInfo("In a cell at top of elevator ride after Flexile"));
-            D.Add(10166470, SafeInfo("In hidden tunnel after riding down on top of the elevator after Flexile"));
-            D.Add(10166480, SafeInfo("In the corridor after one illusory wall, two level's below Straid", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
-            D.Add(10166490, SafeInfo("In the well", KSO(KEYID.ANTIQUATED), KSO(KEYID.BRANCH)));
+            D.Add(1768000, NpcInfo("Gift from Straid after trading 4 boss souls", KSO(KEYID.TENBRANCHLOCK, KEYID.SINNERSRISE)));
+            D.Add(10166190, SafeInfo("Behind the corner at beginning of the bridge to Sinner's Rise", KEYID.SINNERSRISE));
+            D.Add(10166191, NGPlusInfo("Behind the corner at beginning of the bridge to Sinner's Rise in NG+", KEYID.SINNERSRISE));
 
             // Belfry Luna:
             D.Add(324000, BossInfo("Belfry Gargoyles drop", KEYID.BELFRYLUNA));
@@ -410,11 +411,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10255130, MChestInfo("Vanilla shotel: metal chest in the side tunnel before the worms"));
             D.Add(10256210, SafeInfo("In the fire in the Rotten arena"));
             D.Add(10256350, SafeInfo("Urn at the bottom of the elevator near Gulch Giants"));
-            D.Add(10256360, SafeInfo("Urn next to the second bonfire", KEYID.BRANCH));
+            D.Add(10256360, SafeInfo("Urn next to the second bonfire", KEYID.TENBRANCHLOCK));
             D.Add(10256370, SafeInfo("First urn in the front of the worms"));
             D.Add(10256380, SafeInfo("Second urn in the front of the worms"));
             D.Add(10256390, SafeInfo("Urn in the wide area before the rotten"));
-            D.Add(10256500, NpcInfo("Dropped from rotten's arm")); // who knows what category this is
+            D.Add(10256500, VolInfo("Dropped from rotten's arm")); // who knows what category this is
             D.Add(60001000, BossInfo("Drop from Gulch giants")); // ?
 
             // Huntman's Copse:
@@ -554,7 +555,7 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10176630, SafeInfo("Short corridor with poison on floor", KEYID.ROTUNDA));
 
 
-            // Iron Keep & Belfry Sol:
+            // Iron Keep:
             D.Add(305000, BossInfo("Smelter demon drop", KEYID.ROTUNDA));
             D.Add(607000, BossInfo("Old Iron King drop", KEYID.ROTUNDA));
             D.Add(607001, BossNGPlusInfo("Old Iron King drop in NG+", KEYID.ROTUNDA));
@@ -567,12 +568,9 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10195001, WChestNGPlusInfo("Wooden chest at upper level of the room with changing platforms in NG+", KEYID.ROTUNDA));
             D.Add(10195030, MChestInfo("Metal chest next to Pharros contraption after Dull ember jump, in the first big lava room", KEYID.ROTUNDA));
             D.Add(10195040, MChestInfo("Metal chest next to archer on upper left side of the first big lava room", KEYID.ROTUNDA));
-            D.Add(10195050, MChestInfo("Metal chest behind illusory wall after Belfry Sol exit", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
-            D.Add(10195060, MChestInfo("Metal chest behind illusory wall after Belfry Sol exit", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
             D.Add(10195090, MChestInfo("Metal chest at the top of the high tower with a hole in the middle of it", KEYID.ROTUNDA));
             D.Add(10195100, MChestInfo("Metal chest in lava at right side of the first big lava room", KEYID.ROTUNDA));
             D.Add(10195110, MChestInfo("Metal chest in lava in the room with changing platforms", KEYID.ROTUNDA));
-            D.Add(10195130, MChestInfo("Metal chest next to Belfry Sol bonfire", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
             D.Add(10195140, MChestInfo("Metal chest immediately after Smelter demon", KEYID.ROTUNDA));
             D.Add(10195150, MChestInfo("Metal chest after Old Iron King", KEYID.ROTUNDA));
             D.Add(10196030, SafeInfo("On lower left side of the first big lava room", KEYID.ROTUNDA));
@@ -596,23 +594,33 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10196210, SafeInfo("Inside the central kiln", KEYID.ROTUNDA));
             D.Add(10196211, NGPlusInfo("Inside the central kiln in NG+", KEYID.ROTUNDA));
             D.Add(10196220, SafeInfo("Corpse at the top of the high tower with three Alonne captains", KEYID.ROTUNDA));
-            D.Add(10195120, MChestInfo("Metal chest immediately after completing Belfy Sol", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
-            D.Add(10196000, SafeInfo("Behind the Belfry, near the lever in Belfry Sol", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
-            D.Add(10196010, SafeInfo("On the far side of the sloped roof in Belfry Sol", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
-            D.Add(10196020, SafeInfo("Next to the ladder near the exit of Belfry Sol", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
-            D.Add(10196200, SafeInfo("Corpse at bottom of stairs after Belfy Sol exit", KSO(KEYID.ROTUNDA, KEYID.PHARROS)));
+
+            // Belfry Sol:
+            D.Add(10195130, MChestInfo("Metal chest next to Belfry Sol bonfire", KEYID.BELFRYSOL));
+            D.Add(10196000, SafeInfo("Behind the Belfry, near the lever in Belfry Sol", KEYID.BELFRYSOL));
+            D.Add(10196010, SafeInfo("On the far side of the sloped roof in Belfry Sol", KEYID.BELFRYSOL));
+            D.Add(10196020, SafeInfo("Next to the ladder near the exit of Belfry Sol", KEYID.BELFRYSOL));
+            D.Add(10195120, MChestInfo("Metal chest immediately after completing Belfy Sol", KEYID.BELFRYSOL));
+            D.Add(10196200, SafeInfo("Corpse at bottom of stairs after Belfy Sol exit", KEYID.BELFRYSOL));
+            D.Add(10195050, MChestInfo("Metal chest behind illusory wall after Belfry Sol exit", KEYID.BELFRYSOL));
+            D.Add(10195060, MChestInfo("Metal chest behind illusory wall after Belfry Sol exit", KEYID.BELFRYSOL));
 
             // Shaded Woods:
-            D.Add(1307000, NpcInfo("Gift from Head of Vengarl after exhausting his dialogue", KEYID.BRANCH));
             D.Add(10295000, MChestInfo("Metal chest next to the Old Akelarre bonfire", KEYID.BRANCH));
             D.Add(10296020, SafeInfo("Corpse in the room above the Old Akelarre bonfire", KEYID.BRANCH));
+            D.Add(10326000, SafeInfo("On ledge left side of the path to Ruined Fork Road bonfire", KEYID.BRANCH));
+            D.Add(10326110, SafeInfo("On the path to Ruined Fork Road” bonfire", KEYID.BRANCH));
+            D.Add(10326270, SafeInfo("Corpse getting eaten by goblins just before Ruined Fork Road bonfire", KEYID.BRANCH));
+            D.Add(10326280, SafeInfo("Corpse getting eaten by goblins just before the Ruined Fork Road bonfire", KEYID.BRANCH));
+            D.Add(10326170, SafeInfo("Vanilla RTSR: in the mud next to hippo", KEYID.BRANCH));
+            D.Add(10326020, SafeInfo("On a ledge on left side of the path between Ruined Fork Road bonfire and Shrine of Winter", KEYID.BRANCH));
+            D.Add(10326260, SafeInfo("On a wall along the path after Shrine of Winter", KEYID.DRANGLEIC));
+            D.Add(10326030, SafeInfo("Vanilla Golden Falcon shield: in front of the ruined gate just before Shrine of Winter", KEYID.BRANCH));
             D.Add(10325020, MChestInfo("Vanilla Chlo +1: metal chest on left side of the fog area", KEYID.BRANCH));
             D.Add(10325050, MChestInfo("Vanilla Old Sun ring: metal chest on right side of the fog area", KEYID.BRANCH));
-            D.Add(10325080, MChestInfo("Vanilla Clear Bluetone+1: metal chest next to a big tree in fog area", KEYID.BRANCH));
-            D.Add(10326000, SafeInfo("On ledge left side of the path to Ruined Fork Road bonfire", KEYID.BRANCH));
-            D.Add(10326020, SafeInfo("On a ledge on left side of the path between Ruined Fork Road bonfire and Shrine of Winter", KEYID.BRANCH));
-            D.Add(10326030, SafeInfo("Vanilla Golden Falcon shield: in front of the ruined gate just before Shrine of Winter", KEYID.BRANCH));
+            D.Add(10325080, MChestInfo("Vanilla Clear Bluetone +1: metal chest next to a big tree in fog area", KEYID.BRANCH));
             D.Add(10326060, SafeInfo("Corpse just before the stone circle next to Head of Vengarl", KEYID.BRANCH));
+            D.Add(1307000, NpcInfo("Gift from Head of Vengarl after exhausting his dialogue", KEYID.BRANCH));
             D.Add(10326240, SafeInfo("Behind the stone circle by Head of Vengarl", KEYID.BRANCH));
             D.Add(10326070, SafeInfo("Corpse next to a tree in fog area", KEYID.BRANCH));
             D.Add(10326080, SafeInfo("Corpse next to a big tree in fog area", KEYID.BRANCH));
@@ -620,26 +628,17 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10326090, SafeInfo("Corpse in the middle of the fog area", KEYID.BRANCH));
             D.Add(10326100, SafeInfo("Corpse on right side of the fog area", KEYID.BRANCH));
             D.Add(10326101, NGPlusInfo("Corpse on right side of the fog area in NG+", KEYID.BRANCH));
-            D.Add(10326110, SafeInfo("On the path to Ruined Fork Road” bonfire", KEYID.BRANCH));
-            D.Add(10326170, SafeInfo("Vanilla RTSR: in the mud next to hippo", KEYID.BRANCH));
             D.Add(10326220, SafeInfo("Behind the ruined gate, to the right after Shrine of Winter", KEYID.DRANGLEIC));
-            D.Add(10326250, SafeInfo("On the path after Shrine of Winter", KEYID.DRANGLEIC));
-            D.Add(10326260, SafeInfo("On a wall along the path after Shrine of Winter", KEYID.DRANGLEIC));
-            D.Add(10326270, SafeInfo("Corpse getting eaten by goblins just before Ruined Fork Road bonfire", KEYID.BRANCH));
-            D.Add(10326280, SafeInfo("Corpse getting eaten by goblins just before the Ruined Fork Road bonfire", KEYID.BRANCH));
-            D.Add(503000, BossInfo("Scorpioness Najka drop", KEYID.BRANCH));
-            D.Add(503001, NGPlusInfo("Scorpioness Najka drop in NG+", KEYID.BRANCH));
+            //
             D.Add(1502000, NpcInfo("Gift from Manscorpion Tark after defeating Najka", KSO(KEYID.BRANCH, KEYID.WHISPERS)));
             D.Add(1502010, NpcInfo("Gift from manscorpion Tark after defeating Freja", KSO(KEYID.BRANCH, KEYID.WHISPERS)));
             D.Add(10325000, WChestInfo("Wooden chest on lower floor of the main Shaded Ruins bridge", KEYID.BRANCH));
             D.Add(10325001, WChestNGPlusInfo("Wooden chest On lower floor of the main Shaded Ruins bridge in NG+", KEYID.BRANCH));
             D.Add(10325010, WChestInfo("Wooden chest on upper floor of the main Shaded Ruins bridge", KEYID.BRANCH));
             D.Add(10325030, MChestInfo("Metal chest on upper area by Manscorpion tark", KEYID.BRANCH));
-            D.Add(10325040, MChestInfo("Metal chest in room blocked by petrified statue", KEYID.BRANCH)); // Double branch :thinking:
             D.Add(10325060, MChestInfo("Metal chest next to Darkdiver Grandahl", KEYID.BRANCH));
-            D.Add(10325100, MChestInfo("Metal chest blocked by petrified statue", KEYID.BRANCH));
             D.Add(10325110, MChestInfo("Vanilla BKH: metal chest under the main Shaded Ruins bridge", KEYID.BRANCH));
-            D.Add(10325120, MChestInfo("Vanilla bone dust: metal chest in area behind two petrified statues and Vengarl's body", KEYID.BRANCH));
+            D.Add(10325120, MChestInfo("Vanilla bone dust: metal chest in area behind two petrified statues", KEYID.BRANCH));
             D.Add(10326010, SafeInfo("Left of the building leading to Manscorpion Tark", KEYID.BRANCH));
             D.Add(10326040, SafeInfo("On 2nd floor of the area with many lion warriors", KEYID.BRANCH));
             D.Add(10326120, SafeInfo("On ledge next to the exit from the corrosive puddles area", KEYID.BRANCH));
@@ -651,10 +650,16 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10326180, SafeInfo("On collapsed stairs next to Creighton", KEYID.BRANCH));
             D.Add(10326190, SafeInfo("Corpse next to the big collapsing floor", KEYID.BRANCH));
             D.Add(10326191, NGPlusInfo("Corpse next to the big collapsing floor in NG+", KEYID.BRANCH));
-            D.Add(10326200, NpcInfo("On tree in Najka's arena", KEYID.BRANCH)); // To consider fairness
             D.Add(10326210, SafeInfo("On lower floor of the building leading to Manscorpion Tark", KEYID.BRANCH));
-            D.Add(10326230, SafeInfo("Next to Vengarl's body", KEYID.BRANCH)); // Multi branch
-            D.Add(60009000, SafeInfo("Drop from the petrified lion warrior by the tree bridge", KEYID.BRANCH)); // Multi-branch
+            D.Add(10326200, VolInfo("On tree in Najka's arena", KEYID.BRANCH));
+            D.Add(503000, BossInfo("Scorpioness Najka drop", KEYID.BRANCH));
+            D.Add(503001, NGPlusInfo("Scorpioness Najka drop in NG+", KEYID.BRANCH));
+            D.Add(10326250, SafeInfo("On the path after Shrine of Winter", KEYID.DRANGLEIC));
+            //
+            D.Add(10325100, MChestInfo("Metal chest blocked by petrified statue", KEYID.TENBRANCHLOCK));
+            D.Add(10326230, SafeInfo("Next to Vengarl's body", KEYID.TENBRANCHLOCK));
+            D.Add(10325040, MChestInfo("Metal chest in room blocked by petrified statue", KEYID.TENBRANCHLOCK));
+            D.Add(60009000, SafeInfo("Vanilla Fang Key: drop from the petrified lion warrior by the tree bridge", KEYID.TENBRANCHLOCK));
 
             // Doors of Pharros:
             D.Add(223500, BossInfo("Royal Rat Authority drop", KEYID.BRANCH));
@@ -811,10 +816,8 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(20115060, MChestInfo("Vanilla sunlight blade: metal chest in the end of the narrow underwater walkway", KEYID.AMANA));
             D.Add(20115080, MChestInfo("Metal chest in water side from the second hut", KEYID.AMANA));
             D.Add(20115090, MChestInfo("Vanilla Helix Halberd: metal chest behind a Pharros contraption near the Crumbled Ruins bonfire", KSO(KEYID.AMANA, KEYID.PHARROS)));
-            D.Add(20115100, MChestInfo("Metal chest in left-side water at bottom of stairs by the praying Milfanito", KEYID.AMANA));
-            D.Add(20115110, MChestInfo("Metal chest in right-side water at bottom of stairs by the praying Milfanito", KEYID.AMANA));
-            D.Add(20115070, MChestInfo("Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KSO(KEYID.AMANA, KEYID.SOULOFAGIANT)));
-            D.Add(20115500, SafeInfo("Vanilla Soul of the King: on a throne behind a door that opens after defeating Vendrick", KSO(KEYID.AMANA, KEYID.SOULOFAGIANT)));
+            D.Add(20115070, MChestInfo("Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KEYID.VENDRICK));
+            D.Add(20115500, SafeInfo("Vanilla Soul of the King: on a throne behind a door that opens after defeating Vendrick", KEYID.VENDRICK));
             D.Add(20116000, SafeInfo("On narrow walkway just after Rhoy's Resting Place” bonfire", KEYID.AMANA));
             D.Add(20116010, SafeInfo("Under the circular staircase in the beginning of the area", KEYID.AMANA));
             D.Add(20116011, NGPlusInfo("Under the circular staircase in the beginning of the area in NG+", KEYID.AMANA));
@@ -825,7 +828,6 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(20116080, SafeInfo("Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place” bonfire", KEYID.AMANA));
             D.Add(20116090, SafeInfo("Behind a fallen pilar next to the circle of pillars after the Rhoy's Resting place bonfire", KEYID.AMANA));
             D.Add(20116100, SafeInfo("Next to torch before the demon of song", KEYID.AMANA));
-            D.Add(20116110, SafeInfo("In cave under the stairs leading down from the praying Milfanito", KEYID.AMANA));
             D.Add(20116130, SafeInfo("Corpse hanging from branch in the beginning of the area", KEYID.AMANA));
             D.Add(20116140, SafeInfo("On narrow walkway to the right of the second fog gate", KEYID.AMANA));
             D.Add(20116150, SafeInfo("Behind roots before the first bonfire", KEYID.AMANA));
@@ -836,8 +838,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(20116171, NGPlusInfo("In the second hut in NG+", KEYID.AMANA));
             D.Add(20116210, SafeInfo("In the second hut", KEYID.AMANA));
             D.Add(20116190, SafeInfo("On rising-beam to the left of the second fog gate", KEYID.AMANA));
-            D.Add(20116200, SafeInfo("Vanilla Life Ring+2: in a cave behind roots with a hippo", KEYID.AMANA));
+            D.Add(20116200, SafeInfo("Vanilla Life Ring +2: in a cave behind roots with a hippo", KEYID.AMANA));
             D.Add(20116220, SafeInfo("On small island surrounding by lizardmen, left side of the path before the first hut", KEYID.AMANA));
+            D.Add(20116110, SafeInfo("In cave under the stairs leading down from the praying Milfanito", KSO(KEYID.AMANA, KEYID.TENBRANCHLOCK)));
+            D.Add(20115100, MChestInfo("Metal chest in left-side water at bottom of stairs by the praying Milfanito", KSO(KEYID.AMANA, KEYID.TENBRANCHLOCK)));
+            D.Add(20115110, MChestInfo("Metal chest in right-side water at bottom of stairs by the praying Milfanito", KSO(KEYID.AMANA, KEYID.TENBRANCHLOCK)));
 
             // Undead Crypt:
             D.Add(333000, BossInfo("Velstadt drop", KEYID.AMANA));
