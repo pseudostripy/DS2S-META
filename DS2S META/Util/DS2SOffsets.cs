@@ -314,6 +314,7 @@ namespace DS2S_META
         public const int ParamDataOffset2 = 0xD8;
         public const int ParamDataOffset3 = 0xA8;
         public const int ParamDataOffset4 = 0x50;
+        public const int ParamDataOffset5 = 0xB0;
 
         public const int ParamItemLotOtherOffset = 0x1F8;
 
@@ -360,12 +361,24 @@ namespace DS2S_META
         public enum ItemLotOffsets : int
         {
             // The 1 is the first of 10 slots for each of the following
-            Item1 = 0x2C,
-            Quantity1 = 0x4,
-            Reinforcement1 = 0xE,
-            Infusion1 = 0x18,
-            Unk3_1 = 0x22, // TODO: investigate
-            Chance1 = 0x54
+            Item1           = 0x2C,
+            Quantity1       = 0x4,
+            Reinforcement1  = 0xE,
+            Infusion1       = 0x18,
+            Unk3_1          = 0x22, // TODO: investigate (related to item one-per-playthrough)
+            Chance1         = 0x54
+        }
+        public enum ShopLotOffsets : int
+        {
+            ItemID          = 0x00,
+            Unk04           = 0x04,
+            EnableFlag      = 0x08,
+            DisableFlag     = 0x0C,
+            MaterialID      = 0x10,
+            DuplicateItemID = 0x14,
+            Unk18           = 0x18,
+            PriceRate       = 0x1C,
+            Quantity        = 0x20,
         }
 
 

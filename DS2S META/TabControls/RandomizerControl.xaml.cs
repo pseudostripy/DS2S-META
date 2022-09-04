@@ -20,6 +20,7 @@ namespace DS2S_META
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
         private Random RNG = new Random();
         private Dictionary<int, ItemLot> VanillaLots;
+        private Dictionary<int, ShopInfo> VanillaShops;
         internal RandoDicts RD = new RandoDicts();
         internal bool isRandomized = false;
 
@@ -54,6 +55,14 @@ namespace DS2S_META
                 return;
             }
 
+            // Read normal game params:
+            if (VanillaLots == null)
+            {
+                VanillaLots = Hook.GetVanillaLots();
+                VanillaShops = Hook.GetVanillaShops();
+            }
+
+            
 
             if (isRandomized)
                 unrandomize();
@@ -83,8 +92,6 @@ namespace DS2S_META
             RD = new RandoDicts();
 
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
-            if (VanillaLots == null)
-                VanillaLots = Hook.GetVanillaLots();
             ItemSetBase CasInfo = new CasualItemSet(); // Get accessibility
 
             // Get Loot to randomize:

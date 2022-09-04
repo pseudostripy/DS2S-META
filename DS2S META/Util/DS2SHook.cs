@@ -72,6 +72,7 @@ namespace DS2S_META
         private PHPointer ItemUseageParam;
         private PHPointer ItemLotDropsParam; // Enemy drop tables
         private PHPointer ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
+        private PHPointer ShopLineupParam;   // Shops.
 
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
@@ -159,6 +160,7 @@ namespace DS2S_META
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
             ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
             ItemLotOtherParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamItemLotOtherOffset);
+            ShopLineupParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset5, (int)DS2SOffsets.ParamDataOffset2);
 
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
             Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
@@ -178,6 +180,7 @@ namespace DS2S_META
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
             ItemLotOtherPODict = BuildOffsetDictionary(ItemLotDropsParam, "ITEM_LOT_PARAM2");
             ItemLotOtherPODict = BuildOffsetDictionary(ItemLotOtherParam, "ITEM_LOT_PARAM2");
+            ShopLineupPODict = BuildOffsetDictionary(ShopLineupParam, "SHOP_LINEUP_PARAM");
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -1037,6 +1040,7 @@ namespace DS2S_META
         private static Dictionary<int, int> ItemUsageParamOffsetDict;
         private static Dictionary<int, int> ItemLotParam_Drops; 
         private static Dictionary<int, int> ItemLotOtherPODict;
+        private static Dictionary<int, int> ShopLineupPODict;
 
 
 
@@ -1241,6 +1245,20 @@ namespace DS2S_META
 
             return vanlots;
         }
+        internal Dictionary<int, ShopInfo> GetVanillaShops()
+        {
+            Dictionary<int, ShopInfo> vanshops = new Dictionary<int, ShopInfo>();
+
+            // Loop over all the params and read the itemlot tables
+            foreach (var kvp in ShopLineupPODict)
+                vanshops.Add(kvp.Key, ReadShopInfo(kvp));
+
+            // Write out the whole table to a file cause I'm lazy:
+            string[] lines = ShopLineupPODict.Select(kvp => $"ID: {kvp.Key} --> Offset: {kvp.Value:X}").ToArray();
+            File.WriteAllLines("./ShopLineupOffsets.txt", lines);
+
+            return vanshops;
+        }
 
         internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
         {
@@ -1273,6 +1291,25 @@ namespace DS2S_META
             }
             return lot;
         }
+        internal ShopInfo ReadShopInfo(KeyValuePair<int, int> kvp)
+        {
+            // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
+            int lotstart = kvp.Value;
+
+            ItemLot lot = new ItemLot();
+
+            int itemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.ItemID);
+            int enableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag);
+            int disableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
+            int materialID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.MaterialID);
+            int dupitemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID);
+            float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
+            int quant = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.Quantity);
+
+            return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
+        }
+
+
         internal void WriteAllLots(Dictionary<int, ItemLot> all_lots)
         {
             // Implement randomness:
