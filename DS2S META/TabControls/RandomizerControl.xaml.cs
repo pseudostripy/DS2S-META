@@ -79,12 +79,17 @@ namespace DS2S_META
         // Entry Point Randomizer Code:
         private void randomize()
         {
+            // Reset Dictionaries for any re-randomization:
+            RD = new RandoDicts();
+
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
             if (VanillaLots == null)
                 VanillaLots = Hook.GetVanillaLots();
-
-            // Get definitions of what is accessible:
             ItemSetBase CasInfo = new CasualItemSet(); // Get accessibility
+
+            // Get Loot to randomize:
+            FixVanillaLots(CasInfo);
+            
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList(); // flatlist of all drop options
             // Need to add shops here.
 
@@ -103,18 +108,21 @@ namespace DS2S_META
                 PICKUPTYPE.NPC,
                 PICKUPTYPE.VOLATILE,
                 PICKUPTYPE.EXOTIC,
-                PICKUPTYPE.COVENANT, // To split into cheap/annoying
+                PICKUPTYPE.COVENANTEASY,
+                PICKUPTYPE.COVENANTHARD,
                 PICKUPTYPE.UNRESOLVED,
                 PICKUPTYPE.REMOVED,
                 PICKUPTYPE.NGPLUS,
+                PICKUPTYPE.CRAMMED,
             };
             var BanGeneralTypes = new List<PICKUPTYPE>()
             {
                 PICKUPTYPE.EXOTIC,
-                PICKUPTYPE.COVENANT, // To split into cheap/annoying
+                PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
                 PICKUPTYPE.UNRESOLVED,
                 PICKUPTYPE.REMOVED,
                 PICKUPTYPE.NGPLUS,
+                PICKUPTYPE.CRAMMED,
             };
             RD.ValidKeyPlaces = CasInfo.RemoveBannedTypes(BanKeyTypes);
             RD.ValidGenPlaces = CasInfo.RemoveBannedTypes(BanGeneralTypes);
@@ -148,7 +156,9 @@ namespace DS2S_META
                 Ngenrem = RD.RemGenPlaces.Count(); // only decreases on saturated lot
             }
 
-
+            // Randomize Game!
+            Hook.WriteAllLots(RD.ShuffledLots);
+            isRandomized = true;
 
             var debug2 = 1;
             //foreach (var kvp in VanillaLots)
@@ -198,8 +208,7 @@ namespace DS2S_META
             //}
 
 
-            //Hook.WriteAllLots(ShuffledLots);
-            //isRandomized = true;
+            
         }
         private void unrandomize()
         {
@@ -213,10 +222,21 @@ namespace DS2S_META
         }
 
         // Utility methods:
+        private void FixVanillaLots(ItemSetBase pinfo)
+        {
+            // Remove lots which are all empty
+            VanillaLots = VanillaLots.Where(kvp => kvp.Value.NumDrops != 0)
+                             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            // Remove lots from params we don't like:
+            var BanLootTypes = new List<PICKUPTYPE>() { PICKUPTYPE.CRAMMED, PICKUPTYPE.UNRESOLVED, PICKUPTYPE.REMOVED }; // Don't even include these in the randomization
+            VanillaLots = VanillaLots.Where(kvp => !pinfo.D[kvp.Key].HasType(BanLootTypes))
+                                      .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
         private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
         {
             // First select things which are allowed to be dupes:
-            var okdupes = new List<KEYID>() { KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH, KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE };
+            var okdupes = new List<KEYID>() { KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH, KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE, KEYID.FLAMEBUTTERFLY };
             var okdupesint = okdupes.Cast<int>();
 
             var dupekeys = allkeys.Where(di => okdupesint.Contains(di.ItemID)).ToList();
@@ -393,6 +413,10 @@ namespace DS2S_META
                     // Rotunda Lockstone && Pharros Lockstone x2
                     return condSol();
 
+                case KEYID.DARKLURKER:
+                    // Drangleic && Forgotten key && Torch && Butterfly x3
+                    return condDarklurker();
+
                 default:
                     return condKey(kid); // Simple Key check
             }
@@ -428,6 +452,8 @@ namespace DS2S_META
             bool condPharros() => countPharros() >= 8; // surely enough
             bool condLuna() => condBranch() && condBigPharros();
             bool condSol() => condRotunda() && condBigPharros();
+            bool condButterflies() => placedSoFar.Where(i => i == (int)KEYID.FLAMEBUTTERFLY).Count() >= 3;
+            bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
         }
         private bool IsPlaceSaturated(Dictionary<int, ItemLot> shuflots, int placeid)
         {

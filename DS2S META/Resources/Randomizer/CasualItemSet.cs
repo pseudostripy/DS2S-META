@@ -28,11 +28,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(1754000, NpcInfo("Gift from Melentia after spending 10000 souls"));
             D.Add(1766000, NpcInfo("Gift from Carhillion when over 30INT"));
             D.Add(1769000, NpcInfo("Gift from Licia when over 30FTH"));
-            D.Add(1753020, CovInfo("Bell Keepers join", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
+            D.Add(1753020, CovFineInfo("Bell Keepers join", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
             D.Add(2004011, CovInfo("Bell Keepers 1st rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
             D.Add(2004012, CovInfo("Bell Keepers 2nd rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
             D.Add(2004013, CovInfo("Bell Keepers 3rd rank reward", KSO(KEYID.BELFRYLUNA), KSO(KEYID.BELFRYSOL)));
-            D.Add(2005000, CovInfo("Rat King covenant join"));
+            D.Add(2005000, CovFineInfo("Rat King covenant join"));
             D.Add(2005011, CovInfo("Rat King covenant 1st rank reward"));
             D.Add(2005012, CovInfo("Rat King covenant 2nd rank reward"));
             D.Add(2005013, CovInfo("Rat King covenant 3rd rank reward"));
@@ -76,11 +76,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(1762000, NpcInfo("Gift from Chloanne after spending 20000 souls", KEYID.ROTUNDA));
             D.Add(1763000, NpcInfo("Gift from Rosabeth after unpetrifying her", KEYID.BRANCH));
             D.Add(1764000, NpcInfo("Gift from Lenigrast after spending 8000 souls on upgrades", KEYID.BLACKSMITH));
-            D.Add(2001000, CovInfo("Way of Blue join"));
+            D.Add(2001000, CovFineInfo("Way of Blue join"));
             D.Add(2001011, CovInfo("Way of Blue 1st rank reward"));
             D.Add(2001012, CovInfo("Way of Blue 2nd rank reward"));
             D.Add(2001013, CovInfo("Way of Blue 3rd rank reward"));
-            D.Add(2009000, CovInfo("Company of Champions join"));
+            D.Add(2009000, CovFineInfo("Company of Champions join"));
             D.Add(2009011, CovInfo("Company of Champions 1st rank reward"));
             D.Add(2009012, CovInfo("Company of Champions 2nd rank reward"));
             D.Add(2009013, CovInfo("Company of Champions 3rd rank reward"));
@@ -210,11 +210,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10316090, SafeInfo("In the waterway from Majula"));
             D.Add(10316100, SafeInfo("On a corpse near the first lever"));
             D.Add(10316101, SafeInfo("Behind the big opened metal door in NG+"));
-            D.Add(2002000, CovInfo("Blue sentinels join"));
-            D.Add(2002011, CovInfo("Blue sentinels 1st rank reward"));
-            D.Add(2002012, CovInfo("Blue sentinels 2nd rank reward"));
-            D.Add(2002013, CovInfo("Blue sentinels 3rd rank reward"));
-            D.Add(1785040, CovInfo("Gift from Blue Sentinel Targray after getting to 3rd rank in the Blue Sentinels"));
+            D.Add(2002000, CovFineInfo("Blue sentinels join", KEYID.TOKENOFFIDELITY));
+            D.Add(2002011, CovInfo("Blue sentinels 1st rank reward", KEYID.TOKENOFFIDELITY));
+            D.Add(2002012, CovInfo("Blue sentinels 2nd rank reward", KEYID.TOKENOFFIDELITY));
+            D.Add(2002013, CovInfo("Blue sentinels 3rd rank reward", KEYID.TOKENOFFIDELITY));
+            D.Add(1785040, CovInfo("Gift from Blue Sentinel Targray after getting to 3rd rank in the Blue Sentinels", KEYID.TOKENOFFIDELITY));
             D.Add(10315010, MChestInfo("Metal chest after Old Dragonslayer"));
             D.Add(10315020, WChestInfo("Wooden chest after Old Dragonslayer"));
             D.Add(10315030, MChestInfo("Metal chest before Old Dragonslayer"));
@@ -454,10 +454,10 @@ namespace DS2S_META.Resources.Randomizer
             // Chariot Arena:
             D.Add(619100, BossInfo("Executioner's Chariot drop", KEYID.ROTUNDA));
             D.Add(619101, BossInfo("Executioner's Chariot drop in NG+", KEYID.ROTUNDA));
-            D.Add(2003000, CovInfo("Brotherhood of Blood join", KEYID.ROTUNDA));
-            D.Add(2003011, CovInfo("Brotherhood of Blood 1st rank price", KEYID.ROTUNDA));
-            D.Add(2003012, CovInfo("Brotherhood of Blood 2nd rank price", KEYID.ROTUNDA));
-            D.Add(2003013, CovInfo("Brotherhood of Blood 3rd rank price", KEYID.ROTUNDA));
+            D.Add(2003000, CovFineInfo("Brotherhood of Blood join", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            D.Add(2003011, CovInfo("Brotherhood of Blood 1st rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            D.Add(2003012, CovInfo("Brotherhood of Blood 2nd rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            D.Add(2003013, CovInfo("Brotherhood of Blood 3rd rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
             D.Add(1783040, CovInfo("Gift from Titchy Gren after getting to 3rd rank in Brotherhood of Blood", KEYID.ROTUNDA));
             D.Add(10236010, SafeInfo("Above the stairs leading to the bonfire", KEYID.ROTUNDA));
             D.Add(10236180, SafeInfo("First corpse in the chariot arena", KEYID.ROTUNDA));
@@ -467,7 +467,7 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10236220, SafeInfo("Fifth corpse in the chariot arena", KEYID.ROTUNDA));
 
             // Harvest Valley:
-            D.Add(2007000, CovInfo("Heirs of the Sun join", KEYID.ROTUNDA));
+            D.Add(2007000, CovFineInfo("Heirs of the Sun join", KEYID.ROTUNDA));
             D.Add(2007011, CovInfo("Heirs of the Sun 1st rank price", KEYID.ROTUNDA));
             D.Add(2007012, CovInfo("Heirs of the Sun 2nd rank price", KEYID.ROTUNDA));
             D.Add(2007013, CovInfo("Heirs of the Sun 3rd rank price", KEYID.ROTUNDA));
@@ -560,7 +560,7 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(607000, BossInfo("Old Iron King drop", KEYID.ROTUNDA));
             D.Add(607001, BossNGPlusInfo("Old Iron King drop in NG+", KEYID.ROTUNDA));
             D.Add(1772000, NpcInfo("Gift from Magerold after spending 16000 souls", KEYID.ROTUNDA));
-            D.Add(2008000, CovInfo("Dragon Remnants join", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
+            D.Add(2008000, CovFineInfo("Dragon Remnants join", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
             D.Add(2008011, CovInfo("Dragon Remnants 1st rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
             D.Add(2008012, CovInfo("Dragon Remnants 2nd rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
             D.Add(2008013, CovInfo("Dragon Remnants 3rd rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
@@ -754,10 +754,11 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(332000, BossInfo("Throne Watcher and Defender drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(332001, BossNGPlusInfo("Throne Watcher and Defender drop in NG+", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(627000, BossInfo("Nashandra drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
-            D.Add(2006000, CovInfo("Pilgrims of Dark join", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC)));
-            D.Add(2006011, CovInfo("Pilgrims of Dark, one dungeon cleared", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH)));
-            D.Add(2006012, CovInfo("Pilgrims of Dark, three dungeons cleared", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH)));
-            D.Add(1725000, CovInfo("Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH))); // Is this an NpcInfo too? a covenant too??
+            D.Add(2006000, CovFineInfo("Pilgrims of Dark join", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC)));
+            D.Add(2006011, CovFineInfo("Pilgrims of Dark, one dungeon cleared", KEYID.DARKLURKER));
+            D.Add(2006012, CovFineInfo("Pilgrims of Dark, three dungeons cleared", KEYID.DARKLURKER));
+            D.Add(2006013, CovFineInfo("Reward for Rank 3 Darklurker covenant", KEYID.DARKLURKER)); // Missed in original rando.
+            D.Add(1725000, CovFineInfo("Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH)));
             D.Add(1721000, NpcSafeInfo("Gift from Chancellor Wellager after defeating the Giant Lord", KSO(KEYID.DRANGLEIC, KEYID.ASHENMIST)));
             D.Add(1760200, NpcInfo("Gift when releasing Milfanito from highest tower up the Drangleic elevator", KSO(KEYID.DRANGLEIC, KEYID.EMBEDDED)));
             D.Add(20215000, MChestInfo("Metal chest one level down from the Forgotten Chamber” bonfire", KEYID.DRANGLEIC));
@@ -1290,22 +1291,22 @@ namespace DS2S_META.Resources.Randomizer
 
 
             // Misc special:
-            D.Add(60006000, NpcInfo("Reward for killing Licia using the Crushed Eye Orb", KSO(KEYID.CRUSHEDEYEORB, KEYID.BRANCH))); // consider branch number todo
+            D.Add(60006000, NpcInfo("Reward for killing Licia using the Crushed Eye Orb", KSO(KEYID.CRUSHEDEYEORB, KEYID.DRANGLEIC)));
             D.Add(60015000, SafeInfo("Full Soul of Nadalia, Bride of Ash after combining fragments", KSO(KEYID.NADALIA, KEYID.FUME, KEYID.BLUESMELTER)));
             D.Add(60007000, ExoticInfo("Vanilla Lingering Dragoncrest +2: reward for killing 1000 invading Red Phantoms"));
             D.Add(60007100, ExoticInfo("Vanilla Ring of Thorns +2: reward for invading and killing 1000 other worlds"));
             D.Add(60007200, ExoticInfo("Vanilla Illusory Ring of a Conqueror: reward for completing the game without dying", KEYID.CREDITS));
             D.Add(60007300, ExoticInfo("Vanilla Illusory Ring of the Exalted: reward for completing the game without taking a bonfire", KEYID.CREDITS));
             D.Add(70000000, ExoticInfo("Pre-order bonus: Black Flamestone dagger + Black Flamestone Parma"));
-            D.Add(60010000, ExoticInfo("Reward for killing Last Giant when crammed (Soldier key only)"));
-            D.Add(60011000, ExoticInfo("Reward for killing Ancient Dragon (Ashen Mist only) when crammed", KEYID.ALDIASKEEP));
-            D.Add(60043000, ExoticInfo("Reward for killing Giant Lord when crammed (Kinship only)", KEYID.ASHENMIST));
-            D.Add(60042000, ExoticInfo("Reward for killing Gulch Giants when crammed (Forgotten Key only)"));
-            D.Add(60045000, ExoticInfo("Reward for killing Licia using the Crushed Eye Orb whilst crammed (Rotunda only)", KSO(KEYID.CRUSHEDEYEORB, KEYID.BRANCH)));
-            D.Add(60040000, ExoticInfo("Last Giant Soul drop by itself, dropped only when crammed after defeating Last Giant", KEYID.ASHENMIST));
-            D.Add(60044000, ExoticInfo("Giant Lord Soul drop by itself, dropped only when crammed after defeating Giant Lord in base NG", KEYID.ASHENMIST));
-            D.Add(60044001, ExoticInfo("Giant Lord Soul and Ring of Giants +2. Dropped only when crammed after defeating Giant Lord in NG+", KEYID.ASHENMIST));
-            D.Add(60041000, ExoticInfo("Ancient Dragon Soul drop by itself, dropped only when crammed after defeating Ancient Dragon. Likely an oversight.", KEYID.ALDIASKEEP));
+            D.Add(60010000, CrammedInfo("Reward for killing Last Giant when crammed (Soldier key only)"));
+            D.Add(60011000, CrammedInfo("Reward for killing Ancient Dragon (Ashen Mist only) when crammed", KEYID.ALDIASKEEP));
+            D.Add(60043000, CrammedInfo("Reward for killing Giant Lord when crammed (Kinship only)", KEYID.ASHENMIST));
+            D.Add(60042000, CrammedInfo("Reward for killing Gulch Giants when crammed (Forgotten Key only)"));
+            D.Add(60045000, CrammedInfo("Reward for killing Licia using the Crushed Eye Orb whilst crammed (Rotunda only)", KSO(KEYID.CRUSHEDEYEORB, KEYID.BRANCH)));
+            D.Add(60040000, CrammedInfo("Last Giant Soul drop by itself, dropped only when crammed after defeating Last Giant", KEYID.ASHENMIST));
+            D.Add(60044000, CrammedInfo("Giant Lord Soul drop by itself, dropped only when crammed after defeating Giant Lord in base NG", KEYID.ASHENMIST));
+            D.Add(60044001, CrammedInfo("Giant Lord Soul and Ring of Giants +2. Dropped only when crammed after defeating Giant Lord in NG+", KEYID.ASHENMIST));
+            D.Add(60041000, CrammedInfo("Ancient Dragon Soul drop by itself, dropped only when crammed after defeating Ancient Dragon. Likely an oversight.", KEYID.ALDIASKEEP));
             D.Add(60046000, UnresolvedInfo("Key to the Embedded by itself?, possibly related to when Key to Embedded was a key and cramming"));
             D.Add(60046001, UnresolvedInfo("Demon of Song Soul by itself? Possibly related to when Key to Embedded was a key and cramming"));
             D.Add(60030000, UnresolvedInfo("Soul of Aava + Garrison ward key?? Cut content??"));
@@ -1396,7 +1397,6 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(1777000, UnresolvedInfo("Dagger"));
             D.Add(1786000, UnresolvedInfo("Dagger"));
             D.Add(2004000, UnresolvedInfo("Bell Keeper's Seal"));
-            D.Add(2006013, NpcInfo("Reward for Rank 3 Darklurker covenant")); // Missed in original rando.
             // 
             D.Add(3001000, UnresolvedInfo("Gesture: Point. Gestures seemingly not tied to expected events though"));
             D.Add(3002000, UnresolvedInfo("Gesture: I won't bite. Gestures seemingly not tied to expected events though"));

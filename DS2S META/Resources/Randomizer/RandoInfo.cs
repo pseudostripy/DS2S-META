@@ -27,6 +27,7 @@ namespace DS2S_META.Resources.Randomizer
         CREDITS         = 0xBBE,    // Shorthand: Everything required to beat Nash
         VENDRICK        = 0xBBF,    // Shorthand: Amana && SoaG x3
         BELFRYSOL       = 0xBC0,    // Shorthand: Rotunda && BigPharros
+        DARKLURKER      = 0xBC1,    // Shorthand: Forgotten && Drangleic && Torch && Butterfly x3
 
         BRANCH          = 0xAA0,    // Shorthand: Require at least 3 branches
         PHARROS         = 0xAA1,    // Shorthand: Enough Pharros Lockstones available
@@ -70,11 +71,15 @@ namespace DS2S_META.Resources.Randomizer
         SOULOFAGIANT    = 50920000,
         CRUSHEDEYEORB   = 51000000,
         SMELTERWEDGE    = 53200000,
+        TOKENOFFIDELITY = 62100000,
+        TOKENOFSPITE    = 62110000,
+        FLAMEBUTTERFLY  = 60430000,
     }
 
     internal enum PICKUPTYPE : int
     {
-        COVENANT,
+        COVENANTEASY,
+        COVENANTHARD,
         NPC,
         WOODCHEST,
         METALCHEST,
@@ -82,8 +87,9 @@ namespace DS2S_META.Resources.Randomizer
         NONVOLATILE, // this is basically corpse pickups now
         BOSS,
         NGPLUS,
-        EXOTIC,     // Cannot possibly expect a casual to figure these out
+        EXOTIC,     // Legit in game things considered too hard to achieve in rando
         REMOVED,    // Lost content
+        CRAMMED,    // Meme stuff regarding edge cases when you're crammed
         UNRESOLVED,
     }
 
@@ -105,6 +111,11 @@ namespace DS2S_META.Resources.Randomizer
             Description = desc;
             Types = types;
             KeySet = reqkeys;
+        }
+
+        internal bool HasType(List<PICKUPTYPE> checklist)
+        {
+            return Types.Any(checklist.Contains);
         }
     };
 

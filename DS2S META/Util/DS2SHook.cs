@@ -1239,9 +1239,7 @@ namespace DS2S_META
             foreach( var kvp in ItemLotOtherPODict)
                 vanlots.Add(kvp.Key, ReadItemLot(kvp));
 
-            // Remove lots which are all empty
-            return vanlots.Where(kvp => kvp.Value.NumDrops != 0)
-                             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return vanlots;
         }
 
         internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)

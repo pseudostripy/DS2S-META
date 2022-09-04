@@ -19,8 +19,11 @@ namespace DS2S_META.Resources.Randomizer
         }
         internal RandoInfo CovInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
-
-            return new RandoInfo(desc, PICKUPTYPE.COVENANT, new KeySet(reqkey));
+            return new RandoInfo(desc, PICKUPTYPE.COVENANTHARD, new KeySet(reqkey));
+        }
+        internal RandoInfo CovFineInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.COVENANTEASY, new KeySet(reqkey));
         }
         internal RandoInfo WChestInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
@@ -58,6 +61,10 @@ namespace DS2S_META.Resources.Randomizer
         {
             return new RandoInfo(desc, PICKUPTYPE.EXOTIC, new KeySet(reqkey));
         }
+        internal RandoInfo CrammedInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.CRAMMED, new KeySet(reqkey));
+        }
         internal RandoInfo RemovedInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
             return new RandoInfo(desc, PICKUPTYPE.REMOVED, new KeySet(reqkey));
@@ -84,7 +91,11 @@ namespace DS2S_META.Resources.Randomizer
         }
         internal RandoInfo CovInfo(string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.COVENANT, keysets);
+            return new RandoInfo(desc, PICKUPTYPE.COVENANTHARD, keysets);
+        }
+        internal RandoInfo CovFineInfo(string desc, params KeySet[] keysets)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.COVENANTEASY, keysets);
         }
         internal RandoInfo WChestInfo(string desc, params KeySet[] keysets)
         {
@@ -113,6 +124,10 @@ namespace DS2S_META.Resources.Randomizer
         internal RandoInfo ExoticInfo(string desc, params KeySet[] keysets)
         {
             return new RandoInfo(desc, PICKUPTYPE.EXOTIC, keysets);
+        }
+        internal RandoInfo CrammedInfo(string desc, params KeySet[] keysets)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.CRAMMED, keysets);
         }
         internal RandoInfo VolInfo(string desc, params KeySet[] keysets)
         {
