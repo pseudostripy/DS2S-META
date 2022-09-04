@@ -79,6 +79,10 @@ namespace DS2S_META.Resources.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
         }
+        internal RandoInfo VolBossInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), new KeySet(reqkey));
+        }
 
         // Overloads for multiple key options:
         internal RandoInfo NpcInfo(string desc, params KeySet[] keysets)

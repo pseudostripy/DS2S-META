@@ -56,8 +56,8 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10026020, SafeInfo("Guarded by hippo before Fire Keeper's cottage"));
             D.Add(10026030, SafeInfo("Under Betwixt waterfall"));
             D.Add(10026031, NGPlusInfo("Under Betwixt waterfall in NG+"));
-            D.Add(10026040, SafeInfo("one ledge down from the crow nest"));
-            D.Add(10026050, SafeInfo("Behind the wagon next to bonfire"));
+            D.Add(10026040, SafeInfo("One ledge down from the crow nest"));
+            D.Add(10026050, SafeInfo("Vanilla Cart Soul: Behind the wagon next to bonfire"));
             D.Add(10026060, SafeInfo("Behind a door in small alcove"));
             D.Add(10026070, SafeInfo("On path after the backstab tutorial"));
             D.Add(10026080, SafeInfo("Next to fog gate and archer"));

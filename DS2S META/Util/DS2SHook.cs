@@ -1283,7 +1283,7 @@ namespace DS2S_META
 
             // Pack relevant data together first:
             var itembytes = itemlot.Items.SelectMany(id => BitConverter.GetBytes(id)).ToArray();
-            var quantbytes = itemlot.Quantities.SelectMany(q => BitConverter.GetBytes(q)).ToArray();
+            var quantbytes = itemlot.Quantities.ToArray();
 
             // Write to game:
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1, itembytes);

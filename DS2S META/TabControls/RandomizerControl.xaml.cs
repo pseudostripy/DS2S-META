@@ -161,53 +161,6 @@ namespace DS2S_META
             isRandomized = true;
 
             var debug2 = 1;
-            //foreach (var kvp in VanillaLots)
-            //{
-            //    // unpack:
-            //    int paramID = kvp.Key;
-            //    ItemLot lot = kvp.Value;
-
-            //    // At some point, should sort the lots to place them in a more sensible order...
-            //    if (lot.NumDrops == 0)
-            //        continue;
-
-            //    List<DropInfo> dropList = new List<DropInfo>();
-            //    for (int i = 0; i < lot.NumDrops; i++)
-            //    {
-            //        while (remainingitemindex)
-            //        {
-            //            int index = rng.Next(flatlist.Count());
-            //            DropInfo randdrop = flatlist[index]; // get the item we want to place here
-
-            //            // Ensure we don't softlock the game because of keys blocks
-            //            if (CheckValidPlacement(paramID, randdrop))
-            //            {
-            //                dropList.Add(randdrop);
-            //                flatlist.RemoveAt(index); // don't place twice
-            //            }
-            //            else
-            //            {
-            //                // TODO full softlock reset tests.
-            //            }
-            //        }
-            //    }
-            //}
-
-
-
-            //// Make into new lots:
-            //foreach (var kvp in VanillaLots)
-            //{
-            //    ItemLot IL = new ItemLot();
-            //    for (int row = 0; row < kvp.Value.NumDrops; row++)
-            //    {
-            //        IL.AddDrop(flatlist[0]);
-            //        flatlist.RemoveAt(0); // pop
-            //    }
-            //    ShuffledLots[kvp.Key] = IL; // add to new dictionary
-            //}
-
-
             
         }
         private void unrandomize()
