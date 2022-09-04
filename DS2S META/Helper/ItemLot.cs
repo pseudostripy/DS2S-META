@@ -32,28 +32,11 @@ namespace DS2S_META
         {
             Lot.Add(dropInfo);
         }
-        internal ItemLot(IEnumerable<int> itemIDs)
+        
+        // Utility:
+        internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
-            // Assumes that all these items are only 1 quantity.
-            
-            Lot = itemIDs.Select(id => new DropInfo(id, SINGLE)).ToList();
-        }
-        internal ItemLot(IEnumerable<int> itemIDs, IEnumerable<int> quantities)
-        {
-            if (itemIDs.Count() != quantities.Count())
-                throw new ArgumentException("Mismatch between number of items and number of quantity parameters provided");
-
-            Lot = itemIDs.Zip(quantities, (id, q) => new DropInfo(id, (byte)q)).ToList();
-        }
-
-        // Methods:
-        internal void AddDrop(int itemID)
-        {
-            AddDrop(itemID, SINGLE);
-        }
-        internal void AddDrop(int itemID, int quantity)
-        {
-            AddDrop(new DropInfo(itemID, (byte)quantity));
+            AddDrop(new DropInfo(itemID, (byte)quantity, (byte) reinforce, (byte) infusion));
         }
         internal void AddDrop(DropInfo data)
         {
@@ -67,14 +50,17 @@ namespace DS2S_META
         // Fields:
         internal int ItemID { get; set; }
         internal byte Quantity { get; set; }
-
+        internal byte Infusion { get; set; }
+        internal byte Reinforcement { get; set; }
 
         // Constructors:
         internal DropInfo() { }
-        internal DropInfo(int itemID, byte quantity)
+        internal DropInfo(int itemID, byte quantity, byte reinforce, byte infusion)
         {
             ItemID = itemID;
             Quantity = quantity;
+            Reinforcement = reinforce;
+            Infusion = infusion;
         }
     }
 }

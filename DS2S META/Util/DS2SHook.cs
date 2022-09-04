@@ -1263,11 +1263,13 @@ namespace DS2S_META
 
                 // Read remaining params
                 int quantity = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i);
+                int reinforce = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Reinforcement1 + sizeof(byte) * i);
+                int infusion = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Infusion1 + sizeof(byte) * i);
                 if (quantity == 0)
                     continue; // we're not interested in these.
 
                 // Valid Item: Store in item lot:
-                lot.AddDrop(itemid, quantity);
+                lot.AddDrop(itemid, quantity, reinforce, infusion);
             }
             return lot;
         }
