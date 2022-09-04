@@ -120,11 +120,13 @@ namespace DS2S_META.Resources.Randomizer
     internal class RandoDicts
     {
         // Encapsulating various fields used in Rando setup
+        internal Dictionary<int, RandoInfo> ValidKeyPlaces;
+        internal Dictionary<int, RandoInfo> ValidGenPlaces;
         internal Dictionary<int, RandoInfo> RemKeyPlaces = new Dictionary<int, RandoInfo>();
+        internal Dictionary<int, RandoInfo> RemGenPlaces = new Dictionary<int, RandoInfo>();
         internal Dictionary<int, RandoInfo> SoftlockSpots = new Dictionary<int, RandoInfo>();
         internal List<int> PlacedSoFar = new List<int>();
         internal Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
-        internal Dictionary<int, RandoInfo> ValidKeyPlaces;
 
         // Constructors
         internal RandoDicts() { }

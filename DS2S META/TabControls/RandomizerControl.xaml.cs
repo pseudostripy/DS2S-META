@@ -49,7 +49,11 @@ namespace DS2S_META
         {
             // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
             if (!Hook.Hooked)
+            {
+                MsgMissingDS2();
                 return;
+            }
+
 
             if (isRandomized)
                 unrandomize();
@@ -66,24 +70,34 @@ namespace DS2S_META
             string gamestate = isRandomized ? "Randomized" : "Normal";
             lblGameRandomization.Content = $"Game is {gamestate}!";
         }
+        private void MsgMissingDS2()
+        {
+            MessageBox.Show("Please open Dark Souls 2 first.");
+            return;
+        }
 
         // Entry Point Randomizer Code:
         private void randomize()
         {
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
-            if (VanillaLots==null)
+            if (VanillaLots == null)
                 VanillaLots = Hook.GetVanillaLots();
 
+            // Get definitions of what is accessible:
+            ItemSetBase CasInfo = new CasualItemSet(); // Get accessibility
+            var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList(); // flatlist of all drop options
+            // Need to add shops here.
 
-            ItemSetBase CasInfo = new CasualItemSet();
-            Dictionary<int, ItemLot> NewLots = new Dictionary<int, ItemLot>();
 
-            // Write undefined paramIDs to file:
-            //var test = VanillaLots.Where(lot => (!CasInfo.D.ContainsKey(lot.Key))).ToArray();
-            //string[] missed_params = test.Select(kvp => $"{kvp.Key} (Offset {Hook.GetItemLotOffset(kvp.Key):X}) : {kvp.Value}").ToArray();
-            //System.IO.File.WriteAllLines("missing_params.txt", missed_params);
+            // Partition into KeyTypes and Generic:
+            var allkeys = flatlist.Where(DI => Enum.IsDefined(typeof(KEYID), DI.ItemID)).ToList();
+            var allgen = flatlist.Except(allkeys).ToList();
+            allkeys = RemoveDuplicateKeys(allkeys); // avoid double ashen mist etc.
 
-            // Remove anything disregarded from settings:
+            //// Go through and place the keys randomly:
+            //var test = allkeys.Where(DI => DI.ItemID == (int)KEYID.ASHENMIST);
+
+            // Get lists of places where items can go (removing options based on settings)
             var BanKeyTypes = new List<PICKUPTYPE>()
             {
                 PICKUPTYPE.NPC,
@@ -102,46 +116,41 @@ namespace DS2S_META
                 PICKUPTYPE.REMOVED,
                 PICKUPTYPE.NGPLUS,
             };
-
-            // Make into flat list of stuff:
-            var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList();
-            // Need to add shops here.
-
-            var ShuffledLots = new Dictionary<int, ItemLot>();
+            RD.ValidKeyPlaces = CasInfo.RemoveBannedTypes(BanKeyTypes);
+            RD.ValidGenPlaces = CasInfo.RemoveBannedTypes(BanGeneralTypes);
 
 
-            // List of any key related item:
-            var allkeys = flatlist.Where(DI => Enum.IsDefined(typeof(KEYID), DI.ItemID)).ToList();
-            var keysrem = new List<DropInfo>(allkeys); // clone
-
-            // Go through and place the keys randomly:
-            
-            
-            var test = allkeys.Where(DI => DI.ItemID == (int)KEYID.FRAGRANTBRANCH).Count();
-
-            // Get list of places where keys can go:
-            var validKeyPlaces = CasInfo.D.Where(kvp => IsValidKeyPickup(kvp, BanKeyTypes))
-                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            var remKeyPlaces = new Dictionary<int, RandoInfo>(validKeyPlaces); // clone
-            RD.ValidKeyPlaces = validKeyPlaces;
-            RD.RemKeyPlaces = remKeyPlaces;
+            // Place all keys:
+            var keysrem = new List<DropInfo>(allkeys);                              // clone
+            RD.RemKeyPlaces = new Dictionary<int, RandoInfo>(RD.ValidKeyPlaces);    // clone
 
             var Nkeyrem = keysrem.Count();
             while (Nkeyrem > 0)
             {
-                int keyid = RNG.Next(Nkeyrem);
-                DropInfo item = keysrem[keyid]; // get key to place
-                PlaceItem(item, RD);
+                int keyindex = RNG.Next(Nkeyrem);
+                DropInfo item = keysrem[keyindex]; // get key to place
+                PlaceKeyItem(item, RD);
                 Nkeyrem--;
             }
 
-            var testing = RD.ShuffledLots.Where(kvp => kvp.Value.NumDrops > 1).ToList();
+            // Place everything else:
+            var genrem = new List<DropInfo>(allgen);                                // clone
+            RD.RemGenPlaces = new Dictionary<int, RandoInfo>(RD.ValidGenPlaces);    // clone
+            RD.RemGenPlaces = RD.RemGenPlaces.Where(kvp => !RD.ShuffledLots.ContainsKey(kvp.Key)) // remove already filled places
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            int Ngenrem = RD.RemGenPlaces.Count();
+            while (Ngenrem > 0)
+            {
+                int itemindex = RNG.Next(Ngenrem);
+                DropInfo item = genrem[itemindex]; // get item to place
+                PlaceGenericItem(item, RD);
+                Ngenrem = RD.RemGenPlaces.Count(); // only decreases on saturated lot
+            }
 
 
-            
 
-
-            var debug = 1;
+            var debug2 = 1;
             //foreach (var kvp in VanillaLots)
             //{
             //    // unpack:
@@ -202,9 +211,29 @@ namespace DS2S_META
             timer.Stop();
             Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
         }
-        
+
         // Utility methods:
-        private void PlaceItem(DropInfo item, RandoDicts RD)
+        private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
+        {
+            // First select things which are allowed to be dupes:
+            var okdupes = new List<KEYID>() { KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH, KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE };
+            var okdupesint = okdupes.Cast<int>();
+
+            var dupekeys = allkeys.Where(di => okdupesint.Contains(di.ItemID)).ToList();
+            var alluniquekeys = allkeys.Where(di => !okdupesint.Contains(di.ItemID));
+
+            // Probably a better way of doing this by overloading isEqual but has other considerations
+            List<DropInfo> uniquekeys = new List<DropInfo>();
+            for (int i = 0; i < alluniquekeys.Count(); i++)
+            {
+                var currdrop = alluniquekeys.ElementAt(i);
+                if (uniquekeys.Any(di => di.ItemID == currdrop.ItemID))
+                    continue;
+                uniquekeys.Add(currdrop);
+            }
+            return dupekeys.Concat(uniquekeys).ToList();
+        }
+        private void PlaceKeyItem(DropInfo item, RandoDicts RD)
         {
             bool keyPlaced = false;
             RD.SoftlockSpots = new Dictionary<int, RandoInfo>(); // resets each time a key is placed
@@ -234,8 +263,21 @@ namespace DS2S_META
                 foreach (var kvp in RD.SoftlockSpots)
                     RD.RemKeyPlaces.Add(kvp.Key, kvp.Value);
             }
+        }
+        private void PlaceGenericItem(DropInfo item, RandoDicts RD)
+        {
+            // Item should be able to go into the remGenPlaces spots without issue
+            int Nsr = RD.RemGenPlaces.Count();
+            if (Nsr == 0)
+                throw new Exception("Shouldn't be reaching this situation");
 
+            // Choose random place for item:
+            int pindex = RNG.Next(Nsr);
+            var place = RD.RemGenPlaces.ElementAt(pindex);
 
+            AddToLots(RD.ShuffledLots, place, item);
+            if (IsPlaceSaturated(RD.ShuffledLots, place.Key))
+                RD.RemGenPlaces.Remove(place.Key);
         }
         private void HandleSoftlockCheck(out bool isSoftLocked, KeyValuePair<int, RandoInfo> place, RandoDicts RD)
         {
@@ -274,7 +316,7 @@ namespace DS2S_META
                 case KEYID.SINNERSRISE:
                     // Branch || Antiquated
                     return condSinner();
-                    
+
                 case KEYID.DRANGLEIC:
                     // Branch && Rotunda && Sinner's Rise
                     return condDrangleic();
@@ -354,7 +396,7 @@ namespace DS2S_META
                 default:
                     return condKey(kid); // Simple Key check
             }
-            
+
             // Conditions wrappers:
             int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();
             int countPharros() => placedSoFar.Where(i => i == (int)KEYID.PHARROSLOCKSTONE).Count();
@@ -399,11 +441,6 @@ namespace DS2S_META
                 shuflots[pkey].AddDrop(item);
             else
                 shuflots[pkey] = new ItemLot(item);
-        }
-        private bool IsValidKeyPickup(KeyValuePair<int, RandoInfo> kvp_pickup, List<PICKUPTYPE> bannedtypes)
-        {
-            PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
-            return !PTs.Any(bannedtypes.Contains);
         }
     }
 }

@@ -137,6 +137,16 @@ namespace DS2S_META.Resources.Randomizer
         {
             return new KeySet(keys);
         }
+        internal Dictionary<int, RandoInfo> RemoveBannedTypes(List<PICKUPTYPE> bantypes)
+        {
+            return D.Where(kvp => IsValidKeyPickup(kvp, bantypes))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+        private bool IsValidKeyPickup(KeyValuePair<int, RandoInfo> kvp_pickup, List<PICKUPTYPE> bannedtypes)
+        {
+            PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
+            return !PTs.Any(bannedtypes.Contains);
+        }
 
         // To implement:
         internal Dictionary<int, RandoInfo> D = new Dictionary<int, RandoInfo>();
