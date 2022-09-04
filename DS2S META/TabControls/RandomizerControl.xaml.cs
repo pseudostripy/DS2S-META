@@ -10,21 +10,20 @@ using DS2S_META.Resources.Randomizer;
 namespace DS2S_META
 {
     /// <summary>
-    /// Interaction logic for CovenantControl.xaml
+    /// Randomizer Code & Front End for RandomizerControl.xaml
     /// </summary>
     public partial class RandomizerControl : METAControl
     {
+        // Fields:
         private Color PURPLE = Color.FromArgb(0xFF, 0xB1, 0x59, 0xCC);
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
-
-        Random RNG = new Random();
-
+        private Random RNG = new Random();
         private Dictionary<int, ItemLot> VanillaLots;
         internal RandoDicts RD = new RandoDicts();
         internal bool isRandomized = false;
 
-
+        // FrontEnd:
         public RandomizerControl()
         {
             InitializeComponent();
@@ -33,25 +32,42 @@ namespace DS2S_META
             int seed = 1;
             RNG = new Random(seed);
         }
-
-
-
-        //Handles the "Seeed..." label on the text box
         private void FixSeedVisibility()
         {
+            //Handles the "Seeed..." label on the text box
             if (txtSeed.Text == "")
                 lblSeed.Visibility = Visibility.Visible;
             else
                 lblSeed.Visibility = Visibility.Hidden;
 
         }
-
         private void txtSeed_TextChanged(object sender, TextChangedEventArgs e)
         {
             FixSeedVisibility();
         }
+        private void btnRandomize_Click(object sender, RoutedEventArgs e)
+        {
+            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
+            if (!Hook.Hooked)
+                return;
 
+            if (isRandomized)
+                unrandomize();
+            else
+                randomize();
 
+            // Force an area reload. TODO add warning:
+            Hook.WarpLast();
+
+            // Update UI:
+            btnRandomize.Content = isRandomized ? "Unrandomize!" : "Randomize!";
+            Color bkg = isRandomized ? PURPLE : LIGHTGREEN;
+            lblGameRandomization.Background = new SolidColorBrush(bkg);
+            string gamestate = isRandomized ? "Randomized" : "Normal";
+            lblGameRandomization.Content = $"Game is {gamestate}!";
+        }
+
+        // Entry Point Randomizer Code:
         private void randomize()
         {
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
@@ -72,7 +88,6 @@ namespace DS2S_META
             {
                 PICKUPTYPE.NPC,
                 PICKUPTYPE.VOLATILE,
-
                 PICKUPTYPE.EXOTIC,
                 PICKUPTYPE.COVENANT, // To split into cheap/annoying
                 PICKUPTYPE.UNRESOLVED,
@@ -177,6 +192,18 @@ namespace DS2S_META
             //Hook.WriteAllLots(ShuffledLots);
             //isRandomized = true;
         }
+        private void unrandomize()
+        {
+            var timer = new Stopwatch();
+            timer.Start();
+            Hook.WriteAllLots(VanillaLots);
+            isRandomized = false;
+
+            timer.Stop();
+            Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
+        }
+        
+        // Utility methods:
         private void PlaceItem(DropInfo item, RandoDicts RD)
         {
             bool keyPlaced = false;
@@ -360,15 +387,10 @@ namespace DS2S_META
             bool condLuna() => condBranch() && condBigPharros();
             bool condSol() => condRotunda() && condBigPharros();
         }
-
-            
-
-        // Utility checks:
         private bool IsPlaceSaturated(Dictionary<int, ItemLot> shuflots, int placeid)
         {
             return shuflots[placeid].NumDrops == VanillaLots[placeid].NumDrops;
         }
-
         private void AddToLots(Dictionary<int, ItemLot> shuflots, KeyValuePair<int, RandoInfo> place, DropInfo item)
         {
             // ShuffledLots passed in by ref since dictionary
@@ -382,41 +404,6 @@ namespace DS2S_META
         {
             PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
             return !PTs.Any(bannedtypes.Contains);
-        }
-
-
-        private void unrandomize()
-        {
-            var timer = new Stopwatch();
-            timer.Start();
-            Hook.WriteAllLots(VanillaLots);
-            isRandomized = false;
-
-            timer.Stop();
-            Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
-        }
-
-        
-        private void btnRandomize_Click(object sender, RoutedEventArgs e)
-        {
-            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
-            if (!Hook.Hooked)
-                return;
-
-            if (isRandomized)
-                unrandomize();
-            else
-                randomize();
-
-            // Force an area reload. TODO add warning:
-            Hook.WarpLast();
-
-            // Update UI:
-            btnRandomize.Content = isRandomized ? "Unrandomize!" : "Randomize!";
-            Color bkg = isRandomized ? PURPLE : LIGHTGREEN;
-            lblGameRandomization.Background = new SolidColorBrush(bkg);
-            string gamestate = isRandomized ? "Randomized" : "Normal";
-            lblGameRandomization.Content = $"Game is {gamestate}!";
         }
     }
 }
