@@ -69,8 +69,6 @@ namespace DS2S_META
             {
                 VanillaLots = Hook.GetVanillaLots();
                 VanillaShops = Hook.GetVanillaShops();
-                foreach (var val in VanillaShops.Values)
-                    val.Quantity = val.RawQuantity; // save vanilla numbers for unrandomizer
                 VanillaItemPrices = Hook.GetVanillaItemPrices();
             }
 
@@ -219,7 +217,7 @@ namespace DS2S_META
                 if (shopexcl.Contains(kvp.Key))
                     continue;
 
-                ShopInfo SI = kvp.Value;
+                ShopInfo SI = new ShopInfo(kvp.Value); // clone new ref
                 SI.Quantity = GetAdjustedQuantity(SI);
                 //SI.BasePrice = VanillaItemPrices[SI.ItemID]; // Do we need this here?
 
@@ -240,7 +238,6 @@ namespace DS2S_META
                 if (shopexcl.Contains(kvp.Key))
                     continue;
 
-                ShopInfo SI = kvp.Value;
                 RandoInfo RI = new RandoInfo("TODO Link Shop Description", PICKUPTYPE.SHOP);
                 shopslots.Add(kvp.Key, RI);
             }
@@ -503,7 +500,7 @@ namespace DS2S_META
         private void AddShops_UpdateRD(RandoDicts RD, int paramid, DropInfo item)
         {
             // Look up standard flags for this shop spot:
-            ShopInfo SI = VanillaShops[paramid];
+            ShopInfo SI = new ShopInfo(VanillaShops[paramid]); // clone object
 
             // Edit price / quantity:
             SI.ItemID = item.ItemID;

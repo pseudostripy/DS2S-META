@@ -76,6 +76,17 @@ namespace DS2S_META
             RawQuantity = quant;
             BasePrice = baseprice;
         }
+        internal ShopInfo(ShopInfo toClone)
+        {
+            ItemID = toClone.ItemID;
+            EnableFlag = toClone.EnableFlag;
+            DisableFlag = toClone.DisableFlag;
+            MaterialID = toClone.MaterialID;
+            DuplicateItemID = toClone.DuplicateItemID;
+            PriceRate = toClone.PriceRate;
+            RawQuantity = toClone.RawQuantity;
+            BasePrice = toClone.Quantity;
+        }
         internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant)
         {
             ItemID = itemID;
@@ -84,6 +95,7 @@ namespace DS2S_META
             MaterialID = mat;
             DuplicateItemID = dup;
             PriceRate = rate;
+            RawQuantity= quant;
             Quantity = quant;
         }
     }
