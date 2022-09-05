@@ -257,6 +257,7 @@
     <Compile Include="Resources\Randomizer\ItemSetBase.cs" />
     <Compile Include="Resources\Randomizer\RandoInfo.cs" />
     <Compile Include="Resources\Randomizer\CasualItemSet.cs" />
+    <Compile Include="Resources\Randomizer\ShopRules.cs" />
     <Compile Include="TabControls\RandomizerControl.xaml.cs">
       <DependentUpon>RandomizerControl.xaml</DependentUpon>
     </Compile>

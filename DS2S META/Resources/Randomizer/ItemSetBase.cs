@@ -166,9 +166,16 @@ namespace DS2S_META.Resources.Randomizer
             PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
             return !PTs.Any(bannedtypes.Contains);
         }
+        internal void AppendMorePlaces(Dictionary<int, RandoInfo> dictoappend) 
+        {
+            foreach(var kvp in dictoappend)
+                D.Add(kvp.Key, kvp.Value);
+        }
 
         // To implement:
         internal Dictionary<int, RandoInfo> D = new Dictionary<int, RandoInfo>();
         internal abstract void SetupItemSet();
+
+
     }
 }

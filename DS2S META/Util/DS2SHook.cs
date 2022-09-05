@@ -1248,16 +1248,25 @@ namespace DS2S_META
         internal Dictionary<int, ShopInfo> GetVanillaShops()
         {
             Dictionary<int, ShopInfo> vanshops = new Dictionary<int, ShopInfo>();
-
+            
             // Loop over all the params and read the itemlot tables
             foreach (var kvp in ShopLineupPODict)
                 vanshops.Add(kvp.Key, ReadShopInfo(kvp));
 
             // Write out the whole table to a file cause I'm lazy:
-            string[] lines = ShopLineupPODict.Select(kvp => $"ID: {kvp.Key} --> Offset: {kvp.Value:X}").ToArray();
-            File.WriteAllLines("./ShopLineupOffsets.txt", lines);
+            //string[] lines = ShopLineupPODict.Select(kvp => $"ID: {kvp.Key} --> Offset: {kvp.Value:X}").ToArray();
+            //File.WriteAllLines("./ShopLineupOffsets.txt", lines);
 
             return vanshops;
+        }
+        internal Dictionary<int, int> GetVanillaItemPrices()
+        {
+            Dictionary<int, int> vanprices = new Dictionary<int, int>();
+
+            foreach (var kvp in ItemParamOffsetDict)
+                vanprices.Add(kvp.Key, ReadPrice(kvp));
+
+            return vanprices;
         }
 
         internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
@@ -1308,13 +1317,54 @@ namespace DS2S_META
 
             return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
         }
-
+        internal int ReadPrice(KeyValuePair<int, int> kvp)
+        {
+            int offset = kvp.Value;
+            return ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
+        }
 
         internal void WriteAllLots(Dictionary<int, ItemLot> all_lots)
         {
-            // Implement randomness:
             foreach (var kvp in all_lots)
                 WriteItemLotTable(kvp.Key, kvp.Value);
+        }
+        internal void WriteAllShops(Dictionary<int, ShopInfo> shops, Dictionary<int, int> prices)
+        {
+            foreach (var kvp in shops)
+                WriteShopInfo(kvp);
+
+            foreach (var kvp in prices)
+                WritePrice(kvp);
+        }
+        internal void WritePrice(KeyValuePair<int, int> kvp)
+        {
+            int lotStart = ItemParamOffsetDict[kvp.Key];
+            var price = BitConverter.GetBytes(kvp.Value);
+            ItemParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemParam.BaseBuyPrice, price);
+        }
+        internal void WriteShopInfo(KeyValuePair<int, ShopInfo> kvp)
+        {
+            // Write to game:
+            int lotStart = ShopLineupPODict[kvp.Key];
+            ShopInfo SI = kvp.Value;
+
+            // Prepare for write
+            var itemid = BitConverter.GetBytes(SI.ItemID);
+            var enable = BitConverter.GetBytes(SI.EnableFlag);
+            var disable = BitConverter.GetBytes(SI.DisableFlag);
+            var material = BitConverter.GetBytes(SI.MaterialID);
+            var dup = BitConverter.GetBytes(SI.DuplicateItemID);
+            var rate = BitConverter.GetBytes(SI.PriceRate);
+            var quant = BitConverter.GetBytes(SI.Quantity);
+
+            // Write to game
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.ItemID, itemid);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag, enable);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag, disable);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.MaterialID, material);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID, dup);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.PriceRate, rate);
+            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.Quantity, quant);
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
@@ -1327,6 +1377,20 @@ namespace DS2S_META
             // Write to game:
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1, itembytes);
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1, quantbytes);
+        }
+        
+        internal ItemType GetItemType(int itemid)
+        {
+            int offset = ItemParamOffsetDict[itemid];
+            return (ItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
+        }
+
+        internal enum ItemType : int
+        {
+            WEAPON = 1,
+            SHIELD = 2,
+            RING = 7,
+            CONSUMABLE = 8,
         }
 
         #endregion

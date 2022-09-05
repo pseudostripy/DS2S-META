@@ -91,6 +91,7 @@ namespace DS2S_META.Resources.Randomizer
         REMOVED,    // Lost content
         CRAMMED,    // Meme stuff regarding edge cases when you're crammed
         UNRESOLVED,
+        SHOP,
     }
 
     internal class RandoInfo
@@ -117,6 +118,10 @@ namespace DS2S_META.Resources.Randomizer
         {
             return Types.Any(checklist.Contains);
         }
+        internal bool HasType(PICKUPTYPE checktype)
+        {
+            return Types.Any(pt => pt == checktype);
+        }
     };
 
     internal class KeySet
@@ -137,7 +142,9 @@ namespace DS2S_META.Resources.Randomizer
         internal Dictionary<int, RandoInfo> RemGenPlaces = new Dictionary<int, RandoInfo>();
         internal Dictionary<int, RandoInfo> SoftlockSpots = new Dictionary<int, RandoInfo>();
         internal List<int> PlacedSoFar = new List<int>();
-        internal Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();
+        internal Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();    // itemOtherParamID -> itemLotParamData
+        internal Dictionary<int, ShopInfo> ShuffledShops = new Dictionary<int, ShopInfo>(); // shopParamID -> shopParamData
+        internal Dictionary<int, int> ShuffledPrices = new Dictionary<int, int>();          // itemID -> itemPrice
 
         // Constructors
         internal RandoDicts() { }

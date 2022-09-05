@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using System.Windows.Media;
 using DS2S_META.Resources.Randomizer;
+using System.IO;
 
 namespace DS2S_META
 {
@@ -21,8 +22,16 @@ namespace DS2S_META
         private Random RNG = new Random();
         private Dictionary<int, ItemLot> VanillaLots;
         private Dictionary<int, ShopInfo> VanillaShops;
+        private Dictionary<int, int> VanillaItemPrices;
         internal RandoDicts RD = new RandoDicts();
         internal bool isRandomized = false;
+
+        // For Gaussians:
+        private const double priceMean = 3000;
+        private const double priceSD = 500;
+        // For Gamma distribution
+        internal const double priceShapeK = 3.0;
+        internal const double priceScaleTh = 2.0;
 
         // FrontEnd:
         public RandomizerControl()
@@ -60,14 +69,16 @@ namespace DS2S_META
             {
                 VanillaLots = Hook.GetVanillaLots();
                 VanillaShops = Hook.GetVanillaShops();
+                foreach (var val in VanillaShops.Values)
+                    val.Quantity = val.RawQuantity; // save vanilla numbers for unrandomizer
+                VanillaItemPrices = Hook.GetVanillaItemPrices();
             }
 
             
-
             if (isRandomized)
-                unrandomize();
+                Unrandomize();
             else
-                randomize();
+                Randomize();
 
             // Force an area reload. TODO add warning:
             Hook.WarpLast();
@@ -86,29 +97,32 @@ namespace DS2S_META
         }
 
         // Entry Point Randomizer Code:
-        private void randomize()
+        private void Randomize()
         {
             // Reset Dictionaries for any re-randomization:
             RD = new RandoDicts();
 
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
-            ItemSetBase CasInfo = new CasualItemSet(); // Get accessibility
+            ItemSetBase PTF = new CasualItemSet(); // Places To Fill
+            var shopplaces = ConvertShopToSlots(); // Update with shop options to fill
+            PTF.AppendMorePlaces(shopplaces); 
 
             // Get Loot to randomize:
-            FixVanillaLots(CasInfo);
-            
+            FixVanillaLots(PTF);
             var flatlist = VanillaLots.SelectMany(kvp => kvp.Value.Lot).ToList(); // flatlist of all drop options
-            // Need to add shops here.
+            var flatshops = ConvertShopToDrops(); // flatlist of "admissible" shop params
+            var LTR = flatlist.Concat(flatshops); // Loot To Randomize
+            
 
+            // Partition into KeyTypes, ReqNonKeys and Generic:
+            var allkeys = LTR.Where(DI => Enum.IsDefined(typeof(KEYID), DI.ItemID)).ToList();   // Keys
+            var LTR1 = LTR.Where(DI => !Enum.IsDefined(typeof(KEYID), DI.ItemID));              // All but keys
+            var reqlist = DefineRequiredItems();                                                // Declare reqs
+            var allreq = LTR1.Where(DI => reqlist.Contains(DI.ItemID)).ToList();                // Prepare reqs
+            var LTR2 = LTR1.Where(DI => !reqlist.Contains(DI.ItemID));                          // All but keys, reqs
+            var allgen = LTR2.ToList();                                                         // Generics
 
-            // Partition into KeyTypes and Generic:
-            var allkeys = flatlist.Where(DI => Enum.IsDefined(typeof(KEYID), DI.ItemID)).ToList();
-            var allgen = flatlist.Except(allkeys).ToList();
-            allkeys = RemoveDuplicateKeys(allkeys); // avoid double ashen mist etc.
-
-            //// Go through and place the keys randomly:
-            //var test = allkeys.Where(DI => DI.ItemID == (int)KEYID.ASHENMIST);
-
+            
             // Get lists of places where items can go (removing options based on settings)
             var BanKeyTypes = new List<PICKUPTYPE>()
             {
@@ -121,6 +135,7 @@ namespace DS2S_META
                 PICKUPTYPE.REMOVED,
                 PICKUPTYPE.NGPLUS,
                 PICKUPTYPE.CRAMMED,
+                PICKUPTYPE.SHOP, // For now
             };
             var BanGeneralTypes = new List<PICKUPTYPE>()
             {
@@ -131,11 +146,12 @@ namespace DS2S_META
                 PICKUPTYPE.NGPLUS,
                 PICKUPTYPE.CRAMMED,
             };
-            RD.ValidKeyPlaces = CasInfo.RemoveBannedTypes(BanKeyTypes);
-            RD.ValidGenPlaces = CasInfo.RemoveBannedTypes(BanGeneralTypes);
+            RD.ValidKeyPlaces = PTF.RemoveBannedTypes(BanKeyTypes);
+            RD.ValidGenPlaces = PTF.RemoveBannedTypes(BanGeneralTypes);
 
 
             // Place all keys:
+            allkeys = RemoveDuplicateKeys(allkeys); // avoid double ashen mist etc.
             var keysrem = new List<DropInfo>(allkeys);                              // clone
             RD.RemKeyPlaces = new Dictionary<int, RandoInfo>(RD.ValidKeyPlaces);    // clone
 
@@ -148,40 +164,104 @@ namespace DS2S_META
                 Nkeyrem--;
             }
 
-            // Place everything else:
-            var genrem = new List<DropInfo>(allgen);                                // clone
+            
+            // Place all non-key, required items:
             RD.RemGenPlaces = new Dictionary<int, RandoInfo>(RD.ValidGenPlaces);    // clone
-            RD.RemGenPlaces = RD.RemGenPlaces.Where(kvp => !RD.ShuffledLots.ContainsKey(kvp.Key)) // remove already filled places
+            RD.RemGenPlaces = RD.RemGenPlaces.Where(kvp => !RD.ShuffledLots.ContainsKey(kvp.Key)) // remove key-filled places
                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-            int Ngenrem = RD.RemGenPlaces.Count();
-            while (Ngenrem > 0)
+            while (allreq.Count > 0)
             {
-                int itemindex = RNG.Next(Ngenrem);
-                DropInfo item = genrem[itemindex]; // get item to place
+                int index = RNG.Next(allreq.Count);
+                DropInfo item = allreq[index]; // get item to place
                 PlaceGenericItem(item, RD);
-                Ngenrem = RD.RemGenPlaces.Count(); // only decreases on saturated lot
+                allreq.RemoveAt(index);
+            }
+
+            // Place everything else:
+            while (RD.RemGenPlaces.Count > 0)
+            {
+                if (allgen.Count == 0)
+                    throw new Exception("Ran out of items, please code empties");
+
+                int index = RNG.Next(RD.RemGenPlaces.Count);
+                DropInfo item = allgen[index]; // get item to place
+                PlaceGenericItem(item, RD);
+                allgen.RemoveAt(index);
             }
 
             // Randomize Game!
             Hook.WriteAllLots(RD.ShuffledLots);
+            Hook.WriteAllShops(RD.ShuffledShops, RD.ShuffledPrices);
             isRandomized = true;
-
-            var debug2 = 1;
-            
         }
-        private void unrandomize()
+        private void Unrandomize()
         {
-            var timer = new Stopwatch();
-            timer.Start();
+            //var timer = new Stopwatch();
+            //timer.Start();
             Hook.WriteAllLots(VanillaLots);
+            Hook.WriteAllShops(VanillaShops, VanillaItemPrices);
             isRandomized = false;
 
-            timer.Stop();
-            Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
+            //timer.Stop();
+            //Console.WriteLine($"Execution time: {timer.Elapsed.TotalSeconds} ms");
         }
 
         // Utility methods:
+        private List<DropInfo> ConvertShopToDrops()
+        {
+            List<DropInfo> shopdrops = new List<DropInfo>();
+            var ShopRules = new ShopRules(); // Maybe static class?
+            var shopexcl = ShopRules.DefineExclusions();
+
+            foreach(var kvp in VanillaShops)
+            {
+                // Remove duplicates and missing content:
+                if (shopexcl.Contains(kvp.Key))
+                    continue;
+
+                ShopInfo SI = kvp.Value;
+                SI.Quantity = GetAdjustedQuantity(SI);
+                //SI.BasePrice = VanillaItemPrices[SI.ItemID]; // Do we need this here?
+
+                DropInfo DI = new DropInfo(SI.ItemID, SI.Quantity, 0, 0);
+                shopdrops.Add(DI);
+            }
+            return shopdrops;
+        }
+        private Dictionary<int, RandoInfo> ConvertShopToSlots()
+        {
+            Dictionary<int, RandoInfo> shopslots = new Dictionary<int, RandoInfo>();
+            var ShopRules = new ShopRules(); // Maybe static class?
+            var shopexcl = ShopRules.DefineExclusions();
+
+            foreach (var kvp in VanillaShops)
+            {
+                // Remove duplicates and missing content:
+                if (shopexcl.Contains(kvp.Key))
+                    continue;
+
+                ShopInfo SI = kvp.Value;
+                RandoInfo RI = new RandoInfo("TODO Link Shop Description", PICKUPTYPE.SHOP);
+                shopslots.Add(kvp.Key, RI);
+            }
+            return shopslots;
+        }
+        internal int GetAdjustedQuantity(ShopInfo SI)
+        {
+            var itype = Hook.GetItemType(SI.ItemID);
+            switch (SI.RawQuantity)
+            {
+                // Adjust these weights if required
+                case 255:
+                    return itype == DS2SHook.ItemType.CONSUMABLE ? 5 : 1;
+
+                case 10:
+                    return 3;
+
+                default:
+                    return SI.RawQuantity;
+            }
+        }
         private void FixVanillaLots(ItemSetBase pinfo)
         {
             // Remove lots which are all empty
@@ -234,7 +314,7 @@ namespace DS2S_META
 
                 // Accept solution:
                 RD.PlacedSoFar.Add(item.ItemID);
-                AddToLots(RD.ShuffledLots, place, item);
+                AddLots_UpdateRD(RD, place, item, true);
                 if (IsPlaceSaturated(RD.ShuffledLots, place.Key))
                     RD.RemKeyPlaces.Remove(place.Key);
 
@@ -255,9 +335,10 @@ namespace DS2S_META
             int pindex = RNG.Next(Nsr);
             var place = RD.RemGenPlaces.ElementAt(pindex);
 
-            AddToLots(RD.ShuffledLots, place, item);
-            if (IsPlaceSaturated(RD.ShuffledLots, place.Key))
-                RD.RemGenPlaces.Remove(place.Key);
+            if (place.Value.HasType(PICKUPTYPE.SHOP))
+                AddShops_UpdateRD(RD, place.Key, item);
+            else
+                AddLots_UpdateRD(RD, place, item);
         }
         private void HandleSoftlockCheck(out bool isSoftLocked, KeyValuePair<int, RandoInfo> place, RandoDicts RD)
         {
@@ -419,14 +500,113 @@ namespace DS2S_META
         {
             return shuflots[placeid].NumDrops == VanillaLots[placeid].NumDrops;
         }
-        private void AddToLots(Dictionary<int, ItemLot> shuflots, KeyValuePair<int, RandoInfo> place, DropInfo item)
+        private void AddShops_UpdateRD(RandoDicts RD, int paramid, DropInfo item)
         {
-            // ShuffledLots passed in by ref since dictionary
+            // Look up standard flags for this shop spot:
+            ShopInfo SI = VanillaShops[paramid];
+
+            // Edit price / quantity:
+            SI.ItemID = item.ItemID;
+            SI.Quantity = item.Quantity;
+
+            // Update dictionaries
+            RD.ShuffledShops.Add(paramid, SI);
+            RD.ShuffledPrices[SI.ItemID] = RandomGammaInt(3000);
+            RD.RemGenPlaces.Remove(paramid); // Shops only have one slot which is now used
+        }
+        private void AddLots_UpdateRD(RandoDicts RD, KeyValuePair<int, RandoInfo> place, DropInfo item, bool keycall = false)
+        {
+            // Update Lots and remove availability of place once the lot is full wrt vanilla
             int pkey = place.Key;
-            if (shuflots.ContainsKey(pkey))
-                shuflots[pkey].AddDrop(item);
+            if (RD.ShuffledLots.ContainsKey(pkey))
+                RD.ShuffledLots[pkey].AddDrop(item);
             else
-                shuflots[pkey] = new ItemLot(item);
+                RD.ShuffledLots[pkey] = new ItemLot(item);
+
+            if (keycall)
+                return; // logic handled elsewhere
+
+            if (IsPlaceSaturated(RD.ShuffledLots, pkey))
+                RD.RemGenPlaces.Remove(place.Key);
+        }
+        internal int RandomGaussianInt(double mean, double stdDev, int roundfac = 50)
+        {
+            // Steal code from online :)
+            double u1 = 1.0 - RNG.NextDouble(); // uniform(0,1] random doubles
+            double u2 = 1.0 - RNG.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                         Math.Sin(2.0 * Math.PI * u2); // random normal(0,1)
+            double randNormal =
+                         mean + stdDev * randStdNormal; // random normal(mean,stdDev^2)
+
+            return RoundToFactorN(randNormal, roundfac);
+        }
+        internal int RoundToFactorN(double val, int fac)
+        {
+            var nearestMultiple = Math.Round( (val / fac), MidpointRounding.AwayFromZero) * fac;
+            return (int)nearestMultiple;
+        }
+        internal int RandomGammaInt(int wantedMean, int roundfac = 50, double scaleA = priceShapeK, double shapeTh = priceScaleTh)
+        {
+            // Wrapper to handle pre/post int manipulation for Gamma distribution
+            double rvg = RandomGammaVariable(scaleA, shapeTh);
+
+            double rvgmode = (scaleA - 1) * shapeTh; // gamma distribution property
+            double rvgScaled = (rvg / rvgmode) * wantedMean;
+            return RoundToFactorN(rvgScaled, roundfac);
+        }
+        internal double RandomGammaVariable(double shapeA, double scaleTh)
+        {
+            // https://www.cs.toronto.edu/~radford/csc2541.F04/gamma.html
+            // Can code up a more efficient version if you want to go through the maths
+
+            double scaleB = 1 / scaleTh; // Align notation
+            int Na = (int)Math.Floor(shapeA);
+            List<double> RVu = new List<double>(); // RandomVariables Uniform(0,1] distribution
+            List<double> RVe = new List<double>(); // RandomVariables Exponential(1) distribution
+            for(int i = 0; i < Na; i++)
+            {
+                double ui = RNG.NextDouble();
+                double Li = -Math.Log(1 - ui);
+
+                // Store results:
+                RVu.Add(ui);
+                RVe.Add(Li);
+            }
+
+            double S = RVe.Sum();
+            double RVgamma = S / scaleB;
+            return RVgamma;
+        }
+
+        // To move somewhere else:
+        private List<int> DefineRequiredItems()
+        {
+            // Add here / refactor as required.
+            List<int> items = new List<int>()
+            {
+                40420000,   // Silvercat Ring
+                5400000,    // Pyromancy Flame
+                5410000,    // Dark Pyromancy Flame 
+                60355000,   // Aged Feather
+            };
+            return items;
+        }
+
+        // Testing / Unused:
+        private void TestPricesLottery()
+        {
+            // Produce a graph to look at our distribution
+            List<int> testlist = new List<int>();
+            int Nsamp = 1000;
+            for(int i = 0; i <= Nsamp; i++)
+            {
+                testlist.Add(RandomGammaInt(3000));
+            }
+
+            // Too lazy to plot in C#, write to file instead:
+            string[] lines = testlist.Select(i => $"{i}").ToArray();
+            File.WriteAllLines("./prices_check.txt", lines);
         }
     }
 }

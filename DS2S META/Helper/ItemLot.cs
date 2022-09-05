@@ -62,5 +62,12 @@ namespace DS2S_META
             Reinforcement = reinforce;
             Infusion = infusion;
         }
+        internal DropInfo(int itemID, int quantity, int reinforce, int infusion)
+        {
+            ItemID = itemID;
+            Quantity = (byte)quantity;
+            Reinforcement = (byte)reinforce;
+            Infusion = (byte)infusion;
+        }
     }
 }
