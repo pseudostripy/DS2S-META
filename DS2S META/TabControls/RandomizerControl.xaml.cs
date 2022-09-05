@@ -318,6 +318,9 @@ namespace DS2S_META
                 foreach (var kvp in RD.SoftlockSpots)
                     RD.RemKeyPlaces.Add(kvp.Key, kvp.Value);
             }
+
+            if (!keyPlaced)
+                throw new Exception("True Softlock");
         }
         private void PlaceGenericItem(DropInfo item, RandoDicts RD)
         {
@@ -365,6 +368,10 @@ namespace DS2S_META
             // Function to handle different checks depending on KeyTypes I guess:
             switch (kid)
             {
+                case KEYID.NONE:
+                    // no condition required:
+                    return true;
+
                 case KEYID.BELFRYLUNA:
                     // Branch && Pharros Lockstone x2
                     return condLuna();
