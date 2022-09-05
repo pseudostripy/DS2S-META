@@ -37,10 +37,6 @@ namespace DS2S_META
         public RandomizerControl()
         {
             InitializeComponent();
-
-            // TODO
-            int seed = 1;
-            RNG = new Random(seed);
         }
         private void FixSeedVisibility()
         {
@@ -97,8 +93,10 @@ namespace DS2S_META
         // Entry Point Randomizer Code:
         private void Randomize()
         {
-            // Reset Dictionaries for any re-randomization:
-            RD = new RandoDicts();
+            // Setup for re-randomization:
+            int seed = Convert.ToInt32(txtSeed.Text);
+            RNG = new Random(seed); // reset Rng Twister
+            RD = new RandoDicts();  // reset dictionaries
 
             // Need to get a list of the vanilla item lots C#.8 pleeeease :(
             ItemSetBase PTF = new CasualItemSet(); // Places To Fill
