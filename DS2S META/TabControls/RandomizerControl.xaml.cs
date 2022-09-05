@@ -356,9 +356,9 @@ namespace DS2S_META
             foreach (var keyset in keysets)
             {
                 if (keyset.Keys.All(kid => IsPlaced(kid, placedSoFar)))
-                    return true; // all required keys are placed for at least one Keyset
+                    return false; // NOT SOFT LOCKED all required keys are placed for at least one Keyset
             }
-            return false;
+            return true;
         }
         private bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
