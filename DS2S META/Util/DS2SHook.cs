@@ -1312,7 +1312,7 @@ namespace DS2S_META
             int disableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
             int materialID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.MaterialID);
             int dupitemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID);
-            float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
+            float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.PriceRate);
             int quant = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.Quantity);
 
             return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
