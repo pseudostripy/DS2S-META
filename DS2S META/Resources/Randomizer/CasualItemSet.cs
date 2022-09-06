@@ -87,7 +87,7 @@ namespace DS2S_META.Resources.Randomizer
             D.Add(10045000, WChestInfo("Wooden chest on the attic of Maughlin the Armorer"));
             D.Add(10045001, WChestNGPlusInfo("Wooden chest on the attic of Maughlin the Armorer in NG+1"));
             D.Add(10045002, WChestNGPlusInfo("Wooden chest on the attic of Maughlin the Armorer in NG+2"));
-            D.Add(10045010, WChestInfo("Wooden chest on the attic of Cale's house", KEYID.MANSION));
+            D.Add(10045010, WChestInfo("Wooden chest on the attic of Majula mansion", KEYID.MANSION));
             D.Add(10045040, WChestInfo("Wooden chest in Lenigrast's workshop", KEYID.BLACKSMITH));
             D.Add(10045060, MChestInfo("Metal chest on the way towards forest"));
             D.Add(10045070, MChestInfo("Metal chest in staircase towards Heide's Tower of Flame"));

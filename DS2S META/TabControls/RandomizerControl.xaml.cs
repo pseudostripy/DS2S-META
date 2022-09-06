@@ -146,21 +146,38 @@ namespace DS2S_META
             RD.ValidGenPlaces = PTF.RemoveBannedTypes(BanGeneralTypes);
 
 
+            // testing
+            var test = LTR.ToArray().Where(di => di.ItemID == 52400000).ToArray();
+            var testsoldier = LTR.ToArray().Where(di => di.ItemID == (int)KEYID.SOLDIER).ToArray();
+            var testsoldier2 = allkeys.ToArray().Where(di => di.ItemID == (int)KEYID.SOLDIER).ToArray();
+
             // Place all keys:
             allkeys = RemoveDuplicateKeys(allkeys); // avoid double ashen mist etc.
             var keysrem = new List<DropInfo>(allkeys);                              // clone
             RD.RemKeyPlaces = new Dictionary<int, RandoInfo>(RD.ValidKeyPlaces);    // clone
 
-            var Nkeyrem = keysrem.Count();
-            while (Nkeyrem > 0)
+
+            var testsoldier3 = keysrem.ToArray().Where(di => di.ItemID == (int)KEYID.SOLDIER).ToArray();
+
+            while (keysrem.Count > 0)
             {
-                int keyindex = RNG.Next(Nkeyrem);
+                int keyindex = RNG.Next(keysrem.Count);
                 DropInfo item = keysrem[keyindex]; // get key to place
                 PlaceKeyItem(item, RD);
-                Nkeyrem--;
+                keysrem.RemoveAt(keyindex);
             }
 
-            
+            // Printout the current shuffled lots:
+            List<string> lines = new List<string>();
+            foreach (var kvp in RD.ShuffledLots)
+            {
+                int paramid = kvp.Key;
+                ItemLot IL = kvp.Value;
+                var ri = PTF.D[kvp.Key];
+                lines.Add($"{paramid} : {ri.Description} : {IL}");
+            }
+            File.WriteAllLines("./keytesting.txt", lines.ToArray());
+
             // Place all non-key, required items:
             RD.RemGenPlaces = new Dictionary<int, RandoInfo>(RD.ValidGenPlaces);    // clone
             RD.RemGenPlaces = RD.RemGenPlaces.Where(kvp => !RD.ShuffledLots.ContainsKey(kvp.Key)) // remove key-filled places
@@ -172,6 +189,8 @@ namespace DS2S_META
                 PlaceGenericItem(item, RD);
                 allreq.RemoveAt(index);
             }
+
+            
 
             // Place everything else:
             while (RD.RemGenPlaces.Count > 0)
