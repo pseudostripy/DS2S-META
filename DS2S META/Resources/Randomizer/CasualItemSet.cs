@@ -1208,7 +1208,7 @@ namespace DS2S_META.Randomizer
             D.Add(1788000, CovInfo("Gift from Alsanna after bringing her 5 Loyce souls", KEYID.DLC3));
             D.Add(1788010, CovInfo("Gift from Alsanna after bringing her 15 Loyce souls", KEYID.DLC3));
             D.Add(1788020, CovInfo("Gift from Alsanna after bringing her 35 Loyce souls", KEYID.DLC3));
-            D.Add(1788030, CovInfo("Gift from Alsanna after bringing her 50 Loyce souls", KEYID.DLC3));
+            D.Add(1788030, SafeInfo("Gift from Alsanna after bringing her 50 Loyce souls; or killing her", KEYID.DLC3));
             D.Add(60031000, SafeInfo("Vanilla Crown: in the Ivory King arena after defeating him", KEYID.DLC3));
             D.Add(50376340, SafeInfo("In a corner of the first room right from the Outer Wall bonfire", KEYID.DLC3));
             D.Add(50376410, SafeInfo("In a narrow corridor in the beginning of the area", KEYID.DLC3));
