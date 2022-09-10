@@ -120,8 +120,8 @@ namespace DS2S_META.Randomizer
                 Data.Add(new ShopRdz(kvp));
             }
 
-
             LTR_flatlist = Data.SelectMany(rz => rz.Flatlist).ToList();
+            FixFlatList(); // ensure correct number of keys etc
         }
         internal void AddShopLogic()
         {
@@ -158,17 +158,6 @@ namespace DS2S_META.Randomizer
             if (ldkeys.Any(di => ldreqs.Contains(di)))
                 throw new Exception("Add a query to remove duplicates here!");
         }
-        internal void PlaceSet(List<DropInfo> ld, SetType flag)
-        {
-            // ld: list of DropInfos
-            while (ld.Count > 0)
-            {
-                int keyindex = RNG.Next(ld.Count);
-                DropInfo item = ld[keyindex]; // get key to place
-                PlaceItem(item, flag);
-                ld.RemoveAt(keyindex);
-            }
-        }
         private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
         {
             // First select things which are allowed to be dupes:
@@ -192,6 +181,24 @@ namespace DS2S_META.Randomizer
                 uniquekeys.Add(currdrop);
             }
             return dupekeys.Concat(uniquekeys).ToList();
+        }
+        internal void FixFlatList()
+        {
+            // Ensure 5 SoaGs (game defines these weirdly)
+            var soag = LTR_flatlist.Where(di => di.ItemID == (int)KEYID.SOULOFAGIANT).First();
+            LTR_flatlist.Add(soag);
+            LTR_flatlist.Add(soag);
+        }
+        internal void PlaceSet(List<DropInfo> ld, SetType flag)
+        {
+            // ld: list of DropInfos
+            while (ld.Count > 0)
+            {
+                int keyindex = RNG.Next(ld.Count);
+                DropInfo item = ld[keyindex]; // get key to place
+                PlaceItem(item, flag);
+                ld.RemoveAt(keyindex);
+            }
         }
         private void PlaceItem(DropInfo item, SetType stype)
         {
