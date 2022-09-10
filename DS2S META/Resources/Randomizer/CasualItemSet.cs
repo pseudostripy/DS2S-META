@@ -1099,7 +1099,7 @@ namespace DS2S_META.Randomizer
             D.Add(50366360, SafeInfo("On a round platform of the central pillar close to the top of the tower", KEYID.DLC2));
             D.Add(50366380, SafeInfo("On a round platform of the central pillar close to the top of the tower", KEYID.DLC2));
             D.Add(50366350, SafeInfo("In first (top) ash ledge beneath the chain; near a gate", KEYID.DLC2));
-            D.Add(50368000, SafeInfo("Inside ash statue in the first (top) ashe ledge beneath the chain", KEYID.DLC2));
+            D.Add(50368000, SafeInfo("Inside ash statue in the first (top) ash-covered ledge beneath the chain", KEYID.DLC2));
             D.Add(50366030, SafeInfo("On a corpose underneath the first chain towards Throne Floor bonfire", KEYID.DLC2));
             D.Add(50365000, MChestInfo("Metal chest just above the second Ashen Idol guarded by possessed armor", KEYID.DLC2));
             D.Add(50366900, SafeInfo("In the first area with Cask Runners", KEYID.DLC2));

@@ -170,7 +170,7 @@ namespace DS2S_META.Randomizer
             var okdupes = new List<KEYID>()
             {   KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH,
                 KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE, KEYID.FLAMEBUTTERFLY,
-                KEYID.NADALIA,
+                KEYID.NADALIAFRAGMENT,
             };
             var okdupesint = okdupes.Cast<int>();
 

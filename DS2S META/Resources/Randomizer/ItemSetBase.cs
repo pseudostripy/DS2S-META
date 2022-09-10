@@ -83,7 +83,7 @@ namespace DS2S_META.Randomizer
             KEYID.FRAGRANTBRANCH,
             KEYID.SOULOFAGIANT,
             KEYID.SMELTERWEDGE,
-            KEYID.NADALIA,
+            KEYID.NADALIAFRAGMENT,
             KEYID.PHARROSLOCKSTONE,
         };
 
