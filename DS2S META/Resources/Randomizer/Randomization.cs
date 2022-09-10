@@ -33,10 +33,10 @@ namespace DS2S_META.Randomizer
         internal abstract bool HasShuffledItemID(int itemID);
         internal abstract bool HasVannilaItemID(int itemID);
         internal abstract int GetShuffledItemQuant(int itemID);
+        internal abstract string GetNeatDescription();
 
         internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
-        
     }
 
 
@@ -59,7 +59,10 @@ namespace DS2S_META.Randomizer
         internal override void AddShuffledItem(DropInfo item)
         {
             if (ShuffledLot == null)
+            {
                 ShuffledLot = new ItemLot(item);
+                ShuffledLot.ParamDesc = VanillaLot.ParamDesc;
+            }
             else
                 ShuffledLot.AddDrop(item);
 
@@ -85,6 +88,25 @@ namespace DS2S_META.Randomizer
             return ShuffledLot.Lot.Where(di => di.ItemID == itemID).First().Quantity;
             // Note: there's an extremely unlikely bug that can occur here and only affects
             // output display, so I'm too lazy to deal with it.
+        }
+        internal override string GetNeatDescription()
+        {
+            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaLot.ParamDesc}{Environment.NewLine}");
+            
+            // Display empty lots
+            if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
+                return sb.Append("\tEMPTY").ToString();    
+            
+            foreach(var di in ShuffledLot.Lot)
+            {
+                sb.Append($"\t{GetItemName(di.ItemID)}");
+                if (di.Quantity > 0)
+                    sb.Append($" x{di.Quantity}");
+                sb.Append(Environment.NewLine);
+            }
+
+            // Remove final newline:
+            return sb.ToString().TrimEnd('\r','\n');
         }
 
         internal override string printdata()
@@ -138,6 +160,16 @@ namespace DS2S_META.Randomizer
             if (ShuffledShop == null)
                 return -1;
             return ShuffledShop.AdjQuantity;
+        }
+        internal override string GetNeatDescription()
+        {
+            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaShop.ParamDesc}{Environment.NewLine}");
+
+            // Display empty lots
+            if (ShuffledShop == null || ShuffledShop.ItemID == 0)
+                return sb.Append("\tEMPTY").ToString();
+
+            return sb.Append($"\t{GetItemName(ShuffledShop.ItemID)}").ToString();
         }
     }
 }

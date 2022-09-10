@@ -692,7 +692,7 @@ namespace DS2S_META.Randomizer
             D.Add(10145060, WChestInfo("Spider-trapped wooden chest before Congregation", KEYID.BRANCH));
             D.Add(10145061, WChestNGPlusInfo("Spider-trapped wooden chest before Congregation in NG+", KEYID.BRANCH));
             D.Add(10145070, WChestInfo("Wooden chest in Tseldora den", KSO(KEYID.BRANCH, KEYID.TSELDORADEN)));
-            D.Add(10145080, MChestInfo("Metal chest in tseldora den", KSO(KEYID.BRANCH, KEYID.TSELDORADEN)));
+            D.Add(10145080, MChestInfo("Metal chest in Tseldora den", KSO(KEYID.BRANCH, KEYID.TSELDORADEN)));
             D.Add(10145110, MChestInfo("Metal chest in secret alcove behind shelf in room next to Ornifex's Tseldora room", KEYID.BRANCH));
             D.Add(10145120, MChestInfo("Metal chest on lowerable platform", KEYID.BRANCH));
             D.Add(10145130, MChestInfo("Vanilla BKUGS: metal chest behind locked door in pickaxe room", KSO(KEYID.BRANCH, KEYID.BRIGHTSTONE)));

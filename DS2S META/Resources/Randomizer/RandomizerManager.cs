@@ -45,7 +45,7 @@ namespace DS2S_META.Randomizer
             item = found ? VanillaItemParams[itemid] : null;
             return found;
         }
-
+        
         // Enums:
         internal enum SetType : byte { Keys, Reqs, Gens }
 
@@ -66,6 +66,10 @@ namespace DS2S_META.Randomizer
             Logic = new CasualItemSet();
             AddShopLogic();
 
+            // Add descriptions
+            foreach (var kvp in VanillaLots)
+                kvp.Value.ParamDesc = Logic.GetDesc(kvp.Key);
+
             // Fill vanilla data to work with:
             GetLootToRandomize(); // set Data
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
@@ -85,7 +89,7 @@ namespace DS2S_META.Randomizer
 
             // Printout the current shuffled lots:
             PrintKeysNeat();
-            // PrintAllItems(); // TODO
+            PrintAllRdz();
 
             // Randomize Game!
             WriteShuffledLots();
@@ -284,6 +288,24 @@ namespace DS2S_META.Randomizer
 
             // Write file:
             File.WriteAllLines("./keytesting.txt", lines.ToArray());
+        }
+        internal void PrintAllRdz()
+        {
+            List<string> lines = new List<string>();
+
+            // World placements:
+            lines.Add("World placement:");
+            foreach (var ldz in Data.OfType<LotRdz>())
+                lines.Add(ldz.GetNeatDescription());
+
+            // Shops:
+            lines.Add("");
+            lines.Add("Shops:");
+            foreach (var rdz in Data)
+                lines.Add(rdz.GetNeatDescription());
+
+            // Write file:
+            File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
         internal void ClearLotsShops()
         {

@@ -32,7 +32,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.NGPLUS,
             PICKUPTYPE.CRAMMED,
         };
-
         internal List<PICKUPTYPE> BanFromLoot = new List<PICKUPTYPE>()
         {
             // List of places where loot cannot come from:
@@ -40,7 +39,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
         };
-        // To move somewhere else:
         internal static List<int> RequiredItems = new List<int>()
         {
             // Add here / refactor as required.
@@ -96,6 +94,11 @@ namespace DS2S_META.Randomizer
             KEYID.NADALIAFRAGMENT,
             KEYID.PHARROSLOCKSTONE,
         };
+        internal string GetDesc(int paramid)
+        {
+            bool found = D.ContainsKey(paramid);
+            return found ? D[paramid].Description : "";
+        }
 
         // Overloads for quick construction, single or no key requirements:
         internal RandoInfo NpcInfo(string desc, KEYID reqkey = KEYID.NONE)
