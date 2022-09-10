@@ -288,11 +288,9 @@ namespace DS2S_META.Randomizer
         }
         internal void PrintKeysNeat()
         {
-            // Order keys to find & output:
-            var orderedkeys = Enum.GetValues(typeof(KEYID)).Cast<int>().OrderBy(i => i).ToArray();
-
+            
             List<string> lines = new List<string>();
-            foreach (var keyid in orderedkeys)
+            foreach (int keyid in ItemSetBase.KeyOutputOrder.Cast<int>())
             {
                 if (!TryGetItemName(keyid, out string itemname))
                     continue;

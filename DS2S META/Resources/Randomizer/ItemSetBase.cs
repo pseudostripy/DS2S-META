@@ -41,6 +41,52 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.REMOVED,
         };
 
+        // Purely for printing:
+        internal static List<KEYID> KeyOutputOrder = new List<KEYID>()
+        {
+            // Actual Key Item IDs:
+            KEYID.BLACKSMITH,
+            KEYID.MANSION,
+            KEYID.SOLDIER,
+            KEYID.IRON,
+            KEYID.DULLEMBER,
+            KEYID.ANTIQUATED,
+            KEYID.BASTILLEKEY,
+            KEYID.ROTUNDA,
+            KEYID.FORGOTTEN,
+            KEYID.UNDEADLOCKAWAY,
+            KEYID.FANG,
+            KEYID.BRIGHTSTONE,
+            KEYID.TSELDORADEN,
+            KEYID.KINGSPASSAGE,
+            KEYID.EMBEDDED,
+            KEYID.KINGSRING,
+            KEYID.ALDIASKEY,
+            KEYID.ASHENMIST,
+            KEYID.KINSHIP,
+            //
+            KEYID.PETRIFIEDEGG,
+            KEYID.WHISPERS,
+            KEYID.CRUSHEDEYEORB,
+            KEYID.TOKENOFFIDELITY,
+            KEYID.TOKENOFSPITE,
+            //
+            KEYID.DLC1,
+            KEYID.DRAGONSTONE,
+            KEYID.ETERNALSANCTUM,
+            KEYID.DLC2,
+            KEYID.SCEPTER,
+            KEYID.TOWER,
+            KEYID.DLC3KEY,
+            KEYID.GARRISONWARD,
+            //
+            KEYID.FRAGRANTBRANCH,
+            KEYID.SOULOFAGIANT,
+            KEYID.SMELTERWEDGE,
+            KEYID.NADALIA,
+            KEYID.PHARROSLOCKSTONE,
+        };
+
         // Overloads for quick construction, single or no key requirements:
         internal RandoInfo NpcInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
