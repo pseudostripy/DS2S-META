@@ -6,51 +6,6 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class ShopLot
-    {
-        ////Fields:
-        //internal List<ShopInfo> Lot = new List<ShopInfo>();
-        
-        //// Constructor:
-        //internal ShopLot()
-        //{
-
-
-
-        //}
-
-        //public override string ToString()
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    for (int i = 0; i < NumDrops; i++)
-        //    {
-        //        sb.Append($"Item[{i}] x{Quantities[i]}: {Items[i]:X} / {Items[i]}\n");
-        //    }
-        //    return sb.ToString().TrimEnd('\n');
-        //}
-
-        
-        //    // Constructors:
-        //    internal ItemLot() { }
-        //    internal ItemLot(DropInfo dropInfo)
-        //    {
-        //        Lot.Add(dropInfo);
-        //    }
-
-        //    // Utility:
-        //    internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
-        //    {
-        //        AddDrop(new DropInfo(itemID, (byte)quantity, (byte) reinforce, (byte) infusion));
-        //    }
-        //    internal void AddDrop(DropInfo data)
-        //    {
-        //        Lot.Add(data);
-        //    }
-
-        //}
-
-    }
-
     internal class ShopInfo
     {
         // Fields:

@@ -266,8 +266,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helper\Extensions.cs" />
-    <Compile Include="Helper\ShopLot.cs" />
-    <Compile Include="Helper\ItemLot.cs" />
+    <Compile Include="Resources\Randomizer\ShopInfo.cs" />
+    <Compile Include="Resources\Randomizer\ItemLot.cs" />
     <Compile Include="List Items\DS2SCovenant.cs" />
     <Compile Include="Resources\Randomizer\ItemParam.cs" />
     <Compile Include="Resources\Randomizer\ItemSetBase.cs" />
