@@ -10,30 +10,36 @@ namespace DS2S_META.Randomizer
     {
         // Other Logic related things:
         List<PICKUPTYPE> BanKeyTypes = new List<PICKUPTYPE>()
-            {
-                PICKUPTYPE.NPC,
-                PICKUPTYPE.VOLATILE,
-                PICKUPTYPE.EXOTIC,
-                PICKUPTYPE.COVENANTEASY,
-                PICKUPTYPE.COVENANTHARD,
-                PICKUPTYPE.UNRESOLVED,
-                PICKUPTYPE.REMOVED,
-                PICKUPTYPE.NGPLUS,
-                PICKUPTYPE.CRAMMED,
-                PICKUPTYPE.WOODCHEST,
-                PICKUPTYPE.SHOP, // For now
-            };      // TODO: part of Logic class
+        {
+            PICKUPTYPE.NPC,
+            PICKUPTYPE.VOLATILE,
+            PICKUPTYPE.EXOTIC,
+            PICKUPTYPE.COVENANTEASY,
+            PICKUPTYPE.COVENANTHARD,
+            PICKUPTYPE.UNRESOLVED,
+            PICKUPTYPE.REMOVED,
+            PICKUPTYPE.NGPLUS,
+            PICKUPTYPE.CRAMMED,
+            PICKUPTYPE.WOODCHEST,
+            PICKUPTYPE.SHOP, // For now
+        };
         List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
-            {
-                PICKUPTYPE.EXOTIC,
-                PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
-                PICKUPTYPE.UNRESOLVED,
-                PICKUPTYPE.REMOVED,
-                PICKUPTYPE.NGPLUS,
-                PICKUPTYPE.CRAMMED,
-            };  // TODO: part of Logic class
+        {
+            PICKUPTYPE.EXOTIC,
+            PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
+            PICKUPTYPE.UNRESOLVED,
+            PICKUPTYPE.REMOVED,
+            PICKUPTYPE.NGPLUS,
+            PICKUPTYPE.CRAMMED,
+        };
 
-
+        internal List<PICKUPTYPE> BanFromLoot = new List<PICKUPTYPE>()
+        {
+            // List of places where loot cannot come from:
+            PICKUPTYPE.CRAMMED,
+            PICKUPTYPE.UNRESOLVED,
+            PICKUPTYPE.REMOVED,
+        };
 
         // Overloads for quick construction, single or no key requirements:
         internal RandoInfo NpcInfo(string desc, KEYID reqkey = KEYID.NONE)
@@ -216,6 +222,11 @@ namespace DS2S_META.Randomizer
                 default:
                     throw new Exception("Unexpected value in argument set type");
             }
+        }
+        internal bool AvoidsTypes(Randomization rdz, List<PICKUPTYPE> bantypes) 
+        {
+            var LI = D[rdz.ParamID];
+            return LI.AvoidsTypes(bantypes);
         }
         internal bool IsBannedType(Randomization rdz, RandomizerManager.SetType parentset)
         {

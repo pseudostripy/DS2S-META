@@ -31,6 +31,7 @@ namespace DS2S_META.Randomizer
         internal abstract bool IsSaturated();
         internal abstract void AddShuffledItem(DropInfo item);
         internal abstract bool HasShuffledItemID(int itemID);
+        internal abstract bool HasVannilaItemID(int itemID);
 
         internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
@@ -68,6 +69,12 @@ namespace DS2S_META.Randomizer
             if (ShuffledLot == null)
                 return false;
             return ShuffledLot.Items.Contains(itemID);
+        }
+        internal override bool HasVannilaItemID(int itemID)
+        {
+            if (VanillaLot == null)
+                return false;
+            return VanillaLot.Items.Contains(itemID);
         }
 
         internal override string printdata()
@@ -109,6 +116,12 @@ namespace DS2S_META.Randomizer
             if (ShuffledShop == null)
                 return false;
             return ShuffledShop.ItemID == itemID;
+        }
+        internal override bool HasVannilaItemID(int itemID)
+        {
+            if (ShuffledShop == null)
+                return false;
+            return VanillaShop.ItemID == itemID;
         }
     }
 }

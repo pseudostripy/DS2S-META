@@ -102,12 +102,10 @@ namespace DS2S_META.Randomizer
         // Core Code:
         internal void GetLootToRandomize()
         {
-            var ltr0 = VanillaLots.Where(kvp => kvp.Value.NumDrops != 0); // filter out completely empty loot tables 
-            // insert more filters here if you need
-
             // For each vanilla lot, make a new randomization object
-            foreach (var kvp in ltr0)
-                Data.Add(new LotRdz(kvp));
+            Data.AddRange( VanillaLots.Select(kvp => new LotRdz(kvp))
+                            .Where(ldz => ldz.VanillaLot.NumDrops != 0)
+                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot)) );
             
             // Add shops
             foreach (var kvp in VanillaShops)
