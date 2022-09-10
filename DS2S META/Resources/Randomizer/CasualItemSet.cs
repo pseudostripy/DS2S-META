@@ -373,7 +373,7 @@ namespace DS2S_META.Randomizer
 
             // The Gutter & Black Gulch:
             D.Add(326000, BossInfo("The Rotten drop"));
-            D.Add(326001, BossInfo("The Rotten drop in NG+"));
+            D.Add(326001, BossNGPlusInfo("The Rotten drop in NG+"));
             D.Add(10255010, WChestInfo("Wooden chest on top of small structure in the end of the first long bridge"));
             D.Add(10255030, WChestInfo("Wooden chest on ledge in multiple ladders area"));
             D.Add(10255040, MChestInfo("Metal chest near where melinda the butcher invades"));
@@ -927,7 +927,7 @@ namespace DS2S_META.Randomizer
             D.Add(10276041, SafeInfo("In the cave under the first dragon nest in NG+", KEYID.ALDIASKEEP));
             D.Add(10276190, SafeInfo("In the cave under the first dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276060, SafeInfo("Near the hollow priest by the second dragon nest", KEYID.ALDIASKEEP));
-            D.Add(10276061, SafeInfo("Near the hollow priest by the second dragon nest in NG+", KEYID.ALDIASKEEP));
+            D.Add(10276061, NGPlusInfo("Near the hollow priest by the second dragon nest in NG+", KEYID.ALDIASKEEP));
             D.Add(10276180, SafeInfo("Corpse in the second dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276080, SafeInfo("Corpse in the second dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276070, SafeInfo("In the middle of Aerie, at the end of one of the rope bridges, near multiple exploding hollows", KEYID.ALDIASKEEP));
