@@ -107,11 +107,8 @@ namespace DS2S_META.Properties {
         ///19: 41 b8 02 00 00 00       mov    r8d,0x2
         ///1f: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000
         ///26: ff ff ff
-        ///29: 41 ff d6                call   r14
-        ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000
-        ///33: ff ff ff
-        ///36: 48 89 c2                mov    rdx,rax
-        ///39: 49 be 00  [rest of string was truncated]&quot;;.
+        ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
+        ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0x [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BonfireWarp {
             get {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META
+namespace DS2S_META.Randomizer
 {
     internal class ItemLot
     {
@@ -32,7 +32,17 @@ namespace DS2S_META
         {
             Lot.Add(dropInfo);
         }
-        
+        internal ItemLot(List<DropInfo> lots)
+        {
+            Lot = new List<DropInfo>(lots);
+        }
+
+        // Methods:
+        internal ItemLot Clone()
+        {
+            return new ItemLot(Lot);
+        }
+
         // Utility:
         internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
@@ -69,5 +79,8 @@ namespace DS2S_META
             Reinforcement = (byte)reinforce;
             Infusion = (byte)infusion;
         }
+
+        // Properties:
+        internal bool IsKeyType => Enum.IsDefined(typeof(KEYID), ItemID);
     }
 }

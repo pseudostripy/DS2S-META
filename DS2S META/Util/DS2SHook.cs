@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DS2S_META.Randomizer;
+
 
 namespace DS2S_META
 {
@@ -1245,13 +1247,35 @@ namespace DS2S_META
 
             return vanlots;
         }
-        internal Dictionary<int, ShopInfo> GetVanillaShops()
+        internal Dictionary<int, ItemParam> GetVanillaItemParams()
+        {
+            List<DS2SItem> allitems = DS2SItemCategory.AllItems;
+            Dictionary<int, ItemParam> vanitems = new Dictionary<int, ItemParam>();
+
+            // Loop over all the params and read the itemlot tables
+            // Note: this gets messy if you do it as an overly complicated LINQ query
+            foreach (var kvp in ItemParamOffsetDict)
+            {
+                int itemid = kvp.Key;
+                IEnumerable<DS2SItem> ds2item = allitems.Where(item => item.ID == itemid);
+                string itemname = ds2item.Count() > 0 ? ds2item.First().Name : "unknown_item";
+                vanitems.Add(kvp.Key, ReadItem(kvp, itemname));
+            }
+            
+            return vanitems;
+        }
+        internal Dictionary<int, ShopInfo> GetVanillaShops(Dictionary<int, string> dictDesc)
         {
             Dictionary<int, ShopInfo> vanshops = new Dictionary<int, ShopInfo>();
             
             // Loop over all the params and read the itemlot tables
             foreach (var kvp in ShopLineupPODict)
-                vanshops.Add(kvp.Key, ReadShopInfo(kvp));
+            {
+                var SI = ReadShopInfo(kvp);
+                SI.ParamDesc = dictDesc[kvp.Key];
+                vanshops.Add(kvp.Key, SI);
+            }
+                
 
             // Write out the whole table to a file cause I'm lazy:
             //string[] lines = ShopLineupPODict.Select(kvp => $"ID: {kvp.Key} --> Offset: {kvp.Value:X}").ToArray();
@@ -1259,16 +1283,18 @@ namespace DS2S_META
 
             return vanshops;
         }
-        internal Dictionary<int, int> GetVanillaItemPrices()
+        
+        // Params table reads
+        internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
         {
-            Dictionary<int, int> vanprices = new Dictionary<int, int>();
+            int offset = kvp.Value;
+            var basebuy     = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
+            var itemusageid = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.ItemUsageID);
+            var maxheld     = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.MaxHeld);
+            var itemtype    = ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
 
-            foreach (var kvp in ItemParamOffsetDict)
-                vanprices.Add(kvp.Key, ReadPrice(kvp));
-
-            return vanprices;
+            return new ItemParam(desc, kvp.Key, itemusageid, maxheld, basebuy, itemtype);
         }
-
         internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
         {
             // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
@@ -1317,24 +1343,33 @@ namespace DS2S_META
 
             return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
         }
-        internal int ReadPrice(KeyValuePair<int, int> kvp)
+        internal int ReadPrice(int itemid)
         {
-            int offset = kvp.Value;
+            int offset = ItemParamOffsetDict[itemid];
             return ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
         }
 
+        // Params table writes
         internal void WriteAllLots(Dictionary<int, ItemLot> all_lots)
         {
             foreach (var kvp in all_lots)
                 WriteItemLotTable(kvp.Key, kvp.Value);
         }
-        internal void WriteAllShops(Dictionary<int, ShopInfo> shops, Dictionary<int, int> prices)
+        internal void WriteAllShops(Dictionary<int, ShopInfo> all_shops, bool isshuf)
         {
-            foreach (var kvp in shops)
-                WriteShopInfo(kvp);
+            foreach (var kvp in all_shops)
+            {
+                if (kvp.Value == null)
+                    continue;
 
-            foreach (var kvp in prices)
-                WritePrice(kvp);
+                WriteShopInfo(kvp);
+                KeyValuePair<int, int> kvp_price;
+                if (isshuf)
+                    kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, kvp.Value.NewBasePrice);
+                else
+                    kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, kvp.Value.VanillaBasePrice);
+                WritePrice(kvp_price);
+            }
         }
         internal void WritePrice(KeyValuePair<int, int> kvp)
         {
@@ -1344,6 +1379,9 @@ namespace DS2S_META
         }
         internal void WriteShopInfo(KeyValuePair<int, ShopInfo> kvp)
         {
+            if (kvp.Value == null)
+                return;
+
             // Write to game:
             int lotStart = ShopLineupPODict[kvp.Key];
             ShopInfo SI = kvp.Value;
@@ -1368,6 +1406,9 @@ namespace DS2S_META
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
+            if (itemlot == null)
+                return;
+
             int lotStart = ItemLotOtherPODict[paramID];
 
             // Pack relevant data together first:
@@ -1379,20 +1420,13 @@ namespace DS2S_META
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1, quantbytes);
         }
         
-        internal ItemType GetItemType(int itemid)
+        internal ItemParam.eItemType GetItemType(int itemid)
         {
             int offset = ItemParamOffsetDict[itemid];
-            return (ItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
+            return (ItemParam.eItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
         }
 
-        internal enum ItemType : int
-        {
-            WEAPON = 1,
-            SHIELD = 2,
-            RING = 7,
-            CONSUMABLE = 8,
-        }
-
+        
         #endregion
 
         #region Bonfires

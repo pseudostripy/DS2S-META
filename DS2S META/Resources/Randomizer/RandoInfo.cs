@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Resources.Randomizer
+namespace DS2S_META.Randomizer
 {
     internal enum KEYID : int
     {
@@ -118,6 +118,10 @@ namespace DS2S_META.Resources.Randomizer
         {
             return Types.Any(checklist.Contains);
         }
+        internal bool AvoidsTypes(List<PICKUPTYPE> bannedtypes)
+        {
+            return !HasType(bannedtypes);
+        }
         internal bool HasType(PICKUPTYPE checktype)
         {
             return Types.Any(pt => pt == checktype);
@@ -131,32 +135,5 @@ namespace DS2S_META.Resources.Randomizer
         {
             Keys = keys;
         }
-    }
-
-    internal class RandoDicts
-    {
-        // Encapsulating various fields used in Rando setup
-        internal Dictionary<int, RandoInfo> ValidKeyPlaces;
-        internal Dictionary<int, RandoInfo> ValidGenPlaces;
-        internal Dictionary<int, RandoInfo> RemKeyPlaces = new Dictionary<int, RandoInfo>();
-        internal Dictionary<int, RandoInfo> RemGenPlaces = new Dictionary<int, RandoInfo>();
-        internal Dictionary<int, RandoInfo> SoftlockSpots = new Dictionary<int, RandoInfo>();
-        internal List<int> PlacedSoFar = new List<int>();
-        internal Dictionary<int, ItemLot> ShuffledLots = new Dictionary<int, ItemLot>();    // itemOtherParamID -> itemLotParamData
-        internal Dictionary<int, ShopInfo> ShuffledShops = new Dictionary<int, ShopInfo>(); // shopParamID -> shopParamData
-        internal Dictionary<int, int> ShuffledPrices = new Dictionary<int, int>();          // itemID -> itemPrice
-
-        // Constructors
-        internal RandoDicts() { }
-        internal RandoDicts(Dictionary<int, RandoInfo> validkeyplaces)
-        {
-            ValidKeyPlaces = validkeyplaces;
-        }
-        internal RandoDicts(Dictionary<int, RandoInfo> validkeyplaces, Dictionary<int, RandoInfo> remKeyPlaces)
-        {
-            ValidKeyPlaces = validkeyplaces;
-            RemKeyPlaces = remKeyPlaces;
-        }
-
     }
 }

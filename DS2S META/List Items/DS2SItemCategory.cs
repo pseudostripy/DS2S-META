@@ -48,8 +48,10 @@ namespace DS2S_META
                 if (GetTxtResourceClass.IsValidTxtResource(line)) //determine if line is a valid resource or not
                     All.Add(new DS2SItemCategory(line));
             };
+            AllItems = All.SelectMany(cat => cat.Items).ToList();
         }
 
         public static List<DS2SItemCategory> All = new List<DS2SItemCategory>();
+        public static List<DS2SItem> AllItems = new List<DS2SItem>();
     }
 }
