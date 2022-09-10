@@ -22,7 +22,15 @@ namespace DS2S_META.Randomizer
         private readonly bool InitFromShop;
 
         internal ItemParam ItemParam => RandomizerManager.VanillaItemParams[ItemID];
-        internal int VanillaBasePrice => RandomizerManager.VanillaItemParams[ItemID].BaseBuyPrice;
+        internal int VanillaBasePrice
+        {
+            get
+            {
+                if (!RandomizerManager.TryGetItem(ItemID, out var item))
+                    return -1;
+                return item.BaseBuyPrice;
+            }
+        }
 
         // Constructors:
         internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant)
@@ -62,7 +70,10 @@ namespace DS2S_META.Randomizer
                 return RawQuantity;
 
             // Shops that are put into shops:
-            var itype = ItemParam.ItemType;
+            if (!RandomizerManager.TryGetItem(ItemID, out ItemParam item))
+                return -1;
+
+            var itype = item.ItemType;
             switch (RawQuantity)
             {
                 // Adjust these weights if required

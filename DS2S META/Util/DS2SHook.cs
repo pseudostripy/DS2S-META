@@ -1363,17 +1363,22 @@ namespace DS2S_META
                     continue;
 
                 WriteShopInfo(kvp);
+                int priceToWrite;
                 KeyValuePair<int, int> kvp_price;
                 if (isshuf)
-                    kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, kvp.Value.NewBasePrice);
+                    priceToWrite = kvp.Value.NewBasePrice;
                 else
-                    kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, kvp.Value.VanillaBasePrice);
+                    priceToWrite = kvp.Value.VanillaBasePrice;
+
+                kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, priceToWrite);
                 WritePrice(kvp_price);
             }
         }
         internal void WritePrice(KeyValuePair<int, int> kvp)
         {
-            int lotStart = ItemParamOffsetDict[kvp.Key];
+            if (!ItemParamOffsetDict.TryGetValue(kvp.Key, out var lotStart))
+                return;
+
             var price = BitConverter.GetBytes(kvp.Value);
             ItemParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemParam.BaseBuyPrice, price);
         }

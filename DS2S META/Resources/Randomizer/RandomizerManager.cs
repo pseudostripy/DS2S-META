@@ -32,11 +32,17 @@ namespace DS2S_META.Randomizer
         private List<int> KeysPlacedSoFar = new List<int>(); // to tidy
         //
         internal static Dictionary<int, ItemParam> VanillaItemParams;
-        internal string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
-        internal bool TryGetItemName(int itemid, out string name)
+        internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
+        internal static bool TryGetItemName(int itemid, out string name)
         {
             bool found = VanillaItemParams.ContainsKey(itemid);
             name = found ? GetItemName(itemid) : "";
+            return found;
+        }
+        internal static bool TryGetItem(int itemid, out ItemParam item)
+        {
+            bool found = VanillaItemParams.ContainsKey(itemid);
+            item = found ? VanillaItemParams[itemid] : null;
             return found;
         }
 
@@ -96,7 +102,7 @@ namespace DS2S_META.Randomizer
         internal void Unrandomize()
         {
             WriteVanillaShops();
-            WriteVanillaShops();
+            WriteVanillaLots();
 
             // Force an area reload. TODO add warning:
             Hook.WarpLast();
