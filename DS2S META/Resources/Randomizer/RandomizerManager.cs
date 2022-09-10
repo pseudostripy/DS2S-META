@@ -295,6 +295,10 @@ namespace DS2S_META.Randomizer
                 foreach (var rdz in rdzsWithKey)
                 {
                     StringBuilder sb = new StringBuilder(itemname);
+                    int quant = rdz.GetShuffledItemQuant(keyid);
+                    if (quant != 1)
+                        sb.Append($" x{quant}");
+                    
                     string desc = Logic.D[rdz.ParamID].Description;
                     sb.Append($": {desc}");
                     lines.Add(sb.ToString());

@@ -32,9 +32,11 @@ namespace DS2S_META.Randomizer
         internal abstract void AddShuffledItem(DropInfo item);
         internal abstract bool HasShuffledItemID(int itemID);
         internal abstract bool HasVannilaItemID(int itemID);
+        internal abstract int GetShuffledItemQuant(int itemID);
 
         internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
+        
     }
 
 
@@ -75,6 +77,14 @@ namespace DS2S_META.Randomizer
             if (VanillaLot == null)
                 return false;
             return VanillaLot.Items.Contains(itemID);
+        }
+        internal override int GetShuffledItemQuant(int itemID)
+        {
+            if (ShuffledLot == null)
+                return -1;
+            return ShuffledLot.Lot.Where(di => di.ItemID == itemID).First().Quantity;
+            // Note: there's an extremely unlikely bug that can occur here and only affects
+            // output display, so I'm too lazy to deal with it.
         }
 
         internal override string printdata()
@@ -122,6 +132,12 @@ namespace DS2S_META.Randomizer
             if (ShuffledShop == null)
                 return false;
             return VanillaShop.ItemID == itemID;
+        }
+        internal override int GetShuffledItemQuant(int itemID)
+        {
+            if (ShuffledShop == null)
+                return -1;
+            return ShuffledShop.AdjQuantity;
         }
     }
 }

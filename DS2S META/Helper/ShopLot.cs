@@ -62,33 +62,14 @@ namespace DS2S_META.Randomizer
         internal int DuplicateItemID { get; set; }
         internal float PriceRate { get; set; }
         internal int RawQuantity { get; set; }
-        internal int Quantity { get; set; } // adjusted for inf shop sells
+        internal int AdjQuantity => GetAdjustedQuantity(); // adjusted for inf shop sells
         internal int NewBasePrice { get; set; }
-        
+        private readonly bool InitFromShop;
+
         internal ItemParam ItemParam => RandomizerManager.VanillaItemParams[ItemID];
         internal int VanillaBasePrice => RandomizerManager.VanillaItemParams[ItemID].BaseBuyPrice;
 
         // Constructors:
-        internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant, int baseprice)
-        {
-            ItemID = itemID;
-            EnableFlag = en;
-            DisableFlag = dis;
-            MaterialID = mat;
-            DuplicateItemID = dup;
-            PriceRate = rate;
-            RawQuantity = quant;
-        }
-        internal ShopInfo(ShopInfo toClone)
-        {
-            ItemID = toClone.ItemID;
-            EnableFlag = toClone.EnableFlag;
-            DisableFlag = toClone.DisableFlag;
-            MaterialID = toClone.MaterialID;
-            DuplicateItemID = toClone.DuplicateItemID;
-            PriceRate = toClone.PriceRate;
-            RawQuantity = toClone.RawQuantity;
-        }
         internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant)
         {
             ItemID = itemID;
@@ -98,25 +79,13 @@ namespace DS2S_META.Randomizer
             DuplicateItemID = dup;
             PriceRate = rate;
             RawQuantity = quant;
-            Quantity = quant;
-        }
-        internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant, string desc)
-        {
-            ItemID = itemID;
-            EnableFlag = en;
-            DisableFlag = dis;
-            MaterialID = mat;
-            DuplicateItemID = dup;
-            PriceRate = rate;
-            RawQuantity= quant;
-            Quantity = quant;
-            ParamDesc = desc;
+            InitFromShop = true; // Tells us we should adjust shop quantities
         }
         internal ShopInfo(DropInfo DI, ShopInfo VanShop, float pricerate, int newbaseprice)
         {
             // Used to construct things from various information sources:
             ItemID          = DI.ItemID;
-            Quantity        = DI.Quantity;
+            RawQuantity     = DI.Quantity;
             //
             EnableFlag      = VanShop.EnableFlag;
             DisableFlag     = VanShop.DisableFlag;
@@ -127,11 +96,17 @@ namespace DS2S_META.Randomizer
             PriceRate = pricerate;
             //
             NewBasePrice = newbaseprice;
+            InitFromShop = false; // Do not adjust raw quantity
         }
 
         // Methods:
         internal int GetAdjustedQuantity()
         {
+            // World lots that are put into shops:
+            if (!InitFromShop)
+                return RawQuantity;
+
+            // Shops that are put into shops:
             var itype = ItemParam.ItemType;
             switch (RawQuantity)
             {
@@ -149,7 +124,7 @@ namespace DS2S_META.Randomizer
         internal DropInfo ConvertToDropInfo()
         {
             // Assume no infusion or reinforcement, to consider later.
-            return new DropInfo(ItemID, Quantity, 0, 0);
+            return new DropInfo(ItemID, AdjQuantity, 0, 0);
         }
     }
 }
