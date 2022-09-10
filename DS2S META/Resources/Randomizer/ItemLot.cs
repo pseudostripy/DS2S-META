@@ -40,7 +40,22 @@ namespace DS2S_META.Randomizer
         // Methods:
         internal ItemLot Clone()
         {
-            return new ItemLot(Lot);
+            // Performs a deep clone on the Lot object
+            var ilclone = new ItemLot();
+            foreach (var di in Lot)
+            {
+                ilclone.AddDrop(di.Clone());
+            }
+            return ilclone;
+        }
+        internal void Zeroise()
+        {
+            // Careful using this method!
+            foreach (var di in Lot)
+            {
+                di.ItemID = 60510000; // rubbish
+                di.Quantity = 0;
+            }
         }
 
         // Utility:
@@ -78,6 +93,10 @@ namespace DS2S_META.Randomizer
             Quantity = (byte)quantity;
             Reinforcement = (byte)reinforce;
             Infusion = (byte)infusion;
+        }
+        internal DropInfo Clone()
+        {
+            return (DropInfo)MemberwiseClone();
         }
 
         // Properties:

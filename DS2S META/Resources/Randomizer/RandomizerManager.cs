@@ -74,13 +74,9 @@ namespace DS2S_META.Randomizer
         internal void Randomize(int seed)
         {
             // Setup for re-randomization:
-            SetSeed(seed);              // reset Rng Twister
-
-            // Clear Lots/Shops to avoid vanilla spillover bug
-            // TODO
-
-            // Split items into Keys, Required, Generics
-            DefineKRG();
+            SetSeed(seed);      // reset Rng Twister
+            ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
+            DefineKRG();        // Split items into Keys, Required, Generics
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
@@ -94,9 +90,7 @@ namespace DS2S_META.Randomizer
             // Randomize Game!
             WriteShuffledLots();
             WriteShuffledShops();
-
-            // Force an area reload. TODO add warning:
-            Hook.WarpLast();
+            Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
         }
         internal void Unrandomize()
@@ -311,6 +305,24 @@ namespace DS2S_META.Randomizer
 
             // Write file:
             File.WriteAllLines("./keytesting.txt", lines.ToArray());
+        }
+        internal void ClearLotsShops()
+        {
+            foreach(var kvp in VanillaLots)
+            {
+                var IL = kvp.Value.Clone();
+                IL.Zeroise();
+                Hook.WriteItemLotTable(kvp.Key, IL);
+            }
+
+            foreach(var kvp in VanillaShops)
+            {
+                ShopInfo blankshop = kvp.Value.Clone();
+                blankshop.RawQuantity = 0;
+                blankshop.ItemID = 0; // don't even show in shop
+                var blankshopkvp = new KeyValuePair<int, ShopInfo>(kvp.Key, blankshop);
+                Hook.WriteShopInfo(blankshopkvp);
+            }
         }
         internal void WriteShuffledLots()
         {

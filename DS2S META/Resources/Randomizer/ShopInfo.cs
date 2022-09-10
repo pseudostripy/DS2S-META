@@ -61,6 +61,10 @@ namespace DS2S_META.Randomizer
             NewBasePrice = newbaseprice;
             InitFromShop = false; // Do not adjust raw quantity
         }
+        internal ShopInfo Clone()
+        {
+            return (ShopInfo)MemberwiseClone();
+        }
 
         // Methods:
         internal int GetAdjustedQuantity()
