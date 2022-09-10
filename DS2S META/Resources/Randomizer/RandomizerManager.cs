@@ -143,12 +143,9 @@ namespace DS2S_META.Randomizer
         }
         internal void DefineKRG()
         {
-            // Hard-code requireds for now:
-            List<int> intreqs = DefineRequiredItems();
-
             // Partition into KeyTypes, ReqNonKeys and Generic:
             ldkeys = LTR_flatlist.Where(DI => DI.IsKeyType).ToList();                   // Keys
-            ldreqs = LTR_flatlist.Where(DI => intreqs.Contains(DI.ItemID)).ToList();    // Declare reqs
+            ldreqs = LTR_flatlist.Where(DI => ItemSetBase.RequiredItems.Contains(DI.ItemID)).ToList(); // Reqs
             ldgens = LTR_flatlist.Except(ldkeys).Except(ldreqs).ToList();               // Generics
 
             // Fixes:
@@ -244,20 +241,6 @@ namespace DS2S_META.Randomizer
                 return;
             }
             throw new Exception("True Softlock, please investigate");
-        }
-
-        // To move somewhere else:
-        private List<int> DefineRequiredItems()
-        {
-            // Add here / refactor as required.
-            List<int> items = new List<int>()
-            {
-                40420000,   // Silvercat Ring
-                5400000,    // Pyromancy Flame
-                5410000,    // Dark Pyromancy Flame 
-                60355000,   // Aged Feather
-            };
-            return items;
         }
 
         // Utility:

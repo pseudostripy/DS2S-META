@@ -40,6 +40,16 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
         };
+        // To move somewhere else:
+        internal static List<int> RequiredItems = new List<int>()
+        {
+            // Add here / refactor as required.
+            60155000,   // Estus Flask
+            40420000,   // Silvercat Ring
+            5400000,    // Pyromancy Flame
+            5410000,    // Dark Pyromancy Flame 
+            60355000,   // Aged Feather
+        };
 
         // Purely for printing:
         internal static List<KEYID> KeyOutputOrder = new List<KEYID>()
