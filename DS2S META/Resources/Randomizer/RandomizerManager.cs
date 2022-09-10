@@ -232,12 +232,8 @@ namespace DS2S_META.Randomizer
 
                 rdz.AddShuffledItem(item);
                 if (rdz.IsSaturated())
-                {
-                    var test = Unfilled.Remove(elnum); // now filled!
-                    int debug = -1;
-                }
-
-
+                    Unfilled.Remove(elnum); // now filled!
+                
                 return;
             }
             throw new Exception("True Softlock, please investigate");

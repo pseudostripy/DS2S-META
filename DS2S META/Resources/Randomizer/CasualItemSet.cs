@@ -267,7 +267,8 @@ namespace DS2S_META.Randomizer
             D.Add(10165170, WChestInfo("Second wooden chest in McDuff's workshop"));
             D.Add(10165180, WChestInfo("Third wooden chest in McDuff's workshop"));
             D.Add(10165190, WChestInfo("Fourth wooden chest in McDuff's workshop"));
-            D.Add(10165150, MChestInfo("Metal chest in McDuff's workshop", KSO(KEYID.TORCH), KSO(KEYID.DULLEMBER))); // TODO check this edge case!;
+            D.Add(10165150, MChestInfo("Metal chest in McDuff's workshop", KSO(KEYID.TORCH), KSO(KEYID.DULLEMBER)));
+            D.Add(1764300,  NpcInfo("Given to you after spending 12k on upgrades/infusions at Mcduff", KEYID.DULLEMBER));
             //
             D.Add(10165140, MChestInfo("Metal chest where Pursuer attacks near the Tower Apart", KEYID.SOLDIER));
             D.Add(10166080, SafeInfo("On ledge near tower apart bonfire", KEYID.SOLDIER));
@@ -1392,7 +1393,6 @@ namespace DS2S_META.Randomizer
             D.Add(1757000, UnresolvedInfo("Dagger"));
             D.Add(1758000, UnresolvedInfo("Dagger"));
             D.Add(1759000, UnresolvedInfo("Dagger"));
-            D.Add(1764300, UnresolvedInfo("Titanite Slab"));
             D.Add(1776000, UnresolvedInfo("Human Effigy"));
             D.Add(1777000, UnresolvedInfo("Dagger"));
             D.Add(1786000, UnresolvedInfo("Dagger"));
