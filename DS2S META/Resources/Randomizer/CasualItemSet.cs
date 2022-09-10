@@ -751,13 +751,13 @@ namespace DS2S_META.Randomizer
 
             // Drangleic Castle / Throne of Want:
             D.Add(309610, BossInfo("Twin Dragonriders drop", KEYID.DRANGLEIC));
-            D.Add(506100, BossInfo("Darklurker drop", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC)));
             D.Add(332000, BossInfo("Throne Watcher and Defender drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(332001, BossNGPlusInfo("Throne Watcher and Defender drop in NG+", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(627000, BossInfo("Nashandra drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(2006000, CovFineInfo("Pilgrims of Dark join", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC)));
             D.Add(2006011, CovFineInfo("Pilgrims of Dark, one dungeon cleared", KEYID.DARKLURKER));
             D.Add(2006012, CovFineInfo("Pilgrims of Dark, three dungeons cleared", KEYID.DARKLURKER));
+            D.Add(506100, CovFineInfo("Darklurker drop", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC))); // can get locked if you kill Grandahl
             D.Add(2006013, CovFineInfo("Reward for Rank 3 Darklurker covenant", KEYID.DARKLURKER)); // Missed in original rando.
             D.Add(1725000, CovFineInfo("Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH)));
             D.Add(1721000, NpcSafeInfo("Gift from Chancellor Wellager after defeating the Giant Lord", KSO(KEYID.DRANGLEIC, KEYID.ASHENMIST)));
