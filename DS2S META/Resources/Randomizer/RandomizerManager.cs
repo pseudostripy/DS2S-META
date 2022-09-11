@@ -69,10 +69,6 @@ namespace DS2S_META.Randomizer
             // Add descriptions
             foreach (var kvp in VanillaLots)
                 kvp.Value.ParamDesc = Logic.GetDesc(kvp.Key);
-
-            // Fill vanilla data to work with:
-            GetLootToRandomize(); // set Data
-            Unfilled = Enumerable.Range(0, Data.Count).ToList();
             IsInitialized = true;
         }
         internal void Randomize(int seed)
@@ -80,7 +76,10 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
+            GetLootToRandomize(); // set Data field
+            Unfilled = Enumerable.Range(0, Data.Count).ToList();
             DefineKRG();        // Split items into Keys, Required, Generics
+
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
@@ -111,6 +110,7 @@ namespace DS2S_META.Randomizer
         // Core Logic
         internal void GetLootToRandomize()
         {
+            Data = new List<Randomization>(); // Reset
             // For each vanilla lot, make a new randomization object
             var chosenlots = VanillaLots.Select(kvp => new LotRdz(kvp))
                             .Where(ldz => ldz.VanillaLot.NumDrops != 0)
