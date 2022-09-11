@@ -86,6 +86,7 @@ namespace DS2S_META.Randomizer
             PlaceSet(ldkeys, SetType.Keys);
             PlaceSet(ldreqs, SetType.Reqs);
             PlaceSet(ldgens, SetType.Gens);
+            FillLeftovers();
 
             // Printout the current shuffled lots:
             PrintKeysNeat();
@@ -111,9 +112,11 @@ namespace DS2S_META.Randomizer
         internal void GetLootToRandomize()
         {
             // For each vanilla lot, make a new randomization object
-            Data.AddRange(VanillaLots.Select(kvp => new LotRdz(kvp))
+            var chosenlots = VanillaLots.Select(kvp => new LotRdz(kvp))
                             .Where(ldz => ldz.VanillaLot.NumDrops != 0)
-                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot)));
+                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot));
+
+            Data.AddRange(chosenlots.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes)));
 
             // Add shops
             foreach (var kvp in VanillaShops)
@@ -124,7 +127,8 @@ namespace DS2S_META.Randomizer
                 Data.Add(new ShopRdz(kvp));
             }
 
-            LTR_flatlist = Data.SelectMany(rz => rz.Flatlist).ToList();
+            // Define what loot can be distributed:
+            LTR_flatlist = chosenlots.SelectMany(rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
         internal void AddShopLogic()
@@ -241,6 +245,20 @@ namespace DS2S_META.Randomizer
                 return;
             }
             throw new Exception("True Softlock, please investigate");
+        }
+        private void FillLeftovers()
+        {
+            // ld: list of DropInfos
+            int Nfc = ItemSetBase.FillerItems.Count; // fill count
+            foreach (var rdz in Data)
+            {
+                while (!rdz.IsSaturated())
+                {
+                    int ind = RNG.Next(Nfc);
+                    DropInfo item = ItemSetBase.FillerItems[ind]; // get filler item
+                    rdz.AddShuffledItem(item);
+                }
+            }
         }
 
         // Utility:

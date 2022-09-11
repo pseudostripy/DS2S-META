@@ -9,7 +9,7 @@ namespace DS2S_META.Randomizer
     internal abstract class ItemSetBase
     {
         // Other Logic related things:
-        List<PICKUPTYPE> BanKeyTypes = new List<PICKUPTYPE>()
+        internal List<PICKUPTYPE> BanKeyTypes = new List<PICKUPTYPE>()
         {
             PICKUPTYPE.NPC,
             PICKUPTYPE.VOLATILE,
@@ -23,7 +23,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.WOODCHEST,
             PICKUPTYPE.SHOP, // For now
         };
-        List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
+        internal List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
         {
             PICKUPTYPE.EXOTIC,
             PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
@@ -47,6 +47,108 @@ namespace DS2S_META.Randomizer
             5400000,    // Pyromancy Flame
             5410000,    // Dark Pyromancy Flame 
             60355000,   // Aged Feather
+        };
+        internal static List<DropInfo> FillerItems = new List<DropInfo>()
+        {
+            new DropInfo(0x0393AE10, 3), // Lifegem
+            new DropInfo(0x0393D520), // Radiant Lifegem
+            new DropInfo(0x0393FC30), // Old Radiant Lifegem
+            new DropInfo(0x039413A0), // Dried Root
+            new DropInfo(0x03942340), // Amber Herb
+            new DropInfo(0x03944A50), // Twilight Herb
+            new DropInfo(0x03947160), // Wilted Dusk Herb
+            new DropInfo(0x03949870), // Poison Moss
+            new DropInfo(0x0394E690), // Monastery Charm
+            new DropInfo(0x03950DA0), // Dragon Charm
+            new DropInfo(0x03952128), // Divine Blessing
+            new DropInfo(0x039534B0), // Rouge Water
+            new DropInfo(0x03955BC0), // Crimson Water
+            new DropInfo(0x0395D4D8), // Human Effigy
+            new DropInfo(0x0395F800), // Small Blue Burr
+            new DropInfo(0x03961F10), // Small Yellow Burr
+            new DropInfo(0x03964620), // Small Orange Burr
+            new DropInfo(0x03966D30), // Dark Troches
+            new DropInfo(0x03969440), // Common Fruit
+            new DropInfo(0x0396BB50), // Red Leech Troches
+            new DropInfo(0x03970970), // Triclops Snake Troches
+            new DropInfo(0x03971CF8), // Old Growth Balm
+            new DropInfo(0x039720E0), // Vine Balm
+            new DropInfo(0x039724C8), // Blackweed Balm
+            new DropInfo(0x039728B0), // Goldenfruit Balm
+            new DropInfo(0x03973080), // Aromatic Ooze
+            new DropInfo(0x03975790), // Gold Pine Resin
+            new DropInfo(0x03977EA0), // Charcoal Pine Resin
+            new DropInfo(0x0397A5B0), // Dark Pine Resin
+            new DropInfo(0x0397CCC0), // Rotten Pine Resin
+            new DropInfo(0x0397F3D0), // Bleeding Serum
+            new DropInfo(0x039841F0), // Green Blossom
+            new DropInfo(0x03986900), // Rusted Coin
+            new DropInfo(0x0398DE30), // Homeward Bone
+            new DropInfo(0x03992C50), // Silver Talisman
+            new DropInfo(0x0399C890), // Repair Powder
+            new DropInfo(0x039A16B0), // Flame Butterfly
+            new DropInfo(0x039A64D0), // Prism Stone
+            new DropInfo(0x039B4F30), // Rubbish
+            new DropInfo(0x039B5318), // Petrified Something
+            new DropInfo(0x039B9198), // Bonfire Ascetic
+            new DropInfo(0x039B9D50), // Alluring Skull
+            new DropInfo(0x039BA138), // Lloyd's Talisman
+            new DropInfo(0x039BC460, 5), // Throwing Knife
+            new DropInfo(0x039BEB70, 3), // Witching Urn
+            new DropInfo(0x039C1280, 3), // Lightning Urn
+            new DropInfo(0x039C3990, 3), // Firebomb
+            new DropInfo(0x039C4D18, 3), // Black Firebomb
+            new DropInfo(0x039C60A0, 3), // Hexing Urn
+            new DropInfo(0x039C87B0, 5), // Poison Throwing Knife
+            new DropInfo(0x039C9B38, 3), // Dung Pie
+            new DropInfo(0x039CAEC0, 5), // Lacerating Knife
+            new DropInfo(0x039CD5D0, 3), // Corrosive Urn
+            new DropInfo(0x039CFCE0, 3), // Holy Water Urn
+            new DropInfo(0x039D1068), // Fading Soul
+            new DropInfo(0x039D23F0), // Soul of a Lost Undead
+            new DropInfo(0x039D4B00), // Large Soul of a Lost Undead
+            new DropInfo(0x039D7210), // Soul of a Nameless Soldier
+            new DropInfo(0x039D9920), // Large Soul of a Nameless Soldier
+            new DropInfo(0x039DC030), // Soul of a Proud Knight
+            new DropInfo(0x039DE740), // Large Soul of a Proud Knight
+            new DropInfo(0x039E0E50), // Soul of a Brave Warrior
+            new DropInfo(0x039E3560), // Large Soul of a Brave Warrior
+            new DropInfo(0x039E5C70), // Soul of a Hero
+            
+            new DropInfo(0x039F1FC0, 5), // Wood Arrow
+            new DropInfo(0x039F46D0, 5), // Iron Arrow
+            new DropInfo(0x039F6DE0, 5), // Magic Arrow
+            new DropInfo(0x039F94F0, 5), // Lightning Arrow
+            new DropInfo(0x039FBC00, 5), // Fire Arrow
+            new DropInfo(0x039FE310, 5), // Dark Arrow
+            new DropInfo(0x03A00A20, 5), // Poison Arrow
+            new DropInfo(0x03A03130, 5), // Lacerating Arrow
+            new DropInfo(0x03A07F50, 5), // Iron Greatarrow
+            new DropInfo(0x03A0CD70, 5), // Lightning Greatarrow
+            new DropInfo(0x03A0F480, 5), // Fire Greatarrow
+            new DropInfo(0x03A142A0, 5), // Destructive Greatarrow
+            new DropInfo(0x03A169B0, 5), // Wood Bolt
+            new DropInfo(0x03A190C0, 5), // Heavy Bolt
+            new DropInfo(0x03A1B7D0, 5), // Magic Bolt
+            new DropInfo(0x03A1DEE0, 5), // Lightning Bolt
+            new DropInfo(0x03A205F0, 5), // Fire Bolt
+            new DropInfo(0x03A22D00, 5), // Dark Bolt
+            
+            new DropInfo(0x03A25410), // Titanite Shard
+            new DropInfo(0x03A26798), // Large Titanite Shard
+            new DropInfo(0x03A27B20), // Titanite Chunk
+            new DropInfo(0x03A2C940), // Twinkling Titanite
+            new DropInfo(0x03A33E70), // Petrified Dragon Bone
+            new DropInfo(0x03A3B3A0), // Faintstone
+            new DropInfo(0x03A3DAB0), // Boltstone
+            new DropInfo(0x03A401C0), // Firedrake Stone
+            new DropInfo(0x03A428D0), // Darknight Stone
+            new DropInfo(0x03A44FE0), // Poison Stone
+            new DropInfo(0x03A476F0), // Bleed Stone
+            new DropInfo(0x03A4C510), // Raw Stone
+            new DropInfo(0x03A4EC20), // Magic Stone
+            new DropInfo(0x03A51330), // Old Mundane Stone
+            new DropInfo(0x03A53A40), // Palestone
         };
 
         // Purely for printing:

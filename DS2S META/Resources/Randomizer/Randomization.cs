@@ -54,7 +54,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods
-        internal override bool IsSaturated() => ShuffledLot.NumDrops == VanillaLot.NumDrops;
+        internal override bool IsSaturated() => ShuffledLot != null && (ShuffledLot.NumDrops == VanillaLot.NumDrops);
         internal override List<DropInfo> Flatlist => VanillaLot.Lot;
         internal override void AddShuffledItem(DropInfo item)
         {
@@ -131,7 +131,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods:
-        internal override bool IsSaturated() => ShuffledShop == null;
+        internal override bool IsSaturated() => ShuffledShop != null;
         internal override string printdata()
         {
             int itemid = VanillaShop.ItemID;

@@ -81,6 +81,20 @@ namespace DS2S_META.Randomizer
 
         // Constructors:
         internal DropInfo() { }
+        internal DropInfo(int itemID)
+        {
+            ItemID = itemID;
+            Quantity = 1;
+            Reinforcement = 0;
+            Infusion = 0;
+        }
+        internal DropInfo(int itemID, int quantity)
+        {
+            ItemID = itemID;
+            Quantity = (byte)quantity;
+            Reinforcement = 0;
+            Infusion = 0;
+        }
         internal DropInfo(int itemID, byte quantity, byte reinforce, byte infusion)
         {
             ItemID = itemID;
