@@ -19,6 +19,7 @@ namespace DS2S_META.Randomizer
         internal static Random RNG = new Random();
         private Dictionary<int, ItemLot> VanillaLots;
         private Dictionary<int, ShopInfo> VanillaShops;
+        private Dictionary<int, ShopInfo> FixedVanillaShops;
         internal ItemSetBase Logic;
         internal List<DropInfo> LTR_flatlist;
         internal bool IsInitialized = false;
@@ -64,6 +65,7 @@ namespace DS2S_META.Randomizer
             VanillaLots = Hook.GetVanillaLots();
             VanillaItemParams = Hook.GetVanillaItemParams();
             Logic = new CasualItemSet();
+            FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
             AddShopLogic();
 
             // Add descriptions
@@ -75,7 +77,6 @@ namespace DS2S_META.Randomizer
         {
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
-            ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
             GetLootToRandomize(); // set Data field
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
             DefineKRG();        // Split items into Keys, Required, Generics
@@ -92,6 +93,7 @@ namespace DS2S_META.Randomizer
             PrintAllRdz();
 
             // Randomize Game!
+            ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
             WriteShuffledLots();
             WriteShuffledShops();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
@@ -119,7 +121,7 @@ namespace DS2S_META.Randomizer
             Data.AddRange(chosenlots.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes)));
 
             // Add shops
-            foreach (var kvp in VanillaShops)
+            foreach (var kvp in FixedVanillaShops)
             {
                 // Remove duplicates and missing content:
                 if (ShopRules.Exclusions.Contains(kvp.Key))
@@ -131,20 +133,56 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = chosenlots.SelectMany(rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
-        internal void AddShopLogic()
+        internal Dictionary<int, ShopInfo> FixShopEvents()
         {
-            // Update PTF with shop places
+            // Code is probably written awfully, but whatever. I might refactor this one day.
+
+            // Go through and clone the "normal" shops:
+            var PTF = new Dictionary<int, ShopInfo>();
+            var handled_cases = new List<int>();
+            var skip_shops = new List<int>();
             foreach (var kvp in VanillaShops)
             {
-                //// Remove duplicates and missing content:
-                //if (ShopRules.Exclusions.Contains(kvp.Key))
-                //    continue;
+                if (handled_cases.Contains(kvp.Key))
+                    continue;
 
+                // "normal case"
+                if (kvp.Value.DisableFlag == -1)
+                {
+                    PTF.Add(kvp.Key, kvp.Value.Clone());
+                    handled_cases.Add(kvp.Key);
+                    continue;
+                }
+
+                // "disable flag set" - find and fix it's enable counterpart:
+                int disableEvt = kvp.Value.DisableFlag;
+                var ctrparts = VanillaShops.Where(kvp2 => kvp2.Value.EnableFlag == disableEvt).ToList();
+
+                foreach (var KvpEnShop in ctrparts)
+                {
+                    handled_cases.Add(KvpEnShop.Key);
+                    skip_shops.Add(KvpEnShop.Key); // this is for final pass checks
+                }
+
+                // Fix shop that has disablement
+                ShopInfo SI = kvp.Value.Clone();
+                SI.DisableFlag = -1; // Don't disable it
+                PTF.Add(kvp.Key, SI);
+            }
+
+            // One more pass to catch params in unfortunate order:
+            return PTF.Where(kvp => !skip_shops.Contains(kvp.Key))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+        internal void AddShopLogic()
+        {
+            foreach (var kvp in FixedVanillaShops)
+            {
                 // Unpack:
                 ShopInfo SI = kvp.Value;
                 int shopparamid = kvp.Key;
 
-                // Apopend:
+                // Append:
                 RandoInfo RI = new RandoInfo(SI.ParamDesc, PICKUPTYPE.SHOP);
                 Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(shopparamid, RI));
             }
