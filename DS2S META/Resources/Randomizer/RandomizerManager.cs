@@ -166,7 +166,8 @@ namespace DS2S_META.Randomizer
 
                 // Fix shop that has disablement
                 ShopInfo SI = kvp.Value.Clone();
-                SI.DisableFlag = -1; // Don't disable it
+                SI.DisableFlag = -1;    // Don't remove it on merchant move
+                SI.PriceRate = 1.00f;   // Just default all these to 1 for now to make prices consistent when they move around.
                 PTF.Add(kvp.Key, SI);
             }
 
