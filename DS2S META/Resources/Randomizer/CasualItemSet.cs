@@ -260,7 +260,6 @@ namespace DS2S_META.Randomizer
             D.Add(10166300, SafeInfo("[Bastille] Cell near Exile Holding Cells bonfire"));
             D.Add(10166310, SafeInfo("[Bastille] In a room with explosive hollows near Antiquated door"));
             D.Add(10166010, SafeInfo("[Bastille] On top of the scaffolding in dog courtyard"));
-            D.Add(10166040, SafeInfo("[Bastille] On the ledge above Mcduff's workshop"));
             D.Add(10166070, SafeInfo("[Bastille] Vanilla gold pine resin: on the left-hand-side on the way to McDuff"));
             D.Add(10165240, MChestInfo("[Bastille] Metal chest next to Lucatiel"));
             D.Add(10166420, SafeInfo("[Bastille] Upper floor of tower above Lucatiel"));
@@ -309,6 +308,7 @@ namespace DS2S_META.Randomizer
             D.Add(10166480, SafeInfo("[Bastille] In the corridor after one illusory wall, two level's below Straid", KEYID.SINNERSRISE));
             D.Add(10166200, SafeInfo("[Bastille] End of the path after double illusory wall above dog/Pursuer courtyard", KEYID.SINNERSRISE));
             D.Add(10166260, SafeInfo("[Bastille] On corpse after jumping gap after the illusory wall", KEYID.SINNERSRISE));
+            D.Add(10166040, SafeInfo("[Bastille] On a corpse at the end of a long thin ledge above Mcduff's workshop", KEYID.SINNERSRISE));
             D.Add(10166440, SafeInfo("[Bastille] In a cell next to Straid's cell", KSO(KEYID.SINNERSRISE, KEYID.BASTILLEKEY)));
             D.Add(10166441, NGPlusInfo("[Bastille] In a cell next to straid's cell in NG+", KEYID.BASTILLEKEY));
             D.Add(1768000, NpcInfo("[Bastille] Gift from Straid after trading 4 boss souls", KSO(KEYID.TENBRANCHLOCK, KEYID.SINNERSRISE)));
