@@ -82,7 +82,7 @@ namespace DS2S_META.Randomizer
             {
                 // Adjust these weights if required
                 case 255:
-                    return itype == ItemParam.eItemType.CONSUMABLE ? 5 : 1;
+                    return itype == eItemType.CONSUMABLE ? 5 : 1;
 
                 case 10:
                     return 3;

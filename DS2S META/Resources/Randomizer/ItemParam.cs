@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace DS2S_META
 {
+    public enum eItemType : byte
+    {
+        STAFFCHIME  = 0,
+        WEAPON      = 1, // includes shields
+        HEADARMOUR  = 2,
+        CHESTARMOUR = 3,
+        GAUNTLETS   = 4,
+        LEGARMOUR   = 5,
+        RING        = 7,
+        CONSUMABLE  = 8, // Includes keys
+    }
+
     /// <summary>
     /// Data Class for storing ItemParam
     /// </summary>
@@ -27,14 +39,6 @@ namespace DS2S_META
             MaxHeld = maxHeld;
             BaseBuyPrice = baseBuyPrice;
             ItemType = (eItemType)itemType;
-        }
-
-        public enum eItemType : byte
-        {
-            WEAPON      = 1,
-            SHIELD      = 2,
-            RING        = 7,
-            CONSUMABLE  = 8,
         }
     }
 }

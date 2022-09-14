@@ -13,6 +13,8 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> Lot = new List<DropInfo>();
         internal List<int> Items => Lot.Select(L => L.ItemID).ToList();
         internal List<byte> Quantities => Lot.Select(L => L.Quantity).ToList();
+        internal List<byte> Reinforcements => Lot.Select(L => L.Reinforcement).ToList();
+        internal List<byte> Infusions => Lot.Select(L => L.Infusion).ToList();
         internal int NumDrops => Lot.Count();
 
         private const int SINGLE = 1;

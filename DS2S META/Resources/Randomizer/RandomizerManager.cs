@@ -46,7 +46,24 @@ namespace DS2S_META.Randomizer
             item = found ? VanillaItemParams[itemid] : null;
             return found;
         }
-        
+        internal int GetItemMaxUpgrade(ItemParam item)
+        {
+            // Wrapper similar to the DS2Item class call in Hook.
+            switch (item.ItemType)
+            {
+                case eItemType.WEAPON: // & shields
+                    return Hook.GetWeaponMaxUpgrade(item.ItemID);
+                case eItemType.HEADARMOUR:
+                case eItemType.CHESTARMOUR:
+                case eItemType.GAUNTLETS:
+                case eItemType.LEGARMOUR:
+                    return Hook.GetArmorMaxUpgrade(item.ItemID);
+
+                default:
+                    return 0;
+            }
+        }
+
         // Enums:
         internal enum SetType : byte { Keys, Reqs, Gens }
 
@@ -239,12 +256,12 @@ namespace DS2S_META.Randomizer
             while (ld.Count > 0)
             {
                 int keyindex = RNG.Next(ld.Count);
-                DropInfo item = ld[keyindex]; // get key to place
-                PlaceItem(item, flag);
+                DropInfo di = ld[keyindex]; // get item to place
+                PlaceItem(di.Clone(), flag);
                 ld.RemoveAt(keyindex);
             }
         }
-        private void PlaceItem(DropInfo item, SetType stype)
+        private void PlaceItem(DropInfo di, SetType stype)
         {
             var localunfilled = new List<int>(Unfilled); // local clone of spots available for placement
             while (localunfilled.Count > 0)
@@ -275,9 +292,13 @@ namespace DS2S_META.Randomizer
 
                 // Accept solution:
                 if (stype == SetType.Keys)
-                    KeysPlacedSoFar.Add(item.ItemID);
+                    KeysPlacedSoFar.Add(di.ItemID);
 
-                rdz.AddShuffledItem(item);
+                // This is preliminary code if you want to randomize reinforcement/infusion
+                FixReinforcement(di);
+                FixInfusion(di);
+
+                rdz.AddShuffledItem(di);
                 if (rdz.IsSaturated())
                     Unfilled.Remove(elnum); // now filled!
                 
@@ -298,6 +319,29 @@ namespace DS2S_META.Randomizer
                     rdz.AddShuffledItem(item);
                 }
             }
+        }
+        private void FixInfusion(DropInfo di)
+        {
+            TryGetItem(di.ItemID, out ItemParam item);
+            switch (item.ItemType)
+            {
+                case eItemType.STAFFCHIME:
+                case eItemType.WEAPON:
+                    var infusionOptions = Hook.GetWeaponInfusions(item.ItemID);
+                    if (!infusionOptions.Any(ds2I => ds2I.ID == di.Infusion))
+                        di.Infusion = 0; // Don't allow a "new" infusion
+                    return;
+
+                default:
+                    di.Infusion = 0; // uninfusable
+                    return;
+            }
+        }
+        private void FixReinforcement(DropInfo di)
+        {
+            TryGetItem(di.ItemID, out ItemParam item);
+            var maxupgrade = GetItemMaxUpgrade(item);
+            di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
         }
 
         // Utility:

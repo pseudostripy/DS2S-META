@@ -1188,12 +1188,12 @@ namespace DS2S_META
             return 0;
         }
 
-        private int GetArmorMaxUpgrade(int id)
+        internal int GetArmorMaxUpgrade(int id)
         {
             if  (!Setup) return 0;
             return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
         }
-        private int GetWeaponMaxUpgrade(int id)
+        internal int GetWeaponMaxUpgrade(int id)
         {
             if (!Setup) return 0;
             var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
@@ -1419,16 +1419,20 @@ namespace DS2S_META
             // Pack relevant data together first:
             var itembytes = itemlot.Items.SelectMany(id => BitConverter.GetBytes(id)).ToArray();
             var quantbytes = itemlot.Quantities.ToArray();
+            var reinfbytes = itemlot.Reinforcements.ToArray();
+            var infusionbytes = itemlot.Infusions.ToArray();
 
             // Write to game:
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1, itembytes);
             ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1, quantbytes);
+            ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Reinforcement1, reinfbytes);
+            ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Infusion1, infusionbytes);
         }
         
-        internal ItemParam.eItemType GetItemType(int itemid)
+        internal eItemType GetItemType(int itemid)
         {
             int offset = ItemParamOffsetDict[itemid];
-            return (ItemParam.eItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
+            return (eItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
         }
 
         
