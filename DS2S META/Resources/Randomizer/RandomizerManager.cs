@@ -130,24 +130,24 @@ namespace DS2S_META.Randomizer
         internal void GetLootToRandomize()
         {
             Data = new List<Randomization>(); // Reset
+
             // For each vanilla lot, make a new randomization object
-            var chosenlots = VanillaLots.Select(kvp => new LotRdz(kvp))
+            IEnumerable<Randomization> ltr = VanillaLots.Select(kvp => new LotRdz(kvp))
                             .Where(ldz => ldz.VanillaLot.NumDrops != 0)
                             .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot));
+            List<Randomization> listltr = ltr.ToList();
 
-            Data.AddRange(chosenlots.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes)));
 
-            // Add shops
-            foreach (var kvp in FixedVanillaShops)
-            {
-                // Remove duplicates and missing content:
-                if (ShopRules.Exclusions.Contains(kvp.Key))
-                    continue;
-                Data.Add(new ShopRdz(kvp));
-            }
+            // Get shop loot
+            IEnumerable<Randomization> shoploot = FixedVanillaShops.Select(kvp => new ShopRdz(kvp));
+            
+            // List of Places to fill:
+            Data.AddRange(listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes)));
+            Data.AddRange(shoploot);            // Add shop loot to be filled
 
             // Define what loot can be distributed:
-            LTR_flatlist = chosenlots.SelectMany(rz => rz.Flatlist).ToList();
+            listltr.AddRange(shoploot);         // Add shop loot for distribution
+            LTR_flatlist = listltr.SelectMany(rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
         internal Dictionary<int, ShopInfo> FixShopEvents()
@@ -161,6 +161,10 @@ namespace DS2S_META.Randomizer
             foreach (var kvp in VanillaShops)
             {
                 if (handled_cases.Contains(kvp.Key))
+                    continue;
+
+                // Remove the empty shop from LTR
+                if (kvp.Value.ItemID == 0)
                     continue;
 
                 // "normal case"
@@ -207,7 +211,7 @@ namespace DS2S_META.Randomizer
         }
         internal void DefineKRG()
         {
-            // Partition into KeyTypes, ReqNonKeys and Generic:
+            // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             ldkeys = LTR_flatlist.Where(DI => DI.IsKeyType).ToList();                   // Keys
             ldreqs = LTR_flatlist.Where(DI => ItemSetBase.RequiredItems.Contains(DI.ItemID)).ToList(); // Reqs
             ldgens = LTR_flatlist.Except(ldkeys).Except(ldreqs).ToList();               // Generics
@@ -255,11 +259,18 @@ namespace DS2S_META.Randomizer
             // ld: list of DropInfos
             while (ld.Count > 0)
             {
+                if (Unfilled.Count == 0)
+                    break;
+
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
                 PlaceItem(di.Clone(), flag);
                 ld.RemoveAt(keyindex);
             }
+
+            // Must have ran out of space to place things:
+            if (ld.Count > 0 && flag != SetType.Gens) 
+                throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
         private void PlaceItem(DropInfo di, SetType stype)
         {
@@ -322,7 +333,9 @@ namespace DS2S_META.Randomizer
         }
         private void FixInfusion(DropInfo di)
         {
-            TryGetItem(di.ItemID, out ItemParam item);
+            if (!TryGetItem(di.ItemID, out ItemParam item))
+                return;
+
             switch (item.ItemType)
             {
                 case eItemType.STAFFCHIME:
@@ -339,7 +352,8 @@ namespace DS2S_META.Randomizer
         }
         private void FixReinforcement(DropInfo di)
         {
-            TryGetItem(di.ItemID, out ItemParam item);
+            if (!TryGetItem(di.ItemID, out ItemParam item))
+                return;
             var maxupgrade = GetItemMaxUpgrade(item);
             di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
         }
