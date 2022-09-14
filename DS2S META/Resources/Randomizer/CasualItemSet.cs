@@ -127,7 +127,7 @@ namespace DS2S_META.Randomizer
             D.Add(10105100, MChestInfo("[FOFG] Metal chest in the guard room over the courtyard"));
             D.Add(10105110, MChestInfo("[FOFG] Metal chest in the top-level of Salamander pit"));
             D.Add(10105120, WChestInfo("[FOFG] Wooden chest near soldier's rest bonfire", KEYID.SOLDIER));
-            D.Add(10105130, MChestInfo("[FOFG] Vanilla fire longsword: Metal chest in the tunnel where you get fireballed by salamander"));
+            D.Add(10105130, MChestInfo("[FOFG] Vanilla fire longsword: Metal chest in the tunnel where you get fireballed by a salamander"));
             D.Add(10105140, MChestInfo("[FOFG] Metal chest behind a illusory wall after the gate trap room"));
             D.Add(10105150, WChestInfo("[FOFG] Wooden chest next to king's door", KSO(KEYID.SOLDIER)));
             D.Add(10106010, SafeInfo("[FOFG] First corpse at rooftop near soldier's rest bonfire", KEYID.SOLDIER));

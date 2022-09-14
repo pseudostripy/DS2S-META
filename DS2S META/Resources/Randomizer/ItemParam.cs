@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace DS2S_META
 {
+    // NOTE: I don't think this is a particularly stable for of weapon
+    // discrimination, might want to implement a better form.
     public enum eItemType : byte
     {
-        STAFFCHIME  = 0,
-        WEAPON      = 1, // includes shields
+        WEAPON1     = 0,
+        WEAPON2     = 1, // includes shields
         HEADARMOUR  = 2,
         CHESTARMOUR = 3,
         GAUNTLETS   = 4,
         LEGARMOUR   = 5,
         RING        = 7,
         CONSUMABLE  = 8, // Includes keys
+        SPELLS      = 9,
     }
 
     /// <summary>

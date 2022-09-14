@@ -51,7 +51,8 @@ namespace DS2S_META.Randomizer
             // Wrapper similar to the DS2Item class call in Hook.
             switch (item.ItemType)
             {
-                case eItemType.WEAPON: // & shields
+                case eItemType.WEAPON1: // & shields
+                case eItemType.WEAPON2: // & staves
                     return Hook.GetWeaponMaxUpgrade(item.ItemID);
                 case eItemType.HEADARMOUR:
                 case eItemType.CHESTARMOUR:
@@ -338,8 +339,8 @@ namespace DS2S_META.Randomizer
 
             switch (item.ItemType)
             {
-                case eItemType.STAFFCHIME:
-                case eItemType.WEAPON:
+                case eItemType.WEAPON1:
+                case eItemType.WEAPON2:
                     var infusionOptions = Hook.GetWeaponInfusions(item.ItemID);
                     if (!infusionOptions.Any(ds2I => ds2I.ID == di.Infusion))
                         di.Infusion = 0; // Don't allow a "new" infusion
