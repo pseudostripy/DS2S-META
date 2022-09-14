@@ -402,7 +402,7 @@ namespace DS2S_META.Randomizer
             // Shops:
             lines.Add("");
             lines.Add("Shops:");
-            foreach (var rdz in Data)
+            foreach (var rdz in Data.OfType<ShopRdz>())
                 lines.Add(rdz.GetNeatDescription());
 
             // Write file:
