@@ -22,6 +22,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.WOODCHEST,
             PICKUPTYPE.SHOP, // For now
+            PICKUPTYPE.CROWS,
         };
         internal List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
         {
@@ -31,6 +32,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.REMOVED,
             PICKUPTYPE.NGPLUS,
             PICKUPTYPE.CRAMMED,
+            PICKUPTYPE.CROWS, // handled separately
         };
         internal List<PICKUPTYPE> BanFromLoot = new List<PICKUPTYPE>()
         {
@@ -38,6 +40,28 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
+        };
+        internal List<int> CrowDuplicates = new List<int>()
+        {
+            // Prism: keep C loot:
+            50000300, // B loot from prism
+            50000301, // A loot from prism
+            50000302, // S loot from prism
+
+            // Small silky: keep B loot:
+            50000001, // A loot from small silky
+            50000002, // S loot from small silky
+            50000003, // C loot from small silky
+
+            // Silky: keep A loot
+            50000100, // B loot from silky
+            50000102, // S loot from silky
+            50000103, // C loot from silky
+
+            // Petrified: keep S loot
+            50000200, // B loot from petrified
+            50000201, // A loot from petrified
+            50000203, // C loot from petrified
         };
         internal static List<int> RequiredItems = new List<int>()
         {
@@ -246,6 +270,10 @@ namespace DS2S_META.Randomizer
         internal RandoInfo VolInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
             return new RandoInfo(desc, PICKUPTYPE.VOLATILE, new KeySet(reqkey));
+        }
+        internal RandoInfo CrowsInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(desc, PICKUPTYPE.CROWS, new KeySet(reqkey));
         }
         internal RandoInfo UnresolvedInfo(string desc, KEYID reqkey = KEYID.NONE)
         {

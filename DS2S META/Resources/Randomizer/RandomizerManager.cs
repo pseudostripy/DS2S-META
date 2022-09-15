@@ -135,15 +135,17 @@ namespace DS2S_META.Randomizer
             // For each vanilla lot, make a new randomization object
             IEnumerable<Randomization> ltr = VanillaLots.Select(kvp => new LotRdz(kvp))
                             .Where(ldz => ldz.VanillaLot.NumDrops != 0)
-                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot));
+                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot))
+                            .Where(ldz => !Logic.CrowDuplicates.Contains(ldz.ParamID));
             List<Randomization> listltr = ltr.ToList();
 
 
             // Get shop loot
             IEnumerable<Randomization> shoploot = FixedVanillaShops.Select(kvp => new ShopRdz(kvp));
-            
+
             // List of Places to fill:
-            Data.AddRange(listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes)));
+            var lotptf = listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes));
+            Data.AddRange(lotptf);
             Data.AddRange(shoploot);            // Add shop loot to be filled
 
             // Define what loot can be distributed:

@@ -93,6 +93,7 @@ namespace DS2S_META.Randomizer
         CRAMMED,    // Meme stuff regarding edge cases when you're crammed
         UNRESOLVED,
         SHOP,
+        CROWS,
     }
 
     internal class RandoInfo

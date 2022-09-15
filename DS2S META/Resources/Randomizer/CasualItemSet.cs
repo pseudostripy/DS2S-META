@@ -40,14 +40,25 @@ namespace DS2S_META.Randomizer
             D.Add(60015000, SafeInfo("[Misc] Full Soul of Nadalia, Bride of Ash after combining fragments", KSO(KEYID.NADALIA, KEYID.FUME, KEYID.BLUESMELTER)));
 
             // Crows Nest:
-            D.Add(50000000, VolInfo("[Crows] First set of 10 drops for the Small Smooth and Silky Stone table at crows"));
-            D.Add(50000001, VolInfo("[Crows] Second set of 10 drops for the Small Smooth and Silky Stone table at crows"));
-            D.Add(50000002, VolInfo("[Crows] Third set of 10 drops (only 7 active) for the Small Smooth and Silky Stone table at crows"));
-            D.Add(50000100, VolInfo("[Crows] First set of 10 drops (only 6 active) for the Smooth and Silky Stone table at crows"));
-            D.Add(50000101, VolInfo("[Crows] Second set of 10 drops (all active) for the Smooth and Silky Stone table at crows"));
-            D.Add(50000102, VolInfo("[Crows] Third set of 10 drops (only 7 active) for the Smooth and Silky Stone table at crows"));
-            D.Add(50000202, VolInfo("[Crows] Set of 10 drops (only 6 active) for the Petrified Something table at crows"));
-            D.Add(50000303, VolInfo("[Crows] Set of 10 drops for the Prism Stone table at crows"));
+            D.Add(50000000, CrowsInfo("[Crows] First set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows"));
+            D.Add(50000001, CrowsInfo("[Crows] Second set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows"));
+            D.Add(50000002, CrowsInfo("[Crows] Third set of 10 drops (7 active) for the Small Smooth and Silky Stone table at crows"));
+            D.Add(50000003, CrowsInfo("[Crows] Fourth set of 10 drops (none active) for the Small Smooth and Silky Stone table at crows"));
+            //
+            D.Add(50000100, CrowsInfo("[Crows] First set of 10 drops (6 active) for the Smooth and Silky Stone table at crows"));
+            D.Add(50000101, CrowsInfo("[Crows] Second set of 10 drops (all active) for the Smooth and Silky Stone table at crows"));
+            D.Add(50000102, CrowsInfo("[Crows] Third set of 10 drops (7 active) for the Smooth and Silky Stone table at crows"));
+            D.Add(50000103, CrowsInfo("[Crows] Fourth set of 10 drops (none active) for the Smooth and Silky Stone table at crows"));
+            //
+            D.Add(50000200, CrowsInfo("[Crows] First set of 10 drops (none active) for the Petrified Something table at crows"));
+            D.Add(50000201, CrowsInfo("[Crows] Second set of 10 drops (none active) for the Petrified Something table at crows"));
+            D.Add(50000202, CrowsInfo("[Crows] Third set of 10 drops (7 active) for the Petrified Something table at crows"));
+            D.Add(50000203, CrowsInfo("[Crows] Fourth set of 10 drops (none active) for the Petrified Something table at crows"));
+            //
+            D.Add(50000300, CrowsInfo("[Crows] First set of 10 drops (none active) for the Prism Stone table at crows"));
+            D.Add(50000301, CrowsInfo("[Crows] Second set of 10 drops (none active) for the Prism Stone table at crows"));
+            D.Add(50000302, CrowsInfo("[Crows] Third set of 10 drops (none active) for the Prism Stone table at crows"));
+            D.Add(50000303, CrowsInfo("[Crows] Fourth set of 10 drops (all active) for the Prism Stone table at crows"));
 
             // Things Betwixt:
             D.Add(1705000, NpcInfo("[Betwixt] Gift from the fire keepers after getting the King's Ring", KEYID.DRANGLEIC));

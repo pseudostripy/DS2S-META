@@ -14,9 +14,6 @@ namespace DS2S_META.Randomizer
     {
         // Fields
         internal int ParamID;
-        //ItemLot VanillaLot;
-        //ItemLot ShuffledLot;
-        //RandoInfo RandoInfo;
         internal abstract List<DropInfo> Flatlist { get; }
 
 
