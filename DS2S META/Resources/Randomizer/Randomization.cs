@@ -108,8 +108,7 @@ namespace DS2S_META.Randomizer
             foreach(var di in ShuffledLot.Lot)
             {
                 sb.Append($"\t{GetItemName(di.ItemID)}");
-                if (di.Quantity > 0)
-                    sb.Append($" x{di.Quantity}");
+                sb.Append($" x{di.Quantity}");
                 sb.Append(Environment.NewLine);
             }
 
@@ -134,7 +133,7 @@ namespace DS2S_META.Randomizer
 
                 case eItemType.CONSUMABLE:
                     if (di.Quantity == 255)
-                        di.Quantity = 8;
+                        di.Quantity = 5;
                     return;
 
                 default:
@@ -143,12 +142,10 @@ namespace DS2S_META.Randomizer
                     return;
             }
         }
-
         internal override string printdata()
         {
             throw new NotImplementedException();
         }
-
     }
 
 
@@ -207,7 +204,7 @@ namespace DS2S_META.Randomizer
             if (ShuffledShop == null || ShuffledShop.ItemID == 0)
                 return sb.Append("\tEMPTY").ToString();
 
-            return sb.Append($"\t{GetItemName(ShuffledShop.ItemID)}").ToString();
+            return sb.Append($"\t{GetItemName(ShuffledShop.ItemID)} x{ShuffledShop.Quantity}").ToString();
         }
         internal override void AdjustQuantity(DropInfo di)
         {
@@ -227,11 +224,12 @@ namespace DS2S_META.Randomizer
 
                 case eItemType.CONSUMABLE:
                     if (di.Quantity == 255)
-                        di.Quantity = 50;
+                        di.Quantity = 15;
                     return;
 
                 default:
-                    // Everything else, allow it to sell whatever it has
+                    // Everything else set to one for now. Still deciding on this:
+                    di.Quantity = 1;
                     return;
             }
         }
