@@ -197,7 +197,7 @@ namespace DS2S_META.Randomizer
         {
             if (ShuffledShop == null)
                 return -1;
-            return ShuffledShop.RawQuantity;
+            return ShuffledShop.Quantity;
         }
         internal override string GetNeatDescription()
         {

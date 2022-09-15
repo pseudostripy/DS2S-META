@@ -435,7 +435,7 @@ namespace DS2S_META.Randomizer
             foreach(var kvp in VanillaShops)
             {
                 ShopInfo blankshop = kvp.Value.Clone();
-                blankshop.RawQuantity = 0;
+                blankshop.Quantity = 0;
                 blankshop.ItemID = 0; // don't even show in shop
                 var blankshopkvp = new KeyValuePair<int, ShopInfo>(kvp.Key, blankshop);
                 Hook.WriteShopInfo(blankshopkvp);

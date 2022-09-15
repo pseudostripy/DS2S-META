@@ -1398,7 +1398,7 @@ namespace DS2S_META
             var material = BitConverter.GetBytes(SI.MaterialID);
             var dup = BitConverter.GetBytes(SI.DuplicateItemID);
             var rate = BitConverter.GetBytes(SI.PriceRate);
-            var quant = BitConverter.GetBytes(SI.RawQuantity);
+            var quant = BitConverter.GetBytes(SI.Quantity);
 
             // Write to game
             ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.ItemID, itemid);
