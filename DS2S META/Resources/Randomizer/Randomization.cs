@@ -34,6 +34,11 @@ namespace DS2S_META.Randomizer
         internal abstract bool HasVannilaItemID(int itemID);
         internal abstract int GetShuffledItemQuant(int itemID);
         internal abstract string GetNeatDescription();
+        internal abstract void AdjustQuantity(DropInfo di);
+        protected int RoundUpNearestMultiple(int val, int m)
+        {
+            return (int)Math.Ceiling((double)val / m) * m;
+        }
 
         internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
@@ -56,15 +61,18 @@ namespace DS2S_META.Randomizer
         // Methods
         internal override bool IsSaturated() => ShuffledLot != null && (ShuffledLot.NumDrops == VanillaLot.NumDrops);
         internal override List<DropInfo> Flatlist => VanillaLot.Lot;
-        internal override void AddShuffledItem(DropInfo item)
+        internal override void AddShuffledItem(DropInfo di)
         {
+            // Fix quantity:
+            AdjustQuantity(di);
+
             if (ShuffledLot == null)
             {
-                ShuffledLot = new ItemLot(item);
+                ShuffledLot = new ItemLot(di);
                 ShuffledLot.ParamDesc = VanillaLot.ParamDesc;
             }
             else
-                ShuffledLot.AddDrop(item);
+                ShuffledLot.AddDrop(di);
 
             if (ShuffledLot.NumDrops > VanillaLot.NumDrops)
                 throw new Exception("Shouldn't be able to get here!");
@@ -108,6 +116,33 @@ namespace DS2S_META.Randomizer
             // Remove final newline:
             return sb.ToString().TrimEnd('\r','\n');
         }
+        internal override void AdjustQuantity(DropInfo di)
+        {
+            if (!RandomizerManager.TryGetItem(di.ItemID, out ItemParam item))
+                return;
+
+            var itype = item.ItemType;
+            switch (itype)
+            {
+                case eItemType.AMMO:
+                    if (di.Quantity == 255)
+                        di.Quantity = 50; // reset to reasonable value
+
+                    // Otherwise round to nearest 10 ceiling
+                    di.Quantity = (byte)RoundUpNearestMultiple(di.Quantity, 10);
+                    return;
+
+                case eItemType.CONSUMABLE:
+                    if (di.Quantity == 255)
+                        di.Quantity = 8;
+                    return;
+
+                default:
+                    // Everything else:
+                    di.Quantity = 1;
+                    return;
+            }
+        }
 
         internal override string printdata()
         {
@@ -138,10 +173,13 @@ namespace DS2S_META.Randomizer
             return $"{ParamID} [{"<insert_name>"}]: {itemid} ({GetItemName(itemid)})";
         }
         internal override List<DropInfo> Flatlist => new List<DropInfo>() { VanillaShop.ConvertToDropInfo() };
-        internal override void AddShuffledItem(DropInfo item)
+        internal override void AddShuffledItem(DropInfo di)
         {
+            // Fix quantity:
+            AdjustQuantity(di);
+
             int basepricenew = RandomizerManager.RandomGammaInt(3000);
-            ShuffledShop = new ShopInfo(item, VanillaShop, 1.00f, basepricenew);
+            ShuffledShop = new ShopInfo(di, VanillaShop, 1.00f, basepricenew);
         }
         internal override bool HasShuffledItemID(int itemID)
         {
@@ -159,7 +197,7 @@ namespace DS2S_META.Randomizer
         {
             if (ShuffledShop == null)
                 return -1;
-            return ShuffledShop.AdjQuantity;
+            return ShuffledShop.RawQuantity;
         }
         internal override string GetNeatDescription()
         {
@@ -171,5 +209,32 @@ namespace DS2S_META.Randomizer
 
             return sb.Append($"\t{GetItemName(ShuffledShop.ItemID)}").ToString();
         }
+        internal override void AdjustQuantity(DropInfo di)
+        {
+            if (!RandomizerManager.TryGetItem(di.ItemID, out ItemParam item))
+                return;
+
+            var itype = item.ItemType;
+            switch (itype)
+            {
+                case eItemType.AMMO:
+                    if (di.Quantity == 255)
+                        di.Quantity = 50; // reset to reasonable value
+
+                    // Otherwise round to nearest 10 ceiling
+                    di.Quantity = (byte)RoundUpNearestMultiple(di.Quantity, 10);
+                    return;
+
+                case eItemType.CONSUMABLE:
+                    if (di.Quantity == 255)
+                        di.Quantity = 50;
+                    return;
+
+                default:
+                    // Everything else, allow it to sell whatever it has
+                    return;
+            }
+        }
+
     }
 }

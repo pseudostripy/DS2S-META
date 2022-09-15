@@ -16,6 +16,7 @@ namespace DS2S_META
         CHESTARMOUR = 3,
         GAUNTLETS   = 4,
         LEGARMOUR   = 5,
+        AMMO        = 6,
         RING        = 7,
         CONSUMABLE  = 8, // Includes keys
         SPELLS      = 9,

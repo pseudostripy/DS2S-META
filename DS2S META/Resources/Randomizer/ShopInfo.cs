@@ -17,7 +17,7 @@ namespace DS2S_META.Randomizer
         internal int DuplicateItemID { get; set; }
         internal float PriceRate { get; set; }
         internal int RawQuantity { get; set; }
-        internal int AdjQuantity => GetAdjustedQuantity(); // adjusted for inf shop sells
+        //internal int AdjQuantity => GetAdjustedQuantity(); // adjusted for inf shop sells
         internal int NewBasePrice { get; set; }
         private readonly bool InitFromShop;
 
@@ -67,34 +67,10 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods:
-        internal int GetAdjustedQuantity()
-        {
-            // World lots that are put into shops:
-            if (!InitFromShop)
-                return RawQuantity;
-
-            // Shops that are put into shops:
-            if (!RandomizerManager.TryGetItem(ItemID, out ItemParam item))
-                return -1;
-
-            var itype = item.ItemType;
-            switch (RawQuantity)
-            {
-                // Adjust these weights if required
-                case 255:
-                    return itype == eItemType.CONSUMABLE ? 5 : 1;
-
-                case 10:
-                    return 3;
-
-                default:
-                    return RawQuantity;
-            }
-        }
         internal DropInfo ConvertToDropInfo()
         {
             // Assume no infusion or reinforcement, to consider later.
-            return new DropInfo(ItemID, AdjQuantity, 0, 0);
+            return new DropInfo(ItemID, RawQuantity, 0, 0);
         }
     }
 }
