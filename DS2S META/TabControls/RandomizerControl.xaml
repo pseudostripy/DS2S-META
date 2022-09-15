@@ -11,12 +11,24 @@
         <StackPanel Margin="25">
             <Label Content="Randomizer!" FontSize="20" HorizontalAlignment="Center"/>
             <Border BorderBrush="Gray" BorderThickness="1" />
-            <Label x:Name="lblGameRandomization" Content="Game is Normal" Height="62" Width="177" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF87CC59"/>
             <Grid>
-                <TextBox x:Name="txtSeed" Height="22" TextWrapping="Wrap" Width="177" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0" TextChanged="txtSeed_TextChanged"/>
-                <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="163" Margin="0,8,0,0"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition x:Name="TopRow"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label x:Name="lblGameRandomization" Content="Game is Normal" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF87CC59" Grid.Column="1"/>
+                <TextBox x:Name="txtSeed" TextWrapping="Wrap" TextChanged="txtSeed_TextChanged" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Height="30" MaxLength="16" ToolTip=""/>
+                <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0"/>
+                <Button x:Name="btnRandomize" Content="Randomize!" BorderBrush="#FFABADB3" Background="White" FontWeight="Bold" FontSize="16" Click="btnRandomize_Click" Grid.Row="2" Grid.Column="1"/>
+                <Image x:Name="imgGenerate" Source="/TabControls/regenerate_icon.png" MouseLeftButtonDown="testImage_MouseLeftButtonDown" RenderTransformOrigin="6.739,0.92" Stretch="Uniform" StretchDirection="Both" Grid.Column="1" Margin="192,2,4,1" Height="27" Grid.Row="1" ToolTip="Generate New Seed"/>
             </Grid>
-            <Button x:Name="btnRandomize" Content="Randomize!" Width="177" BorderBrush="#FFABADB3" Background="White" Height="40" FontWeight="Bold" FontSize="16" Click="btnRandomize_Click"/>
+
         </StackPanel>
     </Grid>
 </local:METAControl>

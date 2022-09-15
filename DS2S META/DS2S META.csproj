@@ -313,6 +313,7 @@
       <DependentUpon>HotkeyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Util\User32.cs" />
+    <Resource Include="TabControls\regenerate_icon.png" />
     <None Include="Resources\Randomizer\ShopLineupParam.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

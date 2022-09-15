@@ -75,6 +75,9 @@ namespace DS2S_META
             return;
         }
 
-        
+        private void testImage_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MessageBox.Show("Testing");
+        }
     }
 }
