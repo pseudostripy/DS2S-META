@@ -54,14 +54,16 @@ namespace DS2S_META
             if (!RM.IsInitialized)
                 RM.Initalize(Hook);
 
-            int seed = txtSeed.Text == "" ? 1337 : Convert.ToInt32(txtSeed.Text);
+            // Sort out seeding
+            if (txtSeed.Text == "")
+                PopulateNewSeed();
+            int seed = Convert.ToInt32(txtSeed.Text);
             
             if (IsRandomized)
                 RM.Unrandomize();
             else
                 RM.Randomize(seed);
 
-            
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
             Color bkg = IsRandomized ? PURPLE : LIGHTGREEN;
@@ -76,6 +78,10 @@ namespace DS2S_META
         }
 
         private void imgGenerate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            PopulateNewSeed();
+        }
+        private void PopulateNewSeed()
         {
             int seed = RM.GetRandom();
             txtSeed.Text = seed.ToString().PadLeft(10, '0'); // 10 is max value of digits of int32 in decimal
