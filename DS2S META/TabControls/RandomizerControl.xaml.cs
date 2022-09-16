@@ -75,9 +75,10 @@ namespace DS2S_META
             return;
         }
 
-        private void testImage_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void imgGenerate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MessageBox.Show("Testing");
+            int seed = RM.GetRandom();
+            txtSeed.Text = seed.ToString().PadLeft(10, '0'); // 10 is max value of digits of int32 in decimal
         }
     }
 }

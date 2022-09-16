@@ -70,7 +70,10 @@ namespace DS2S_META.Randomizer
 
 
         // Constructors:
-        internal RandomizerManager() { }
+        internal RandomizerManager() 
+        {
+            RNG = new Random(Environment.TickCount); // used for generate seed numbers
+        }
 
         // Main Methods:
         internal void Initalize(DS2SHook hook)
@@ -126,6 +129,11 @@ namespace DS2S_META.Randomizer
             Hook.WarpLast();
             IsRandomized = false;
         }
+        internal int GetRandom()
+        {
+            return RNG.Next();
+        }
+
 
         // Core Logic
         internal void GetLootToRandomize()
