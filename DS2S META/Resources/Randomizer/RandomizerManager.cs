@@ -31,6 +31,7 @@ namespace DS2S_META.Randomizer
         //
         private List<int> Unfilled = new List<int>();
         private List<int> KeysPlacedSoFar = new List<int>(); // to tidy
+        private int CurrSeed;
         //
         internal static Dictionary<int, ItemParam> VanillaItemParams;
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -391,8 +392,14 @@ namespace DS2S_META.Randomizer
         }
         internal void PrintKeysNeat()
         {
-            
+            // Prep:
             List<string> lines = new List<string>();
+
+            // Intro line
+            lines.Add($"Printing key locations for seed {CurrSeed}");
+            lines.Add("---------------------------------------------");
+
+            // Main print loop
             foreach (int keyid in ItemSetBase.KeyOutputOrder.Cast<int>())
             {
                 if (!TryGetItemName(keyid, out string itemname))
@@ -417,7 +424,12 @@ namespace DS2S_META.Randomizer
         }
         internal void PrintAllRdz()
         {
+            // Prep:
             List<string> lines = new List<string>();
+
+            // Intro line
+            lines.Add($"Printing items at all locations for seed {CurrSeed}");
+            lines.Add("---------------------------------------------");
 
             // World placements:
             lines.Add("World placement:");
@@ -477,6 +489,7 @@ namespace DS2S_META.Randomizer
         internal const double priceScaleTh = 2.0;       // For Gamma distribution
         internal void SetSeed(int seed)
         {
+            CurrSeed = seed;
             RNG = new Random(seed);
         }
         internal int RandomGaussianInt(double mean, double stdDev, int roundfac = 50)
