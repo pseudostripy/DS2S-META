@@ -23,7 +23,8 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label x:Name="lblGameRandomization" Content="Game is Normal" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF87CC59" Grid.Column="1"/>
+                <Label x:Name="lblGameRandomization" Content="" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF87CC59" Grid.Column="1" Visibility="Visible"/>
+                <TextBlock x:Name="txtGameState" TextWrapping="Wrap" Text="Game is Normal!" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold" FontSize="16"/>
                 <TextBox x:Name="txtSeed" TextWrapping="Wrap" TextChanged="txtSeed_TextChanged" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Height="30" MaxLength="16"/>
                 <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0"/>
                 <Button x:Name="btnRandomize" Content="Randomize!" BorderBrush="#FFABADB3" Background="White" FontWeight="Bold" FontSize="16" Click="btnRandomize_Click" Grid.Row="2" Grid.Column="1"/>

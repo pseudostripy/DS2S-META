@@ -20,6 +20,7 @@ namespace DS2S_META
     {
         // Fields:
         private Color PURPLE = Color.FromArgb(0xFF, 0xB1, 0x59, 0xCC);
+        private Color LIGHTPURPLE = Color.FromArgb(0xFF, 0xCE, 0x73, 0xF1); // #FFCE73F1
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
         internal RandomizerManager RM = new RandomizerManager();
@@ -73,14 +74,22 @@ namespace DS2S_META
 
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
-            Color bkg = IsRandomized ? PURPLE : LIGHTGREEN;
+            Color bkg = IsRandomized ? LIGHTPURPLE : LIGHTGREEN;
             lblGameRandomization.Background = new SolidColorBrush(bkg);
-            string gamestate = IsRandomized ? "Randomized" : "Normal";
-            lblGameRandomization.Content = $"Game is {gamestate}!";
-            
+
+            if (IsRandomized)
+                txtGameState.Text = $"Game is Randomized!{Environment.NewLine} Seed: {ZeroPadString(RM.CurrSeed)}";
+            else
+                txtGameState.Text = $"Game is Normal!";
+
+
             // Restore after completion:
             lblWorking.Visibility = Visibility.Hidden;
             btnRandomize.IsEnabled = true;
+        }
+        private string ZeroPadString(int seed)
+        {
+            return seed.ToString().PadLeft(10, '0');
         }
         private void MsgMissingDS2()
         {
@@ -92,15 +101,10 @@ namespace DS2S_META
         {
             PopulateNewSeed();
         }
-        private void MakeLabelVisible()
-        {
-            lblWorking.Visibility = Visibility.Visible;
-            //lblWorking.InvalidateVisual();
-        }
         private void PopulateNewSeed()
         {
             int seed = RM.GetRandom();
-            txtSeed.Text = seed.ToString().PadLeft(10, '0'); // 10 is max value of digits of int32 in decimal
+            txtSeed.Text = ZeroPadString(seed); // 10 is max value of digits of int32 in decimal
         }
     }
 }

@@ -31,7 +31,7 @@ namespace DS2S_META.Randomizer
         //
         private List<int> Unfilled = new List<int>();
         private List<int> KeysPlacedSoFar = new List<int>(); // to tidy
-        private int CurrSeed;
+        internal int CurrSeed;
         //
         internal static Dictionary<int, ItemParam> VanillaItemParams;
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
