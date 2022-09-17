@@ -265,6 +265,12 @@ namespace DS2S_META.Randomizer
             var soag = LTR_flatlist.Where(di => di.ItemID == (int)KEYID.SOULOFAGIANT).First();
             LTR_flatlist.Add(soag);
             LTR_flatlist.Add(soag);
+
+            // Remove Lord soul duplicates:
+            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64140000).First()); // Rotten
+            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64060000).First()); // Sinner
+            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64170000).First()); // Freja
+            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64120000).First()); // Old Iron King
         }
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
         {
