@@ -8,6 +8,8 @@ using System.Windows.Media;
 using DS2S_META.Randomizer;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DS2S_META
 {
@@ -58,11 +60,21 @@ namespace DS2S_META
             if (txtSeed.Text == "")
                 PopulateNewSeed();
             int seed = Convert.ToInt32(txtSeed.Text);
-            
+
+            lblWorking.Visibility = Visibility.Visible;
+            Task t;
             if (IsRandomized)
-                RM.Unrandomize();
+            {
+                t = Task.Run(() => RM.Unrandomize());
+            }
             else
-                RM.Randomize(seed);
+            {
+                t = Task.Run( () => RM.Randomize(seed));
+            }
+            btnRandomize.IsEnabled = false; // whilst it's working...
+            t.GetAwaiter().GetResult();
+            btnRandomize.IsEnabled = true;
+
 
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
@@ -70,6 +82,7 @@ namespace DS2S_META
             lblGameRandomization.Background = new SolidColorBrush(bkg);
             string gamestate = IsRandomized ? "Randomized" : "Normal";
             lblGameRandomization.Content = $"Game is {gamestate}!";
+            lblWorking.Visibility = Visibility.Hidden;
         }
         private void MsgMissingDS2()
         {

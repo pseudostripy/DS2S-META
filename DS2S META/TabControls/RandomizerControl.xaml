@@ -21,14 +21,15 @@
                     <RowDefinition x:Name="TopRow"/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label x:Name="lblGameRandomization" Content="Game is Normal" FontWeight="Bold" FontSize="16" FontStyle="Normal" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#FF87CC59" Grid.Column="1"/>
                 <TextBox x:Name="txtSeed" TextWrapping="Wrap" TextChanged="txtSeed_TextChanged" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Center" Height="30" MaxLength="16" ToolTip=""/>
                 <Label x:Name="lblSeed" Foreground="LightSlateGray" Content="Seed..." IsEnabled="False" IsHitTestVisible="False" Height="26" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="10,0,0,0"/>
                 <Button x:Name="btnRandomize" Content="Randomize!" BorderBrush="#FFABADB3" Background="White" FontWeight="Bold" FontSize="16" Click="btnRandomize_Click" Grid.Row="2" Grid.Column="1"/>
                 <Image x:Name="imgGenerate" Source="/TabControls/regenerate_icon.png" MouseLeftButtonDown="imgGenerate_MouseLeftButtonDown" RenderTransformOrigin="6.739,0.92" Stretch="Uniform" StretchDirection="Both" Grid.Column="1" Margin="192,2,4,1" Height="27" Grid.Row="1" ToolTip="Generate New Seed"/>
+                <Label x:Name="lblWorking" Content="Working...." Grid.Column="1" Grid.Row="3" HorizontalContentAlignment="Center" FontWeight="Bold" Visibility="Hidden"/>
             </Grid>
-
         </StackPanel>
     </Grid>
 </local:METAControl>
