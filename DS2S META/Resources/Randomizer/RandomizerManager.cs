@@ -116,8 +116,8 @@ namespace DS2S_META.Randomizer
 
             // Randomize Game!
             ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
-            WriteShuffledLots();
-            WriteShuffledShops();
+            await Task.Run( () => WriteShuffledLots());
+            await Task.Run( () => WriteShuffledShops());
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
         }
