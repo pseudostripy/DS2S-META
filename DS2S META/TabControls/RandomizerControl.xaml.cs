@@ -44,7 +44,7 @@ namespace DS2S_META
         {
             FixSeedVisibility();
         }
-        private void btnRandomize_Click(object sender, RoutedEventArgs e)
+        private async void btnRandomize_Click(object sender, RoutedEventArgs e)
         {
             // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
             if (!Hook.Hooked)
@@ -61,20 +61,15 @@ namespace DS2S_META
                 PopulateNewSeed();
             int seed = Convert.ToInt32(txtSeed.Text);
 
+            // Inform user of progress..
+            btnRandomize.IsEnabled = false;
             lblWorking.Visibility = Visibility.Visible;
-            Task t;
-            if (IsRandomized)
-            {
-                t = Task.Run(() => RM.Unrandomize());
-            }
-            else
-            {
-                t = Task.Run( () => RM.Randomize(seed));
-            }
-            btnRandomize.IsEnabled = false; // whilst it's working...
-            t.GetAwaiter().GetResult();
-            btnRandomize.IsEnabled = true;
 
+            var tasks = new List<Task>();
+            if (IsRandomized)
+                await Task.Run( () => RM.Unrandomize());
+            else
+                await Task.Run( () => RM.Randomize(seed));
 
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
@@ -82,7 +77,10 @@ namespace DS2S_META
             lblGameRandomization.Background = new SolidColorBrush(bkg);
             string gamestate = IsRandomized ? "Randomized" : "Normal";
             lblGameRandomization.Content = $"Game is {gamestate}!";
+            
+            // Restore after completion:
             lblWorking.Visibility = Visibility.Hidden;
+            btnRandomize.IsEnabled = true;
         }
         private void MsgMissingDS2()
         {
@@ -93,6 +91,11 @@ namespace DS2S_META
         private void imgGenerate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             PopulateNewSeed();
+        }
+        private void MakeLabelVisible()
+        {
+            lblWorking.Visibility = Visibility.Visible;
+            //lblWorking.InvalidateVisual();
         }
         private void PopulateNewSeed()
         {

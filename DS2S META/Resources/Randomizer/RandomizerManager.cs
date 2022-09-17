@@ -95,7 +95,7 @@ namespace DS2S_META.Randomizer
                 kvp.Value.ParamDesc = Logic.GetDesc(kvp.Key);
             IsInitialized = true;
         }
-        internal void Randomize(int seed)
+        internal async Task Randomize(int seed)
         {
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
