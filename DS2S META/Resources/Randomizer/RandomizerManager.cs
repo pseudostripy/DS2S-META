@@ -152,10 +152,13 @@ namespace DS2S_META.Randomizer
             // Get shop loot
             IEnumerable<Randomization> shoploot = FixedVanillaShops.Select(kvp => new ShopRdz(kvp));
 
+            var test = VanillaShops.Where(kvp => kvp.Key == 77601115).ToList();
+            var test2 = FixedVanillaShops.Where(kvp => kvp.Key == 77601115).ToList();
+
             // List of Places to fill:
             var lotptf = listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes));
             Data.AddRange(lotptf);
-            Data.AddRange(shoploot);            // Add shop loot to be filled
+            Data.AddRange(shoploot);  // Add shop loot to be filled
 
             // Define what loot can be distributed:
             listltr.AddRange(shoploot);         // Add shop loot for distribution
@@ -164,49 +167,42 @@ namespace DS2S_META.Randomizer
         }
         internal Dictionary<int, ShopInfo> FixShopEvents()
         {
-            // Code is probably written awfully, but whatever. I might refactor this one day.
-
+            // Remove shop & trade menu resets on certain events so they stay randomised
             // Go through and clone the "normal" shops:
             var PTF = new Dictionary<int, ShopInfo>();
             var handled_cases = new List<int>();
             var skip_shops = new List<int>();
+
+            var LEvents = ShopRules.GetLinkedEvents();
+
+            // Get list of all undisabled:
+            var tokeep = LEvents.Select(le => le.KeepID);
+            var tolose = LEvents.SelectMany(le => le.RemoveIDs);
+
+
             foreach (var kvp in VanillaShops)
             {
-                if (handled_cases.Contains(kvp.Key))
+                if (ShopRules.Exclusions.Contains(kvp.Key))
+                    continue; // empty shops etc
+
+                // Remove events:
+                if (tolose.Contains(kvp.Key))
                     continue;
 
-                // Remove the empty shop from LTR
-                if (kvp.Value.ItemID == 0)
-                    continue;
-
-                // "normal case"
-                if (kvp.Value.DisableFlag == -1)
+                // Keep and don't disable events:
+                if (tokeep.Contains(kvp.Key))
                 {
-                    PTF.Add(kvp.Key, kvp.Value.Clone());
-                    handled_cases.Add(kvp.Key);
+                    var shopid = LEvents.Where(le => le.KeepID == kvp.Key).First();
+                    var normshop = VanillaShops[shopid.KeepID].Clone();
+                    normshop.DisableFlag = -1;
+                    PTF.Add(kvp.Key, normshop);
                     continue;
                 }
 
-                // "disable flag set" - find and fix it's enable counterpart:
-                int disableEvt = kvp.Value.DisableFlag;
-                var ctrparts = VanillaShops.Where(kvp2 => kvp2.Value.EnableFlag == disableEvt).ToList();
-
-                foreach (var KvpEnShop in ctrparts)
-                {
-                    handled_cases.Add(KvpEnShop.Key);
-                    skip_shops.Add(KvpEnShop.Key); // this is for final pass checks
-                }
-
-                // Fix shop that has disablement
-                ShopInfo SI = kvp.Value.Clone();
-                SI.DisableFlag = -1;    // Don't remove it on merchant move
-                SI.PriceRate = 1.00f;   // Just default all these to 1 for now to make prices consistent when they move around.
-                PTF.Add(kvp.Key, SI);
+                // Everything else:
+                PTF.Add(kvp.Key, kvp.Value.Clone());
             }
-
-            // One more pass to catch params in unfortunate order:
-            return PTF.Where(kvp => !skip_shops.Contains(kvp.Key))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return PTF;
         }
         internal void AddShopLogic()
         {

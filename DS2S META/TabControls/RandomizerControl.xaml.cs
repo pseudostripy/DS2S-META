@@ -70,7 +70,8 @@ namespace DS2S_META
             if (IsRandomized)
                 await Task.Run( () => RM.Unrandomize());
             else
-                await Task.Run( () => RM.Randomize(seed));
+                await Task.Run(() => RM.Randomize(seed));
+                //RM.Randomize(seed);
 
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
