@@ -45,7 +45,7 @@ namespace DS2S_META.Randomizer
         {
             // Used to construct things from various information sources:
             ItemID          = DI.ItemID;
-            Quantity     = DI.Quantity;
+            Quantity        = DI.Quantity;
             //
             EnableFlag      = VanShop.EnableFlag;
             DisableFlag     = VanShop.DisableFlag;

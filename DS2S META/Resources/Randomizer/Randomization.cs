@@ -172,8 +172,13 @@ namespace DS2S_META.Randomizer
             // Fix quantity:
             AdjustQuantity(di);
 
-            int basepricenew = RandomizerManager.RandomGammaInt(3000);
-            ShuffledShop = new ShopInfo(di, VanillaShop, 1.00f, basepricenew);
+            // Fix price:
+            int basepricenew = 12000; // some large number that divides by a lot of things
+            int pricenew = RandomizerManager.RandomGammaInt(3000);
+            float pricerate = (float)pricenew / basepricenew;
+
+            // Create:
+            ShuffledShop = new ShopInfo(di, VanillaShop, pricerate, basepricenew);
         }
         internal override bool HasShuffledItemID(int itemID)
         {
