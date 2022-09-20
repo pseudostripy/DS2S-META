@@ -24,7 +24,7 @@ namespace DS2S_META
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
         internal RandomizerManager RM = new RandomizerManager();
-        private bool IsRandomized => RM.IsRandomized;
+        public static bool IsRandomized = false;
 
         
         // FrontEnd:
@@ -62,7 +62,7 @@ namespace DS2S_META
             {
                 var randowarning = new RandoWarpWarning()
                 {
-                    Title = "Online Warning",
+                    Title = "Randomizer Warp Warning",
                     Width = 375,
                     Height = 175,
                 };
@@ -86,7 +86,8 @@ namespace DS2S_META
                 await Task.Run( () => RM.Unrandomize());
             else
                 await Task.Run(() => RM.Randomize(seed));
-                //RM.Randomize(seed);
+            IsRandomized = RM.IsRandomized;
+
 
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";

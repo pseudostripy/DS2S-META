@@ -130,6 +130,17 @@ namespace DS2S_META
             UpdateTimer.Stop();
             SaveAllTabs();
 
+            if (RandomizerControl.IsRandomized && Properties.Settings.Default.ShowWarnRandoExit)
+            {
+                var randoexit = new RandoExitWarning()
+                {
+                    Title = "Game Randomized Warning",
+                    Width = 375,
+                    Height = 195,
+                };
+                randoexit.ShowDialog();
+            }
+            
             Settings.Save();
         }
 

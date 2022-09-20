@@ -322,5 +322,17 @@ namespace DS2S_META.Properties {
                 this["ShowWarnRandowarp"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowWarnRandoExit {
+            get {
+                return ((bool)(this["ShowWarnRandoExit"]));
+            }
+            set {
+                this["ShowWarnRandoExit"] = value;
+            }
+        }
     }
 }
