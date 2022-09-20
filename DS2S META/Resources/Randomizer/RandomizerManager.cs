@@ -422,7 +422,7 @@ namespace DS2S_META.Randomizer
             }
 
             // Write file:
-            File.WriteAllLines("./keytesting.txt", lines.ToArray());
+            File.WriteAllLines("./key_placements.txt", lines.ToArray());
         }
         internal void PrintAllRdz()
         {
