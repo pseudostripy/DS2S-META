@@ -46,7 +46,7 @@ My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](
 ### Randomizer Alpha A.1
 
 * Added descriptions of all items and all keys in txt files
-* Vanilla Iteam-leak bug fixed on all lots/shops
+* Vanilla item-leak bug fixed on all lots/shops
 * Empty lots fixed
 * Shops fixed when NPCs move
 * Fixed Reinforcements and Infusions being applied to consumables
