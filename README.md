@@ -42,6 +42,32 @@ My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log  
+
+### Randomizer Alpha A.1
+
+* Added descriptions of all items and all keys in txt files
+* Vanilla Iteam-leak bug fixed on all lots/shops
+* Empty lots fixed
+* Shops fixed when NPCs move
+* Fixed Reinforcements and Infusions being applied to consumables
+* Fixed Trade logic (a little)
+* Fixed over-maximum reinforcements - now checked versus in game max param
+* Item prices randomized even for two items of same ID within a shop
+* Item prices adjusted depending on type
+* Number of items sold in shops adjusted/fixed for balancing
+* Fixed many locations worth of fixed descriptions/mis-typed backend info
+* Fixed item duplications that shouldn't be there
+* Added QOL messages for what happens when you click randomize
+* Updated Frontend for seed generation and general convenience
+* Fixed possibly missing estus bug
+* Fixed Soul of Nadalia logic
+* Fix Alsanna & Darklurker/Dungeon Logic
+* Fixed Soul of a Giant bug (previously only 3 placed)
+
+### Randomizer Pre-Alpha A.0
+
+* First version of randomizer with non game-breaking bugs
+
 ### Beta 0.4  
 
 * Fixed game crash when closing META  
