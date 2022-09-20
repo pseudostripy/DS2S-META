@@ -371,7 +371,7 @@ namespace DS2S_META.Randomizer
             var maxupgrade = GetItemMaxUpgrade(item);
             di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
         }
-
+        
         // Utility:
         internal Dictionary<int, string> ReadShopNames()
         {

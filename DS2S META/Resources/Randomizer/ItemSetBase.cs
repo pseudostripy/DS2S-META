@@ -174,6 +174,66 @@ namespace DS2S_META.Randomizer
             new DropInfo(0x03A51330), // Old Mundane Stone
             new DropInfo(0x03A53A40), // Palestone
         };
+        internal static Dictionary<int, int> SoulPriceList = new Dictionary<int, int>()
+        {
+            { 60625000, 50 },       // Fading soul
+            { 60630000, 200 },      // Soul of a Lost Undead 
+            { 60640000, 400 },      // Large Soul of a Lost Undead
+            { 60650000, 800 },      // Soul of a Nameless Soldier
+            { 60660000, 1000 },     // Large Soul of a Nameless Soldier
+            { 60670000, 2000 },     // Soul of a Proud Knight
+            { 60680000, 3000 },     // Large Soul of a Proud Knight
+            { 60690000, 5000 },     // Soul of a Brave Warrior
+            { 60700000, 8000 },     // Large Soul of a Brave Warrior
+            { 60710000, 10000 },    // Soul of a Hero
+            { 60720000, 20000 },    // Soul of a Great Hero
+            //
+            { 64010000, 6000 },     // Soul of the Last Giant
+            { 64000000, 8000 },     // Soul of the Pursuer
+            { 64020000, 6000 },     // Dragonrider Soul
+            { 64030000, 10000 },    // Old Dragonslayer Soul
+            { 64040000, 6000 },     // Flexile Sentry Soul
+            { 64050000, 6000 },     // Ruin Sentinel Soul
+            { 64060000, 25000 },    // Soul of the Lost Sinner
+            { 64070000, 8000 },     // Executioner's Chariot Soul
+            { 64080000, 6000 },     // Skeleton Lord's Soul
+            { 64090000, 6000 },     // Covetous Demon Soul
+            { 64100000, 10000 },    // Mytha's Soul
+            { 64110000, 8000 },     // Smelter Demon Soul
+            { 64120000, 25000 },    // Old Iron King Soul
+            { 64130000, 6000 },     // Royal Rat Vanguard Soul
+            { 64140000, 25000 },    // Soul of the Rotten
+            { 64150000, 8000 },     // Najka Soul
+            { 64160000, 6000 },     // Rat Authority Soul
+            { 64170000, 25000 },    // Freja Soul
+            { 64180000, 18000 },    // Mirror Knight Soul
+            { 64190000, 12000 },    // Demon of Song Soul
+            { 64200000, 15000 },    // Velstadt Soul
+            { 64210000, 50000 },    // Soul of the King
+            { 64220000, 14000 },    // Guardian Dragon Soul
+            { 64230000, 75000 },    // Ancient Dragon Soul
+            { 64240000, 25000 },    // Giant Lord Soul
+            { 64250000, 30000 },    // Nashandra Soul
+            { 64260000, 16000 },    // Throne Defender Soul
+            { 64270000, 16000 },    // Throne Watcher Soul
+            { 64280000, 22000 },    // Darklurker Soul
+            { 64290000, 6000 },     // Gargoyles Soul
+            { 64300000, 60000 },    // Old Witch Soul
+            { 64310000, 60000 },    // Old King Soul
+            { 64320000, 60000 },    // Old Dead One Soul
+            { 64330000, 60000 },    // Old Paledrake Soul
+            { 64500000, 16000 },    // Sinh Soul
+            { 64510000, 16000 },    // Fume Knight Soul
+            { 64520000, 16000 },    // Aava Soul
+            { 64530000, 30000 },    // Elana Soul
+            { 64540000, 30000 },    // Nadalia Soul
+            { 64550000, 30000 },    // Alsanna Soul
+            { 64560000, 16000 },    // Sir Alonne Soul
+            { 64580000, 30000 },    // Ivory King Soul
+            { 64590000, 16000 },    // Zallen Soul
+            { 64610000, 16000 },    // Lud Soul
+            // { 64600000, 16000 },    // Loyce Soul (nothing)
+        };
 
         // Purely for printing:
         internal static List<KEYID> KeyOutputOrder = new List<KEYID>()

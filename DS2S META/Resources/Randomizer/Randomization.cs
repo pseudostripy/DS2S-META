@@ -36,6 +36,44 @@ namespace DS2S_META.Randomizer
         {
             return (int)Math.Ceiling((double)val / m) * m;
         }
+        protected int GetTypeRandomPrice(int itemid)
+        {
+            if (!RandomizerManager.TryGetItem(itemid, out var item))
+                return RandomizerManager.RandomGammaInt(3000, 50); // generic guess
+
+            switch (item.ItemType)
+            {
+                case eItemType.AMMO:
+                    return RandomizerManager.RandomGammaInt(100, 10);
+
+                case eItemType.CONSUMABLE:
+                    return GetConsumableRandomPrice(item.ItemID);
+
+                case eItemType.WEAPON1:
+                case eItemType.WEAPON2:
+                    return RandomizerManager.RandomGammaInt(5000, 100);
+
+                default:
+                    return RandomizerManager.RandomGammaInt(3000, 50);
+            }
+        }
+        protected int GetConsumableRandomPrice(int itemid)
+        {
+            // Add more rules here as appropriate:
+            if (ItemSetBase.SoulPriceList.ContainsKey(itemid))
+            {
+                var souls = ItemSetBase.SoulPriceList[itemid];
+                var ranval = RandomizerManager.RandomGammaInt(souls, 50);
+                return (int)Math.Max(ranval, 0.9 * souls); // Limit to 10% off best sale
+            }
+
+            var lowtier = new List<int>() { 60010000, 60040000, 60595000, 60070000 }; // lifegem, amber herb, dung pie, poison moss
+            if (lowtier.Contains(itemid))
+                return RandomizerManager.RandomGammaInt(400, 50);
+
+            // Otherwise:
+            return RandomizerManager.RandomGammaInt(2000, 50);
+        }
 
         internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
@@ -174,7 +212,7 @@ namespace DS2S_META.Randomizer
 
             // Fix price:
             int basepricenew = 12000; // some large number that divides by a lot of things
-            int pricenew = RandomizerManager.RandomGammaInt(3000);
+            int pricenew = GetTypeRandomPrice(di.ItemID);
             float pricerate = (float)pricenew / basepricenew;
 
             // Create:
