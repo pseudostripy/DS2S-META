@@ -301,6 +301,9 @@
     <Compile Include="List Items\DS2SInfusion.cs" />
     <Compile Include="Util\SavedPos.cs" />
     <Compile Include="Util\State.cs" />
+    <Compile Include="WindowControls\RandoWarpWarning.xaml.cs">
+      <DependentUpon>RandoWarpWarning.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowControls\METAWarning.xaml.cs">
       <DependentUpon>METAWarning.xaml</DependentUpon>
     </Compile>
@@ -426,6 +429,10 @@
     <Page Include="TabControls\BonfireMainControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowControls\RandoWarpWarning.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="WindowControls\METAWarning.xaml">
       <SubType>Designer</SubType>

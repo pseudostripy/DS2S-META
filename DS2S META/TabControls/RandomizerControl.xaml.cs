@@ -57,6 +57,21 @@ namespace DS2S_META
             if (!RM.IsInitialized)
                 RM.Initalize(Hook);
 
+            // Warn user about the incoming warp
+            if (Properties.Settings.Default.ShowWarnRandowarp)
+            {
+                var randowarning = new RandoWarpWarning()
+                {
+                    Title = "Online Warning",
+                    Width = 375,
+                    Height = 175,
+                };
+                randowarning.ShowDialog();
+            }
+
+
+
+
             // Sort out seeding
             if (txtSeed.Text == "")
                 PopulateNewSeed();
