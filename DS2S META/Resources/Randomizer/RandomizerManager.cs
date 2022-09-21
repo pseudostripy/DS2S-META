@@ -118,6 +118,8 @@ namespace DS2S_META.Randomizer
             ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
             await Task.Run( () => WriteShuffledLots());
             await Task.Run( () => WriteShuffledShops());
+            //DisableUnusedShops();
+            FixMaughlinEvent();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
         }
@@ -152,9 +154,7 @@ namespace DS2S_META.Randomizer
             // Get shop loot
             IEnumerable<Randomization> shoploot = FixedVanillaShops.Select(kvp => new ShopRdz(kvp));
 
-            var test = VanillaShops.Where(kvp => kvp.Key == 77601115).ToList();
-            var test2 = FixedVanillaShops.Where(kvp => kvp.Key == 77601115).ToList();
-
+            
             // List of Places to fill:
             var lotptf = listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes));
             Data.AddRange(lotptf);
@@ -170,9 +170,7 @@ namespace DS2S_META.Randomizer
             // Remove shop & trade menu resets on certain events so they stay randomised
             // Go through and clone the "normal" shops:
             var PTF = new Dictionary<int, ShopInfo>();
-            var handled_cases = new List<int>();
-            var skip_shops = new List<int>();
-
+            
             var LEvents = ShopRules.GetLinkedEvents();
 
             // Get list of all undisabled:
@@ -482,6 +480,53 @@ namespace DS2S_META.Randomizer
         internal void WriteVanillaLots()
         {
             Hook.WriteAllLots(VanillaLots);
+        }
+        internal void DisableUnusedShops()
+        {
+            var dicbadshops = new Dictionary<int, ShopInfo>();
+
+            var tolose = ShopRules.GetLinkedEvents().SelectMany(le => le.RemoveIDs);
+            var badshops = VanillaShops.Where(kvp => tolose.Contains(kvp.Key));
+            foreach (var shop in badshops)
+            {
+                var badshop = shop.Value.Clone();
+                badshop.EnableFlag = -1;
+                badshop.Quantity = 0;
+                badshop.ItemID = 0; // don't even show in shop
+                dicbadshops[shop.Key] = badshop;
+            }
+
+            Hook.WriteAllShops(dicbadshops, true);
+        }
+        internal void FixMaughlinEvent()
+        {
+            // His update event seems to be unique in that it clears previous stuff?
+
+            var maughlin_events = new List<LinkedShopEvent>()
+            {
+                new LinkedShopEvent(76100211, 76100219), // Maughlin royal sodlier helm
+                new LinkedShopEvent(76100212, 76100220), // Maughlin royal sodlier armour
+                new LinkedShopEvent(76100213, 76100221), // Maughlin royal sodlier gauntlets
+                new LinkedShopEvent(76100214, 76100222), // Maughlin royal sodlier leggings
+                new LinkedShopEvent(76100215, 76100223), // Maughlin elite knight helm
+                new LinkedShopEvent(76100216, 76100224), // Maughlin elite knight armour
+                new LinkedShopEvent(76100217, 76100225), // Maughlin elite knight gauntlets
+                new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
+            };
+
+            var cloneshops = new Dictionary<int, ShopInfo>();
+            foreach (LinkedShopEvent LE in maughlin_events)
+            {
+                var goodshop = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
+
+                // this still isn't a perfect solution because of quantities
+                var badshopkey = LE.RemoveIDs.First();
+                var badshop = goodshop.ShuffledShop.Clone();
+                var vanshop = VanillaShops[badshopkey];
+                badshop.EnableFlag = vanshop.EnableFlag; // still enable when it wants to -> should "trade places"
+                cloneshops[badshopkey] = badshop;
+            }
+            Hook.WriteAllShops(cloneshops, true);
         }
 
         // RNG related:

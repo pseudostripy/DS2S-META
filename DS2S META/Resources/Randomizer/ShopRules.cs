@@ -49,13 +49,13 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76200604, 76200605), // Chloanne titanite chunk
 
                 // Note: McDuff's descriptions are messed up:
-                new LinkedShopEvent(76430000, 76200607), // McDuff Uchi
-                new LinkedShopEvent(76430001, 76200608), // McDuff Bastard Sword
-                new LinkedShopEvent(76430002, 76200609), // McDuff Greataxe
-                new LinkedShopEvent(76430003, 76200610), // Mcduff Winged Spear
-                new LinkedShopEvent(76430004, 76200611), // McDuff Scythe
-                new LinkedShopEvent(76430005, 76200612), // McDuff Longbow
-                new LinkedShopEvent(76430006, 76200613), // McDuff Light Crossbow
+                new LinkedShopEvent(76430000, 76430007), // McDuff Uchi
+                new LinkedShopEvent(76430001, 76430008), // McDuff Bastard Sword
+                new LinkedShopEvent(76430002, 76430009), // McDuff Greataxe
+                new LinkedShopEvent(76430003, 76430010), // Mcduff Winged Spear
+                new LinkedShopEvent(76430004, 76430011), // McDuff Scythe
+                new LinkedShopEvent(76430005, 76430012), // McDuff Longbow
+                new LinkedShopEvent(76430006, 76430013), // McDuff Light Crossbow
                 new LinkedShopEvent(76430100, 76430102), // McDuff Royal Kite Shield
                 //
                 new LinkedShopEvent(76600300, 76600308), // Carhillion Soul Arrow
