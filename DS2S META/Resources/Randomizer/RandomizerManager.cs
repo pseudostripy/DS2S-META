@@ -100,6 +100,7 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             GetLootToRandomize(); // set Data field
+            KeysPlacedSoFar = new List<int>(); // nice bug :)
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
             DefineKRG();        // Split items into Keys, Required, Generics
 
