@@ -28,6 +28,7 @@ namespace DS2S_META
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string MetaVersion;
         private Properties.Settings Settings;
         public MainWindow()
         {
@@ -71,22 +72,32 @@ namespace DS2S_META
 
         Timer UpdateTimer = new Timer();
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            var version= fileVersionInfo.ProductVersion;
+            MetaVersion = fileVersionInfo.ProductVersion;
 
-            lblWindowName.Content = $"DS2 Scholar META {version}";
+            lblWindowName.Content = $"DS2 Scholar META {MetaVersion}";
             EnableTabs(false);
             InitAllTabs();
 
+            VersionUpdateCheck("Nordgaren");
+            VersionUpdateCheck("Pseudostripy"); // Randomizer updates
+
+            UpdateTimer.Interval = 16;
+            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Enabled = true;
+        }
+
+        private async void VersionUpdateCheck(string repo_owner)
+        {
             try
             {
                 GitHubClient gitHubClient = new GitHubClient(new ProductHeaderValue("DS2S-META"));
-                Release release = await gitHubClient.Repository.Release.GetLatest("Nordgaren", "DS2S-META");
+                Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
                 Version gitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-                Version exeVersion = Version.Parse(version);
+                Version exeVersion = Version.Parse(MetaVersion);
                 if (gitVersion > exeVersion) //Compare latest version to current version
                 {
                     link.NavigateUri = new Uri(release.HtmlUrl);
@@ -94,13 +105,9 @@ namespace DS2S_META
                     labelCheckVersion.Visibility = Visibility.Hidden;
                 }
                 else if (gitVersion == exeVersion)
-                {
                     labelCheckVersion.Content = "App up to date";
-                }
                 else
-                {
-                    labelCheckVersion.Content = "App version unreleased. Be wary of bugs!";
-                }
+                    labelCheckVersion.Content = "In-development version.";
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
             {
@@ -111,9 +118,6 @@ namespace DS2S_META
                 labelCheckVersion.Content = "Something is very broke, contact DS2 META repo owner";
                 MessageBox.Show(ex.Message);
             }
-            UpdateTimer.Interval = 16;
-            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
-            UpdateTimer.Enabled = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
