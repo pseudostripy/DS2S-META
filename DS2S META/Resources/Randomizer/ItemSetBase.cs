@@ -268,7 +268,7 @@ namespace DS2S_META.Randomizer
             KEYID.DLC1,
             KEYID.DRAGONSTONE,
             KEYID.ETERNALSANCTUM,
-            KEYID.DLC2,
+            KEYID.DLC2KEY,
             KEYID.SCEPTER,
             KEYID.TOWER,
             KEYID.DLC3KEY,
@@ -591,6 +591,10 @@ namespace DS2S_META.Randomizer
                     // Drangleic && Forgotten key && Torch && Butterfly x3
                     return condDarklurker();
 
+                case KEYID.DLC2:
+                    // Rotunda Lockstone && DLC2 key
+                    return condDLC2();
+
                 default:
                     return condKey(kid); // Simple Key check
             }
@@ -605,7 +609,7 @@ namespace DS2S_META.Randomizer
             bool condAshen() => condKey(KEYID.ASHENMIST);
             bool condKingsRing() => condKey(KEYID.KINGSRING);
             bool condDLC1() => condKey(KEYID.DLC1);
-            bool condDLC2() => condKey(KEYID.DLC2);
+            bool condDLC2() => condRotunda() && condKey(KEYID.DLC2);
             bool condSinner() => condBranch() || condKey(KEYID.ANTIQUATED);
             bool condDrangleic() => condBranch() && condRotunda() && condSinner();
             bool condAmana() => condDrangleic() && condKey(KEYID.KINGSPASSAGE);

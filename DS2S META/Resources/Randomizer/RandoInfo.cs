@@ -28,6 +28,7 @@ namespace DS2S_META.Randomizer
         VENDRICK        = 0xBBF,    // Shorthand: Amana && SoaG x3
         BELFRYSOL       = 0xBC0,    // Shorthand: Rotunda && BigPharros
         DARKLURKER      = 0xBC1,    // Shorthand: Forgotten && Drangleic && Torch && Butterfly x3
+        DLC2            = 0xBC2,    // Shorthand: DLC2 key + Rotunda
 
         BRANCH          = 0xAA0,    // Shorthand: Require at least 3 branches
         PHARROS         = 0xAA1,    // Shorthand: Enough Pharros Lockstones available
@@ -47,7 +48,7 @@ namespace DS2S_META.Randomizer
         KINGSRING       = 40510000,
         DRAGONSTONE     = 52650000,
         DLC1            = 52000000,
-        DLC2            = 52100000,
+        DLC2KEY         = 52100000,
         DLC3KEY         = 52200000,
         EMBEDDED        = 1980000,
         KINGSPASSAGE    = 50610000,
