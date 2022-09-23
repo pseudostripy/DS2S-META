@@ -365,7 +365,7 @@ namespace DS2S_META.Randomizer
             D.Add(10046090, SafeInfo("[Pit] Fourth board in the pit"));
             D.Add(10046150, SafeInfo("[Pit] Vanilla homeward bone: entrance to corridor before bridge crystal lizard"));
             D.Add(10345000, MChestInfo("[Pit] Metal chest after jumping across the wooden bridge in the circular room with explosive hollows"));
-            D.Add(10345010, MChestInfo("[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter"));
+            D.Add(10345010, WChestInfo("[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter"));
             D.Add(10345020, MChestInfo("[Pit] Vanilla bone dust: metal chest guarded by syan soldier"));
             D.Add(10346000, SafeInfo("[Pit] First corpse on scaffolding before the Gutter"));
             D.Add(10346010, SafeInfo("[Pit] Second corpse on scaffolding before the Gutter"));
