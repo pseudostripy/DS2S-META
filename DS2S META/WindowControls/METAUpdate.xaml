@@ -1,0 +1,34 @@
+﻿<Window x:Class="DS2S_META.METAUpdate"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             x:Name="Window"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:p="clr-namespace:DS2S_META.Properties"
+             xmlns:local="clr-namespace:DS2S_META"
+             mc:Ignorable="d" 
+             ResizeMode="NoResize"
+             WindowStyle="SingleBorderWindow"
+             WindowStartupLocation="CenterScreen"
+             d:DesignHeight="178.667" d:DesignWidth="350" Background="LightGray" Closing="Window_Closing">
+    <Grid>
+        <StackPanel Margin="25,0,25,0">
+            <Label Content="Info:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black"/>
+            
+            <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="A new version has been released. It is linked in the top-right corner, or can be found here:"/>
+            
+            <StackPanel Height="26" Width="175" >
+                <Label x:Name="lblNewVersion" Visibility="Visible" HorizontalContentAlignment="Center">
+                    <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
+                        "New version!"
+                    </Hyperlink>
+                </Label>
+            </StackPanel>
+            <CheckBox x:Name="cbxShowUpdateNotification" HorizontalAlignment="Center" Content="Do not show again"/>
+            <Separator Visibility="Hidden" Height="5"/>
+            <Button Content="Okay" IsCancel="True" Width="75"/>
+        </StackPanel>
+    </Grid>
+</Window>

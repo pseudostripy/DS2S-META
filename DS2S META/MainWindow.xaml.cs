@@ -103,6 +103,15 @@ namespace DS2S_META
                     link.NavigateUri = new Uri(release.HtmlUrl);
                     llbNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
+
+                    var warning = new METAUpdate(link.NavigateUri)
+                    {
+                        Title = "New Update Available",
+                        Width = 350,
+                        Height = 240
+                    };
+                    warning.ShowDialog();
+
                 }
                 else if (gitVersion == exeVersion)
                     labelCheckVersion.Content = "App up to date";

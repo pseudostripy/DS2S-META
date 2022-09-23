@@ -334,5 +334,17 @@ namespace DS2S_META.Properties {
                 this["ShowWarnRandoExit"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowUpdateMessage {
+            get {
+                return ((bool)(this["ShowUpdateMessage"]));
+            }
+            set {
+                this["ShowUpdateMessage"] = value;
+            }
+        }
     }
 }
