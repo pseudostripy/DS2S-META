@@ -16,16 +16,13 @@
     <Grid>
         <StackPanel Margin="25,0,25,0">
             <Label Content="Info:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black"/>
-            
             <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="A new version has been released. It is linked in the top-right corner, or can be found here:"/>
-            
-            <StackPanel Height="26" Width="175" >
-                <Label x:Name="lblNewVersion" Visibility="Visible" HorizontalContentAlignment="Center">
-                    <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
-                        "New version!"
-                    </Hyperlink>
-                </Label>
-            </StackPanel>
+            <Label x:Name="lblNewVersion" Visibility="Visible" HorizontalContentAlignment="Center">
+                <Hyperlink x:Name="lnkInfoUpdateLink" RequestNavigate="link_RequestNavigate" >
+                    New version available!
+                </Hyperlink>
+            </Label>
+            <Separator Visibility="Hidden" Height="3"/>
             <CheckBox x:Name="cbxShowUpdateNotification" HorizontalAlignment="Center" Content="Do not show again"/>
             <Separator Visibility="Hidden" Height="5"/>
             <Button Content="Okay" IsCancel="True" Width="75"/>

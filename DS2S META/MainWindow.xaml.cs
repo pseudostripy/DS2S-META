@@ -107,8 +107,8 @@ namespace DS2S_META
                     var warning = new METAUpdate(link.NavigateUri)
                     {
                         Title = "New Update Available",
-                        Width = 350,
-                        Height = 240
+                        Width = 450,
+                        Height = 200
                     };
                     warning.ShowDialog();
 

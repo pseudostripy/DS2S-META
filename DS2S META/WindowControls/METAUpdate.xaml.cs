@@ -27,11 +27,14 @@ namespace DS2S_META
             InitializeComponent();
             Link = link;
 
-            //Run linkrun = new Run(link.ToString());
-            //var hyper = new Hyperlink(linkrun);
-            //hyper.NavigateUri = link;
-            ////hyper.Name = "link";
-            //lblNewVersion.Content = hyper;
+            // Create hyperlink object dynamically
+            Run runtext = new Run($"{Link}");
+            var hyperobj = new Hyperlink(runtext);
+            hyperobj.NavigateUri = Link;
+            hyperobj.RequestNavigate += link_RequestNavigate;
+
+            // Update UI
+            lblNewVersion.Content = hyperobj;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
