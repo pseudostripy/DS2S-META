@@ -11,13 +11,13 @@ namespace DS2S_META.Randomizer
         // Fields:
         internal string ParamDesc;
         internal List<DropInfo> Lot = new List<DropInfo>();
+        
+        // Properties:
         internal List<int> Items => Lot.Select(L => L.ItemID).ToList();
         internal List<byte> Quantities => Lot.Select(L => L.Quantity).ToList();
         internal List<byte> Reinforcements => Lot.Select(L => L.Reinforcement).ToList();
         internal List<byte> Infusions => Lot.Select(L => L.Infusion).ToList();
         internal int NumDrops => Lot.Count();
-
-        private const int SINGLE = 1;
 
         public override string ToString()
         {
@@ -60,8 +60,6 @@ namespace DS2S_META.Randomizer
                 di.Quantity = 0;
             }
         }
-
-        // Utility:
         internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
             AddDrop(new DropInfo(itemID, (byte)quantity, (byte) reinforce, (byte) infusion));
@@ -70,53 +68,12 @@ namespace DS2S_META.Randomizer
         {
             Lot.Add(data);
         }
-
-    }
-
-    internal class DropInfo
-    {
-        // Fields:
-        internal int ItemID { get; set; }
-        internal byte Quantity { get; set; }
-        internal byte Infusion { get; set; }
-        internal byte Reinforcement { get; set; }
-
-        // Constructors:
-        internal DropInfo() { }
-        internal DropInfo(int itemID)
+        
+        // Query Utility
+        internal bool HasItem(int itemid)
         {
-            ItemID = itemID;
-            Quantity = 1;
-            Reinforcement = 0;
-            Infusion = 0;
-        }
-        internal DropInfo(int itemID, int quantity)
-        {
-            ItemID = itemID;
-            Quantity = (byte)quantity;
-            Reinforcement = 0;
-            Infusion = 0;
-        }
-        internal DropInfo(int itemID, byte quantity, byte reinforce, byte infusion)
-        {
-            ItemID = itemID;
-            Quantity = quantity;
-            Reinforcement = reinforce;
-            Infusion = infusion;
-        }
-        internal DropInfo(int itemID, int quantity, int reinforce, int infusion)
-        {
-            ItemID = itemID;
-            Quantity = (byte)quantity;
-            Reinforcement = (byte)reinforce;
-            Infusion = (byte)infusion;
-        }
-        internal DropInfo Clone()
-        {
-            return (DropInfo)MemberwiseClone();
+            return Lot.Any(di => di.HasItem(itemid));
         }
 
-        // Properties:
-        internal bool IsKeyType => Enum.IsDefined(typeof(KEYID), ItemID);
     }
 }
