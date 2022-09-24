@@ -115,7 +115,7 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(77601006, 77601106, 77602006, 77602106), // Ornifex Thorned Greatsword
                 new LinkedShopEvent(77601007, 77601107, 77602007, 77602107), // Ornifex King's Mirror
                 new LinkedShopEvent(77601008, 77601108, 77602008, 77602108), // Ornifex Sacred Chime Hammer
-                new LinkedShopEvent(77601009, 77601119, 77602009, 77602109), // Ornifex Ruler's Sword
+                new LinkedShopEvent(77601009, 77601109, 77602009, 77602109), // Ornifex Ruler's Sword
                 new LinkedShopEvent(77601010, 77601110, 77602010, 77602110), // Ornifex King's UGS
                 new LinkedShopEvent(77601011, 77601111, 77602011, 77602111), // Ornifex King's Shield
                 new LinkedShopEvent(77601012, 77601112, 77602012, 77602112), // Ornifex Spitfire Spear
