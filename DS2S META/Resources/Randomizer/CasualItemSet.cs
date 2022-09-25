@@ -222,7 +222,7 @@ namespace DS2S_META.Randomizer
             D.Add(10316050, SafeInfo("[Heides] On the ledge on the way towards the cathedral"));
             D.Add(10316090, SafeInfo("[Heides] In the waterway from Majula"));
             D.Add(10316100, SafeInfo("[Heides] On a corpse near the first lever"));
-            D.Add(10316101, SafeInfo("[Heides] Behind the big opened metal door in NG+"));
+            D.Add(10316101, NGPlusInfo("[Heides] On a corpse near the first lever in NG+"));
             D.Add(2002000, CovFineInfo("[Heides] Blue sentinels join", KEYID.TOKENOFFIDELITY));
             D.Add(2002011, CovInfo("[Heides] Blue sentinels 1st rank reward", KEYID.TOKENOFFIDELITY));
             D.Add(2002012, CovInfo("[Heides] Blue sentinels 2nd rank reward", KEYID.TOKENOFFIDELITY));
@@ -1303,7 +1303,7 @@ namespace DS2S_META.Randomizer
             D.Add(50376230, SafeInfo("[DLC3] Between the first and the second house in Frigid Outskirts", KEYID.FRIGIDOUTSKIRTS));
             D.Add(50376460, SafeInfo("[DLC3] Between the second and the third house in Frigid Outskirts", KEYID.FRIGIDOUTSKIRTS));
             D.Add(50376470, SafeInfo("[DLC3] In the third house in Frigid Outskirts", KEYID.FRIGIDOUTSKIRTS));
-            D.Add(50376710, SafeInfo("[DLC3] On ledge just before Lud and Zallen", KEYID.FRIGIDOUTSKIRTS));
+            D.Add(50376710, SafeInfo("[DLC3] On ledge just before bridge to Lud and Zallen", KEYID.FRIGIDOUTSKIRTS));
 
 
             // Misc special:
