@@ -208,6 +208,7 @@ namespace DS2S_META
         private void InitAllTabs()
         {
             metaItems.InitTab();
+            metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
             InitHotkeys();
         }

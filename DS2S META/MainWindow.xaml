@@ -103,7 +103,7 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450">
+            <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450" MinHeight="650">
                 <TabControl.ItemsPanel>
                     <ItemsPanelTemplate/>
                 </TabControl.ItemsPanel>
@@ -145,7 +145,11 @@
                 </TabItem>
                 <TabItem x:Name="tabSettings" Header="Settings">
                     <Grid Background="LightGray">
-                        <TabControl Background="LightGray" Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="253*"/>
+                            <ColumnDefinition Width="172*"/>
+                        </Grid.ColumnDefinitions>
+                        <TabControl Background="LightGray" Margin="0,10,0,0" Grid.ColumnSpan="2">
                             <TabItem Header="General">
                                 <Grid >
                                     <Grid.ColumnDefinitions>
@@ -259,9 +263,9 @@
                         <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Test" >
+                <TabItem Header="Dmg Calculator" >
                     <Grid Background="LightGray">
-                        <local:RandomizerControl x:Name="metaRando2W" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        <local:DmgCalcControl x:Name="metatabDmgCalc" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
             </TabControl>

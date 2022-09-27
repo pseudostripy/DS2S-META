@@ -49,9 +49,13 @@ namespace DS2S_META
                     All.Add(new DS2SItemCategory(line));
             };
             AllItems = All.SelectMany(cat => cat.Items).ToList();
+            var wepcatnames = new List<string>() { "Melee Weapons", "Ranged Weapons", "Staff/Chimes" };
+            AllWeapons = All.Where(cat => wepcatnames.Contains(cat.Name))
+                            .SelectMany(cat => cat.Items).ToList();      
         }
 
         public static List<DS2SItemCategory> All = new List<DS2SItemCategory>();
         public static List<DS2SItem> AllItems = new List<DS2SItem>();
+        public static List<DS2SItem> AllWeapons = new List<DS2SItem>();
     }
 }

@@ -21,6 +21,9 @@ namespace DS2S_META
     /// </summary>
     public partial class DmgCalcControl : METAControl
     {
+        // Fields:
+        private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
+
         public DmgCalcControl()
         {
             InitializeComponent();
@@ -28,8 +31,6 @@ namespace DS2S_META
 
         public override void InitTab()
         {
-            cmbCategory.ItemsSource = DS2SItemCategory.All;
-            cmbCategory.SelectedIndex = 0;
             FilterItems();
             InventoryTimer.Interval = 100;
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
@@ -46,25 +47,6 @@ namespace DS2S_META
 
         private void HandleMaxAvailable()
         {
-            if (cbxQuantityRestrict.IsChecked.Value)
-            {
-                DS2SItem item = lbxItems.SelectedItem as DS2SItem;
-                if (item == null)
-                    return;
-
-                var max = Hook.GetMaxQuantity(item);
-                var held = Hook.GetHeld(item);
-                var diff = max - held;
-                if (diff != nudQuantity.Maximum)
-                {
-                    nudQuantity.Maximum = diff;
-                    if (cbxMax.IsChecked.Value)
-                        nudQuantity.Value = nudQuantity.Maximum;
-
-                    nudQuantity.IsEnabled = nudQuantity.Maximum > 1;
-                    txtMaxHeld.Visibility = nudQuantity.Maximum > 0 ? Visibility.Hidden : Visibility.Visible;
-                }
-            }
         }
 
         internal override void ReloadCtrl()
@@ -76,7 +58,7 @@ namespace DS2S_META
         internal override void EnableCtrls(bool enable)
         {
             InventoryTimer.Enabled = enable;
-            btnCreate.IsEnabled= enable;
+            btnCalculate.IsEnabled= enable;
 
             if (enable)
                 UpdateCreateEnabled();
@@ -91,31 +73,9 @@ namespace DS2S_META
         //Clear items and add the ones that match text in search box
         private void FilterItems()
         {
-            lbxItems.Items.Clear();
-
-            if (SearchAllCheckbox.IsChecked.Value && txtSearch.Text != "")
-            {
-                //search every item category
-                foreach (DS2SItemCategory category in cmbCategory.Items)
-                {
-                    foreach (DS2SItem item in category.Items)
-                    {
-                        if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
-                            lbxItems.Items.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                //only search selected item category
-                DS2SItemCategory category = cmbCategory.SelectedItem as DS2SItemCategory;
-                foreach (DS2SItem item in category.Items)
-                {
-                    if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
-                        lbxItems.Items.Add(item);
-                }
-            }
-
+            // Update listbox
+            lbxItems.ItemsSource = Weapons.Where(wp => wp.NameContains(txtSearch.Text));
+            
             if (lbxItems.Items.Count > 0)
                 lbxItems.SelectedIndex = 0;
 
@@ -149,18 +109,6 @@ namespace DS2S_META
 
             // Update maximum based on cbx value
             setQuantityMaximum(item);
-
-            // Update UI
-            if (cbxQuantityRestrict.IsChecked.Value)
-            {
-                // restricted
-                nudQuantity.IsEnabled = nudQuantity.Maximum > 1;
-            }
-            else
-            {
-                // unrestricted
-                nudQuantity.IsEnabled = true;
-            }
             txtMaxHeld.Visibility = MaxMinusHeld(item) > 0 ? Visibility.Hidden : Visibility.Visible;
         }
         private bool TryGetSelectedItem(out DS2SItem item)
@@ -181,7 +129,6 @@ namespace DS2S_META
 
         private void setQuantityMaximum(DS2SItem item)
         {
-            nudQuantity.Maximum = cbxQuantityRestrict.IsChecked.Value ? MaxMinusHeld(item) : 99;
         }
 
         private int MaxMinusHeld(DS2SItem item)
@@ -222,7 +169,7 @@ namespace DS2S_META
             nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
 
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCalculate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
             if (!Properties.Settings.Default.UpdateMaxLive)
                 HandleMaxAvailable();
             HandleMaxItemCheckbox();
@@ -234,39 +181,16 @@ namespace DS2S_META
             if (item == null)
                 return;
 
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCalculate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
         }
 
         internal void EnableStats(bool enable)
         {
-            btnCreate.IsEnabled = enable;
+            btnCalculate.IsEnabled = enable;
         }
 
-        private void btnCreate_Click(object sender, RoutedEventArgs e)
+        private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
-            CreateItem();
-        }
-
-        //Apply hair to currently loaded character
-        public void CreateItem()
-        {
-            if (!Properties.Settings.Default.UpdateMaxLive)
-                HandleMaxAvailable();
-            //Check if the button is enabled and the selected item isn't null
-            if (btnCreate.IsEnabled && lbxItems.SelectedItem != null)
-            {
-                _ = ChangeColor(Brushes.DarkGray);
-                DS2SItem item = lbxItems.SelectedItem as DS2SItem;
-                if (item == null)
-                    return;
-
-                var id = item.ID;
-
-                var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
-                Hook.GetItem(id, (short)nudQuantity.Value, (byte)nudUpgrade.Value, (byte)infusion.ID);
-                if (!Properties.Settings.Default.UpdateMaxLive)
-                    HandleMaxAvailable();
-            }
         }
 
         //handles up and down scrolling
@@ -298,11 +222,11 @@ namespace DS2S_META
         //Changes the color of the Apply button
         private async Task ChangeColor(Brush new_color)
         {
-            btnCreate.Background = new_color;
+            btnCalculate.Background = new_color;
 
             await Task.Delay(TimeSpan.FromSeconds(.25));
 
-            btnCreate.Background = default(Brush);
+            btnCalculate.Background = default(Brush);
         }
 
         //handles escape
@@ -318,7 +242,7 @@ namespace DS2S_META
             if (e.Key == Key.Enter)
             {
                 e.Handled = true; //Do not pass keypress along
-                CreateItem();
+                //CreateItem();
                 return;
             }
 
@@ -363,18 +287,10 @@ namespace DS2S_META
 
         private void HandleMaxItemCheckbox()
         {
-            // Set maximum values
-            // Assumes that setQuantityMaximum(item) has already been called!
             if (cbxMax.IsChecked.Value)
-            {
-                nudQuantity.Value = nudQuantity.Maximum;
                 nudUpgrade.Value = nudUpgrade.Maximum;
-            }
             else
-            {
-                nudQuantity.Value = nudQuantity.Maximum == 0 ? 0 : 1;
-                nudUpgrade.Value = nudQuantity.Minimum;
-            }
+                nudUpgrade.Value = 0;
         }
 
         private void cmbInfusion_KeyDown(object sender, KeyEventArgs e)
@@ -383,7 +299,6 @@ namespace DS2S_META
             if (e.Key == Key.Enter)
             {
                 e.Handled = true; //Do not pass keypress along
-                CreateItem();
                 return;
             }
         }

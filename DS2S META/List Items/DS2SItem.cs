@@ -55,5 +55,11 @@ namespace DS2S_META
             else
                 return Name.CompareTo(other.Name);
         }
+
+        public bool NameContains(string txtfrag)
+        {
+            // Used for easier filtering
+            return Name.ToLower().Contains(txtfrag.ToLower());
+        }
     }
 }
