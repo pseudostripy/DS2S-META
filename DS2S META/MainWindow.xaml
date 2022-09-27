@@ -8,7 +8,7 @@
         xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DS2S_META"
         mc:Ignorable="d"
-        Title="DS2 META" Height="755" Width="450" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" Icon="Ladder.ico" ResizeMode="NoResize" WindowStyle="None" >
+        Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" Icon="Ladder.ico" ResizeMode="NoResize" WindowStyle="None" SizeToContent="WidthAndHeight" >
 
     <Window.DataContext>
         <local:DS2SViewModel x:Name="ViewModel"/>
@@ -16,8 +16,12 @@
 
 
     <Grid>
-        <StackPanel>
-            <Grid Height="25" MouseDown="Grid_MouseDown" Background="Black">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.ColumnSpan="2">
+            <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="Ladder.ico" Width="25"/>
                     <Label x:Name="lblWindowName" Foreground="White"/>
@@ -36,16 +40,6 @@
                         Foreground="White"
                         Click="Minimize_Click"
                         BorderThickness="0"/>
-
-                    <!--<Button x:Name="Maximize"
-                        Content="☐"
-                        VerticalAlignment="Center"
-                        Width="20"
-                        Height="20"
-                        FontWeight="Bold"
-                        Background="Transparent"
-                        Foreground="White"
-                        BorderThickness="0"/>-->
                     <Button x:Name="btnClose"
                         Content="❌"
                         Width="20"
@@ -56,10 +50,13 @@
                         BorderThickness="0"/>
                 </StackPanel>
             </Grid>
-            <Grid Height="95" VerticalAlignment="Top">
+            <Grid Height="95" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="103*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -67,14 +64,14 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24" Grid.RowSpan="2">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Process:" />
                         <!--<wpfTool:IntegerUpDown Value="{Binding ElementName=DS2META, Path=Hook.ID, Mode=OneWay}" />-->
                         <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}"/>
                     </StackPanel>
                 </StackPanel >
-                <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">
+                <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,0,23" Grid.RowSpan="2">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Loaded:" />
                         <Label Name="lblLoaded" Content="{Binding ContentLoaded}" Margin="1,0,0,0" Foreground="{Binding ForegroundLoaded}"/>
@@ -86,13 +83,13 @@
                         <Label Content="{Binding ContentOnline}" Margin="5,0,0,0" Foreground="{Binding ForegroundOnline}"/>
                     </StackPanel>
                 </StackPanel >
-                <StackPanel Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Right">
+                <StackPanel Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="50,0,0,23" Grid.RowSpan="2">
                     <StackPanel Orientation="Horizontal" Width="175">
                         <Label Content="Version:" />
                         <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" />
                     </StackPanel>
                 </StackPanel >
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Grid.ColumnSpan="3" Width="175">
+                <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="3" Width="175" Margin="50,0,0,24" Grid.RowSpan="2">
                     <Grid>
                         <Label x:Name="labelCheckVersion" />
                         <StackPanel Grid.Column="1" Grid.Row="0" >
@@ -106,16 +103,12 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <TabControl Background="LightGray">
+            <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450">
+                <TabControl.ItemsPanel>
+                    <ItemsPanelTemplate/>
+                </TabControl.ItemsPanel>
                 <TabItem Header="Player">
-                    <Grid Background="LightGray">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="25*"/>
-                            <ColumnDefinition Width="34*"/>
-                            <ColumnDefinition Width="385*"/>
-                        </Grid.ColumnDefinitions>
-                        <local:PlayerControl x:Name="metaPlayer" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
-                    </Grid>
+                    <local:PlayerControl x:Name="metaPlayer" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
                 </TabItem>
                 <TabItem Header="Stats">
                     <Grid Background="LightGray">
@@ -124,7 +117,11 @@
                 </TabItem>
                 <TabItem Header="Items">
                     <Grid Background="LightGray">
-                        <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="53*"/>
+                            <ColumnDefinition Width="391*"/>
+                        </Grid.ColumnDefinitions>
+                        <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Bonfires">
@@ -260,6 +257,11 @@
                 <TabItem Header="Randomizer" >
                     <Grid Background="LightGray">
                         <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Test" >
+                    <Grid Background="LightGray">
+                        <local:RandomizerControl x:Name="metaRando2W" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
             </TabControl>

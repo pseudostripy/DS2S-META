@@ -88,7 +88,7 @@ namespace DS2S_META
                 ProcessSavedPos(pos);
                 UpdatePositions();
                 SavedPos.Save(Positions);
-                
+
                 txtAngX.Text = PlayerState.AngX.ToString("N2");
                 txtAngY.Text = PlayerState.AngY.ToString("N2");
                 txtAngZ.Text = PlayerState.AngZ.ToString("N2");

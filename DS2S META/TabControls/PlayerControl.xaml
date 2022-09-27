@@ -8,200 +8,181 @@
              xmlns:p="clr-namespace:DS2S_META.Properties"
              xmlns:local="clr-namespace:DS2S_META"
              mc:Ignorable="d" 
-             d:DesignHeight="615" d:DesignWidth="425" Background="LightGray">
-    <Grid>
+             d:DesignHeight="620
+                   " d:DesignWidth="425" Background="LightGray">
+    <Grid Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" Margin="10,0,10,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="170"/>
-            <RowDefinition Height="275"/>
+            <RowDefinition x:Name="StatusRow" Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.RowSpan="2">
-            <StackPanel Margin="10,5,10,0" >
-                <Label Content="Status"/>
-                <Border BorderBrush="Gray" BorderThickness="1" Height="145" >
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="25,0,0,0">
-                            <StackPanel Width="100">
-                                <Label Content="Health"/>
-                                <wpfTool:IntegerUpDown x:Name="nudHealth" Value="{Binding ElementName=PlayerCon, Path=Hook.Health}" Maximum="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" IsEnabled="False"/>
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
-                            <StackPanel Width="100">
-                                <Label Content="Health Cap" />
-                                <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" IsEnabled="False"/>
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
-                            <StackPanel Width="100">
-                                <Label Content="Health Max" />
-                                <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthMax}" TextAlignment="Center" IsEnabled="False"/>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="25,0,0,0">
-                            <StackPanel Width="100">
-                                <Label Content="Stamina"/>
-                                <wpfTool:IntegerUpDown x:Name="nudStamina" Value="{Binding ElementName=PlayerCon, Path=Hook.Stamina}" TextAlignment="Center" Maximum="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" ClipValueToMinMax="True" IsEnabled="False" />
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
-                            <StackPanel Width="100">
-                                <Label Content="Stamina Max"/>
-                                <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" TextAlignment="Center" IsEnabled="False"/>
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
+        <StackPanel Margin="0,0,0,10" VerticalAlignment="Stretch" >
+            <Label Content="Status"/>
+            <Border BorderBrush="Gray" BorderThickness="1" >
+                <StackPanel Margin="5,5,5,5">
+                    <Grid Grid.Row="0" Grid.RowSpan="2" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition x:Name="test"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Health" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <wpfTool:IntegerUpDown x:Name="nudHealth" Value="{Binding ElementName=PlayerCon, Path=Hook.Health}" Maximum="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="1"/>
+                        <Label Content="Health Cap" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1"/>
+                        <Label Content="Health Max" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthMax}" TextAlignment="Center" IsEnabled="False" Grid.Column="2" Grid.Row="1"/>
+                        <Label Content="Stamina" Grid.Row="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <wpfTool:IntegerUpDown x:Name="nudStamina" Value="{Binding ElementName=PlayerCon, Path=Hook.Stamina}" TextAlignment="Center" Maximum="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="3" />
+                        <Label Content="Stamina Max" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" TextAlignment="Center" IsEnabled="False" Grid.Row="3" Grid.Column="1"/>
+                        <Label Content="Char Type" Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.CharType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5" Grid.Column="2"/>
+                        <Label Content="Team Type" Grid.Row="4" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.TeamType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5"/>
+                        <Label Content="Invade Type" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                        <TextBox IsEnabled="False" Grid.Row="5" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Margin="0,0,0,10" Grid.Row="1" VerticalAlignment="Stretch">
+            <Label Content="Position"/>
+            <Border BorderBrush="Gray" BorderThickness="1" >
+                <StackPanel Margin="5,5,5,5">
+                    <Grid VerticalAlignment="Stretch" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="X" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                        <Label Content="Y" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+                        <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
+                        <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4"/>
+                        <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding ElementName=PlayerCon, Path=Hook.PosX, Mode=OneWay}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding ElementName=PlayerCon, Path=Hook.PosY, Mode=OneWay}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding ElementName=PlayerCon, Path=Hook.PosZ, Mode=OneWay}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
 
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="25,0,0,0">
-                            <StackPanel Width="100">
-                                <Label Content="Char Type" />
-                                <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.CharType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False"/>
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
-                            <StackPanel Width="100">
-                                <Label Content="Team Type" />
-                                <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.TeamType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False"/>
-                            </StackPanel>
-                            <Separator Width="20" Visibility="Hidden"/>
-                            <StackPanel Width="100" Visibility="Hidden">
-                                <Label Content="Invade Type" />
-                                <TextBox IsEnabled="False"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-               
-                
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" Grid.RowSpan="2">
-            <StackPanel Margin="10,0,10,0">
-                
-                <Label Content="Position"/>
-                <Border BorderBrush="Gray" BorderThickness="1" Height="252" >
-                    <StackPanel>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Separator Width="259" Visibility="Hidden"/>
-                                <StackPanel>
-                                    <Label Content="Stored Positions"/>
-                                    <ComboBox x:Name="cmbStoredPositions" KeyDown="storedPositions_KeyDown" SelectionChanged="storedPositions_SelectionChanged" IsEditable="True" Width="100" />
-                                </StackPanel>
-                                <StackPanel Margin="5,26,0,0">
-                                    <Button x:Name="deleteButton" Content="Del" Width="35" Height="22" Click="DeleteButton_Click"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                            <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Label Content="X" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
-                                <Label Content="Y" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
-                                <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
-                                <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4"/>
-                                <Label Content="Current" Grid.Column="1" Grid.Row="0"/>
-                                <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding ElementName=PlayerCon, Path=Hook.PosX, Mode=OneWay}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                                <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding ElementName=PlayerCon, Path=Hook.PosY, Mode=OneWay}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                                <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding ElementName=PlayerCon, Path=Hook.PosZ, Mode=OneWay}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Grid.Row="4" >
-                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                                        <TextBlock Text="X" Width="33" TextAlignment="Center"/>
-                                        <TextBlock Text="Y" Width="33" TextAlignment="Center"/>
-                                        <TextBlock Text="Z" Width="33" TextAlignment="Center" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.AngX, Mode=OneWay, StringFormat={}{0:N2}}" Width="33" TextAlignment="Center" IsEnabled="False"/>
-                                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.AngY, Mode=OneWay, StringFormat={}{0:N2}}" Width="33" TextAlignment="Center" IsEnabled="False"/>
-                                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.AngZ, Mode=OneWay, StringFormat={}{0:N2}}" Width="33" TextAlignment="Center" IsEnabled="False"/>
-                                    </StackPanel>
-                                </StackPanel>
-                                <Button Content="Store" x:Name="btnPosStore" Grid.Column="1" Grid.Row="5" IsEnabled="False" Height="25" Margin="0,5,0,0" Click="btnStore_Click"/>
+                        <Grid Grid.Row="4" Grid.Column="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <CheckBox Content="Restore State" x:Name="cbxRestoreState" IsChecked="{Binding RestoreState,Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Button Content="Store" x:Name="btnPosStore" IsEnabled="False" Margin="2" Click="btnStore_Click" Grid.Row="1"/>
+                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="False" Grid.Column="3" Grid.Row="5" Margin="2" Click="btnRestore_Click"/>
+                        </Grid>
 
-                                <Label Content="Stable" Grid.Column="2" Grid.Row="0"/>
-                                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableX, Mode=OneWay}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
-                                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableY, Mode=OneWay}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
-                                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableZ, Mode=OneWay}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableX, Mode=OneWay}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableY, Mode=OneWay}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableZ, Mode=OneWay}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
 
-                                <Label Content="Stored" Grid.Column="3" Grid.Row="0" />
-                                <wpfTool:DecimalUpDown x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
-                                <wpfTool:DecimalUpDown x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
-                                <wpfTool:DecimalUpDown x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
-                                <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="False" Grid.Column="3" Grid.Row="5" Height="25" Margin="0,5,0,0" Click="btnRestore_Click"/>
-                                <StackPanel Grid.Column="3" VerticalAlignment="Center" Grid.Row="4" >
-                                    <StackPanel Orientation="Horizontal"  Margin="0,5,0,0">
-                                        <TextBlock Text="X" Width="33" TextAlignment="Center"/>
-                                        <TextBlock Text="Y" Width="33" TextAlignment="Center"/>
-                                        <TextBlock Text="Z" Width="33" TextAlignment="Center" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                        <TextBox Width="33" x:Name="txtAngX" TextAlignment="Center" IsEnabled="False"/>
-                                        <TextBox Width="33" x:Name="txtAngY" TextAlignment="Center" IsEnabled="False"/>
-                                        <TextBox Width="33" x:Name="txtAngZ" TextAlignment="Center" IsEnabled="False"/>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Separator Width="260" Visibility="Hidden"/>
-                            <CheckBox Content="Restore State" x:Name="cbxRestoreState" IsChecked="{Binding RestoreState, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-              
+                        <Label Content="Stored" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                        <wpfTool:DecimalUpDown x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
+                        <wpfTool:DecimalUpDown x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
 
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="2">
-            <StackPanel Margin="10,0,10,0">
-                <Label Content="Misc"/>
-                <Border BorderBrush="Gray" BorderThickness="1" Height="128">
-                    <StackPanel Margin="0,5,0,0" >
-                        <StackPanel Margin="15,0,0,0" Orientation="Horizontal">
-                            <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Gravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="False"/>
-                            <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="False"/>
-                            <Separator Width="65" Visibility="Hidden"/>
-                            <StackPanel>
-                                <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="False" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked"/>
-                                <wpfTool:DecimalUpDown Value="{Binding SpeedValue, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,0" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus"/>
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="Bonfire"/>
-                                <CheckBox Content="Quick Select Bonfire" x:Name="cbxQuickSelectBonfire" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                <CheckBox Content="Bonfire Rest After Warping" x:Name="cbxWarpRest" Margin="10,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <Grid HorizontalAlignment="Center" >
-                                <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" Width="385" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True"/>
-                                <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,0,0,0" IsHitTestVisible="False"/>
-                            </Grid>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <ComboBox x:Name="cbxBonfire" SelectionChanged="cbxBonfire_SelectionChanged"  Width="300"/>
-                                <Button Content="Warp" Click="WarpButton_Click" Width="75" Margin="10,0,0,0" x:Name="btnWarp"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-                
-            </StackPanel>
+                        <Grid Grid.Row="4" Grid.Column="1" Margin="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="X" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Y" TextAlignment="Center" Grid.Column="1" VerticalAlignment="Center"/>
+                            <TextBlock Text="Z" TextAlignment="Center" Grid.Column="2" VerticalAlignment="Center" />
+                            <TextBox x:Name="txtAngX" Text="{Binding ElementName=PlayerCon, Path=Hook.AngX, Mode=OneWay, StringFormat={}{0:N2}}" TextAlignment="Center" IsEnabled="False" Grid.Row="1"/>
+                            <TextBox x:Name="txtAngY" Text="{Binding ElementName=PlayerCon, Path=Hook.AngY, Mode=OneWay, StringFormat={}{0:N2}}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1"/>
+                            <TextBox x:Name="txtAngZ" Text="{Binding ElementName=PlayerCon, Path=Hook.AngZ, Mode=OneWay, StringFormat={}{0:N2}}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="2"/>
+                        </Grid>
+                        <Grid Grid.Row="4" Grid.Column="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Label Content="Stored Positions" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+                            <ComboBox x:Name="cmbStoredPositions" Margin ="2" KeyDown="storedPositions_KeyDown" SelectionChanged="storedPositions_SelectionChanged" IsEditable="True" Grid.Row="1" />
+                            <Button x:Name="deleteButton" Margin="2" Content="Del" Click="DeleteButton_Click" Grid.Row="2"/>
+                        </Grid>
 
-        </Grid>
-
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <StackPanel Margin="0,0,0,10" Grid.Row="2" VerticalAlignment="Stretch">
+            <Label Content="Misc"/>
+            <Border BorderBrush="Gray" BorderThickness="1">
+                <StackPanel Margin="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Bonfire Warp" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="Quick Select" x:Name="cbxQuickSelectBonfire" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
+                        <CheckBox Content="Rest After Warp" x:Name="cbxWarpRest" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2"/>
+                    </Grid>
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" Width="385" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="4" Margin="0,5,0,0"/>
+                        <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,5,0,0" IsHitTestVisible="False" Grid.ColumnSpan="4"/>
+                        <ComboBox x:Name="cbxBonfire" SelectionChanged="cbxBonfire_SelectionChanged" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,10"/>
+                        <Button Content="Warp" Click="WarpButton_Click" x:Name="btnWarp" Grid.Row="1" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,10"/>
+                    </Grid>
+                    <Grid VerticalAlignment="Bottom" Margin="50,5,50,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Gravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="False" Margin="0,5,0,5" VerticalContentAlignment="Center"/>
+                        <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="False" Grid.Row="1" VerticalAlignment="Bottom" Margin="0,5,0,5" VerticalContentAlignment="Center"/>
+                        <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="False" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Margin="0,10,0,10"/>
+                        <wpfTool:DecimalUpDown Value="{Binding SpeedValue, Mode=TwoWay, Source={x:Static p:Settings.Default}, 
+                    UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus" Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
     </Grid>
 </local:METAControl>
