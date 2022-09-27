@@ -40,7 +40,9 @@ namespace DS2S_META
         {
             if (Hook.Loaded)
             {
-                DS2SClass charClass = cmbClass.SelectedItem as DS2SClass;
+                if (cmbClass.SelectedItem is not DS2SClass charClass)
+                    throw new NullReferenceException("Null character class");
+
                 Hook.Class = charClass.ID;
                 nudVig.Minimum = charClass.Vigor;
                 nudEnd.Minimum = charClass.Endurance;
@@ -231,7 +233,7 @@ namespace DS2S_META
             var dbgsid = 1990000;
             Hook.GiveItemSilently(dbgsid, 1, 5, 0);
             var decapitateid = 63017000; // :D
-            Hook.GetItem(decapitateid, 1, 0, 0);        // show visibly
+            Hook.GiveItem_wrapper(decapitateid, 1, 0, 0);        // show visibly
             
 
 

@@ -27,7 +27,7 @@ namespace DS2S_META
             return Name;
         }
 
-        public static List<DS2SCovenant> All = new List<DS2SCovenant>();
+        public static List<DS2SCovenant> All = new();
 
         static DS2SCovenant()
         {

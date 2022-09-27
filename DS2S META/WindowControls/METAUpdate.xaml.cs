@@ -39,7 +39,7 @@ namespace DS2S_META
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Properties.Settings.Default.ShowUpdateMessage = !cbxShowUpdateNotification.IsChecked.Value;
+            Properties.Settings.Default.ShowUpdateMessage = !cbxShowUpdateNotification.IsChecked == true;
         }
 
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)

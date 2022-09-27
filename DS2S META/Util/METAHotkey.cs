@@ -1,7 +1,7 @@
 ﻿using mrousavy;
 using System;
 using System.Diagnostics;
-using System.Drawing;
+//using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,7 +19,7 @@ namespace DS2S_META
         private Brush DefaultColor;
 
         public Key Key;
-        public HotKey HotKey;
+        public HotKey? HotKey;
 
         public METAHotkey(string settingsName, TextBox setTextBox, TabItem setTabPage, Action<HotKey> setAction, System.Windows.Window window)
         {
@@ -71,6 +71,9 @@ namespace DS2S_META
             UnregisterHotkey();
 
             var mWindow = Window as MainWindow;
+            if (mWindow == null)
+                throw new NullReferenceException("Null Window issue");
+
             var existingKey = mWindow.Hotkeys.Find(hKey => hKey.Key == Key && hKey.SettingsName != SettingsName && hKey.Key != Key.Escape);
             if (existingKey != null)
             {

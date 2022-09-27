@@ -30,7 +30,7 @@ namespace DS2S_META
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (IsOk)
-                Properties.Settings.Default.ShowWarnRandowarp = !cbxNoShowRandoWarning.IsChecked.Value;
+                Properties.Settings.Default.ShowWarnRandowarp = cbxNoShowRandoWarning.IsChecked == false;
         }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)

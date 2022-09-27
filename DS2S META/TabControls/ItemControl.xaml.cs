@@ -46,9 +46,9 @@ namespace DS2S_META
 
         private void HandleMaxAvailable()
         {
-            if (cbxQuantityRestrict.IsChecked.Value)
+            if (cbxQuantityRestrict.IsChecked == true)
             {
-                DS2SItem item = lbxItems.SelectedItem as DS2SItem;
+                DS2SItem? item = lbxItems.SelectedItem as DS2SItem;
                 if (item == null)
                     return;
 
@@ -58,7 +58,7 @@ namespace DS2S_META
                 if (diff != nudQuantity.Maximum)
                 {
                     nudQuantity.Maximum = diff;
-                    if (cbxMax.IsChecked.Value)
+                    if (cbxMax.IsChecked == true)
                         nudQuantity.Value = nudQuantity.Maximum;
 
                     nudQuantity.IsEnabled = nudQuantity.Maximum > 1;
@@ -93,7 +93,7 @@ namespace DS2S_META
         {
             lbxItems.Items.Clear();
 
-            if (SearchAllCheckbox.IsChecked.Value && txtSearch.Text != "")
+            if (SearchAllCheckbox.IsChecked == true && txtSearch.Text != "")
             {
                 //search every item category
                 foreach (DS2SItemCategory category in cmbCategory.Items)
@@ -108,7 +108,10 @@ namespace DS2S_META
             else
             {
                 //only search selected item category
-                DS2SItemCategory category = cmbCategory.SelectedItem as DS2SItemCategory;
+                DS2SItemCategory? category = cmbCategory.SelectedItem as DS2SItemCategory;
+                if (category == null)
+                    return;
+
                 foreach (DS2SItem item in category.Items)
                 {
                     if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
@@ -151,7 +154,7 @@ namespace DS2S_META
             setQuantityMaximum(item);
 
             // Update UI
-            if (cbxQuantityRestrict.IsChecked.Value)
+            if (cbxQuantityRestrict.IsChecked == true)
             {
                 // restricted
                 nudQuantity.IsEnabled = nudQuantity.Maximum > 1;
@@ -163,7 +166,7 @@ namespace DS2S_META
             }
             txtMaxHeld.Visibility = MaxMinusHeld(item) > 0 ? Visibility.Hidden : Visibility.Visible;
         }
-        private bool TryGetSelectedItem(out DS2SItem item)
+        private bool TryGetSelectedItem(out DS2SItem? item)
         {
             item = null;
             if (lbxItems == null)
@@ -181,7 +184,7 @@ namespace DS2S_META
 
         private void setQuantityMaximum(DS2SItem item)
         {
-            nudQuantity.Maximum = cbxQuantityRestrict.IsChecked.Value ? MaxMinusHeld(item) : 99;
+            nudQuantity.Maximum = cbxQuantityRestrict.IsChecked == true ? MaxMinusHeld(item) : 99;
         }
 
         private int MaxMinusHeld(DS2SItem item)
@@ -202,7 +205,9 @@ namespace DS2S_META
         {
             if (!Hook.Hooked) return;
 
-            if (!TryGetSelectedItem(out DS2SItem item))
+            if (!TryGetSelectedItem(out DS2SItem? item))
+                return;
+            if (item == null)
                 return;
 
             // update quantities based on newly selected item
@@ -230,10 +235,9 @@ namespace DS2S_META
 
         public void UpdateCreateEnabled()
         {
-            DS2SItem item = lbxItems.SelectedItem as DS2SItem;
-            if (item == null)
-                return;
-
+            if (lbxItems.SelectedItem is not DS2SItem item)
+                throw new NullReferenceException("Unknown item");
+            
             btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
         }
 
@@ -253,17 +257,19 @@ namespace DS2S_META
             if (!Properties.Settings.Default.UpdateMaxLive)
                 HandleMaxAvailable();
             //Check if the button is enabled and the selected item isn't null
-            if (btnCreate.IsEnabled && lbxItems.SelectedItem != null)
+            if (btnCreate.IsEnabled)
             {
                 _ = ChangeColor(Brushes.DarkGray);
-                DS2SItem item = lbxItems.SelectedItem as DS2SItem;
-                if (item == null)
+                if (lbxItems.SelectedItem is not DS2SItem item)
                     return;
-
-                var id = item.ID;
-
+                
+                // Get values:
+                short quanval = (short)(nudQuantity.Value?? 1);
+                byte upgrval = (byte)(nudQuantity.Value ?? 1);
                 var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
-                Hook.GetItem(id, (short)nudQuantity.Value, (byte)nudUpgrade.Value, (byte)infusion.ID);
+                byte infuidval = (byte)(nudQuantity.Value ?? 1);
+
+                Hook.GiveItem_wrapper(item.ID, quanval, upgrval, infuidval);
                 if (!Properties.Settings.Default.UpdateMaxLive)
                     HandleMaxAvailable();
             }
@@ -365,7 +371,7 @@ namespace DS2S_META
         {
             // Set maximum values
             // Assumes that setQuantityMaximum(item) has already been called!
-            if (cbxMax.IsChecked.Value)
+            if (cbxMax.IsChecked == true)
             {
                 nudQuantity.Value = nudQuantity.Maximum;
                 nudUpgrade.Value = nudUpgrade.Maximum;

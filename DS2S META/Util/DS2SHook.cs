@@ -17,13 +17,12 @@ namespace DS2S_META
 {
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new(name));
         }
-        public IntPtr BaseAddress => Process?.MainModule.BaseAddress ?? IntPtr.Zero;
+        public IntPtr BaseAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
         private string _version;
@@ -960,7 +959,7 @@ namespace DS2S_META
         #endregion
 
         #region Items
-        public void GetItem(int item, short amount, byte upgrade, byte infusion)
+        public void GiveItem_wrapper(int item, short amount, byte upgrade, byte infusion)
         {
             if (Properties.Settings.Default.SilentItemGive)
                 GiveItemSilently(item, amount, upgrade, infusion);
@@ -3456,9 +3455,9 @@ namespace DS2S_META
                 PlayerParam.WriteByte((int)DS2SOffsets.Covenants.CurrentCovenant, value);
             }
         }
-        public string CurrentCovenantName
+        public string? CurrentCovenantName
         {
-            get => Loaded ? DS2SCovenant.All.FirstOrDefault(x => x.ID == CurrentCovenant).Name : "";
+            get => Loaded ? DS2SCovenant.All.FirstOrDefault(x => x.ID == CurrentCovenant)?.Name : "";
         }
         public bool HeirsOfTheSunDiscovered
         {

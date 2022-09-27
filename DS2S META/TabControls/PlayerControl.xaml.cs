@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -37,7 +37,7 @@ namespace DS2S_META
                 cbxBonfire.Items.Add(bonfire);
             LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: _Game Start"); //last set bonfire (default values) // TODO cleaner.
             cbxBonfire.Items.Add(LastSetBonfire); //add to end of filter
-            Positions = SavedPos.GetSavedPositions();
+            Positions = SavedPos.GetSavedPositions()?? new();
             cmbStoredPositions.Items.Add(new SavedPos());
             UpdatePositions();
         }
@@ -76,8 +76,8 @@ namespace DS2S_META
                 PlayerState.AngX = Hook.AngX;
                 PlayerState.AngY = Hook.AngY;
                 PlayerState.AngZ = Hook.AngZ;
-                PlayerState.HP = (int)nudHealth.Value;
-                PlayerState.Stamina = (int)nudStamina.Value;
+                PlayerState.HP = nudHealth.Value?? 0; // default to 0 if null
+                PlayerState.Stamina = nudStamina.Value?? 0;
                 PlayerState.FollowCam = Hook.CameraData;
                 PlayerState.FollowCam2 = Hook.CameraData2;
                 PlayerState.Set = true;
@@ -162,7 +162,7 @@ namespace DS2S_META
                 //Hook.CamX = CamX;
                 //Hook.CamY = CamY;
                 //Hook.CamZ = CamZ;
-                if (cbxRestoreState.IsChecked.Value)
+                if (cbxRestoreState.IsChecked == true)
                 {
                     nudHealth.Value = PlayerState.HP;
                     nudStamina.Value = PlayerState.Stamina;
@@ -174,14 +174,14 @@ namespace DS2S_META
         {
             if (Positions.Any(n => n.Name == cmbStoredPositions.Text))
             {
-                if (System.Windows.Forms.MessageBox.Show("Are you sure you want to delete this positon?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                {
-                    var old = Positions.Single(n => n.Name == cmbStoredPositions.Text);
-                    Positions.Remove(old);
-                    cmbStoredPositions.SelectedIndex = 0;
-                    UpdatePositions();
-                    SavedPos.Save(Positions);
-                }
+                //if (MessageBox.Show("Are you sure you want to delete this positon?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                //{
+                //    var old = Positions.Single(n => n.Name == cmbStoredPositions.Text);
+                //    Positions.Remove(old);
+                //    cmbStoredPositions.SelectedIndex = 0;
+                //    UpdatePositions();
+                //    SavedPos.Save(Positions);
+                //}
 
             }
 
@@ -262,30 +262,36 @@ namespace DS2S_META
 
         private void cbxSpeed_Checked(object sender, RoutedEventArgs e)
         {
-            nudSpeed.IsEnabled = cbxSpeed.IsChecked.Value;
-            Hook.Speedhack(cbxSpeed.IsChecked.Value);
+            nudSpeed.IsEnabled = cbxSpeed.IsChecked == true;
+            Hook.Speedhack(cbxSpeed.IsChecked == true);
         }
 
-        private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void SetGameSpeed()
         {
             if (GameLoaded && Hook.Hooked)
-                Hook.SetSpeed((float)nudSpeed.Value);
+                Hook.SetSpeed((float)(nudSpeed.Value ?? 1));
+        }
+        private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            SetGameSpeed();
         }
         private void nudSpeed_LostFocus(object sender, RoutedEventArgs e)
         {
-            nudSpeed_ValueChanged(null, null);
+            SetGameSpeed();
         }
         private void cbxBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Hook.Loaded && cbxQuickSelectBonfire.IsChecked.Value)
-            {
-                var bonfire = cbxBonfire.SelectedItem as DS2SBonfire;
-                if (bonfire == null)
-                    return;
-
-                Hook.LastBonfireID = bonfire.ID;
-                Hook.LastBonfireAreaID = bonfire.AreaID;
-            }
+            // Guard clauses
+            if (!Hook.Loaded)
+                return;
+            if (cbxQuickSelectBonfire.IsChecked != true)
+                return;
+            if (cbxBonfire.SelectedItem is not DS2SBonfire bonfire)
+                throw new NullReferenceException("Unexpected bonfire");
+            
+            // Do stuff
+            Hook.LastBonfireID = bonfire.ID;
+            Hook.LastBonfireAreaID = bonfire.AreaID;
         }
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -318,14 +324,14 @@ namespace DS2S_META
             _ = ChangeColor(Brushes.DarkGray);
             if (Hook.Multiplayer)
             {
-                System.Windows.MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             var bonfire = cbxBonfire.SelectedItem as DS2SBonfire;
-            
+
             // Handle betwixt start warps:
-            bool NoPrevBonfire = (bonfire.ID == 0 || bonfire.AreaID == 0 || bonfire == null);
+            bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
             if (NoPrevBonfire)
             {
                 int BETWIXTAREA = 167903232;
@@ -335,10 +341,14 @@ namespace DS2S_META
                 return;
             }
 
+
+            if (bonfire == null)
+                throw new Exception("How do we get here intellisense??");
+
             Hook.LastBonfireID = bonfire.ID;
             Hook.LastBonfireAreaID = bonfire.AreaID;
             var warped = Hook.Warp(bonfire.ID);
-            if (warped && cbxWarpRest.IsChecked.Value)
+            if (warped && cbxWarpRest.IsChecked == true)
                 WarpRest = true; 
         }
 

@@ -57,7 +57,7 @@ namespace DS2S_META
             get
             {
                 if (!Hook.Hooked)
-                    return null;
+                    return String.Empty;
 
                 if (Hook.Online)
                     return "Yes";
@@ -69,7 +69,7 @@ namespace DS2S_META
             get
             {
                 if (!Hook.Hooked)
-                    return null; 
+                    return Brushes.Black; 
 
                 if (Hook.Online)
                     return Brushes.GreenYellow;

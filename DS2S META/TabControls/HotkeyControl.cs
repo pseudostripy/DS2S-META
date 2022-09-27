@@ -28,12 +28,12 @@ namespace DS2S_META
 
             Hotkeys.Add(new METAHotkey("ToggleGravity", hkeyGravity.tbxHotkey, tabHotkeys, (hotkey) =>
             {
-                metaPlayer.cbxGravity.IsChecked = !metaPlayer.cbxGravity.IsChecked.Value;
+                metaPlayer.cbxGravity.IsChecked = !metaPlayer.cbxGravity.IsChecked == true;
             }, this));
 
             Hotkeys.Add(new METAHotkey("ToggleCollision", hkeyCollision.tbxHotkey, tabHotkeys, (hotkey) =>
             {
-                metaPlayer.cbxCollision.IsChecked = !metaPlayer.cbxCollision.IsChecked.Value;
+                metaPlayer.cbxCollision.IsChecked = !metaPlayer.cbxCollision.IsChecked == true;
             }, this));
 
             Hotkeys.Add(new METAHotkey("Up", hkeyUp.tbxHotkey, tabHotkeys, (hotkey) =>
@@ -49,12 +49,12 @@ namespace DS2S_META
             Hotkeys.Add(new METAHotkey("ModifySpeed", hkeySpeed.tbxHotkey, tabHotkeys, (hotkey) =>
             {
                 if (metaPlayer.cbxSpeed.IsEnabled)
-                    metaPlayer.cbxSpeed.IsChecked = !metaPlayer.cbxSpeed.IsChecked.Value;
+                    metaPlayer.cbxSpeed.IsChecked = !metaPlayer.cbxSpeed.IsChecked == true;
             }, this));
 
             Hotkeys.Add(new METAHotkey("ToggleSpeedFactors", hkeySpeedFactor.tbxHotkey, tabHotkeys, (hotkey) =>
             {
-                metaInternal.cbxSpeeds.IsChecked = !metaInternal.cbxSpeeds.IsChecked.Value;
+                metaInternal.cbxSpeeds.IsChecked = !metaInternal.cbxSpeeds.IsChecked == true;
             }, this));
 
             Hotkeys.Add(new METAHotkey("Warp", hkeyWarp.tbxHotkey, tabHotkeys, (hotkey) =>
@@ -76,8 +76,8 @@ namespace DS2S_META
 
         private void SaveHotkeys()
         {
-            Settings.EnableHotkeys = cbxEnableHotkeys.IsChecked.Value;
-            Settings.HandleHotkeys = cbxHandleHotkeys.IsChecked.Value;
+            Settings.EnableHotkeys = cbxEnableHotkeys.IsChecked == true;
+            Settings.HandleHotkeys = cbxHandleHotkeys.IsChecked == true;
             foreach (METAHotkey hotkey in Hotkeys)
                 hotkey.Save();
         }

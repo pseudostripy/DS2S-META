@@ -29,7 +29,7 @@ namespace DS2S_META
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Properties.Settings.Default.ShowWarnRandoExit = !cbxNoShowRandoExitWarning.IsChecked.Value;
+            Properties.Settings.Default.ShowWarnRandoExit = cbxNoShowRandoExitWarning.IsChecked == false;
         }
     }
 }

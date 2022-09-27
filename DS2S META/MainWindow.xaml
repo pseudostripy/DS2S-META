@@ -8,7 +8,7 @@
         xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DS2S_META"
         mc:Ignorable="d"
-        Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" Icon="Ladder.ico" ResizeMode="NoResize" WindowStyle="None" SizeToContent="WidthAndHeight" >
+        Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" ResizeMode="NoResize" WindowStyle="None" SizeToContent="WidthAndHeight" >
 
     <Window.DataContext>
         <local:DS2SViewModel x:Name="ViewModel"/>
@@ -23,7 +23,6 @@
         <StackPanel Grid.ColumnSpan="2">
             <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="Ladder.ico" Width="25"/>
                     <Label x:Name="lblWindowName" Foreground="White"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" 

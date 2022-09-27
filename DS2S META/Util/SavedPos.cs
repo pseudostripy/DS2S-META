@@ -11,20 +11,17 @@ namespace DS2S_META
 {
     public class SavedPos : IComparable<SavedPos>
     {
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string? ToString() => Name;
 
         [XmlAnyElement("NameXmlComment")]
-        public XmlComment NameXmlComment { get { return GetType().GetXmlComment(); } set { } }
+        public XmlComment? NameXmlComment { get => GetType().GetXmlComment(); set { } }
 
         [XmlComment("string")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
 
         [XmlAnyElement("XXmlComment")]
-        public XmlComment XXmlComment { get { return GetType().GetXmlComment(); } set { } }
+        public XmlComment? XXmlComment { get { return GetType().GetXmlComment(); } set { } }
 
         [XmlComment("decimal")]
         public float X { get; set; }
@@ -35,29 +32,29 @@ namespace DS2S_META
 
 
         [XmlAnyElement("PlayerStateXmlComment")]
-        public XmlComment PlayerStateXmlComment { get { return GetType().GetXmlComment(); } set { } }
+        public XmlComment? PlayerStateXmlComment { get { return GetType().GetXmlComment(); } set { } }
 
         [XmlComment("HP & Stam = int. FollowCam is a byte array as Base64")]
         public State.PlayerState PlayerState { get; set; }
 
-        public int CompareTo(SavedPos other)
+        public int CompareTo(SavedPos? other)
         {
-            return this.Name.CompareTo(other.Name);
+            if (Name == null)
+                return -1;
+            return Name.CompareTo(other?.Name);
         }
 
         private static XmlSerializer XML = new XmlSerializer(typeof(List<SavedPos>));
 
         private static string SavedPositions = $"{GetTxtResourceClass.ExeDir}/Resources/SavedPositions.xml";
 
-        public static List<SavedPos> GetSavedPositions()
+        public static List<SavedPos>? GetSavedPositions()
         {
             var positions = new List<SavedPos>();
             if (File.Exists(SavedPositions))
             {
-                using (var stream = new FileStream(SavedPositions, FileMode.Open))
-                {
-                    positions = (List<SavedPos>)XML.Deserialize(stream);
-                }
+                using var stream = new FileStream(SavedPositions, FileMode.Open);
+                positions = (List<SavedPos>?)XML.Deserialize(stream);
             }
 
             return positions;
@@ -94,7 +91,7 @@ namespace DS2S_META
     {
         const string XmlCommentPropertyPostfix = "XmlComment";
 
-        static XmlCommentAttribute GetXmlCommentAttribute(this Type type, string memberName)
+        static XmlCommentAttribute? GetXmlCommentAttribute(this Type type, string memberName)
         {
             var member = type.GetProperty(memberName);
             if (member == null)
@@ -103,7 +100,7 @@ namespace DS2S_META
             return attr;
         }
 
-        public static XmlComment GetXmlComment(this Type type, [CallerMemberName] string memberName = "")
+        public static XmlComment? GetXmlComment(this Type type, [CallerMemberName] string memberName = "")
         {
             var attr = GetXmlCommentAttribute(type, memberName);
             if (attr == null)

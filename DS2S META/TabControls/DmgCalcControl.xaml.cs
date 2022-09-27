@@ -97,16 +97,16 @@ namespace DS2S_META
 
         }
 
-        private bool TryGetSelectedItem(out DS2SItem item)
+        private bool TryGetSelectedItem(out DS2SItem? item)
         {
-            item = null;
+            item = default;
             if (lbxItems == null)
                 return false;
 
             if (lbxItems.SelectedIndex == -1)
                 return false;
 
-            item = lbxItems.SelectedItem as DS2SItem;
+            item = (DS2SItem)lbxItems.SelectedItem;
             if (item == null)
                 return false;
 
@@ -132,17 +132,19 @@ namespace DS2S_META
             // Guard clauses
             if (!Hook.Hooked)
                 return;
-            if (!TryGetSelectedItem(out DS2SItem item))
+            if (!TryGetSelectedItem(out var item))
+                return;
+            if (item == null)
                 return;
 
             // Update infusion/upgrade ..?
             cmbInfusion.Items.Clear();
-            if (item.Type == DS2SItem.ItemType.Weapon)
+            if (item.Type != DS2SItem.ItemType.Weapon)
+                cmbInfusion.Items.Add(DS2SInfusion.Infusions[0]);
+            else
                 foreach (var infusion in Hook.GetWeaponInfusions(item.ID))
                     cmbInfusion.Items.Add(infusion);
-            else
-                cmbInfusion.Items.Add(DS2SInfusion.Infusions[0]);
-            
+
             cmbInfusion.SelectedIndex = 0;
             cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
 
@@ -157,8 +159,7 @@ namespace DS2S_META
 
         public void UpdateCreateEnabled()
         {
-            DS2SItem item = lbxItems.SelectedItem as DS2SItem;
-            if (item == null)
+            if (lbxItems.SelectedItem is not DS2SItem item)
                 return;
 
             btnCalculate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
@@ -257,7 +258,7 @@ namespace DS2S_META
 
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
         {
-            if (!TryGetSelectedItem(out DS2SItem item))
+            if (!TryGetSelectedItem(out DS2SItem? item))
                 return;
             
             HandleMaxItemCheckbox();
@@ -266,7 +267,7 @@ namespace DS2S_META
 
         private void HandleMaxItemCheckbox()
         {
-            if (cbxMax.IsChecked.Value)
+            if (cbxMax.IsChecked == true)
                 nudUpgrade.Value = nudUpgrade.Maximum;
             else
                 nudUpgrade.Value = 0;

@@ -21,13 +21,13 @@ namespace DS2S_META.Randomizer
         private Dictionary<int, ShopInfo> VanillaShops;
         private Dictionary<int, ShopInfo> FixedVanillaShops;
         internal ItemSetBase Logic;
-        internal List<DropInfo> LTR_flatlist;
+        internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
         // 
-        internal List<DropInfo> ldkeys;
-        internal List<DropInfo> ldreqs;
-        internal List<DropInfo> ldgens;
+        internal List<DropInfo> ldkeys = new();
+        internal List<DropInfo> ldreqs = new();
+        internal List<DropInfo> ldgens = new();
         //
         private List<int> Unfilled = new List<int>();
         private List<int> KeysPlacedSoFar = new List<int>(); // to tidy
@@ -41,7 +41,7 @@ namespace DS2S_META.Randomizer
             name = found ? GetItemName(itemid) : "";
             return found;
         }
-        internal static bool TryGetItem(int itemid, out ItemParam item)
+        internal static bool TryGetItem(int itemid, out ItemParam? item)
         {
             bool found = VanillaItemParams.ContainsKey(itemid);
             item = found ? VanillaItemParams[itemid] : null;
@@ -346,7 +346,9 @@ namespace DS2S_META.Randomizer
         }
         private void FixInfusion(DropInfo di)
         {
-            if (!TryGetItem(di.ItemID, out ItemParam item))
+            if (!TryGetItem(di.ItemID, out ItemParam? item))
+                return;
+            if (item == null)
                 return;
 
             switch (item.ItemType)
@@ -365,7 +367,7 @@ namespace DS2S_META.Randomizer
         }
         private void FixReinforcement(DropInfo di)
         {
-            if (!TryGetItem(di.ItemID, out ItemParam item))
+            if (!TryGetItem(di.ItemID, out ItemParam? item))
                 return;
             var maxupgrade = GetItemMaxUpgrade(item);
             di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade

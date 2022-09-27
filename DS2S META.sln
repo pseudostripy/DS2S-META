@@ -3,7 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DS2S META", "DS2S META\DS2S META.csproj", "{765D15F8-3523-4115-8114-049F9CFAFD5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DS2S META", "DS2S META\DS2S META.csproj", "{765D15F8-3523-4115-8114-049F9CFAFD5F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{18EFF8D2-C4D5-4E18-9A31-38E106BA1CF7} = {18EFF8D2-C4D5-4E18-9A31-38E106BA1CF7}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyHook", "PropertyHook\PropertyHook\PropertyHook.csproj", "{18EFF8D2-C4D5-4E18-9A31-38E106BA1CF7}"
 EndProject

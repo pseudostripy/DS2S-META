@@ -5,7 +5,7 @@ namespace DS2S_META
 {
     class GetTxtResourceClass
     {
-        public static readonly string ExeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        public static readonly string? ExeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
         public static string GetTxtResource(string filePath)
         {

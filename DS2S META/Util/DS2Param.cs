@@ -9,7 +9,7 @@ namespace DS2S_META.Util
     internal abstract class DS2Param
     {
         // Fields
-        private DS2SHook Hook;
+        // comment private DS2SHook Hook;
 
         // Methods
         public abstract void Read(); // read param element
