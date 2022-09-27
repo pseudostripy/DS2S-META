@@ -97,20 +97,6 @@ namespace DS2S_META
 
         }
 
-        private void cbxQuantityRestrict_Checked(object sender, RoutedEventArgs e)
-        {
-            UpdateQuantityAndTextVis();
-        }
-
-        private void UpdateQuantityAndTextVis()
-        {
-            if (!TryGetSelectedItem(out DS2SItem item))
-                return;
-
-            // Update maximum based on cbx value
-            setQuantityMaximum(item);
-            txtMaxHeld.Visibility = MaxMinusHeld(item) > 0 ? Visibility.Hidden : Visibility.Visible;
-        }
         private bool TryGetSelectedItem(out DS2SItem item)
         {
             item = null;
@@ -125,10 +111,6 @@ namespace DS2S_META
                 return false;
 
             return true;
-        }
-
-        private void setQuantityMaximum(DS2SItem item)
-        {
         }
 
         private int MaxMinusHeld(DS2SItem item)
@@ -147,13 +129,11 @@ namespace DS2S_META
 
         private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!Hook.Hooked) return;
-
+            // Guard clauses
+            if (!Hook.Hooked)
+                return;
             if (!TryGetSelectedItem(out DS2SItem item))
                 return;
-
-            // update quantities based on newly selected item
-            UpdateQuantityAndTextVis();
 
             // Update infusion/upgrade ..?
             cmbInfusion.Items.Clear();
@@ -280,7 +260,6 @@ namespace DS2S_META
             if (!TryGetSelectedItem(out DS2SItem item))
                 return;
             
-            setQuantityMaximum(item);
             HandleMaxItemCheckbox();
             
         }

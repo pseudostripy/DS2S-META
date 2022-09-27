@@ -669,7 +669,7 @@ namespace DS2S_META
             Free(unk);
         }
 
-
+        // Speedhack:
         static string SpeedhackDllPath = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/Speedhack.dll";
         public IntPtr SpeedhackDllPtr;
         IntPtr SetupPtr;
@@ -682,13 +682,11 @@ namespace DS2S_META
             else
                 DisableSpeedhack();
         }
-
         public void DisableSpeedhack()
         {
             IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
             Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
         }
-
         private void EnableSpeedhack()
         {
             IntPtr thread = IntPtr.Zero;
@@ -702,7 +700,6 @@ namespace DS2S_META
             Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             SetSpeed((float)Properties.Settings.Default.SpeedValue);
         }
-
         public void SetSpeed(float value)
         {
             IntPtr setSpeed = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetSpeedPtr.ToInt64());
@@ -712,7 +709,6 @@ namespace DS2S_META
             Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(valueAddress);
         }
-
         private void GetSpeedhackOffsets(string path)
         {
             var lib = Kernel32.LoadLibrary(path);

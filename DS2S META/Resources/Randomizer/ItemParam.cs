@@ -27,6 +27,8 @@ namespace DS2S_META
     /// </summary>
     internal class ItemParam
     {
+        private DS2SHook Hook;
+        
         internal string MetaItemName;
         internal int ItemID;
         internal int ItemUsageID;
