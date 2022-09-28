@@ -207,6 +207,7 @@ namespace DS2S_META
         {
             if (!Hook.Hooked) return;
 
+
             if (!TryGetSelectedItem(out DS2SItem? item))
                 return;
             if (item == null)
@@ -258,6 +259,7 @@ namespace DS2S_META
         {
             if (!Properties.Settings.Default.UpdateMaxLive)
                 HandleMaxAvailable();
+
             //Check if the button is enabled and the selected item isn't null
             if (btnCreate.IsEnabled)
             {
@@ -269,7 +271,10 @@ namespace DS2S_META
                 short quanval = (short)(nudQuantity.Value?? 1);
                 byte upgrval = (byte)(nudQuantity.Value ?? 1);
                 var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
-                byte infuidval = (byte)(nudQuantity.Value ?? 1);
+                if (infusion == null)
+                    throw new NullReferenceException("Null Infusion?");
+                var infuidval = infusion.AsByte();
+                 
 
                 Hook.GiveItem_wrapper(item.ID, quanval, upgrval, infuidval);
                 if (!Properties.Settings.Default.UpdateMaxLive)

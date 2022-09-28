@@ -33,5 +33,9 @@ namespace DS2S_META
                     new DS2SInfusion("Enchanted", 8),
                     new DS2SInfusion("Mundane", 9)
         };
+        public byte AsByte()
+        {
+            return (byte)ID;
+        }
     }
 }
