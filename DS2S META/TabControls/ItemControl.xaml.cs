@@ -269,7 +269,7 @@ namespace DS2S_META
                 
                 // Get values:
                 short quanval = (short)(nudQuantity.Value?? 1);
-                byte upgrval = (byte)(nudQuantity.Value ?? 1);
+                byte upgrval = (byte)(nudUpgrade.Value ?? 1);
                 var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
                 if (infusion == null)
                     throw new NullReferenceException("Null Infusion?");
