@@ -33,7 +33,7 @@
             <wpfTool:IntegerUpDown x:Name="nudQuantity" Minimum="1" Value="1" ClipValueToMinMax="True" Maximum="0"/>
             <Label Content="Upgrade" />
             <wpfTool:IntegerUpDown x:Name="nudUpgrade" Minimum="0" Maximum="0"/>
-            <CheckBox x:Name="SearchAllCheckbox" Content="Search All" Margin="0,10,0,0" Checked="SearchAllCheckbox_Checked" Unchecked="SearchAllCheckbox_Checked"/>
+            <CheckBox x:Name="SearchAllCheckbox" Content="Search All" Margin="0,10,0,0" Checked="SearchAllCheckbox_Checked" Unchecked="SearchAllCheckbox_Checked" IsChecked="True"/>
         </StackPanel>
         <StackPanel Grid.Column="2" Margin="5">
             <Label Content="Max Held" Visibility="Hidden" x:Name="txtMaxHeld"/>
