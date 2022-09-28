@@ -31,7 +31,6 @@ namespace DS2S_META
 
         public override void InitTab()
         {
-            FilterItems();
             InventoryTimer.Interval = 100;
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
         }
