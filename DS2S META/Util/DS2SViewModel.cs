@@ -101,11 +101,11 @@ namespace DS2S_META
             OnPropertyChanged(nameof(GameLoaded));
         }
 
-        private void Hook_OnHooked(object sender, PHEventArgs e)
+        private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
         }
 
-        private void Hook_OnUnhooked(object sender, PHEventArgs e)
+        private void Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
 
         }

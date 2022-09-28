@@ -27,9 +27,9 @@ namespace DS2S_META
             return Name;
         }
 
-        public int CompareTo(DS2SBonfireHub other)
+        public int CompareTo(DS2SBonfireHub? other)
         {
-            return Name.CompareTo(other.Name);
+            return Name.CompareTo(other?.Name);
         }
 
         public static List<DS2SBonfireHub> All = new List<DS2SBonfireHub>();

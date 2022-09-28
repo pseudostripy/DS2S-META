@@ -31,9 +31,9 @@ namespace DS2S_META
         {
             return Name;
         }
-        public int CompareTo(DS2SBonfire other)
+        public int CompareTo(DS2SBonfire? other)
         {
-            return Name.CompareTo(other.Name);
+            return Name.CompareTo(other?.Name);
         }
 
         public static List<DS2SBonfire> All = new List<DS2SBonfire>();

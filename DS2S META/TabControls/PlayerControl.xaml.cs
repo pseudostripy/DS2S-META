@@ -21,6 +21,8 @@ namespace DS2S_META
     /// </summary>
     public partial class PlayerControl : METAControl
     {
+        private DS2SBonfire? LastSetBonfire;
+
         public PlayerControl()
         {
             InitializeComponent();
@@ -186,7 +188,7 @@ namespace DS2S_META
             }
 
         }
-        private DS2SBonfire LastSetBonfire;
+        
 
         public bool WarpRest { get; private set; }
 
@@ -194,6 +196,9 @@ namespace DS2S_META
         {
             //manage unknown warps and current warps that are not in filter
             var bonfireID = Hook.LastBonfireID;
+
+            if (LastSetBonfire == null)
+                return;
 
             if (LastSetBonfire.ID != bonfireID) // lastSetBonfire does not match game LastBonfire
             {

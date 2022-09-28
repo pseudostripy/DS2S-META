@@ -14,13 +14,13 @@ namespace DS2S_META.Randomizer
     internal class RandomizerManager
     {
         // Fields:
-        DS2SHook Hook;
+        DS2SHook? Hook;
         List<Randomization> Data = new List<Randomization>(); // Combined info list
         internal static Random RNG = new Random();
-        private Dictionary<int, ItemLot> VanillaLots;
-        private Dictionary<int, ShopInfo> VanillaShops;
-        private Dictionary<int, ShopInfo> FixedVanillaShops;
-        internal ItemSetBase Logic;
+        private Dictionary<int, ItemLot> VanillaLots = new();
+        private Dictionary<int, ShopInfo> VanillaShops = new();
+        private Dictionary<int, ShopInfo> FixedVanillaShops = new();
+        internal ItemSetBase Logic = new CasualItemSet();
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
@@ -29,11 +29,11 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> ldreqs = new();
         internal List<DropInfo> ldgens = new();
         //
-        private List<int> Unfilled = new List<int>();
-        private List<int> KeysPlacedSoFar = new List<int>(); // to tidy
+        private List<int> Unfilled = new();
+        private List<int> KeysPlacedSoFar = new(); // to tidy
         internal int CurrSeed;
         //
-        internal static Dictionary<int, ItemParam> VanillaItemParams;
+        internal static Dictionary<int, ItemParam> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
         internal static bool TryGetItemName(int itemid, out string name)
         {
@@ -49,6 +49,9 @@ namespace DS2S_META.Randomizer
         }
         internal int GetItemMaxUpgrade(ItemParam item)
         {
+            if (Hook == null)
+                return 0;
+
             // Wrapper similar to the DS2Item class call in Hook.
             switch (item.ItemType)
             {
@@ -97,6 +100,9 @@ namespace DS2S_META.Randomizer
         }
         internal async Task Randomize(int seed)
         {
+            if (Hook == null)
+                return;
+
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             GetLootToRandomize(); // set Data field
@@ -126,6 +132,9 @@ namespace DS2S_META.Randomizer
         }
         internal void Unrandomize()
         {
+            if (Hook == null)
+                return;
+
             WriteVanillaShops();
             WriteVanillaLots();
 
@@ -146,7 +155,7 @@ namespace DS2S_META.Randomizer
 
             // For each vanilla lot, make a new randomization object
             IEnumerable<Randomization> ltr = VanillaLots.Select(kvp => new LotRdz(kvp))
-                            .Where(ldz => ldz.VanillaLot.NumDrops != 0)
+                            .Where(ldz => ldz.VanillaLot?.NumDrops != 0)
                             .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot))
                             .Where(ldz => !Logic.CrowDuplicates.Contains(ldz.ParamID));
             List<Randomization> listltr = ltr.ToList();
@@ -163,7 +172,7 @@ namespace DS2S_META.Randomizer
 
             // Define what loot can be distributed:
             listltr.AddRange(shoploot);         // Add shop loot for distribution
-            LTR_flatlist = listltr.SelectMany(rz => rz.Flatlist).ToList();
+            LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
         internal Dictionary<int, ShopInfo> FixShopEvents()
@@ -346,6 +355,8 @@ namespace DS2S_META.Randomizer
         }
         private void FixInfusion(DropInfo di)
         {
+            if (Hook == null)
+                return;
             if (!TryGetItem(di.ItemID, out ItemParam? item))
                 return;
             if (item == null)
@@ -368,6 +379,8 @@ namespace DS2S_META.Randomizer
         private void FixReinforcement(DropInfo di)
         {
             if (!TryGetItem(di.ItemID, out ItemParam? item))
+                return;
+            if (item == null)
                 return;
             var maxupgrade = GetItemMaxUpgrade(item);
             di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
@@ -416,7 +429,7 @@ namespace DS2S_META.Randomizer
                     if (quant != 1)
                         sb.Append($" x{quant}");
                     
-                    string desc = Logic.D[rdz.ParamID].Description;
+                    string? desc = Logic.D[rdz.ParamID].Description;
                     sb.Append($": {desc}");
                     lines.Add(sb.ToString());
                 }
@@ -450,6 +463,9 @@ namespace DS2S_META.Randomizer
         }
         internal void ClearLotsShops()
         {
+            if (Hook == null)
+                return;
+
             foreach(var kvp in VanillaLots)
             {
                 var IL = kvp.Value.Clone();
@@ -468,20 +484,32 @@ namespace DS2S_META.Randomizer
         }
         internal void WriteShuffledLots()
         {
-            var shuffledlots = Data.OfType<LotRdz>().ToDictionary(ldz => ldz.ParamID, ldz => ldz.ShuffledLot);
+            if (Hook == null)
+                return;
+
+            var shuffledlots = Data.OfType<LotRdz>()
+                                    .Where(ldz => ldz.ShuffledLot is not null)
+                                    .ToDictionary(ldz => ldz.ParamID, ldz => ldz.ShuffledLot);
             Hook.WriteAllLots(shuffledlots);
         }
         internal void WriteShuffledShops()
         {
+            if (Hook == null)
+                return;
+
             var shuffledshops = Data.OfType<ShopRdz>().ToDictionary(ldz => ldz.ParamID, ldz => ldz.ShuffledShop);
             Hook.WriteAllShops(shuffledshops, true);
         }
         internal void WriteVanillaShops()
         {
+            if (Hook == null)
+                return;
             Hook.WriteAllShops(VanillaShops, false);
         }
         internal void WriteVanillaLots()
         {
+            if (Hook == null)
+                return;
             Hook.WriteAllLots(VanillaLots);
         }
         internal void DisableUnusedShops()
@@ -499,6 +527,8 @@ namespace DS2S_META.Randomizer
                 dicbadshops[shop.Key] = badshop;
             }
 
+            if (Hook == null)
+                return;
             Hook.WriteAllShops(dicbadshops, true);
         }
         internal void FixMaughlinEvent()
@@ -521,6 +551,8 @@ namespace DS2S_META.Randomizer
             foreach (LinkedShopEvent LE in maughlin_events)
             {
                 var goodshop = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
+                if (goodshop.ShuffledShop == null)
+                    throw new NullReferenceException("Shouldn't get here");
 
                 // this still isn't a perfect solution because of quantities
                 var badshopkey = LE.RemoveIDs.First();
@@ -529,6 +561,9 @@ namespace DS2S_META.Randomizer
                 badshop.EnableFlag = vanshop.EnableFlag; // still enable when it wants to -> should "trade places"
                 cloneshops[badshopkey] = badshop;
             }
+
+            if (Hook == null)
+                return;
             Hook.WriteAllShops(cloneshops, true);
         }
 

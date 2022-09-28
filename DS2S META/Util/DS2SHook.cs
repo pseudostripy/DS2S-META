@@ -25,7 +25,7 @@ namespace DS2S_META
         public IntPtr BaseAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
-        private string _version;
+        private string _version = "";
         public string Version 
         { 
             get =>_version;
@@ -64,12 +64,12 @@ namespace DS2S_META
         private PHPointer BonfireLevels;
         private PHPointer NetSvrBloodstainManager;
 
-        private PHPointer LevelUpSoulsParam;
-        private PHPointer WeaponParam;
-        private PHPointer WeaponReinforceParam;
-        private PHPointer CustomAttrSpecParam;
-        private PHPointer ArmorReinforceParam;
-        private PHPointer ItemParam;
+        private PHPointer? LevelUpSoulsParam;
+        private PHPointer? WeaponParam;
+        private PHPointer? WeaponReinforceParam;
+        private PHPointer? CustomAttrSpecParam;
+        private PHPointer? ArmorReinforceParam;
+        private PHPointer? ItemParam;
         private PHPointer ItemUseageParam;
         private PHPointer ItemLotDropsParam; // Enemy drop tables
         private PHPointer ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
@@ -114,10 +114,53 @@ namespace DS2S_META
 
             BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
 
+            // Just make them not null:
+            var BlankPHP = BaseASetup; // TODO
+            WarpManager = BlankPHP;
+            BaseA = BlankPHP;
+            PlayerName = BlankPHP;
+            AvailableItemBag = BlankPHP;
+            ItemGiveWindow = BlankPHP;
+            PlayerBaseMisc = BlankPHP;
+            PlayerCtrl = BlankPHP;
+            PlayerPosition = BlankPHP;
+            PlayerGravity = BlankPHP;
+            PlayerParam = BlankPHP;
+            PlayerType = BlankPHP;
+            SpEffectCtrl = BlankPHP;
+            ApplySpEffect = BlankPHP;
+            PlayerMapData = BlankPHP;
+            EventManager = BlankPHP;
+            BonfireLevels = BlankPHP;
+            NetSvrBloodstainManager = BlankPHP;
+            LevelUpSoulsParam = BlankPHP;
+            WeaponParam = BlankPHP;
+            WeaponReinforceParam = BlankPHP;
+            CustomAttrSpecParam = BlankPHP;
+            ArmorReinforceParam = BlankPHP;
+            ItemParam = BlankPHP;
+            ItemUseageParam = BlankPHP;
+            ItemLotDropsParam = BlankPHP; // Enemy drop tables
+            ItemLotOtherParam = BlankPHP; // World pickups, boss kills, covenant rewards etc.
+            ShopLineupParam = BlankPHP;   // Shops.
+            BaseBSetup = BlankPHP;
+            BaseB = BlankPHP;
+            Connection = BlankPHP;
+            Camera = BlankPHP;
+            Camera2 = BlankPHP;
+            Camera3 = BlankPHP;
+            Camera4 = BlankPHP;
+            Camera5 = BlankPHP;
+            SpeedFactorAccel = BlankPHP;
+            SpeedFactorAnim = BlankPHP;
+            SpeedFactorJump = BlankPHP;
+            SpeedFactorBuildup = BlankPHP;
+
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
-        private void DS2Hook_OnHooked(object sender, PHEventArgs e)
+        
+        private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             if (!Is64Bit)
             {
@@ -189,7 +232,7 @@ namespace DS2S_META
         }
 
       
-        private void DS2Hook_OnUnhooked(object sender, PHEventArgs e)
+        private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
             Version = "Not Hooked";
             Setup = false;
@@ -931,9 +974,12 @@ namespace DS2S_META
             return soulMemory;
         }
 
-        public static List<int> Levels;
+        public static List<int> Levels = new();
         private void GetLevelRequirements()
         {
+            if (LevelUpSoulsParam == null)
+                throw new Exception("LevelUpSoulsParam not setup");
+
             Levels = new List<int>();
             var paramName = LevelUpSoulsParam.ReadString(0xC, Encoding.UTF8, 0x18);
             if (paramName != "CHR_LEVEL_UP_SOULS_PARAM")
@@ -966,7 +1012,6 @@ namespace DS2S_META
             else
                 GiveItem(item, amount, upgrade, infusion);
         }
-
         private void GiveItem(int item, short amount, byte upgrade, byte infusion)
         {
             var itemStruct = Allocate(0x8A);
@@ -1001,7 +1046,6 @@ namespace DS2S_META
             Execute(asm);
             Free(itemStruct);
         }
-
         public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
         {
             var itemStruct = Allocate(0x8A);
@@ -1029,15 +1073,15 @@ namespace DS2S_META
 
         #region Params
 
-        private static Dictionary<int, int> WeaponParamOffsetDict;
-        private static Dictionary<int, int> WeaponReinforceParamOffsetDict;
-        private static Dictionary<int, int> CustomAttrOffsetDict;
-        private static Dictionary<int, int> ArmorReinforceParamOffsetDict;
-        private static Dictionary<int, int> ItemParamOffsetDict;
-        private static Dictionary<int, int> ItemUsageParamOffsetDict;
-        private static Dictionary<int, int> ItemLotParam_Drops; 
-        private static Dictionary<int, int> ItemLotOtherPODict;
-        private static Dictionary<int, int> ShopLineupPODict;
+        private static Dictionary<int, int> WeaponParamOffsetDict = new();
+        private static Dictionary<int, int> WeaponReinforceParamOffsetDict = new();
+        private static Dictionary<int, int> CustomAttrOffsetDict = new();
+        private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
+        private static Dictionary<int, int> ItemParamOffsetDict = new();
+        private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
+        //private static Dictionary<int, int> ItemLotParam_Drops; 
+        private static Dictionary<int, int> ItemLotOtherPODict = new();
+        private static Dictionary<int, int> ShopLineupPODict = new();
 
 
 
@@ -1185,23 +1229,32 @@ namespace DS2S_META
 
         internal int GetArmorMaxUpgrade(int id)
         {
-            if  (!Setup) return 0;
+            if  (!Setup || ArmorReinforceParam == null) return 0;
             return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
         }
         internal int GetWeaponMaxUpgrade(int id)
         {
-            if (!Setup) return 0;
+            if (!Setup || WeaponReinforceParam == null || WeaponParam == null)
+                return 0;
             var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
             return WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.MaxUpgrade);
         }
         private int GetMaxItemQuantity(int id)
         {
-            if (!Setup) return 0;
+            if (!Setup || ItemParam == null) return 0;
             return ItemParam.ReadInt16(ItemParamOffsetDict[id] + (int)DS2SOffsets.ItemParam.MaxHeld);
         }
 
         internal List<DS2SInfusion> GetWeaponInfusions(int id)
         {
+            // Tidy up guard clauses once params are handled better
+            if (WeaponParam == null)
+                throw new Exception("WeaponParam not setup");
+            if (WeaponReinforceParam == null)
+                throw new Exception("WeaponParam not setup");
+            if (CustomAttrSpecParam == null)
+                throw new Exception("WeaponParam not setup");
+
             var infusions = new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
             var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
             var customAttrID = WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.CustomAttrID);
@@ -1220,7 +1273,7 @@ namespace DS2S_META
         }
         internal bool GetIsDroppable(int id)
         {
-            if (!Setup) return false;
+            if (!Setup || ItemParam == null || ItemUsageParamOffsetDict == null) return false;
             var itemUsageID = ItemParam.ReadInt32(ItemParamOffsetDict[id] + (int)DS2SOffsets.ItemParam.ItemUsageID);
             byte bitField = ItemUseageParam.ReadByte(ItemUsageParamOffsetDict[itemUsageID] + (int)DS2SOffsets.ItemUasgeParam.Bitfield);
 
@@ -1282,6 +1335,9 @@ namespace DS2S_META
         // Params table reads
         internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
         {
+            if (ItemParam == null)
+                throw new Exception("ItemParam not setup");
+
             int offset = kvp.Value;
             var basebuy     = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
             var itemusageid = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.ItemUsageID);
@@ -1340,6 +1396,8 @@ namespace DS2S_META
         }
         internal int ReadPrice(int itemid)
         {
+            if (ItemParam == null)
+                throw new Exception("ItemParam not setup");
             int offset = ItemParamOffsetDict[itemid];
             return ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
         }
@@ -1347,8 +1405,16 @@ namespace DS2S_META
         // Params table writes
         internal void WriteAllLots(Dictionary<int, ItemLot> all_lots)
         {
+            if (all_lots == null)
+                return;
+
             foreach (var kvp in all_lots)
+            {
+                if (kvp.Value == null)
+                    throw new NullReferenceException("Shuffled lot not set but is being written out ?");
                 WriteItemLotTable(kvp.Key, kvp.Value);
+            }
+                
         }
         internal void WriteAllShops(Dictionary<int, ShopInfo> all_shops, bool isshuf)
         {
@@ -1373,15 +1439,14 @@ namespace DS2S_META
         {
             if (!ItemParamOffsetDict.TryGetValue(kvp.Key, out var lotStart))
                 return;
+            if (ItemParam == null)
+                throw new Exception("WeaponParam not setup");
 
             var price = BitConverter.GetBytes(kvp.Value);
             ItemParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemParam.BaseBuyPrice, price);
         }
         internal void WriteShopInfo(KeyValuePair<int, ShopInfo> kvp)
         {
-            if (kvp.Value == null)
-                return;
-
             // Write to game:
             int lotStart = ShopLineupPODict[kvp.Key];
             ShopInfo SI = kvp.Value;
@@ -1426,6 +1491,9 @@ namespace DS2S_META
         
         internal eItemType GetItemType(int itemid)
         {
+            if (ItemParam == null)
+                throw new Exception("WeaponParam not setup");
+
             int offset = ItemParamOffsetDict[itemid];
             return (eItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
         }

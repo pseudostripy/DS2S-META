@@ -70,7 +70,7 @@ namespace DS2S_META
             XmlDocument doc = new XmlDocument();
             doc.Load(SavedPositions);
             XmlComment info = doc.CreateComment("Comments denote following value types. FollowCam is a byte array for camera data.");
-            XmlElement root = doc.DocumentElement;
+            XmlElement? root = doc.DocumentElement;
             doc.InsertBefore(info, root);
             doc.Save(SavedPositions);
         }

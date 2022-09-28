@@ -36,7 +36,7 @@ namespace DS2S_META
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
         }
 
-        private void InventoryTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {

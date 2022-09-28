@@ -41,6 +41,9 @@ namespace DS2S_META.Randomizer
             if (!RandomizerManager.TryGetItem(itemid, out var item))
                 return RandomizerManager.RandomGammaInt(3000, 50); // generic guess
 
+            if (item == null)
+                throw new NullReferenceException("Shouldn't be possible to get here");
+
             switch (item.ItemType)
             {
                 case eItemType.AMMO:
@@ -83,8 +86,8 @@ namespace DS2S_META.Randomizer
     internal class LotRdz : Randomization
     {
         // Subclass fields:
-        internal ItemLot VanillaLot;
-        internal ItemLot ShuffledLot;
+        internal ItemLot VanillaLot = new();
+        internal ItemLot ShuffledLot = new();
 
         // Constructors:
         internal LotRdz(int paramid) : base(paramid) { }
@@ -95,7 +98,14 @@ namespace DS2S_META.Randomizer
 
         // Methods
         internal override bool IsSaturated() => ShuffledLot != null && (ShuffledLot.NumDrops == VanillaLot.NumDrops);
-        internal override List<DropInfo> Flatlist => VanillaLot.Lot;
+        internal override List<DropInfo> Flatlist
+        {
+            get
+            {
+                var flatlist = VanillaLot.Lot;
+                return flatlist;
+            }
+        }
         internal override void AddShuffledItem(DropInfo di)
         {
             // Fix quantity:
@@ -104,12 +114,12 @@ namespace DS2S_META.Randomizer
             if (ShuffledLot == null)
             {
                 ShuffledLot = new ItemLot(di);
-                ShuffledLot.ParamDesc = VanillaLot.ParamDesc;
+                ShuffledLot.ParamDesc = VanillaLot?.ParamDesc;
             }
             else
                 ShuffledLot.AddDrop(di);
 
-            if (ShuffledLot.NumDrops > VanillaLot.NumDrops)
+            if (ShuffledLot.NumDrops > VanillaLot?.NumDrops)
                 throw new Exception("Shouldn't be able to get here!");
         }
         internal override bool HasShuffledItemID(int itemID)
@@ -134,7 +144,7 @@ namespace DS2S_META.Randomizer
         }
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaLot.ParamDesc}{Environment.NewLine}");
+            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
             
             // Display empty lots
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
@@ -152,7 +162,9 @@ namespace DS2S_META.Randomizer
         }
         internal override void AdjustQuantity(DropInfo di)
         {
-            if (!RandomizerManager.TryGetItem(di.ItemID, out ItemParam item))
+            if (!RandomizerManager.TryGetItem(di.ItemID, out var item))
+                return;
+            if (item == null)
                 return;
 
             var itype = item.ItemType;
@@ -187,8 +199,8 @@ namespace DS2S_META.Randomizer
     internal class ShopRdz : Randomization
     {
         // Subclass fields:
-        internal ShopInfo VanillaShop;
-        internal ShopInfo ShuffledShop;
+        internal ShopInfo VanillaShop = new();
+        internal ShopInfo ShuffledShop = new();
 
         // Constructors:
         internal ShopRdz(int paramid) : base(paramid) { }
@@ -201,10 +213,19 @@ namespace DS2S_META.Randomizer
         internal override bool IsSaturated() => ShuffledShop != null;
         internal override string printdata()
         {
+            if (VanillaShop == null)
+                return "BLANK";
             int itemid = VanillaShop.ItemID;
             return $"{ParamID} [{"<insert_name>"}]: {itemid} ({GetItemName(itemid)})";
         }
-        internal override List<DropInfo> Flatlist => new List<DropInfo>() { VanillaShop.ConvertToDropInfo() };
+        internal override List<DropInfo> Flatlist
+        {
+            get
+            {
+                var flatlist = VanillaShop.ConvertToDropInfo();
+                return flatlist ?? new();
+            }
+        }
         internal override void AddShuffledItem(DropInfo di)
         {
             // Fix quantity:
@@ -228,7 +249,7 @@ namespace DS2S_META.Randomizer
         {
             if (ShuffledShop == null)
                 return false;
-            return VanillaShop.ItemID == itemID;
+            return VanillaShop?.ItemID == itemID;
         }
         internal override int GetShuffledItemQuant(int itemID)
         {
@@ -238,7 +259,7 @@ namespace DS2S_META.Randomizer
         }
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaShop.ParamDesc}{Environment.NewLine}");
+            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaShop?.ParamDesc}{Environment.NewLine}");
 
             // Display empty lots
             if (ShuffledShop == null || ShuffledShop.ItemID == 0)
@@ -248,7 +269,9 @@ namespace DS2S_META.Randomizer
         }
         internal override void AdjustQuantity(DropInfo di)
         {
-            if (!RandomizerManager.TryGetItem(di.ItemID, out ItemParam item))
+            if (!RandomizerManager.TryGetItem(di.ItemID, out var item))
+                return;
+            if (item == null)
                 return;
 
             var itype = item.ItemType;

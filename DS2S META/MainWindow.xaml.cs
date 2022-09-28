@@ -28,7 +28,7 @@ namespace DS2S_META
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string MetaVersion;
+        private string MetaVersion = "Version_Undefined";
         private Properties.Settings Settings;
         public MainWindow()
         {
@@ -50,7 +50,7 @@ namespace DS2S_META
             Hook.OnHooked += Hook_OnHooked;
         }
 
-        private void Hook_OnHooked(object sender, PHEventArgs e)
+        private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -159,7 +159,7 @@ namespace DS2S_META
 
         
 
-        private void UpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {

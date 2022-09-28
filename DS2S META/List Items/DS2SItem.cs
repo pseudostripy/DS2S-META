@@ -48,12 +48,12 @@ namespace DS2S_META
         {
             return Name;
         }
-        public int CompareTo(DS2SItem other)
+        public int CompareTo(DS2SItem? other)
         {
             if (ShowID)
-                return ID.CompareTo(other.ID);
+                return ID.CompareTo(other?.ID);
             else
-                return Name.CompareTo(other.Name);
+                return Name.CompareTo(other?.Name);
         }
 
         public bool NameContains(string txtfrag)

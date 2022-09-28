@@ -9,7 +9,7 @@ namespace DS2S_META.Randomizer
     internal class ShopInfo
     {
         // Fields:
-        internal string ParamDesc { get; set; }
+        internal string? ParamDesc { get; set; }
         internal int ItemID { get; set; }
         internal int EnableFlag { get; set; }
         internal int DisableFlag { get; set; }
@@ -26,11 +26,14 @@ namespace DS2S_META.Randomizer
             {
                 if (!RandomizerManager.TryGetItem(ItemID, out var item))
                     return -1;
+                if (item == null)
+                    return -1;
                 return item.BaseBuyPrice;
             }
         }
 
         // Constructors:
+        internal ShopInfo() { }
         internal ShopInfo(int itemID, int en, int dis, int mat, int dup, float rate, int quant)
         {
             ItemID = itemID;
@@ -63,10 +66,10 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods:
-        internal DropInfo ConvertToDropInfo()
+        internal List<DropInfo> ConvertToDropInfo()
         {
             // Assume no infusion or reinforcement, to consider later.
-            return new DropInfo(ItemID, Quantity, 0, 0);
+            return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
     }
 }

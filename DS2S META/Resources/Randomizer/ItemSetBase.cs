@@ -283,7 +283,10 @@ namespace DS2S_META.Randomizer
         internal string GetDesc(int paramid)
         {
             bool found = D.ContainsKey(paramid);
-            return found ? D[paramid].Description : "";
+            if (!found)
+                return "";
+
+            return D[paramid].Description?? "";
         }
 
         // Overloads for quick construction, single or no key requirements:

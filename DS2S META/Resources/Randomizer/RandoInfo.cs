@@ -99,12 +99,12 @@ namespace DS2S_META.Randomizer
 
     internal class RandoInfo
     {
-        internal string Description;
+        internal string? Description;
         internal PICKUPTYPE[] Types;
         internal KeySet[] KeySet;
         
         // Main class constructor
-        internal RandoInfo(string desc, PICKUPTYPE type, params KeySet[] reqkeys)
+        internal RandoInfo(string? desc, PICKUPTYPE type, params KeySet[] reqkeys)
         {
             Description = desc;
             Types = new PICKUPTYPE[] { type };

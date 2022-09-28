@@ -35,7 +35,7 @@ namespace DS2S_META
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
         }
 
-        private void InventoryTimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {
@@ -147,7 +147,9 @@ namespace DS2S_META
 
         private void UpdateQuantityAndTextVis()
         {
-            if (!TryGetSelectedItem(out DS2SItem item))
+            if (!TryGetSelectedItem(out DS2SItem? item))
+                return;
+            if (item == null)
                 return;
 
             // Update maximum based on cbx value
@@ -359,7 +361,9 @@ namespace DS2S_META
 
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
         {
-            if (!TryGetSelectedItem(out DS2SItem item))
+            if (!TryGetSelectedItem(out DS2SItem? item))
+                return;
+            if (item == null)
                 return;
             
             setQuantityMaximum(item);
