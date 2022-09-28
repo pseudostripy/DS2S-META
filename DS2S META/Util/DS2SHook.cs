@@ -116,7 +116,6 @@ namespace DS2S_META
 
             // Just make them not null:
             var BlankPHP = BaseASetup; // TODO
-            WarpManager = BlankPHP;
             BaseA = BlankPHP;
             PlayerName = BlankPHP;
             AvailableItemBag = BlankPHP;
@@ -128,10 +127,11 @@ namespace DS2S_META
             PlayerParam = BlankPHP;
             PlayerType = BlankPHP;
             SpEffectCtrl = BlankPHP;
-            ApplySpEffect = BlankPHP;
+            
             PlayerMapData = BlankPHP;
             EventManager = BlankPHP;
             BonfireLevels = BlankPHP;
+            WarpManager = BlankPHP;
             NetSvrBloodstainManager = BlankPHP;
             LevelUpSoulsParam = BlankPHP;
             WeaponParam = BlankPHP;
@@ -143,7 +143,7 @@ namespace DS2S_META
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
             ItemLotOtherParam = BlankPHP; // World pickups, boss kills, covenant rewards etc.
             ShopLineupParam = BlankPHP;   // Shops.
-            BaseBSetup = BlankPHP;
+            
             BaseB = BlankPHP;
             Connection = BlankPHP;
             Camera = BlankPHP;
@@ -151,11 +151,7 @@ namespace DS2S_META
             Camera3 = BlankPHP;
             Camera4 = BlankPHP;
             Camera5 = BlankPHP;
-            SpeedFactorAccel = BlankPHP;
-            SpeedFactorAnim = BlankPHP;
-            SpeedFactorJump = BlankPHP;
-            SpeedFactorBuildup = BlankPHP;
-
+            
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
@@ -634,7 +630,14 @@ namespace DS2S_META
         }
         public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
         public bool Online => Loaded ? ConnectionType > 0 : true;
-        public int ConnectionType => Hooked && Connection != null ? Connection.ReadInt32((int)DS2SOffsets.Connection.Online) : 0;
+        public int ConnectionType
+        {
+            get
+            {
+                var test = Hooked;
+                return Hooked && Connection != null ? Connection.ReadInt32((int)DS2SOffsets.Connection.Online) : 0;
+            }
+        }
         
         internal bool WarpLast()
         {

@@ -36,11 +36,12 @@ namespace DS2S_META
         {
             PlayerState.Set = false;
             foreach (var bonfire in DS2SBonfire.All)
-                cbxBonfire.Items.Add(bonfire);
+                cmbBonfire.Items.Add(bonfire);
             LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: _Game Start"); //last set bonfire (default values) // TODO cleaner.
-            cbxBonfire.Items.Add(LastSetBonfire); //add to end of filter
+            cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
             Positions = SavedPos.GetSavedPositions()?? new();
             cmbStoredPositions.Items.Add(new SavedPos());
+            btnWarp.IsEnabled = true;
             UpdatePositions();
         }
         internal override void ReloadCtrl()
@@ -64,7 +65,7 @@ namespace DS2S_META
             cbxWarpRest.IsEnabled = enable;
 
             if (enable)
-                cbxBonfire.SelectedIndex = cbxBonfire.Items.Count - 1;
+                cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
         }
         public void StorePosition()
         {
@@ -116,7 +117,7 @@ namespace DS2S_META
             }
 
         }
-        private void storedPositions_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void storedPositions_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -213,14 +214,14 @@ namespace DS2S_META
                 }
 
                 //manage lastSetBonfire
-                cbxBonfire.Items.Remove(LastSetBonfire); //remove from filter (if there)
+                cmbBonfire.Items.Remove(LastSetBonfire); //remove from filter (if there)
 
                 LastSetBonfire.AreaID = result.AreaID;
                 LastSetBonfire.ID = result.ID;
                 LastSetBonfire.Name = "Last Set: " + result.Name;
 
-                cbxBonfire.Items.Add(LastSetBonfire); //add to end of filter
-                cbxBonfire.SelectedItem = LastSetBonfire;
+                cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
+                cmbBonfire.SelectedItem = LastSetBonfire;
                 //AddLastSetBonfire();
             }
         }
@@ -228,21 +229,21 @@ namespace DS2S_META
         {
             //warp filter management
 
-            cbxBonfire.Items.Clear();
-            cbxBonfire.SelectedItem = null;
+            cmbBonfire.Items.Clear();
+            cmbBonfire.SelectedItem = null;
 
             //go through bonfire resource and add to filter
             foreach (var bonfire in DS2SBonfire.All)
             {
                 if (bonfire.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
                 {
-                    cbxBonfire.Items.Add(bonfire);
+                    cmbBonfire.Items.Add(bonfire);
                 }
             }
 
-            cbxBonfire.Items.Add(LastSetBonfire); //add lastSetBonfire to end of filter
+            cmbBonfire.Items.Add(LastSetBonfire); //add lastSetBonfire to end of filter
 
-            cbxBonfire.SelectedIndex = 0;
+            cmbBonfire.SelectedIndex = 0;
 
             if (txtSearch.Text == "")
                 lblSearch.Visibility = Visibility.Visible;
@@ -284,14 +285,14 @@ namespace DS2S_META
         {
             SetGameSpeed();
         }
-        private void cbxBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Guard clauses
             if (!Hook.Loaded)
                 return;
             if (cbxQuickSelectBonfire.IsChecked != true)
                 return;
-            if (cbxBonfire.SelectedItem is not DS2SBonfire bonfire)
+            if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
                 throw new NullReferenceException("Unexpected bonfire");
             
             // Do stuff
@@ -333,7 +334,7 @@ namespace DS2S_META
                 return;
             }
 
-            var bonfire = cbxBonfire.SelectedItem as DS2SBonfire;
+            var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
 
             // Handle betwixt start warps:
             bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
@@ -383,9 +384,9 @@ namespace DS2S_META
             {
                 e.Handled = true;
 
-                if (cbxBonfire.SelectedIndex < cbxBonfire.Items.Count - 1)
+                if (cmbBonfire.SelectedIndex < cmbBonfire.Items.Count - 1)
                 {
-                    cbxBonfire.SelectedIndex += 1;
+                    cmbBonfire.SelectedIndex += 1;
                     return;
                 }
             }
@@ -394,9 +395,9 @@ namespace DS2S_META
             {
                 e.Handled = true;
 
-                if (cbxBonfire.SelectedIndex != 0)
+                if (cmbBonfire.SelectedIndex != 0)
                 {
-                    cbxBonfire.SelectedIndex -= 1;
+                    cmbBonfire.SelectedIndex -= 1;
                     return;
                 }
             }
