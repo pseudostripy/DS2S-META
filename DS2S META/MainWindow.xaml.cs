@@ -75,8 +75,10 @@ namespace DS2S_META
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            MetaVersion = fileVersionInfo.ProductVersion?? "version undefined";
+            var assemblyver = assembly.GetName().Version;
+            MetaVersion = assemblyver == null ? "version undefined" : assemblyver.ToString();
+            //FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            //MetaVersion = assemblyver.ToString() ;
 
             lblWindowName.Content = $"DS2 Scholar META {MetaVersion}";
             EnableTabs(false);
