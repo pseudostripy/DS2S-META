@@ -6,10 +6,15 @@
     <RootNamespace>DS2S_META</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Ladder.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Util\ErdHook.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Ladder.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -100,5 +105,26 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" Condition="$(ConfigurationName) == Release" AfterTargets="PostBuildEvent">
+	  <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+		  <Output TaskParameter="Assemblies" ItemName="Targets" />
+	  </GetAssemblyIdentity>
+	  <ItemGroup>
+		  <VersionNumber Include="%(Targets.Version)">
+			  <Number>%(Targets.Version)</Number>
+		  </VersionNumber>
+		  <OutputDir Include="$(TargetDir)$(ProjectName) %(Targets.Version)" />
+	  </ItemGroup>
+	  <PropertyGroup>
+		  <OutputPath>@(OutputDir)\</OutputPath>
+	  </PropertyGroup>
+	  <Message Text="Executing Copy Filess task" Importance="High" />
+	  <Copy SourceFiles="$(TargetDir)$(ProjectName).exe" DestinationFolder="@(OutputDir)" />
+	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
+	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
+	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
+	  <Message Text="Copied files to build folder" Importance="High" />
+  </Target>
 
 </Project>
