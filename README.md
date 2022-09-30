@@ -41,7 +41,11 @@ My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](
 
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
-# Change Log  
+# Change Log 
+
+### META v0.6
+
+* Upgrade Meta to C# .NET 6.0 and fix associated transitional pains
 
 ### Randomizer Alpha A.1
 
