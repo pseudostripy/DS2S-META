@@ -238,6 +238,8 @@ namespace DS2S_META
 
         public void UpdateCreateEnabled()
         {
+            if (lbxItems.SelectedItem == null)
+                return;
             if (lbxItems.SelectedItem is not DS2SItem item)
                 throw new NullReferenceException("Unknown item");
             
