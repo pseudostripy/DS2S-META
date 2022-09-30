@@ -103,7 +103,7 @@ namespace DS2S_META
                 if (gitVersion > exeVersion) //Compare latest version to current version
                 {
                     link.NavigateUri = new Uri(release.HtmlUrl);
-                    llbNewVersion.Visibility = Visibility.Visible;
+                    lblNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
 
                     // Only show msg again when newer version released

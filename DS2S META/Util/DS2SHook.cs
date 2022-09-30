@@ -172,7 +172,7 @@ namespace DS2S_META
                 BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
                 RescanAOB();
                 BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
-                Version = "BabyJump Dll";
+                Version = "Scholar BabyJump DLL";
             }
 
             PlayerName = CreateChildPointer(BaseA, (int)DS2SOffsets.PlayerNameOffset);

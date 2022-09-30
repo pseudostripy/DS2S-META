@@ -84,8 +84,8 @@
                     </StackPanel>
                 </StackPanel >
                 <StackPanel Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="50,0,0,23" Grid.RowSpan="2">
-                    <StackPanel Orientation="Horizontal" Width="175">
-                        <Label Content="Version:" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="DS2 Version:" />
                         <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" />
                     </StackPanel>
                 </StackPanel >
@@ -93,7 +93,7 @@
                     <Grid>
                         <Label x:Name="labelCheckVersion" />
                         <StackPanel Grid.Column="1" Grid.Row="0" >
-                            <Label x:Name="llbNewVersion" Visibility="Hidden">
+                            <Label x:Name="lblNewVersion" Visibility="Hidden">
                                 <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
                                     New version available!
                                 </Hyperlink>
