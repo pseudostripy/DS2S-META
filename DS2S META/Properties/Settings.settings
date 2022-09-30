@@ -80,8 +80,8 @@
     <Setting Name="ShowWarnRandoExit" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ShowUpdateMessage" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="AcknowledgeUpdateVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">"0.0.0.0"</Value>
     </Setting>
   </Settings>
 </SettingsFile>

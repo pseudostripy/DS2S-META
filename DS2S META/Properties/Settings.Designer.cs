@@ -337,13 +337,13 @@ namespace DS2S_META.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowUpdateMessage {
+        [global::System.Configuration.DefaultSettingValueAttribute("\"0.0.0.0\"")]
+        public string AcknowledgeUpdateVersion {
             get {
-                return ((bool)(this["ShowUpdateMessage"]));
+                return ((string)(this["AcknowledgeUpdateVersion"]));
             }
             set {
-                this["ShowUpdateMessage"] = value;
+                this["AcknowledgeUpdateVersion"] = value;
             }
         }
     }

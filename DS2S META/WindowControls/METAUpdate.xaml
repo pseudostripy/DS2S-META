@@ -23,7 +23,7 @@
                 </Hyperlink>
             </Label>
             <Separator Visibility="Hidden" Height="3"/>
-            <CheckBox x:Name="cbxShowUpdateNotification" HorizontalAlignment="Center" Content="Do not show again"/>
+            <CheckBox x:Name="cbxStopUpdateNotification" HorizontalAlignment="Center" Content="Do not show again"/>
             <Separator Visibility="Hidden" Height="5"/>
             <Button Content="Okay" IsCancel="True" Width="75"/>
         </StackPanel>

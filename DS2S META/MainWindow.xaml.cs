@@ -106,14 +106,9 @@ namespace DS2S_META
                     llbNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
 
-                    var warning = new METAUpdate(link.NavigateUri)
-                    {
-                        Title = "New Update Available",
-                        Width = 450,
-                        Height = 200
-                    };
-                    warning.ShowDialog();
-
+                    // Only show msg again when newer version released
+                    if (Properties.Settings.Default.AcknowledgeUpdateVersion != gitVersion.ToString())
+                        ShowMetaUpdateWindow(link.NavigateUri, gitVersion.ToString());
                 }
                 else if (gitVersion == exeVersion)
                     labelCheckVersion.Content = "App up to date";
@@ -129,6 +124,16 @@ namespace DS2S_META
                 labelCheckVersion.Content = "Something is very broke, contact DS2 META repo owner";
                 MessageBox.Show(ex.Message);
             }
+        }
+        private void ShowMetaUpdateWindow(Uri link, string ackverstring)
+        {
+            var warning = new METAUpdate(link, ackverstring)
+            {
+                Title = "New Update Available",
+                Width = 450,
+                Height = 200
+            };
+            warning.ShowDialog();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

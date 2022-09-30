@@ -22,10 +22,12 @@ namespace DS2S_META
     public partial class METAUpdate : Window
     {
         private Uri Link;
-        public METAUpdate(Uri link)
+        private string CurrentMetaVersion;
+        public METAUpdate(Uri link, string curver)
         {
             InitializeComponent();
             Link = link;
+            CurrentMetaVersion = curver;
 
             // Create hyperlink object dynamically
             Run runtext = new Run($"{Link}");
@@ -39,7 +41,8 @@ namespace DS2S_META
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Properties.Settings.Default.ShowUpdateMessage = !cbxShowUpdateNotification.IsChecked == true;
+            if (!cbxStopUpdateNotification.IsChecked == true)
+                Properties.Settings.Default.AcknowledgeUpdateVersion = CurrentMetaVersion;
         }
 
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
