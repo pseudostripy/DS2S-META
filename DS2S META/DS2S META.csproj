@@ -120,8 +120,10 @@
 	  <PropertyGroup>
 		  <OutputPath>@(OutputDir)\</OutputPath>
 	  </PropertyGroup>
-	  <Message Text="Executing Copy Filess task" Importance="High" />
+	  <Message Text="Executing Copy Files task" Importance="High" />
 	  <Copy SourceFiles="$(TargetDir)$(ProjectName).exe" DestinationFolder="@(OutputDir)" />
+	  <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" DestinationFolder="@(OutputDir)" />
+	  <Copy SourceFiles="$(TargetDir)$(ProjectName).runtimeconfig.json" DestinationFolder="@(OutputDir)" />
 	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
 	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
