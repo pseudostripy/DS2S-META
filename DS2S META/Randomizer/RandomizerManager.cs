@@ -392,7 +392,7 @@ namespace DS2S_META.Randomizer
             Dictionary<int, string> shopnames = new Dictionary<int, string>();
 
             // Read all:
-            var lines = File.ReadAllLines("./Resources/Randomizer/ShopLineupParam.txt");
+            var lines = File.ReadAllLines("./Resources/Paramdex_DS2S_09272022/ShopLineupParam.txt");
 
             // Setup parser:
             Regex re = new Regex(@"(?<paramid>\d+) (?<desc>.*)");

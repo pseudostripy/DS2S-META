@@ -95,6 +95,9 @@
     <None Update="Resources\Equipment\Weapons\SpellTools.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Paramdex_DS2S_09272022\ShopLineupParam.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Systems\BonfireHubs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -21,7 +21,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Content="Note:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black" Padding="0,0,0,0"/>
-        <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="Clicking Randomize or Unrandomize whilst in game will warp you to the previous bonfire." Grid.Row="1"/>
+        <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="Clicking Randomize or Unrandomize whilst in game will warp you to the previous bonfire upon completion." Grid.Row="1"/>
         <CheckBox x:Name="cbxNoShowRandoWarning" HorizontalAlignment="Center" Content="Do not show again" Grid.Row="2" VerticalAlignment="Center"/>
         <StackPanel VerticalAlignment="Center">
             <Separator Visibility="Hidden" Height="5" />
