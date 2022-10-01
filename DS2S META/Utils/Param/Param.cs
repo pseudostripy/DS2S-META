@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 using static SoulsFormats.PARAMDEF;
+using DS2S_META.Utils;
 
 namespace DS2S_META
 {
@@ -17,12 +18,12 @@ namespace DS2S_META
         public string Name { get; private set; }
         public string Type { get; private set; }
         public int Length { get; private set; }
-        public byte[] Bytes { get; private set; }
-        public List<Row> Rows { get; private set; }
-        public List<Field> Fields { get; private set; }
+        public byte[]? Bytes { get; private set; }
+        public List<Row> Rows { get; private set; } = new();
+        public List<Field> Fields { get; private set; } = new();
         private static Regex _paramEntryRx { get; } = new(@"^\s*(?<id>\S+)\s+(?<name>.*)$", RegexOptions.CultureInvariant);
-        public Dictionary<int, string> NameDictionary { get; private set; }
-        public Dictionary<int, int> OffsetDict { get; private set; }
+        public Dictionary<int, string> NameDictionary { get; private set; } = new();
+        public Dictionary<int, int> OffsetDict { get; private set; } = new();
         public int RowLength { get; private set; }
        
         public Param(PHPointer pointer, int offset, PARAMDEF Paramdef, string name)
@@ -41,7 +42,7 @@ namespace DS2S_META
         {
             Rows = new();
             OffsetDict = new();
-            Length = Pointer.ReadInt32((int)Offsets.Param.NameOffset);
+            Length = Pointer.ReadInt32((int)DS2SOffsets.Param.ParamName);
             
             string paramType = Pointer.ReadString(Length, Encoding.UTF8, (uint)Type.Length);
             if (paramType != Type)
@@ -49,7 +50,7 @@ namespace DS2S_META
 
             Bytes = Pointer.ReadBytes(0x0, (uint)Length);
 
-            int tableLength = BitConverter.ToInt32(Bytes ,(int)Offsets.Param.TableLength);
+            int tableLength = BitConverter.ToInt32(Bytes ,(int)DS2SOffsets.Param.TableLength);
             int Param = 0x40;
             int ParamID = 0x0;
             int ParamOffset = 0x8;

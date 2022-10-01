@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Util
+namespace DS2S_META.Utils
 {
-    // NOTE: I don't think this is a particularly stable for of weapon
+    // NOTE: I don't think this is a particularly stable form of weapon
     // discrimination, might want to implement a better form.
     public enum eItemType : byte
     {
