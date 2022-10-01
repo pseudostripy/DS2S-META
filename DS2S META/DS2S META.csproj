@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PropertyHook\PropertyHook\PropertyHook.csproj" />
+    <ProjectReference Include="..\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
   </ItemGroup>
 
   <ItemGroup>

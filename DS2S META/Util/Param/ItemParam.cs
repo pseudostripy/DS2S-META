@@ -25,7 +25,7 @@ namespace DS2S_META.Util
     /// <summary>
     /// Data Class for storing ItemParam
     /// </summary>
-    internal class ItemParam : DS2SParam
+    internal class ItemParam
     {
         internal string MetaItemName;
         internal int ItemID;
@@ -53,19 +53,19 @@ namespace DS2S_META.Util
             ItemType = (eItemType)itemType;
         }
 
-        public override void Read()
-        {
-            ////internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
-            ////{
-            //int offset = kvp.Value;
-            //var basebuy = ItemParam.ReadInt32(offset + (int)Offsets.BaseBuyPrice);
-            //var itemusageid = ItemParam.ReadInt32(offset + (int)Offsets.ItemUsageID);
-            //var maxheld = ItemParam.ReadInt32(offset + (int)Offsets.MaxHeld);
-            //var itemtype = ItemParam.ReadByte(offset + (int)Offsets.ItemType);
+        //public override void Read()
+        //{
+        //    ////internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
+        //    ////{
+        //    //int offset = kvp.Value;
+        //    //var basebuy = ItemParam.ReadInt32(offset + (int)Offsets.BaseBuyPrice);
+        //    //var itemusageid = ItemParam.ReadInt32(offset + (int)Offsets.ItemUsageID);
+        //    //var maxheld = ItemParam.ReadInt32(offset + (int)Offsets.MaxHeld);
+        //    //var itemtype = ItemParam.ReadByte(offset + (int)Offsets.ItemType);
 
-            ////    return new ItemParam(desc, kvp.Key, itemusageid, maxheld, basebuy, itemtype);
-            ////}
-        }
+        //    ////    return new ItemParam(desc, kvp.Key, itemusageid, maxheld, basebuy, itemtype);
+        //    ////}
+        //}
 
     }
 }

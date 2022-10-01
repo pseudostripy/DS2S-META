@@ -12,11 +12,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using DS2S_META.Randomizer;
 
+using static SoulsFormats.PARAMDEF;
+using DS2S_META.Utils;
 
 namespace DS2S_META
 {
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
+        public static readonly string ExeDir = Environment.CurrentDirectory;
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
@@ -1075,135 +1079,135 @@ namespace DS2S_META
         #endregion
 
         #region Params
-        public List<Param> Params;
+        //public List<Param> Params;
 
-        private List<Param> GetParams()
-        {
-            List<Param> paramList = new List<Param>();
-            string paramPath = $"{Util.ExeDir}/Resources/Params/";
+        //private List<Param> GetParams()
+        //{
+        //    List<Param> paramList = new List<Param>();
+        //    string paramPath = $"{ExeDir}/Resources/Params/";
 
-            string pointerPath = $"{paramPath}/Pointers/";
-            string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
-            foreach (string path in paramPointers)
-            {
-                string[] pointers = File.ReadAllLines(path);
-                AddParam(paramList, paramPath, path, pointers);
-            }
+        //    string pointerPath = $"{paramPath}/Pointers/";
+        //    string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
+        //    foreach (string path in paramPointers)
+        //    {
+        //        string[] pointers = File.ReadAllLines(path);
+        //        AddParam(paramList, paramPath, path, pointers);
+        //    }
 
-            return paramList;
-        }
+        //    return paramList;
+        //}
 
-        public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
-        {
-            foreach (string entry in pointers)
-            {
-                if (!Util.IsValidTxtResource(entry))
-                    continue;
+        //public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
+        //{
+        //    foreach (string entry in pointers)
+        //    {
+        //        if (!Util.IsValidTxtResource(entry))
+        //            continue;
 
-                string[] info = entry.TrimComment().Split(':');
-                string name = info[1];
-                string defName = info.Length > 2 ? info[2] : name;
+        //        string[] info = entry.TrimComment().Split(':');
+        //        string name = info[1];
+        //        string defName = info.Length > 2 ? info[2] : name;
 
-                string defPath = $"{paramPath}/Defs/{defName}.xml";
-                if (!File.Exists(defPath))
-                    throw new($"The PARAMDEF {defName} does not exist for {entry}. If the PARAMDEF is named differently than the param name, add another \":\" and append the PARAMDEF name" +
-                              $"Example: 3130:WwiseValueToStrParam_BgmBossChrIdConv:WwiseValueToStrConvertParamFormat");
+        //        string defPath = $"{paramPath}/Defs/{defName}.xml";
+        //        if (!File.Exists(defPath))
+        //            throw new($"The PARAMDEF {defName} does not exist for {entry}. If the PARAMDEF is named differently than the param name, add another \":\" and append the PARAMDEF name" +
+        //                      $"Example: 3130:WwiseValueToStrParam_BgmBossChrIdConv:WwiseValueToStrConvertParamFormat");
 
-                int offset = int.Parse(info[0], System.Globalization.NumberStyles.HexNumber);
+        //        int offset = int.Parse(info[0], System.Globalization.NumberStyles.HexNumber);
 
-                PHPointer pointer = GetParamPointer(offset);
+        //        PHPointer pointer = GetParamPointer(offset);
 
-                PARAMDEF paramDef = XmlDeserialize(defPath);
+        //        PARAMDEF paramDef = XmlDeserialize(defPath);
 
-                Param param = new Param(pointer, offset, paramDef, name);
+        //        Param param = new Param(pointer, offset, paramDef, name);
 
-                SetParamPtrs(param);
+        //        SetParamPtrs(param);
 
-                paramList.Add(param);
-            }
-            paramList.Sort();
-        }
+        //        paramList.Add(param);
+        //    }
+        //    paramList.Sort();
+        //}
 
-        private void SetParamPtrs(Param param)
-        {
-            //switch (param.Name)
-            //{
-            //    case "EquipParamAccessory":
-            //        EquipParamAccessory = param;
-            //        break;
-            //    case "EquipParamGem":
-            //        EquipParamGem = param;
-            //        break;
-            //    case "EquipParamGoods":
-            //        EquipParamGoods = param;
-            //        break;
-            //    case "EquipParamProtector":
-            //        EquipParamProtector = param;
-            //        break;
-            //    case "EquipParamWeapon":
-            //        EquipParamWeapon = param;
-            //        break;
-            //    case "Magic":
-            //        MagicParam = param;
-            //        break;
-            //    case "NpcParam":
-            //        NpcParam = param;
-            //        break;
-            //    case "BonfireWarpParam":
-            //        BonfireWarpParam = param;
-            //        break;
-            //    default:
-            //        break;
-            //}
-        }
+        //private void SetParamPtrs(Param param)
+        //{
+        //    //switch (param.Name)
+        //    //{
+        //    //    case "EquipParamAccessory":
+        //    //        EquipParamAccessory = param;
+        //    //        break;
+        //    //    case "EquipParamGem":
+        //    //        EquipParamGem = param;
+        //    //        break;
+        //    //    case "EquipParamGoods":
+        //    //        EquipParamGoods = param;
+        //    //        break;
+        //    //    case "EquipParamProtector":
+        //    //        EquipParamProtector = param;
+        //    //        break;
+        //    //    case "EquipParamWeapon":
+        //    //        EquipParamWeapon = param;
+        //    //        break;
+        //    //    case "Magic":
+        //    //        MagicParam = param;
+        //    //        break;
+        //    //    case "NpcParam":
+        //    //        NpcParam = param;
+        //    //        break;
+        //    //    case "BonfireWarpParam":
+        //    //        BonfireWarpParam = param;
+        //    //        break;
+        //    //    default:
+        //    //        break;
+        //    //}
+        //}
 
-        internal PHPointer GetParamPointer(int offset)
-        {
-            return CreateChildPointer(SoloParamRepository, new int[] { offset, 0x80, 0x80 });
-        }
-        public void SaveParam(Param param)
-        {
-            string asmString = Util.GetEmbededResource("Assembly.SaveParams.asm");
-            string asm = string.Format(asmString, SoloParamRepository.Resolve(), param.Offset, CapParamCall.Resolve());
-            AsmExecute(asm);
-        }
-        public void RestoreParams()
-        {
-            if (!Setup)
-                return;
+        //internal PHPointer GetParamPointer(int offset)
+        //{
+        //    return CreateChildPointer(SoloParamRepository, new int[] { offset, 0x80, 0x80 });
+        //}
+        //public void SaveParam(Param param)
+        //{
+        //    string asmString = Util.GetEmbededResource("Assembly.SaveParams.asm");
+        //    string asm = string.Format(asmString, SoloParamRepository.Resolve(), param.Offset, CapParamCall.Resolve());
+        //    AsmExecute(asm);
+        //}
+        //public void RestoreParams()
+        //{
+        //    if (!Setup)
+        //        return;
 
-            EquipParamWeapon.RestoreParam();
-            EquipParamGem.RestoreParam();
-        }
-        private async Task ReadParams()
-        {
-            List<Task> tasks = new List<Task>();
+        //    EquipParamWeapon.RestoreParam();
+        //    EquipParamGem.RestoreParam();
+        //}
+        //private async Task ReadParams()
+        //{
+        //    List<Task> tasks = new List<Task>();
 
-            foreach (ItemCategory category in ItemCategory.All)
-            {
-                tasks.Add(Task.Run(() => SetupItems(category)));
-            }
+        //    foreach (ItemCategory category in ItemCategory.All)
+        //    {
+        //        tasks.Add(Task.Run(() => SetupItems(category)));
+        //    }
 
-            Task setupItems = Task.WhenAll(tasks);
-            await setupItems;
-            if (setupItems.Exception != null)
-                throw setupItems.Exception;
+        //    Task setupItems = Task.WhenAll(tasks);
+        //    await setupItems;
+        //    if (setupItems.Exception != null)
+        //        throw setupItems.Exception;
 
-            tasks.Clear();
+        //    tasks.Clear();
 
-            foreach (ItemCategory category in ItemCategory.All)
-            {
-                if (category.Category == Category.Weapons)
-                    tasks.Add(Task.Run(() => SetupGems(category)));
-            }
+        //    foreach (ItemCategory category in ItemCategory.All)
+        //    {
+        //        if (category.Category == Category.Weapons)
+        //            tasks.Add(Task.Run(() => SetupGems(category)));
+        //    }
 
-            Task setupGems = Task.WhenAll(tasks);
-            await setupGems;
-            if (setupGems.Exception != null)
-                throw setupGems.Exception;
+        //    Task setupGems = Task.WhenAll(tasks);
+        //    await setupGems;
+        //    if (setupGems.Exception != null)
+        //        throw setupGems.Exception;
 
-            tasks.Clear();
-        }
+        //    tasks.Clear();
+        //}
 
 
 

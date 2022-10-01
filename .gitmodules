@@ -3,4 +3,6 @@
 	url = https://github.com/Nordgaren/PropertyHook.git
 [submodule "SoulsFormats"]
 	path = SoulsFormats
-	url = https://github.com/JKAnderson/SoulsFormats
+	url = https://github.com/Nordgaren/SoulsFormats.git
+	branch = er
+

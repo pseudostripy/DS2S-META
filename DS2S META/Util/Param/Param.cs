@@ -1,5 +1,4 @@
-﻿using Erd_Tools.Utils;
-using PropertyHook;
+﻿using PropertyHook;
 using SoulsFormats;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using static SoulsFormats.PARAMDEF;
 
-namespace Erd_Tools.Models
+namespace DS2S_META
 {
     public class Param : IComparable<Param>
     {
