@@ -139,7 +139,7 @@ namespace DS2S_META.Randomizer
             WriteVanillaShops();
             WriteVanillaLots();
 
-            // Force an area reload. TODO add warning:
+            // Force an area reload.
             Hook.WarpLast();
             IsRandomized = false;
         }

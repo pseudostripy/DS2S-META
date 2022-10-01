@@ -1,0 +1,2 @@
+//Format: Offsets(comma-separated hex):ParamName:(Optional)ParamDefName
+A8;B0;D8:SHOP_LINEUP_PARAM

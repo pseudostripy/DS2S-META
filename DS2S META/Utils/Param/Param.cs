@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
 
@@ -13,11 +14,11 @@ namespace DS2S_META
     public class Param : IComparable<Param>
     {
         public PHPointer Pointer { get; private set; }
-        public int Offset { get; private set; }
+        public int[] Offsets { get; private set; }
         public PARAMDEF ParamDef { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
-        public int Length { get; private set; }
+        public int TableLength { get; private set; }
         public byte[]? Bytes { get; private set; }
         public List<Row> Rows { get; private set; } = new();
         public List<Field> Fields { get; private set; } = new();
@@ -25,11 +26,13 @@ namespace DS2S_META
         public Dictionary<int, string> NameDictionary { get; private set; } = new();
         public Dictionary<int, int> OffsetDict { get; private set; } = new();
         public int RowLength { get; private set; }
-       
-        public Param(PHPointer pointer, int offset, PARAMDEF Paramdef, string name)
+
+        private const string paramfol = "Resources/Paramdex_DS2S_09272022/";
+
+        public Param(PHPointer pointer, int[] offsets, PARAMDEF Paramdef, string name)
         {
             Pointer = pointer;
-            Offset = offset;
+            Offsets = offsets;
             ParamDef = Paramdef;
             Name = name;
             Type = Paramdef.ParamType;
@@ -38,44 +41,11 @@ namespace DS2S_META
             RowLength = ParamDef.GetRowSize();
             BuildCells();
         }
-        private void BuildOffsetDictionary()
-        {
-            Rows = new();
-            OffsetDict = new();
-            Length = Pointer.ReadInt32((int)DS2SOffsets.Param.ParamName);
-            
-            string paramType = Pointer.ReadString(Length, Encoding.UTF8, (uint)Type.Length);
-            if (paramType != Type)
-                throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
-
-            Bytes = Pointer.ReadBytes(0x0, (uint)Length);
-
-            int tableLength = BitConverter.ToInt32(Bytes ,(int)DS2SOffsets.Param.TableLength);
-            int Param = 0x40;
-            int ParamID = 0x0;
-            int ParamOffset = 0x8;
-            int nextParam = 0x18;
-
-            while (Param < tableLength)
-            {
-                int itemID = BitConverter.ToInt32(Bytes, Param + ParamID);
-                int itemParamOffset = BitConverter.ToInt32(Bytes, Param + ParamOffset);
-                string name = $"{itemID} - ";
-                if (NameDictionary.ContainsKey(itemID))
-                    name += $"{NameDictionary[itemID]}";
-
-                if (!OffsetDict.ContainsKey(itemID))
-                    OffsetDict.Add(itemID, itemParamOffset);
-
-                Rows.Add(new(this ,name, itemID, itemParamOffset));
-
-                Param += nextParam;
-            }
-        }
         private void BuildNameDictionary()
         {
-            NameDictionary = new();
-            string[] result = Util.GetListResource(@$"Resources/Params/Names/{Name}.txt");
+            // Why don't they just use the same names :/
+            string names_filename = Name.Replace("_", string.Empty);
+            string[] result = Util.GetListResource(@$"{paramfol}Names/{names_filename}.txt");
             if (result.Length == 0)
                 return;
 
@@ -93,6 +63,38 @@ namespace DS2S_META
                 NameDictionary.Add(id, name);
             };
         }
+        private void BuildOffsetDictionary()
+        {
+            string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
+            if (paramType != Type)
+                throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
+
+            TableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
+            Bytes = Pointer.ReadBytes(0x0, (uint)TableLength);
+
+            
+            int param = 0x40;
+            int paramID = 0x0;
+            int paramoffset = 0x8;
+            int nextParam = 0x18;
+
+            while (param < TableLength)
+            {
+                int itemID = BitConverter.ToInt32(Bytes, param + paramID);
+                int itemParamOffset = BitConverter.ToInt32(Bytes, param + paramoffset);
+                string name = $"{itemID} - ";
+                if (NameDictionary.ContainsKey(itemID))
+                    name += $"{NameDictionary[itemID]}";
+
+                if (!OffsetDict.ContainsKey(itemID))
+                    OffsetDict.Add(itemID, itemParamOffset);
+
+                Rows.Add(new(this, name, itemID, itemParamOffset));
+
+                param += nextParam;
+            }
+        }
+        
         public override string ToString()
         {
             return Name;

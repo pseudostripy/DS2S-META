@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DS2S_META.Randomizer;
 
+using SoulsFormats;
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
 
@@ -20,6 +21,8 @@ namespace DS2S_META
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
         public static readonly string ExeDir = Environment.CurrentDirectory;
+        public List<Param> Params = new();
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
@@ -41,6 +44,8 @@ namespace DS2S_META
         }
 
         public static bool Reading { get; set; }
+
+        public Param? ShopLineupParam;   // Shops.
 
         private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
@@ -77,8 +82,7 @@ namespace DS2S_META
         private PHPointer ItemUseageParam;
         private PHPointer ItemLotDropsParam; // Enemy drop tables
         private PHPointer ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
-        private PHPointer ShopLineupParam;   // Shops.
-
+        
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
         private PHPointer Connection;
@@ -146,7 +150,6 @@ namespace DS2S_META
             ItemUseageParam = BlankPHP;
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
             ItemLotOtherParam = BlankPHP; // World pickups, boss kills, covenant rewards etc.
-            ShopLineupParam = BlankPHP;   // Shops.
             
             BaseB = BlankPHP;
             Connection = BlankPHP;
@@ -204,8 +207,7 @@ namespace DS2S_META
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
             ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
             ItemLotOtherParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamItemLotOtherOffset);
-            ShopLineupParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset5, (int)DS2SOffsets.ParamDataOffset2);
-
+            
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
             Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
 
@@ -224,7 +226,8 @@ namespace DS2S_META
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
             ItemLotOtherPODict = BuildOffsetDictionary(ItemLotDropsParam, "ITEM_LOT_PARAM2");
             ItemLotOtherPODict = BuildOffsetDictionary(ItemLotOtherParam, "ITEM_LOT_PARAM2");
-            ShopLineupPODict = BuildOffsetDictionary(ShopLineupParam, "SHOP_LINEUP_PARAM");
+            
+            GetParams();
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -237,16 +240,15 @@ namespace DS2S_META
             Version = "Not Hooked";
             Setup = false;
         }
+
         public void UpdateName()
         {
             OnPropertyChanged(nameof(Name));
         }
-
         public void UpdateMainProperties()
         {
             OnPropertyChanged(nameof(ID));
             OnPropertyChanged(nameof(Online));
-            //OnPropertyChanged(nameof(LastBonfireObj));
         }
         public void UpdateStatsProperties()
         {
@@ -1079,92 +1081,74 @@ namespace DS2S_META
         #endregion
 
         #region Params
-        //public List<Param> Params;
+        
 
-        //private List<Param> GetParams()
-        //{
-        //    List<Param> paramList = new List<Param>();
-        //    string paramPath = $"{ExeDir}/Resources/Params/";
+        private List<Param> GetParams()
+        {
+            List<Param> paramList = new List<Param>();
+            string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022/";
 
-        //    string pointerPath = $"{paramPath}/Pointers/";
-        //    string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
-        //    foreach (string path in paramPointers)
-        //    {
-        //        string[] pointers = File.ReadAllLines(path);
-        //        AddParam(paramList, paramPath, path, pointers);
-        //    }
+            string pointerPath = $"{paramPath}/Pointers/";
+            string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
+            foreach (string path in paramPointers)
+            {
+                string[] pointers = File.ReadAllLines(path);
+                AddParam(paramList, paramPath, path, pointers);
+            }
 
-        //    return paramList;
-        //}
+            return paramList;
+        }
 
-        //public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
-        //{
-        //    foreach (string entry in pointers)
-        //    {
-        //        if (!Util.IsValidTxtResource(entry))
-        //            continue;
+        public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
+        {
+            foreach (string entry in pointers)
+            {
+                if (!Util.IsValidTxtResource(entry))
+                    continue;
 
-        //        string[] info = entry.TrimComment().Split(':');
-        //        string name = info[1];
-        //        string defName = info.Length > 2 ? info[2] : name;
+                string[] info = entry.TrimComment().Split(':');
+                string name = info[1];
+                string defName = info.Length > 2 ? info[2] : name;
 
-        //        string defPath = $"{paramPath}/Defs/{defName}.xml";
-        //        if (!File.Exists(defPath))
-        //            throw new($"The PARAMDEF {defName} does not exist for {entry}. If the PARAMDEF is named differently than the param name, add another \":\" and append the PARAMDEF name" +
-        //                      $"Example: 3130:WwiseValueToStrParam_BgmBossChrIdConv:WwiseValueToStrConvertParamFormat");
+                string defPath = $"{paramPath}/Defs/{defName}.xml";
+                if (!File.Exists(defPath))
+                    throw new($"The PARAMDEF {defName} does not exist for {entry}.");
 
-        //        int offset = int.Parse(info[0], System.Globalization.NumberStyles.HexNumber);
+                // Make param
+                int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
+                PHPointer pointer = GetParamPointer(offsets);
+                PARAMDEF paramDef = XmlDeserialize(defPath);
+                Param param = new Param(pointer, offsets, paramDef, name);
 
-        //        PHPointer pointer = GetParamPointer(offset);
+                // Save param
+                StoreLocalParam(param);
+                paramList.Add(param);
+            }
+            paramList.Sort();
+        }
+        private int hex2int(string hexbyte)
+        {
+            return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
+        }
 
-        //        PARAMDEF paramDef = XmlDeserialize(defPath);
+        private void StoreLocalParam(Param param)
+        {
+            switch (param.Name)
+            {
+                // Just save the ones we care about
+                case "SHOP_LINEUP_PARAM":
+                    ShopLineupParam = param;
+                    break;
+                
+                default:
+                    break;
+            }
+        }
 
-        //        Param param = new Param(pointer, offset, paramDef, name);
-
-        //        SetParamPtrs(param);
-
-        //        paramList.Add(param);
-        //    }
-        //    paramList.Sort();
-        //}
-
-        //private void SetParamPtrs(Param param)
-        //{
-        //    //switch (param.Name)
-        //    //{
-        //    //    case "EquipParamAccessory":
-        //    //        EquipParamAccessory = param;
-        //    //        break;
-        //    //    case "EquipParamGem":
-        //    //        EquipParamGem = param;
-        //    //        break;
-        //    //    case "EquipParamGoods":
-        //    //        EquipParamGoods = param;
-        //    //        break;
-        //    //    case "EquipParamProtector":
-        //    //        EquipParamProtector = param;
-        //    //        break;
-        //    //    case "EquipParamWeapon":
-        //    //        EquipParamWeapon = param;
-        //    //        break;
-        //    //    case "Magic":
-        //    //        MagicParam = param;
-        //    //        break;
-        //    //    case "NpcParam":
-        //    //        NpcParam = param;
-        //    //        break;
-        //    //    case "BonfireWarpParam":
-        //    //        BonfireWarpParam = param;
-        //    //        break;
-        //    //    default:
-        //    //        break;
-        //    //}
-        //}
-
-        //internal PHPointer GetParamPointer(int offset)
-        //{
-        //    return CreateChildPointer(SoloParamRepository, new int[] { offset, 0x80, 0x80 });
-        //}
+        internal PHPointer GetParamPointer(int[] offsets)
+        {
+            return CreateChildPointer(BaseA, offsets);
+        }
         //public void SaveParam(Param param)
         //{
         //    string asmString = Util.GetEmbededResource("Assembly.SaveParams.asm");
@@ -1521,17 +1505,19 @@ namespace DS2S_META
             // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
             int lotstart = kvp.Value;
 
-            ItemLot lot = new ItemLot();
 
-            int itemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.ItemID);
-            int enableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag);
-            int disableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
-            int materialID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.MaterialID);
-            int dupitemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID);
-            float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.PriceRate);
-            int quant = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.Quantity);
 
-            return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
+            return new ShopInfo();
+
+            //int itemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.ItemID);
+            //int enableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag);
+            //int disableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
+            //int materialID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.MaterialID);
+            //int dupitemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID);
+            //float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.PriceRate);
+            //int quant = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.Quantity);
+
+            //return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
         }
         internal int ReadPrice(int itemid)
         {
@@ -1600,13 +1586,13 @@ namespace DS2S_META
             var quant = BitConverter.GetBytes(SI.Quantity);
 
             // Write to game
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.ItemID, itemid);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag, enable);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag, disable);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.MaterialID, material);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID, dup);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.PriceRate, rate);
-            ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.Quantity, quant);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.ItemID, itemid);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag, enable);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag, disable);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.MaterialID, material);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID, dup);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.PriceRate, rate);
+            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.Quantity, quant);
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
