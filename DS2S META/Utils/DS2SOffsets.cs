@@ -307,7 +307,8 @@ namespace DS2S_META
         {
             TotalParamLength = 0x0,
             ParamName = 0xC,
-            TableLength = 0x48
+            OffsetsOnlyTableLength = 0x48,
+            TableLength = 0x50 // total incl. offsets/rows parts (excls. strings)
         }
 
         public const int ParamDataOffset1 = 0x18;

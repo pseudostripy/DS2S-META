@@ -19,8 +19,8 @@ namespace DS2S_META.Randomizer
         List<Randomization> Data = new List<Randomization>(); // Combined info list
         internal static Random RNG = new Random();
         private Dictionary<int, ItemLot> VanillaLots = new();
-        private Dictionary<int, ShopInfo> VanillaShops = new();
-        private Dictionary<int, ShopInfo> FixedVanillaShops = new();
+        private List<ShopInfo> VanillaShops = new();
+        private List<ShopInfo> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
         internal ItemSetBase Logic = new CasualItemSet();
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
@@ -85,9 +85,9 @@ namespace DS2S_META.Randomizer
         {
             Hook = hook; // Required for reading game params in memory
 
-            // Get Vanilla Params:
-            var parShopDesc = ReadShopNames();
-            VanillaShops = Hook.GetVanillaShops(parShopDesc);
+            // Get Vanilla Params:1
+            //var parShopDesc = ReadShopNames();
+            GetVanillaShops();
             VanillaLots = Hook.GetVanillaLots();
             VanillaItemParams = Hook.GetVanillaItemParams();
             Logic = new CasualItemSet();
@@ -99,6 +99,16 @@ namespace DS2S_META.Randomizer
                 kvp.Value.ParamDesc = Logic.GetDesc(kvp.Key);
             IsInitialized = true;
         }
+
+        internal void GetVanillaShops()
+        {
+            if (Hook?.ShopLineupParam == null)
+                throw new NullReferenceException("Shouldn't get here");
+
+            VanillaShops = Hook.ShopLineupParam.Rows.Select(row => new ShopInfo(row)).ToList();
+            return;
+        }
+
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -176,11 +186,11 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
-        internal Dictionary<int, ShopInfo> FixShopEvents()
+        internal List<ShopInfo> FixShopEvents()
         {
             // Remove shop & trade menu resets on certain events so they stay randomised
             // Go through and clone the "normal" shops:
-            var PTF = new Dictionary<int, ShopInfo>();
+            var PTF = new List<ShopInfo>();
             
             var LEvents = ShopRules.GetLinkedEvents();
 
@@ -189,41 +199,37 @@ namespace DS2S_META.Randomizer
             var tolose = LEvents.SelectMany(le => le.RemoveIDs);
 
 
-            foreach (var kvp in VanillaShops)
+            foreach (var si in VanillaShops)
             {
-                if (ShopRules.Exclusions.Contains(kvp.Key))
+                if (ShopRules.Exclusions.Contains(si.ID))
                     continue; // empty shops etc
 
                 // Remove events:
-                if (tolose.Contains(kvp.Key))
+                if (tolose.Contains(si.ID))
                     continue;
 
                 // Keep and don't disable events:
-                if (tokeep.Contains(kvp.Key))
+                if (tokeep.Contains(si.ID))
                 {
-                    var shopid = LEvents.Where(le => le.KeepID == kvp.Key).First();
-                    var normshop = VanillaShops[shopid.KeepID].Clone();
+                    var shopid = LEvents.Where(le => le.KeepID == si.ID).First();
+                    var normshop = si.Clone();
                     normshop.DisableFlag = -1;
-                    PTF.Add(kvp.Key, normshop);
+                    PTF.Add(normshop);
                     continue;
                 }
 
                 // Everything else:
-                PTF.Add(kvp.Key, kvp.Value.Clone());
+                PTF.Add(si.Clone());
             }
             return PTF;
         }
         internal void AddShopLogic()
         {
-            foreach (var kvp in FixedVanillaShops)
+            foreach (var si in FixedVanillaShops)
             {
-                // Unpack:
-                ShopInfo SI = kvp.Value;
-                int shopparamid = kvp.Key;
-
                 // Append:
-                RandoInfo RI = new RandoInfo(SI.ParamDesc, PICKUPTYPE.SHOP);
-                Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(shopparamid, RI));
+                RandoInfo RI = new RandoInfo(si.ParamDesc, PICKUPTYPE.SHOP);
+                Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(si.ID, RI));
             }
         }
         internal void DefineKRG()
@@ -474,13 +480,12 @@ namespace DS2S_META.Randomizer
                 Hook.WriteItemLotTable(kvp.Key, IL);
             }
 
-            foreach(var kvp in VanillaShops)
+            foreach(var si in VanillaShops)
             {
-                ShopInfo blankshop = kvp.Value.Clone();
+                ShopInfo blankshop = si.Clone();
                 blankshop.Quantity = 0;
                 blankshop.ItemID = 0; // don't even show in shop
-                var blankshopkvp = new KeyValuePair<int, ShopInfo>(kvp.Key, blankshop);
-                Hook.WriteShopInfo(blankshopkvp);
+                Hook.WriteShopInfo(blankshop);
             }
         }
         internal void WriteShuffledLots()
@@ -503,9 +508,10 @@ namespace DS2S_META.Randomizer
         }
         internal void WriteVanillaShops()
         {
-            if (Hook == null)
+            if (Hook?.ShopLineupParam == null)
                 return;
-            Hook.WriteAllShops(VanillaShops, false);
+            Hook.ShopLineupParam.RestoreParam();
+            //Hook.WriteAllShops(VanillaShops, false);
         }
         internal void WriteVanillaLots()
         {
@@ -518,14 +524,14 @@ namespace DS2S_META.Randomizer
             var dicbadshops = new Dictionary<int, ShopInfo>();
 
             var tolose = ShopRules.GetLinkedEvents().SelectMany(le => le.RemoveIDs);
-            var badshops = VanillaShops.Where(kvp => tolose.Contains(kvp.Key));
+            var badshops = VanillaShops.Where(si => tolose.Contains(si.ID));
             foreach (var shop in badshops)
             {
-                var badshop = shop.Value.Clone();
+                var badshop = shop.Clone();
                 badshop.EnableFlag = -1;
                 badshop.Quantity = 0;
                 badshop.ItemID = 0; // don't even show in shop
-                dicbadshops[shop.Key] = badshop;
+                dicbadshops[shop.ID] = badshop;
             }
 
             if (Hook == null)
@@ -548,7 +554,7 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
             };
 
-            var cloneshops = new Dictionary<int, ShopInfo>();
+            var cloneshops = new List<ShopInfo>();
             foreach (LinkedShopEvent LE in maughlin_events)
             {
                 var goodshop = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
@@ -556,11 +562,10 @@ namespace DS2S_META.Randomizer
                     throw new NullReferenceException("Shouldn't get here");
 
                 // this still isn't a perfect solution because of quantities
-                var badshopkey = LE.RemoveIDs.First();
                 var badshop = goodshop.ShuffledShop.Clone();
-                var vanshop = VanillaShops[badshopkey];
+                var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
                 badshop.EnableFlag = vanshop.EnableFlag; // still enable when it wants to -> should "trade places"
-                cloneshops[badshopkey] = badshop;
+                cloneshops.Add(badshop);
             }
 
             if (Hook == null)

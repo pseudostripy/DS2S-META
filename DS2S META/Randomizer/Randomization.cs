@@ -209,6 +209,10 @@ namespace DS2S_META.Randomizer
         {
             VanillaShop = VanKvp.Value;
         }
+        internal ShopRdz(ShopInfo vanshop) : base(vanshop.ID)
+        {
+            VanillaShop = vanshop;
+        }
 
         // Methods:
         internal override bool IsSaturated() => ShuffledShop != null;

@@ -8,6 +8,9 @@ using System.Text.RegularExpressions;
 
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
+using System.Security.Cryptography;
+using System.Printing.IndexedProperties;
+using System.Linq;
 
 namespace DS2S_META
 {
@@ -18,7 +21,8 @@ namespace DS2S_META
         public PARAMDEF ParamDef { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
-        public int TableLength { get; private set; }
+        public int OffsetsTableLength { get; private set; }
+        public int TotalTableLength { get; private set; }
         public byte[]? Bytes { get; private set; }
         public List<Row> Rows { get; private set; } = new();
         public List<Field> Fields { get; private set; } = new();
@@ -36,9 +40,9 @@ namespace DS2S_META
             ParamDef = Paramdef;
             Name = name;
             Type = Paramdef.ParamType;
+            RowLength = ParamDef.GetRowSize();
             BuildNameDictionary();
             BuildOffsetDictionary();
-            RowLength = ParamDef.GetRowSize();
             BuildCells();
         }
         private void BuildNameDictionary()
@@ -69,8 +73,9 @@ namespace DS2S_META
             if (paramType != Type)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
 
-            TableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
-            Bytes = Pointer.ReadBytes(0x0, (uint)TableLength);
+            TotalTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
+            OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
 
             
             int param = 0x40;
@@ -78,7 +83,7 @@ namespace DS2S_META
             int paramoffset = 0x8;
             int nextParam = 0x18;
 
-            while (param < TableLength)
+            while (param < OffsetsTableLength)
             {
                 int itemID = BitConverter.ToInt32(Bytes, param + paramID);
                 int itemParamOffset = BitConverter.ToInt32(Bytes, param + paramoffset);
@@ -108,31 +113,10 @@ namespace DS2S_META
         }
         public void RestoreParam()
         {
-            Pointer.WriteBytes(0 ,Bytes);
+            Pointer.WriteBytes(0, Bytes);
         }
-        public class Row
-        {
-            public Param Param { get; private set; }
-            public string Name { get; private set; }
-            public int ID { get; private set; }
-            public int DataOffset { get; private set; }
-
-            public Row(Param param, string name, int id, int offset)
-            {
-                Param = param;
-                Name = name;
-                ID = id;
-                DataOffset = offset;
-            }
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
-
         private void BuildCells()
         {
-            Fields = new();
             int totalSize = 0;
             for (int i = 0; i < ParamDef.Fields.Count; i++)
             {
@@ -215,6 +199,54 @@ namespace DS2S_META
             }
         }
 
+
+        /// <summary>
+        /// Each "section" of a Param table (aka each ID) associates to a "row"
+        /// </summary>
+        public class Row
+        {
+            public Param Param { get; private set; }
+            public string Name { get; private set; }
+            public int ID { get; private set; }
+            public int DataOffset { get; private set; }
+            public byte[] RowBytes { get; set;} = Array.Empty<byte>();
+            public object[] Data => ReadRow();
+            public string Desc => Name.Substring(Name.LastIndexOf('-') + 2);
+
+            public Row(Param param, string name, int id, int offset)
+            {
+                Param = param;
+                Name = name;
+                ID = id;
+                DataOffset = offset;
+
+                if (Param.Bytes == null)
+                    return;
+                RowBytes = Param.Bytes.Skip(DataOffset).Take(Param.RowLength).ToArray();
+            }
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            public object[] ReadRow()
+            {
+                if (Param == null)
+                    return Array.Empty<object>();
+                
+                return Param.Fields.Select(f => f.GetFieldValue(RowBytes)).ToArray();
+            }
+            public void WriteRow()
+            {
+                Param.Pointer.WriteBytes(DataOffset, RowBytes);
+            }
+
+        }
+
+
+        /// <summary>
+        /// These are defined in the ParamDef xml
+        /// </summary>
         public abstract class Field
         {
             private PARAMDEF.Field _paramdefField { get; }
@@ -236,6 +268,48 @@ namespace DS2S_META
             {
                 return InternalName;
             }
+
+            // Override for different field returns
+            public virtual object GetFieldValue(byte[] rowbytes)
+            {
+                // Strings overriden in subclass
+                var outputarray = new byte[4];
+                Array.Copy(rowbytes, FieldOffset, outputarray, 0, 4);
+
+                switch (Type)
+                {
+                    case DefType.s8:
+                    case DefType.u8:
+                    case DefType.s16:
+                    case DefType.u16:
+                    case DefType.s32:
+                    case DefType.u32:
+                    case DefType.b32:
+                        return BitConverter.ToInt32(outputarray);
+
+                    case DefType.f32:
+                    case DefType.angle32:
+                        return BitConverter.ToSingle(outputarray);
+
+                    case DefType.f64:
+                        // 8 bytes...
+                        var outputarray2 = new byte[8];
+                        Array.Copy(rowbytes, FieldOffset, outputarray2, 0, 8);
+                        return BitConverter.ToDouble(outputarray2);
+
+                    // Given that there are 8 bytes available, these could possibly be offsets
+                    case DefType.dummy8:
+                    case DefType.fixstr:
+                    case DefType.fixstrW:
+                        //value = null;
+                        //br.AssertInt64(0);
+                        //break;
+                        throw new NotImplementedException($"Not Checked! : {Type}");
+
+                    default:
+                        throw new NotImplementedException($"Missing variable read for type: {Type}");
+                }
+            }
         }
 
         public class FixedStr : Field
@@ -245,8 +319,11 @@ namespace DS2S_META
             {
                 Encoding = encoding;
             }
+            public override string GetFieldValue(byte[] bytes)
+            {
+                return Encoding.GetString(bytes, FieldOffset, ArrayLength);
+            }
         }
-
         public class NumericField : Field
         {
             public bool IsSigned;
@@ -255,7 +332,6 @@ namespace DS2S_META
                 IsSigned = isSigned;
             }
         }
-
         public class BitField : Field
         {
             public int BitPosition;
@@ -264,7 +340,6 @@ namespace DS2S_META
                 BitPosition = bitPosition;
             }
         }
-
         public class PartialByteField : BitField
         {
             public int Width;
@@ -273,7 +348,6 @@ namespace DS2S_META
                 Width = width;
             }
         }
-
         public class PartialUShortField : BitField
         {
             public int Width;
@@ -282,7 +356,6 @@ namespace DS2S_META
                 Width = width;
             }
         }
-
         public class PartialUIntField : BitField
         {
             public int Width;
@@ -291,7 +364,6 @@ namespace DS2S_META
                 Width = width;
             }
         }
-
         public class SingleField : Field
         {
             public SingleField(PARAMDEF.Field field, int fieldOffset) : base(field, fieldOffset)

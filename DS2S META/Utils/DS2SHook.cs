@@ -994,7 +994,7 @@ namespace DS2S_META
             if (paramName != "CHR_LEVEL_UP_SOULS_PARAM")
                 throw new InvalidOperationException("Incorrect Param Pointer: LEVEL_UP_SOULS_PARAM");
 
-            var tableLength = LevelUpSoulsParam.ReadInt32((int)DS2SOffsets.Param.TableLength);
+            var tableLength = LevelUpSoulsParam.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
             var paramID = 0x40;
             var paramOffset = 0x48;
             var nextParam = 0x18;
@@ -1215,7 +1215,7 @@ namespace DS2S_META
             if (paramName != expectedParamName)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {expectedParamName}");
 
-            var tableLength = pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
+            var tableLength = pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
             var paramStartOffset = 0x40;
             var paramLength = 0x18;
 
@@ -1435,25 +1435,7 @@ namespace DS2S_META
             
             return vanitems;
         }
-        internal Dictionary<int, ShopInfo> GetVanillaShops(Dictionary<int, string> dictDesc)
-        {
-            Dictionary<int, ShopInfo> vanshops = new Dictionary<int, ShopInfo>();
-            
-            // Loop over all the params and read the itemlot tables
-            foreach (var kvp in ShopLineupPODict)
-            {
-                var SI = ReadShopInfo(kvp);
-                SI.ParamDesc = dictDesc[kvp.Key];
-                vanshops.Add(kvp.Key, SI);
-            }
-                
-
-            // Write out the whole table to a file cause I'm lazy:
-            //string[] lines = ShopLineupPODict.Select(kvp => $"ID: {kvp.Key} --> Offset: {kvp.Value:X}").ToArray();
-            //File.WriteAllLines("./ShopLineupOffsets.txt", lines);
-
-            return vanshops;
-        }
+        
         
         // Params table reads
         internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
@@ -1500,25 +1482,7 @@ namespace DS2S_META
             }
             return lot;
         }
-        internal ShopInfo ReadShopInfo(KeyValuePair<int, int> kvp)
-        {
-            // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
-            int lotstart = kvp.Value;
-
-
-
-            return new ShopInfo();
-
-            //int itemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.ItemID);
-            //int enableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag);
-            //int disableFlag = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag);
-            //int materialID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.MaterialID);
-            //int dupitemID = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID);
-            //float priceRate = ShopLineupParam.ReadSingle(lotstart + (int)DS2SOffsets.ShopLotOffsets.PriceRate);
-            //int quant = ShopLineupParam.ReadInt32(lotstart + (int)DS2SOffsets.ShopLotOffsets.Quantity);
-
-            //return new ShopInfo(itemID, enableFlag, disableFlag, materialID, dupitemID, priceRate, quant);
-        }
+        
         internal int ReadPrice(int itemid)
         {
             if (ItemParam == null)
@@ -1541,6 +1505,7 @@ namespace DS2S_META
             }
                 
         }
+        // TODO
         internal void WriteAllShops(Dictionary<int, ShopInfo> all_shops, bool isshuf)
         {
             foreach (var kvp in all_shops)
@@ -1548,7 +1513,7 @@ namespace DS2S_META
                 if (kvp.Value == null)
                     continue;
 
-                WriteShopInfo(kvp);
+                WriteShopInfo(kvp.Value);
                 int priceToWrite;
                 KeyValuePair<int, int> kvp_price;
                 if (isshuf)
@@ -1557,6 +1522,25 @@ namespace DS2S_META
                     priceToWrite = kvp.Value.VanillaBasePrice;
 
                 kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, priceToWrite);
+                WritePrice(kvp_price);
+            }
+        }
+        internal void WriteAllShops(List<ShopInfo> all_shops, bool isshuf)
+        {
+            foreach (var si in all_shops)
+            {
+                if (si == null)
+                    continue;
+
+                WriteShopInfo(si);
+                int priceToWrite;
+                KeyValuePair<int, int> kvp_price;
+                if (isshuf)
+                    priceToWrite = si.NewBasePrice;
+                else
+                    priceToWrite = si.VanillaBasePrice;
+
+                kvp_price = new KeyValuePair<int, int>(si.ItemID, priceToWrite);
                 WritePrice(kvp_price);
             }
         }
@@ -1570,29 +1554,11 @@ namespace DS2S_META
             var price = BitConverter.GetBytes(kvp.Value);
             ItemParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemParam.BaseBuyPrice, price);
         }
-        internal void WriteShopInfo(KeyValuePair<int, ShopInfo> kvp)
+        internal void WriteShopInfo(ShopInfo SI)
         {
             // Write to game:
-            int lotStart = ShopLineupPODict[kvp.Key];
-            ShopInfo SI = kvp.Value;
-
-            // Prepare for write
-            var itemid = BitConverter.GetBytes(SI.ItemID);
-            var enable = BitConverter.GetBytes(SI.EnableFlag);
-            var disable = BitConverter.GetBytes(SI.DisableFlag);
-            var material = BitConverter.GetBytes(SI.MaterialID);
-            var dup = BitConverter.GetBytes(SI.DuplicateItemID);
-            var rate = BitConverter.GetBytes(SI.PriceRate);
-            var quant = BitConverter.GetBytes(SI.Quantity);
-
-            // Write to game
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.ItemID, itemid);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.EnableFlag, enable);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DisableFlag, disable);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.MaterialID, material);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.DuplicateItemID, dup);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.PriceRate, rate);
-            //ShopLineupParam.WriteBytes(lotStart + (int)DS2SOffsets.ShopLotOffsets.Quantity, quant);
+            SI.SetBytesOutput();
+            SI.ParamRow.WriteRow();
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)
         {
