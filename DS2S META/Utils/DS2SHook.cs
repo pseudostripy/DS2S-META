@@ -1081,8 +1081,6 @@ namespace DS2S_META
         #endregion
 
         #region Params
-        
-
         private List<Param> GetParams()
         {
             List<Param> paramList = new List<Param>();
@@ -1098,7 +1096,6 @@ namespace DS2S_META
 
             return paramList;
         }
-
         public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
         {
             foreach (string entry in pointers)
@@ -1149,20 +1146,6 @@ namespace DS2S_META
         {
             return CreateChildPointer(BaseA, offsets);
         }
-        //public void SaveParam(Param param)
-        //{
-        //    string asmString = Util.GetEmbededResource("Assembly.SaveParams.asm");
-        //    string asm = string.Format(asmString, SoloParamRepository.Resolve(), param.Offset, CapParamCall.Resolve());
-        //    AsmExecute(asm);
-        //}
-        //public void RestoreParams()
-        //{
-        //    if (!Setup)
-        //        return;
-
-        //    EquipParamWeapon.RestoreParam();
-        //    EquipParamGem.RestoreParam();
-        //}
         //private async Task ReadParams()
         //{
         //    List<Task> tasks = new List<Task>();
@@ -1506,33 +1489,59 @@ namespace DS2S_META
                 
         }
         // TODO
-        internal void WriteAllShops(Dictionary<int, ShopInfo> all_shops, bool isshuf)
+        //internal void WriteAllShops(Dictionary<int, ShopInfo> all_shops, bool isshuf)
+        //{
+        //    foreach (var kvp in all_shops)
+        //    {
+        //        if (kvp.Value == null)
+        //            continue;
+
+        //        WriteShopInfo(kvp.Value);
+        //        int priceToWrite;
+        //        KeyValuePair<int, int> kvp_price;
+        //        if (isshuf)
+        //            priceToWrite = kvp.Value.NewBasePrice;
+        //        else
+        //            priceToWrite = kvp.Value.VanillaBasePrice;
+
+        //        kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, priceToWrite);
+        //        WritePrice(kvp_price);
+        //    }
+        //}
+        internal void WriteSomeShops(List<ShopInfo> shops, bool isshuf)
         {
-            foreach (var kvp in all_shops)
+            // Method used for just writing a few rows out of the Param
+            shops.ForEach(si => WriteShopInfo(si));
+            
+            foreach (var si in shops)
             {
-                if (kvp.Value == null)
+                if (si == null)
                     continue;
 
-                WriteShopInfo(kvp.Value);
+                //WriteShopInfo(si);
                 int priceToWrite;
                 KeyValuePair<int, int> kvp_price;
                 if (isshuf)
-                    priceToWrite = kvp.Value.NewBasePrice;
+                    priceToWrite = si.NewBasePrice;
                 else
-                    priceToWrite = kvp.Value.VanillaBasePrice;
+                    priceToWrite = si.VanillaBasePrice;
 
-                kvp_price = new KeyValuePair<int, int>(kvp.Value.ItemID, priceToWrite);
+                kvp_price = new KeyValuePair<int, int>(si.ItemID, priceToWrite);
                 WritePrice(kvp_price);
             }
         }
+
         internal void WriteAllShops(List<ShopInfo> all_shops, bool isshuf)
         {
+            all_shops.ForEach(si => si.StoreRow());
+            ShopLineupParam?.WriteModifiedParam();
+            
             foreach (var si in all_shops)
             {
                 if (si == null)
                     continue;
 
-                WriteShopInfo(si);
+                //WriteShopInfo(si);
                 int priceToWrite;
                 KeyValuePair<int, int> kvp_price;
                 if (isshuf)
@@ -1557,7 +1566,6 @@ namespace DS2S_META
         internal void WriteShopInfo(ShopInfo SI)
         {
             // Write to game:
-            SI.SetBytesOutput();
             SI.ParamRow.WriteRow();
         }
         internal void WriteItemLotTable(int paramID, ItemLot itemlot)

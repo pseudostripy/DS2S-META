@@ -24,6 +24,7 @@ namespace DS2S_META
         public int OffsetsTableLength { get; private set; }
         public int TotalTableLength { get; private set; }
         public byte[]? Bytes { get; private set; }
+        public byte[]? NewBytes { get; set; } // after modifications
         public List<Row> Rows { get; private set; } = new();
         public List<Field> Fields { get; private set; } = new();
         private static Regex _paramEntryRx { get; } = new(@"^\s*(?<id>\S+)\s+(?<name>.*)$", RegexOptions.CultureInvariant);
@@ -99,7 +100,21 @@ namespace DS2S_META
                 param += nextParam;
             }
         }
-        
+        public void StoreRowBytes(Row row)
+        {
+            if (Bytes == null)
+                throw new Exception("Param Bytes are not set, cannot be modified");
+
+            // Initial copy
+            if (NewBytes == null)
+                NewBytes = (byte[])Bytes.Clone();
+
+            if (row.RowBytes.Length != RowLength)
+                throw new ArrayTypeMismatchException("Row bytes size does not match expected length for param row size");
+
+            Array.Copy(row.RowBytes, 0, NewBytes, row.DataOffset, RowLength);
+        }
+
         public override string ToString()
         {
             return Name;
@@ -114,6 +129,10 @@ namespace DS2S_META
         public void RestoreParam()
         {
             Pointer.WriteBytes(0, Bytes);
+        }
+        public void WriteModifiedParam()
+        {
+            Pointer.WriteBytes(0, NewBytes);
         }
         private void BuildCells()
         {
@@ -257,13 +276,43 @@ namespace DS2S_META
             public int ArrayLength => _paramdefField.ArrayLength;
             public object Increment => _paramdefField.Increment;
             public int FieldOffset { get; }
+            public int FieldLength { get; }
 
             public Field(PARAMDEF.Field field, int fieldOffset)
             {
                 _paramdefField = field;
                 FieldOffset = fieldOffset;
+                FieldLength = GetFieldLength();
             }
+            private int GetFieldLength()
+            {
+                // returns field length in bytes
+                switch (Type)
+                {
+                    case DefType.s8:
+                    case DefType.u8:
+                    case DefType.s16:
+                    case DefType.u16:
+                    case DefType.s32:
+                    case DefType.u32:
+                    case DefType.b32:
+                    case DefType.f32:
+                    case DefType.angle32:
+                        return 4;
 
+                    case DefType.f64:
+                        return 8;
+
+                    // Given that there are 8 bytes available, these could possibly be offsets
+                    case DefType.dummy8:
+                    case DefType.fixstr:
+                    case DefType.fixstrW:
+                        throw new NotImplementedException($"TODO read arraylength subproperty! : {Type}");
+
+                    default:
+                        throw new NotImplementedException($"Unknown field type: {Type}");
+                }
+            }
             public override string ToString()
             {
                 return InternalName;

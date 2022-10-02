@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using DS2S_META.Utils;
 
 using DS2S_META;
+using Octokit;
 
 namespace DS2S_META.Randomizer
 {
@@ -22,13 +23,80 @@ namespace DS2S_META.Randomizer
 
         //internal string? ParamDesc => Data.Name;
         internal string ParamDesc { get; set; }
-        internal int ItemID { get; set; }
-        internal int EnableFlag { get; set; }
-        internal int DisableFlag { get; set; }
-        internal int MaterialID { get; set; }
-        internal int DuplicateItemID { get; set; }
-        internal float PriceRate { get; set; }
-        internal int Quantity { get; set; }
+        
+        // Behind-fields
+        private int _itemid;
+        private int _enableflag;
+        private int _disableflag;
+        private int _materialid;
+        private int _duplicateid;
+        private float _pricerate;
+        private int _quantity;
+
+        // Properties
+        internal int ItemID 
+        { 
+            get => _itemid;
+            set
+            {
+                _itemid = value;
+                WriteAt(0, BitConverter.GetBytes(value));
+            }
+        }
+        internal int EnableFlag 
+        { 
+            get => _enableflag;
+            set
+            {
+                _enableflag = value;
+                WriteAt(2, BitConverter.GetBytes(value));
+            }
+        }
+        internal int DisableFlag 
+        { 
+            get => _disableflag;
+            set
+            {
+                _disableflag = value;
+                WriteAt(3, BitConverter.GetBytes(value));
+            }
+        }
+        internal int MaterialID 
+        { 
+            get => _materialid;
+            set
+            {
+                _materialid = value;
+                WriteAt(4, BitConverter.GetBytes(value));
+            }
+        }
+        internal int DuplicateItemID 
+        { 
+            get => _duplicateid;
+            set
+            {
+                _duplicateid = value;
+                WriteAt(5, BitConverter.GetBytes(value));
+            }
+        }
+        internal float PriceRate 
+        { 
+            get => _pricerate;
+            set
+            {
+                _pricerate = value;
+                WriteAt(7, BitConverter.GetBytes(value));
+            }
+        }
+        internal int Quantity
+        { 
+            get => _quantity;
+            set
+            {
+                _quantity = value;
+                WriteAt(8, BitConverter.GetBytes(value));
+            }
+        }
 
         // Do we need this?
         internal int NewBasePrice { get; set; }
@@ -53,28 +121,19 @@ namespace DS2S_META.Randomizer
             // Unpack data:
             ParamRow = shoprow;
 
-            ParamDesc = UnpackName();
-            ItemID = UnpackItemID();
-            EnableFlag = UnpackEnable();
-            DisableFlag = UnpackDisable();
-            MaterialID = UnpackMaterialID();
-            DuplicateItemID = UnpackDuplicateID();
-            PriceRate = UnpackPriceRate();
-            Quantity = UnpackQuantity();
+            // Initial field setting:
+            ItemID = (int)ReadAt(0);
+            EnableFlag = (int)ReadAt(2);
+            DisableFlag = (int)ReadAt(3);
+            MaterialID = (int)ReadAt(4);
+            DuplicateItemID = (int)ReadAt(5);
+            PriceRate = (float)ReadAt(7);
+            Quantity = (int)ReadAt(8);
         }
-
-        // Think of a way to not hardcode this?
-        private string UnpackName() => ParamRow.Desc;
-        private int UnpackItemID() => (int)ParamRow.Data[0];
-        private int UnpackEnable() => (int)ParamRow.Data[2];
-        private int UnpackDisable() => (int)ParamRow.Data[3];
-        private int UnpackMaterialID() => (int)ParamRow.Data[4];
-        private int UnpackDuplicateID() => (int)ParamRow.Data[5];
-        private float UnpackPriceRate() => (float)ParamRow.Data[7];
-        private int UnpackQuantity() => (int)ParamRow.Data[8];
 
         internal ShopInfo(DropInfo DI, ShopInfo VanShop, float pricerate, int newbaseprice)
         {
+            // Collision might be ok?
             ParamRow = VanShop.ParamRow;
             
             // Used to construct things from various information sources:
@@ -102,27 +161,46 @@ namespace DS2S_META.Randomizer
             // Assume no infusion or reinforcement, to consider later.
             return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
-        internal void SetBytesOutput()
+        //internal void SetBytesOutput()
+        //{
+        //    // Prepare for write
+
+        //    var fourbytes = new byte[4];
+
+        //    var itemid = BitConverter.GetBytes(ItemID);
+        //    var enable = BitConverter.GetBytes(EnableFlag);
+        //    var disable = BitConverter.GetBytes(DisableFlag);
+        //    var material = BitConverter.GetBytes(MaterialID);
+        //    var dup = BitConverter.GetBytes(DuplicateItemID);
+        //    var rate = BitConverter.GetBytes(PriceRate);
+        //    var quant = BitConverter.GetBytes(Quantity);
+
+        //    var test = Concat(itemid, fourbytes, enable, disable, material,
+        //                       dup, fourbytes, rate, quant);
+        //    ParamRow.RowBytes = test;
+        //}
+        public void WriteAt(int fieldindex, byte[] valuebytes)
         {
-            // Prepare for write
-
-            var fourbytes = new byte[4];
-
-            var itemid = BitConverter.GetBytes(ItemID);
-            var enable = BitConverter.GetBytes(EnableFlag);
-            var disable = BitConverter.GetBytes(DisableFlag);
-            var material = BitConverter.GetBytes(MaterialID);
-            var dup = BitConverter.GetBytes(DuplicateItemID);
-            var rate = BitConverter.GetBytes(PriceRate);
-            var quant = BitConverter.GetBytes(Quantity);
-
-            var test = Concat(itemid, fourbytes, enable, disable, material,
-                               dup, fourbytes, rate, quant);
-            ParamRow.RowBytes = test;
+            // Note: this function isn't generalised properly yet
+            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
+            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
         }
-        public static byte[] Concat(params byte[][] arrays)
+        //public byte[] ReadAt(int fieldindex)
+        //{
+        //    Param.Field F = ParamRow.Param.Fields[fieldindex];
+        //    byte[] retbytes = new byte[F.FieldLength];
+        //    Array.Copy(ParamRow.RowBytes, F.FieldOffset, retbytes, 0, F.FieldLength);
+        //    return retbytes;
+        //}
+        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
+        public void StoreRow()
         {
-            return arrays.SelectMany(x => x).ToArray();
+            // Convenience wrapper
+            ParamRow.Param.StoreRowBytes(ParamRow);
         }
+        //public static byte[] Concat(params byte[][] arrays)
+        //{
+        //    return arrays.SelectMany(x => x).ToArray();
+        //}
     }
 }

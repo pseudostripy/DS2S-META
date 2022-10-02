@@ -30,7 +30,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
-            PICKUPTYPE.NGPLUS,
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.CROWS, // handled separately
         };

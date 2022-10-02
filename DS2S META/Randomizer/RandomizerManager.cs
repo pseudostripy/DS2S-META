@@ -133,7 +133,6 @@ namespace DS2S_META.Randomizer
             PrintAllRdz();
 
             // Randomize Game!
-            ClearLotsShops();   // Zeroise everything first (to avoid vanilla item leak)
             await Task.Run( () => WriteShuffledLots());
             await Task.Run( () => WriteShuffledShops());
             //DisableUnusedShops();
@@ -278,10 +277,17 @@ namespace DS2S_META.Randomizer
             LTR_flatlist.Add(soag);
 
             // Remove Lord soul duplicates:
-            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64140000).First()); // Rotten
-            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64060000).First()); // Sinner
-            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64170000).First()); // Freja
-            LTR_flatlist.Remove(LTR_flatlist.Where(di => di.ItemID == 64120000).First()); // Old Iron King
+            RemoveFirstIfPresent(64140000); // Rotten
+            RemoveFirstIfPresent(64060000); // Sinner
+            RemoveFirstIfPresent(64170000); // Freja
+            RemoveFirstIfPresent(64120000); // Old Iron King
+        }
+        private void RemoveFirstIfPresent(int itemid)
+        {
+            var di = LTR_flatlist.Where(di => di.ItemID == itemid).FirstOrDefault();
+            if (di == null)
+                return;
+            LTR_flatlist.Remove(di); 
         }
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
         {
@@ -468,26 +474,6 @@ namespace DS2S_META.Randomizer
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
-        internal void ClearLotsShops()
-        {
-            if (Hook == null)
-                return;
-
-            foreach(var kvp in VanillaLots)
-            {
-                var IL = kvp.Value.Clone();
-                IL.Zeroise();
-                Hook.WriteItemLotTable(kvp.Key, IL);
-            }
-
-            foreach(var si in VanillaShops)
-            {
-                ShopInfo blankshop = si.Clone();
-                blankshop.Quantity = 0;
-                blankshop.ItemID = 0; // don't even show in shop
-                Hook.WriteShopInfo(blankshop);
-            }
-        }
         internal void WriteShuffledLots()
         {
             if (Hook == null)
@@ -503,7 +489,7 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
 
-            var shuffledshops = Data.OfType<ShopRdz>().ToDictionary(ldz => ldz.ParamID, ldz => ldz.ShuffledShop);
+            var shuffledshops = Data.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             Hook.WriteAllShops(shuffledshops, true);
         }
         internal void WriteVanillaShops()
@@ -518,25 +504,6 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
             Hook.WriteAllLots(VanillaLots);
-        }
-        internal void DisableUnusedShops()
-        {
-            var dicbadshops = new Dictionary<int, ShopInfo>();
-
-            var tolose = ShopRules.GetLinkedEvents().SelectMany(le => le.RemoveIDs);
-            var badshops = VanillaShops.Where(si => tolose.Contains(si.ID));
-            foreach (var shop in badshops)
-            {
-                var badshop = shop.Clone();
-                badshop.EnableFlag = -1;
-                badshop.Quantity = 0;
-                badshop.ItemID = 0; // don't even show in shop
-                dicbadshops[shop.ID] = badshop;
-            }
-
-            if (Hook == null)
-                return;
-            Hook.WriteAllShops(dicbadshops, true);
         }
         internal void FixMaughlinEvent()
         {
@@ -562,15 +529,15 @@ namespace DS2S_META.Randomizer
                     throw new NullReferenceException("Shouldn't get here");
 
                 // this still isn't a perfect solution because of quantities
-                var badshop = goodshop.ShuffledShop.Clone();
                 var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
-                badshop.EnableFlag = vanshop.EnableFlag; // still enable when it wants to -> should "trade places"
-                cloneshops.Add(badshop);
+                vanshop.ItemID = goodshop.ShuffledShop.ItemID;
+                vanshop.Quantity = goodshop.ShuffledShop.Quantity;
+                cloneshops.Add(vanshop);
             }
 
             if (Hook == null)
                 return;
-            Hook.WriteAllShops(cloneshops, true);
+            Hook.WriteSomeShops(cloneshops, true);
         }
 
         // RNG related:
