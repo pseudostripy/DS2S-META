@@ -1,2 +1,3 @@
 //Format: Offsets(comma-separated hex):ParamName:(Optional)ParamDefName
 A8;B0;D8:SHOP_LINEUP_PARAM
+A8;50;1F8:ITEM_LOT_PARAM2

@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace DS2S_META.Randomizer
 {
     internal class ItemLot
     {
         // Fields:
-        internal string? ParamDesc;
-        internal List<DropInfo> Lot = new();
+        internal Param.Row ParamRow; // Raw DS2 memory
+        internal int ID => ParamRow.ID; // shorthand
+
+        // Fields:
+        internal string? ParamDesc { get; set; }
+        //internal List<DropInfo> Lot = new();
         
         // Properties:
-        internal List<int> Items => Lot.Select(L => L.ItemID).ToList();
-        internal List<byte> Quantities => Lot.Select(L => L.Quantity).ToList();
-        internal List<byte> Reinforcements => Lot.Select(L => L.Reinforcement).ToList();
-        internal List<byte> Infusions => Lot.Select(L => L.Infusion).ToList();
-        internal int NumDrops => Lot.Count;
+        internal List<int> Items = new();
+        internal List<byte> Quantities = new();
+        internal List<byte> Reinforcements = new();
+        internal List<byte> Infusions = new();
+
+        internal int NumDrops => Quantities.Where(q => q != 0).Count();
 
         public override string ToString()
         {
@@ -28,51 +35,129 @@ namespace DS2S_META.Randomizer
             }
             return sb.ToString().TrimEnd('\n');
         }
+        private enum MINILOTS { ITEMID = 44, QUANT = 4, REINFORCEMENT = 14, INFUSION = 24}
 
         // Constructors:
         internal ItemLot() { }
-        internal ItemLot(DropInfo dropInfo)
+        internal ItemLot(Param.Row itemlotrow)
         {
-            Lot.Add(dropInfo);
+            // Unpack data:
+            ParamRow = itemlotrow;
+
+            Items = ReadListAt((int)MINILOTS.ITEMID).Select(obj => BitConverter.ToInt32(obj)).ToList();
+            Quantities = ReadListAt((int)MINILOTS.QUANT).SelectMany(b => b).ToList();
+            Reinforcements = ReadListAt((int)MINILOTS.REINFORCEMENT).SelectMany(b => b).ToList();
+            Infusions = ReadListAt((int)MINILOTS.INFUSION).SelectMany(b => b).ToList();
         }
-        internal ItemLot(List<DropInfo> lots)
+                
+        public List<byte[]> ReadListAt(int fieldindex)
         {
-            Lot = new List<DropInfo>(lots);
+            // Get 10 at once for this specific param:
+            List<byte[]> objout = new();
+            var F = ParamRow.Param.Fields[fieldindex];
+            for (int i = 0; i < 10; i++)
+            {
+                var outbytes = new byte[F.FieldLength];
+                Array.Copy(ParamRow.RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
+                objout.Add(outbytes);
+            }
+            return objout;
         }
 
         // Methods:
-        internal ItemLot Clone()
+        internal List<DropInfo> GetFlatlist()
+        {
+            List<DropInfo> flatlist = new();
+            for (int i = 0; i < NumDrops; i++)
+            {
+                DropInfo di = new DropInfo(Items[i], Quantities[i], Reinforcements[i], Infusions[i]);
+                flatlist.Add(di);
+            }
+            return flatlist;
+        }
+        internal ItemLot CloneBlank()
         {
             // Performs a deep clone on the Lot object
-            var ilclone = new ItemLot();
-            foreach (var di in Lot)
-            {
-                ilclone.AddDrop(di.Clone());
-            }
+            var ilclone = new ItemLot(ParamRow);
+            ilclone.Items = new List<int>( new int[10] );
+            ilclone.Quantities = new List<byte>(new byte[10]);
+            ilclone.Reinforcements = new List<byte>(new byte[10]);
+            ilclone.Infusions = new List<byte>(new byte[10]);
+
             return ilclone;
         }
-        internal void Zeroise()
-        {
-            // Careful using this method!
-            foreach (var di in Lot)
-            {
-                di.ItemID = 60510000; // rubbish
-                di.Quantity = 0;
-            }
-        }
+        //internal ItemLot CloneBlank()
+        //{
+        //    // Keep the underlying vanilla ParamRow, but reset fields
+        //    var ilclone = new ItemLot();
+        //    foreach (var di in Lot)
+        //    {
+        //        ilclone.AddDrop(di.Clone());
+        //    }
+        //    return ilclone;
+        //}
         internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
             AddDrop(new DropInfo(itemID, (byte)quantity, (byte) reinforce, (byte) infusion));
         }
-        internal void AddDrop(DropInfo data)
+        internal void AddDrop(DropInfo DI)
         {
-            Lot.Add(data);
+            // This is the main way to adjust the fields in this class,
+            // and handled the backend setting of the ParamRow bytes
+            int id = NumDrops;
+            if (id > 10)
+                throw new Exception("Trying to add too many DropInfos to this lot.");
+
+            // Write to the fields:
+            Items[id] = DI.ItemID;
+            Quantities[id] = DI.Quantity;
+            Reinforcements[id] = DI.Reinforcement;
+            Infusions[id] = DI.Infusion;
+
+            // Add to backend too (this is like an element-wise array property setter method)
+            StoreDataWrapper(MINILOTS.ITEMID, id, Items[id]);
+            StoreDataWrapper(MINILOTS.QUANT, id, Quantities[id]);
+            StoreDataWrapper(MINILOTS.REINFORCEMENT, id, Reinforcements[id]);
+            StoreDataWrapper(MINILOTS.INFUSION, id, Infusions[id]);
         }
-        
-        // Query Utility
-        internal bool HasItem(int itemid)
+        private Param.Field GetField(MINILOTS fieldindex)
         {
-            return Lot.Any(di => di.HasItem(itemid));
+            // Trivial wrapper for convenience
+            return ParamRow.Param.Fields[(int)fieldindex];
+        }
+        private void StoreDataWrapper(MINILOTS fenum, int subindex, int value)
+        {
+            var F = GetField(fenum);
+            int ind = F.FieldOffset + subindex * F.FieldLength;
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+        }
+        private void StoreDataWrapper(MINILOTS fenum, int subindex, byte value)
+        {
+            var F = GetField(fenum);
+            int ind = F.FieldOffset + subindex * F.FieldLength;
+            byte[] bytes = BitConverter.GetBytes(value);
+            Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+        }
+        public void StoreRow()
+        {
+            // Convenience wrapper
+            ParamRow.Param.StoreRowBytes(ParamRow);
+        }
+
+        // Query Utility
+        internal bool HasItem(int itemid) => Items.Contains(itemid);
+        internal int GetLotIndex(int itemid)
+        {
+            if (!HasItem(itemid))
+                throw new Exception("Shouldn't be using this query when there's no item with this ID in list");
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (Items[i] == itemid)
+                    return i;
+            }
+            throw new Exception("This should be impossible");
         }
 
     }

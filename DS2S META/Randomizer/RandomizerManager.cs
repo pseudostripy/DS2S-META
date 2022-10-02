@@ -18,7 +18,7 @@ namespace DS2S_META.Randomizer
         DS2SHook? Hook;
         List<Randomization> Data = new List<Randomization>(); // Combined info list
         internal static Random RNG = new Random();
-        private Dictionary<int, ItemLot> VanillaLots = new();
+        private List<ItemLot> VanillaLots = new();
         private List<ShopInfo> VanillaShops = new();
         private List<ShopInfo> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
         internal ItemSetBase Logic = new CasualItemSet();
@@ -88,18 +88,25 @@ namespace DS2S_META.Randomizer
             // Get Vanilla Params:1
             //var parShopDesc = ReadShopNames();
             GetVanillaShops();
-            VanillaLots = Hook.GetVanillaLots();
+            GetVanillaLots();
             VanillaItemParams = Hook.GetVanillaItemParams();
             Logic = new CasualItemSet();
             FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
             AddShopLogic();
 
             // Add descriptions
-            foreach (var kvp in VanillaLots)
-                kvp.Value.ParamDesc = Logic.GetDesc(kvp.Key);
+            foreach (var ilot in VanillaLots)
+                ilot.ParamDesc = Logic.GetDesc(ilot.ID);
             IsInitialized = true;
         }
+        internal void GetVanillaLots()
+        {
+            if (Hook?.ItemLotOtherParam == null)
+                throw new NullReferenceException("Shouldn't get here");
 
+            VanillaLots = Hook.ItemLotOtherParam.Rows.Select(row => new ItemLot(row)).ToList();
+            return;
+        }
         internal void GetVanillaShops()
         {
             if (Hook?.ShopLineupParam == null)
@@ -164,7 +171,7 @@ namespace DS2S_META.Randomizer
             Data = new List<Randomization>(); // Reset
 
             // For each vanilla lot, make a new randomization object
-            IEnumerable<Randomization> ltr = VanillaLots.Select(kvp => new LotRdz(kvp))
+            IEnumerable<Randomization> ltr = VanillaLots.Select(lot => new LotRdz(lot))
                             .Where(ldz => ldz.VanillaLot?.NumDrops != 0)
                             .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot))
                             .Where(ldz => !Logic.CrowDuplicates.Contains(ldz.ParamID));
@@ -481,7 +488,7 @@ namespace DS2S_META.Randomizer
 
             var shuffledlots = Data.OfType<LotRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
-                                    .ToDictionary(ldz => ldz.ParamID, ldz => ldz.ShuffledLot);
+                                    .Select(ldz => ldz.ShuffledLot).ToList();
             Hook.WriteAllLots(shuffledlots);
         }
         internal void WriteShuffledShops()
@@ -497,13 +504,12 @@ namespace DS2S_META.Randomizer
             if (Hook?.ShopLineupParam == null)
                 return;
             Hook.ShopLineupParam.RestoreParam();
-            //Hook.WriteAllShops(VanillaShops, false);
         }
         internal void WriteVanillaLots()
         {
-            if (Hook == null)
+            if (Hook?.ItemLotOtherParam == null)
                 return;
-            Hook.WriteAllLots(VanillaLots);
+            Hook.ItemLotOtherParam.RestoreParam();
         }
         internal void FixMaughlinEvent()
         {

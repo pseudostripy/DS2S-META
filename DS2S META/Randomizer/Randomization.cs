@@ -92,9 +92,10 @@ namespace DS2S_META.Randomizer
 
         // Constructors:
         internal LotRdz(int paramid) : base(paramid) { }
-        internal LotRdz(KeyValuePair<int, ItemLot> VanKvp) : base(VanKvp.Key)
+        internal LotRdz(ItemLot vanlot) : base(vanlot.ID)
         {
-            VanillaLot = VanKvp.Value;
+            VanillaLot = vanlot;
+            ShuffledLot = VanillaLot.CloneBlank();
         }
 
         // Methods
@@ -103,7 +104,7 @@ namespace DS2S_META.Randomizer
         {
             get
             {
-                var flatlist = VanillaLot.Lot;
+                var flatlist = VanillaLot.GetFlatlist();
                 return flatlist;
             }
         }
@@ -113,12 +114,9 @@ namespace DS2S_META.Randomizer
             AdjustQuantity(di);
 
             if (ShuffledLot == null)
-            {
-                ShuffledLot = new ItemLot(di);
-                ShuffledLot.ParamDesc = VanillaLot?.ParamDesc;
-            }
-            else
-                ShuffledLot.AddDrop(di);
+                throw new NullReferenceException("Shuffled lot should have been cloned from vanilla!");
+
+            ShuffledLot.AddDrop(di);
 
             if (ShuffledLot.NumDrops > VanillaLot?.NumDrops)
                 throw new Exception("Shouldn't be able to get here!");
@@ -139,7 +137,8 @@ namespace DS2S_META.Randomizer
         {
             if (ShuffledLot == null)
                 return -1;
-            return ShuffledLot.Lot.Where(di => di.ItemID == itemID).First().Quantity;
+            int ind = ShuffledLot.GetLotIndex(itemID);
+            return ShuffledLot.Quantities[ind];
             // Note: there's an extremely unlikely bug that can occur here and only affects
             // output display, so I'm too lazy to deal with it.
         }
@@ -151,10 +150,10 @@ namespace DS2S_META.Randomizer
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
                 return sb.Append("\tEMPTY").ToString();    
             
-            foreach(var di in ShuffledLot.Lot)
+            for(int i = 0; i < ShuffledLot.NumDrops; i++)
             {
-                sb.Append($"\t{GetItemName(di.ItemID)}");
-                sb.Append($" x{di.Quantity}");
+                sb.Append($"\t{GetItemName(ShuffledLot.Items[i])}");
+                sb.Append($" x{ShuffledLot.Quantities[i]}");
                 sb.Append(Environment.NewLine);
             }
 

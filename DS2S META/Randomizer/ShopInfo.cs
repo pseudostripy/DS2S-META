@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using DS2S_META.Utils;
 
-using DS2S_META;
-using Octokit;
+
+
 
 namespace DS2S_META.Randomizer
 {
@@ -120,6 +120,7 @@ namespace DS2S_META.Randomizer
         {
             // Unpack data:
             ParamRow = shoprow;
+            ParamDesc = ParamRow.Desc;
 
             // Initial field setting:
             ItemID = (int)ReadAt(0);

@@ -74,15 +74,25 @@ namespace DS2S_META
             if (paramType != Type)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
 
-            TotalTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.TableLength);
             OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
-            Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
 
-            
-            int param = 0x40;
+            int param = 0x40; // param header?
             int paramID = 0x0;
             int paramoffset = 0x8;
             int nextParam = 0x18;
+
+            var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
+            var nparams = (OffsetsTableLength - param) / nextParam;
+
+            if ((OffsetsTableLength - param) % nextParam != 0)
+                throw new Exception("Potential mismatch in param total bytes");
+            TotalTableLength = OffsetsTableLength + nparams * RowLength;
+
+            
+            Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
+
+
+            
 
             while (param < OffsetsTableLength)
             {
@@ -99,6 +109,9 @@ namespace DS2S_META
 
                 param += nextParam;
             }
+            //TotalTableLength = ;
+            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
+
         }
         public void StoreRowBytes(Row row)
         {
@@ -291,8 +304,12 @@ namespace DS2S_META
                 {
                     case DefType.s8:
                     case DefType.u8:
+                        return 1;
+
                     case DefType.s16:
                     case DefType.u16:
+                        return 2;
+
                     case DefType.s32:
                     case DefType.u32:
                     case DefType.b32:
