@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using DS2S_META.Utils;
@@ -79,8 +80,18 @@ namespace DS2S_META.Randomizer
             return RandomizerManager.RandomGammaInt(2000, 50);
         }
 
-        internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
-        internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
+        //internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
+        //internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
+
+        internal string GetItemName(int itemid)
+        {
+            if (!RandomizerManager.TryGetItem(itemid, out var item))
+                return string.Empty;
+            if (item == null)
+                return string.Empty;
+
+            return item.MetaItemName;
+        }
     }
 
 
@@ -236,12 +247,16 @@ namespace DS2S_META.Randomizer
             AdjustQuantity(di);
 
             // Fix price:
-            int basepricenew = 12000; // some large number that divides by a lot of things
+            if (!RandomizerManager.TryGetItem(di.ItemID, out var item))
+                throw new Exception("I'm curious whether any of them are not defined?");
+            if (item == null)
+                throw new NullReferenceException("Item shouldn't be null");
+
             int pricenew = GetTypeRandomPrice(di.ItemID);
-            float pricerate = (float)pricenew / basepricenew;
+            float pricerate = (float)pricenew / item.BaseBuyPrice;
 
             // Create:
-            ShuffledShop = new ShopInfo(di, VanillaShop, pricerate, basepricenew);
+            ShuffledShop = new ShopInfo(di, VanillaShop, pricerate);
         }
         internal override bool HasShuffledItemID(int itemID)
         {

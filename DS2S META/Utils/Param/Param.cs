@@ -87,12 +87,7 @@ namespace DS2S_META
             if ((OffsetsTableLength - param) % nextParam != 0)
                 throw new Exception("Potential mismatch in param total bytes");
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
-
-            
             Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
-
-
-            
 
             while (param < OffsetsTableLength)
             {
@@ -109,9 +104,6 @@ namespace DS2S_META
 
                 param += nextParam;
             }
-            //TotalTableLength = ;
-            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
-
         }
         public void StoreRowBytes(Row row)
         {
@@ -339,15 +331,19 @@ namespace DS2S_META
             public virtual object GetFieldValue(byte[] rowbytes)
             {
                 // Strings overriden in subclass
-                var outputarray = new byte[4];
-                Array.Copy(rowbytes, FieldOffset, outputarray, 0, 4);
 
+                var outputarray = new byte[FieldLength];
+                Array.Copy(rowbytes, FieldOffset, outputarray, 0, FieldLength);
                 switch (Type)
                 {
                     case DefType.s8:
                     case DefType.u8:
+                        return (byte)outputarray[0];
+                        
                     case DefType.s16:
                     case DefType.u16:
+                        return BitConverter.ToInt16(outputarray);
+
                     case DefType.s32:
                     case DefType.u32:
                     case DefType.b32:
@@ -359,9 +355,7 @@ namespace DS2S_META
 
                     case DefType.f64:
                         // 8 bytes...
-                        var outputarray2 = new byte[8];
-                        Array.Copy(rowbytes, FieldOffset, outputarray2, 0, 8);
-                        return BitConverter.ToDouble(outputarray2);
+                        return BitConverter.ToDouble(outputarray);
 
                     // Given that there are 8 bytes available, these could possibly be offsets
                     case DefType.dummy8:

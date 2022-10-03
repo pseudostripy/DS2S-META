@@ -98,9 +98,6 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        // Do we need this?
-        internal int NewBasePrice { get; set; }
-        
         internal ItemParam ItemParam => RandomizerManager.VanillaItemParams[ItemID];
         internal int VanillaBasePrice
         {
@@ -132,7 +129,7 @@ namespace DS2S_META.Randomizer
             Quantity = (int)ReadAt(8);
         }
 
-        internal ShopInfo(DropInfo DI, ShopInfo VanShop, float pricerate, int newbaseprice)
+        internal ShopInfo(DropInfo DI, ShopInfo VanShop, float pricerate)
         {
             // Collision might be ok?
             ParamRow = VanShop.ParamRow;
@@ -148,8 +145,6 @@ namespace DS2S_META.Randomizer
             ParamDesc       = VanShop.ParamDesc;
             //
             PriceRate = pricerate;
-            //
-            NewBasePrice = newbaseprice;
         }
         internal ShopInfo Clone()
         {
@@ -162,46 +157,18 @@ namespace DS2S_META.Randomizer
             // Assume no infusion or reinforcement, to consider later.
             return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
-        //internal void SetBytesOutput()
-        //{
-        //    // Prepare for write
-
-        //    var fourbytes = new byte[4];
-
-        //    var itemid = BitConverter.GetBytes(ItemID);
-        //    var enable = BitConverter.GetBytes(EnableFlag);
-        //    var disable = BitConverter.GetBytes(DisableFlag);
-        //    var material = BitConverter.GetBytes(MaterialID);
-        //    var dup = BitConverter.GetBytes(DuplicateItemID);
-        //    var rate = BitConverter.GetBytes(PriceRate);
-        //    var quant = BitConverter.GetBytes(Quantity);
-
-        //    var test = Concat(itemid, fourbytes, enable, disable, material,
-        //                       dup, fourbytes, rate, quant);
-        //    ParamRow.RowBytes = test;
-        //}
+        
         public void WriteAt(int fieldindex, byte[] valuebytes)
         {
             // Note: this function isn't generalised properly yet
             int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
             Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
         }
-        //public byte[] ReadAt(int fieldindex)
-        //{
-        //    Param.Field F = ParamRow.Param.Fields[fieldindex];
-        //    byte[] retbytes = new byte[F.FieldLength];
-        //    Array.Copy(ParamRow.RowBytes, F.FieldOffset, retbytes, 0, F.FieldLength);
-        //    return retbytes;
-        //}
         public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
         public void StoreRow()
         {
             // Convenience wrapper
             ParamRow.Param.StoreRowBytes(ParamRow);
         }
-        //public static byte[] Concat(params byte[][] arrays)
-        //{
-        //    return arrays.SelectMany(x => x).ToArray();
-        //}
     }
 }

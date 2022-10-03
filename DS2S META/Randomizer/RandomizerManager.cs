@@ -63,7 +63,7 @@ namespace DS2S_META.Randomizer
                 case eItemType.CHESTARMOUR:
                 case eItemType.GAUNTLETS:
                 case eItemType.LEGARMOUR:
-                    return Hook.GetArmorMaxUpgrade(item.ItemID);
+                    return Hook.GetArmorMaxUpgrade(item.ItemID + 10000000);
 
                 default:
                     return 0;
@@ -89,7 +89,7 @@ namespace DS2S_META.Randomizer
             //var parShopDesc = ReadShopNames();
             GetVanillaShops();
             GetVanillaLots();
-            VanillaItemParams = Hook.GetVanillaItemParams();
+            VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             Logic = new CasualItemSet();
             FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
             AddShopLogic();
@@ -115,7 +115,7 @@ namespace DS2S_META.Randomizer
             VanillaShops = Hook.ShopLineupParam.Rows.Select(row => new ShopInfo(row)).ToList();
             return;
         }
-
+        
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -405,7 +405,59 @@ namespace DS2S_META.Randomizer
             var maxupgrade = GetItemMaxUpgrade(item);
             di.Reinforcement = (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
         }
-        
+
+        // Memory modification:
+        // Params table writes
+        internal void WriteAllLots(List<ItemLot> lots)
+        {
+            lots.ForEach(lot => lot.StoreRow());
+            Hook?.ItemLotOtherParam?.WriteModifiedParam();
+        }
+        internal void WriteSomeLots(List<ItemLot> somelots)
+        {
+            // Method used for just writing a few rows out of the Param
+            somelots.ForEach(lot => lot.ParamRow.WriteRow());
+        }
+        internal void WriteSomeShops(List<ShopInfo> shops, bool isshuf)
+        {
+            // Method used for just writing a few rows out of the Param
+            shops.ForEach(si => WriteShopInfo(si));
+        }
+        internal void WriteAllShops(List<ShopInfo> all_shops, bool isshuf)
+        {
+            all_shops.ForEach(si => si.StoreRow());
+            Hook?.ShopLineupParam?.WriteModifiedParam();
+        }
+        internal void WriteShopInfo(ShopInfo SI)
+        {
+            // Write to game:
+            SI.ParamRow.WriteRow();
+        }
+        internal void WriteShuffledLots()
+        {
+            if (Hook == null)
+                return;
+
+            var shuffledlots = Data.OfType<LotRdz>()
+                                    .Where(ldz => ldz.ShuffledLot is not null)
+                                    .Select(ldz => ldz.ShuffledLot).ToList();
+            WriteAllLots(shuffledlots);
+        }
+        internal void WriteShuffledShops()
+        {
+            if (Hook == null)
+                return;
+
+            var shuffledshops = Data.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
+            WriteAllShops(shuffledshops, true);
+        }
+        internal void WriteVanillaShops()
+        {
+            if (Hook?.ShopLineupParam == null)
+                return;
+            Hook.ShopLineupParam.RestoreParam();
+        }
+
         // Utility:
         internal Dictionary<int, string> ReadShopNames()
         {
@@ -481,30 +533,7 @@ namespace DS2S_META.Randomizer
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
-        internal void WriteShuffledLots()
-        {
-            if (Hook == null)
-                return;
-
-            var shuffledlots = Data.OfType<LotRdz>()
-                                    .Where(ldz => ldz.ShuffledLot is not null)
-                                    .Select(ldz => ldz.ShuffledLot).ToList();
-            Hook.WriteAllLots(shuffledlots);
-        }
-        internal void WriteShuffledShops()
-        {
-            if (Hook == null)
-                return;
-
-            var shuffledshops = Data.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
-            Hook.WriteAllShops(shuffledshops, true);
-        }
-        internal void WriteVanillaShops()
-        {
-            if (Hook?.ShopLineupParam == null)
-                return;
-            Hook.ShopLineupParam.RestoreParam();
-        }
+        
         internal void WriteVanillaLots()
         {
             if (Hook?.ItemLotOtherParam == null)
@@ -543,7 +572,7 @@ namespace DS2S_META.Randomizer
 
             if (Hook == null)
                 return;
-            Hook.WriteSomeShops(cloneshops, true);
+            WriteSomeShops(cloneshops, true);
         }
 
         // RNG related:

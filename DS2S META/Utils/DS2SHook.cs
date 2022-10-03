@@ -15,6 +15,7 @@ using DS2S_META.Randomizer;
 using SoulsFormats;
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
+using System.Windows.Automation;
 
 namespace DS2S_META
 {
@@ -47,6 +48,9 @@ namespace DS2S_META
 
         public Param? ShopLineupParam;   // Shops.
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
+        private Param? ItemParam;
+
+        public List<ItemParam> Items = new();
 
         private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
@@ -79,7 +83,7 @@ namespace DS2S_META
         private PHPointer? WeaponReinforceParam;
         private PHPointer? CustomAttrSpecParam;
         private PHPointer? ArmorReinforceParam;
-        private PHPointer? ItemParam;
+        
         private PHPointer ItemUseageParam;
         private PHPointer ItemLotDropsParam; // Enemy drop tables
         
@@ -147,9 +151,9 @@ namespace DS2S_META
             WeaponReinforceParam = BlankPHP;
             CustomAttrSpecParam = BlankPHP;
             ArmorReinforceParam = BlankPHP;
-            ItemParam = BlankPHP;
             ItemUseageParam = BlankPHP;
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
+            //ItemParam = BlankPHP;
             //ItemLotOtherParam = BlankPHP; // World pickups, boss kills, covenant rewards etc.
             
             BaseB = BlankPHP;
@@ -204,7 +208,7 @@ namespace DS2S_META
             WeaponReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             CustomAttrSpecParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.CustomAttrSpecParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            ItemParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemParamOffset, (int)DS2SOffsets.ParamDataOffset2);
+            //ItemParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
             ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
             //ItemLotOtherParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamItemLotOtherOffset);
@@ -223,12 +227,13 @@ namespace DS2S_META
             WeaponReinforceParamOffsetDict = BuildOffsetDictionary(WeaponReinforceParam, "WEAPON_REINFORCE_PARAM");
             CustomAttrOffsetDict = BuildOffsetDictionary(CustomAttrSpecParam, "CUSTOM_ATTR_SPEC_PARAM");
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
-            ItemParamOffsetDict = BuildOffsetDictionary(ItemParam, "ITEM_PARAM");
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
+            //ItemParamOffsetDict = BuildOffsetDictionary(ItemParam, "ITEM_PARAM");
             //ItemLotOtherPODict = BuildOffsetDictionary(ItemLotDropsParam, "ITEM_LOT_PARAM2");
             //ItemLotOtherPODict = BuildOffsetDictionary(ItemLotOtherParam, "ITEM_LOT_PARAM2");
             
             GetParams();
+            GetVanillaItems();
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -1142,6 +1147,10 @@ namespace DS2S_META
                     ItemLotOtherParam = param;
                     break;
 
+                case "ITEM_PARAM":
+                    ItemParam = param;
+                    break;
+
                 default:
                     break;
             }
@@ -1151,50 +1160,15 @@ namespace DS2S_META
         {
             return CreateChildPointer(BaseA, offsets);
         }
-        //private async Task ReadParams()
-        //{
-        //    List<Task> tasks = new List<Task>();
-
-        //    foreach (ItemCategory category in ItemCategory.All)
-        //    {
-        //        tasks.Add(Task.Run(() => SetupItems(category)));
-        //    }
-
-        //    Task setupItems = Task.WhenAll(tasks);
-        //    await setupItems;
-        //    if (setupItems.Exception != null)
-        //        throw setupItems.Exception;
-
-        //    tasks.Clear();
-
-        //    foreach (ItemCategory category in ItemCategory.All)
-        //    {
-        //        if (category.Category == Category.Weapons)
-        //            tasks.Add(Task.Run(() => SetupGems(category)));
-        //    }
-
-        //    Task setupGems = Task.WhenAll(tasks);
-        //    await setupGems;
-        //    if (setupGems.Exception != null)
-        //        throw setupGems.Exception;
-
-        //    tasks.Clear();
-        //}
-
-
+        
 
 
         private static Dictionary<int, int> WeaponParamOffsetDict = new();
         private static Dictionary<int, int> WeaponReinforceParamOffsetDict = new();
         private static Dictionary<int, int> CustomAttrOffsetDict = new();
         private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
-        private static Dictionary<int, int> ItemParamOffsetDict = new();
         private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
-        //private static Dictionary<int, int> ItemLotParam_Drops; 
-        //private static Dictionary<int, int> ItemLotOtherPODict = new();
-        private static Dictionary<int, int> ShopLineupPODict = new();
-
-
+        
 
         private Dictionary<int, int> BuildOffsetDictionary(PHPointer pointer, string expectedParamName)
         {
@@ -1338,10 +1312,12 @@ namespace DS2S_META
             return 0;
         }
 
+        // ARCHAIC TO TIDY
         internal int GetArmorMaxUpgrade(int id)
         {
             if  (!Setup || ArmorReinforceParam == null) return 0;
             return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
+            //return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
         }
         internal int GetWeaponMaxUpgrade(int id)
         {
@@ -1350,10 +1326,29 @@ namespace DS2S_META
             var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
             return WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.MaxUpgrade);
         }
-        private int GetMaxItemQuantity(int id)
+        internal void GetVanillaItems()
+        {
+            if (ItemParam == null)
+                throw new NullReferenceException("Shouldn't get here");
+
+            Items = ItemParam.Rows.Select(row => new ItemParam(row)).ToList();
+            foreach(var item in Items)
+            {
+                var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ItemID).FirstOrDefault();
+                if (temp == null)
+                    continue;
+                item.MetaItemName = temp.Name;
+            }
+            return;
+        }
+        private int GetMaxItemQuantity(int itemid)
         {
             if (!Setup || ItemParam == null) return 0;
-            return ItemParam.ReadInt16(ItemParamOffsetDict[id] + (int)DS2SOffsets.ItemParam.MaxHeld);
+            var item = Items.Where(it => it.ItemID == itemid);
+            if (item.Count() == 0)
+                throw new Exception("Cannot find maximum amount to hold for this item");
+
+            return item.First().MaxHeld;
         }
 
         internal List<DS2SInfusion> GetWeaponInfusions(int id)
@@ -1382,10 +1377,17 @@ namespace DS2S_META
 
             return infusions;
         }
-        internal bool GetIsDroppable(int id)
+
+        // TODO ARCHAIC
+        internal bool GetIsDroppable(int itemid)
         {
             if (!Setup || ItemParam == null || ItemUsageParamOffsetDict == null) return false;
-            var itemUsageID = ItemParam.ReadInt32(ItemParamOffsetDict[id] + (int)DS2SOffsets.ItemParam.ItemUsageID);
+            var item = Items.Where(it => it.ItemID + 10000000 == itemid).FirstOrDefault();
+
+            if (item == null)
+                throw new Exception("Cannot find item for GetIsDroppable");
+
+            var itemUsageID = item.ItemUsageID;
             byte bitField = ItemUseageParam.ReadByte(ItemUsageParamOffsetDict[itemUsageID] + (int)DS2SOffsets.ItemUasgeParam.Bitfield);
 
             if (bitField == 0)
@@ -1393,193 +1395,6 @@ namespace DS2S_META
 
             return (bitField & 4) != 0;
         }
-
-        // testing
-        //internal int GetItemLotOffset(int paramid) => ItemLotOtherPODict[paramid];
-        //internal Dictionary<int,ItemLot> GetVanillaLots()
-        //{
-        //    Dictionary<int, ItemLot> vanlots = new Dictionary<int, ItemLot>();
-            
-        //    // Loop over all the params and read the itemlot tables
-        //    foreach( var kvp in ItemLotOtherPODict)
-        //        vanlots.Add(kvp.Key, ReadItemLot(kvp));
-
-        //    return vanlots;
-        //}
-        internal Dictionary<int, ItemParam> GetVanillaItemParams()
-        {
-            List<DS2SItem> allitems = DS2SItemCategory.AllItems;
-            Dictionary<int, ItemParam> vanitems = new Dictionary<int, ItemParam>();
-
-            // Loop over all the params and read the itemlot tables
-            // Note: this gets messy if you do it as an overly complicated LINQ query
-            foreach (var kvp in ItemParamOffsetDict)
-            {
-                int itemid = kvp.Key;
-                IEnumerable<DS2SItem> ds2item = allitems.Where(item => item.ID == itemid);
-                string itemname = ds2item.Count() > 0 ? ds2item.First().Name : "unknown_item";
-                vanitems.Add(kvp.Key, ReadItem(kvp, itemname));
-            }
-            
-            return vanitems;
-        }
-        
-        
-        // Params table reads
-        internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
-        {
-            if (ItemParam == null)
-                throw new Exception("ItemParam not setup");
-
-            int offset = kvp.Value;
-            var basebuy     = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
-            var itemusageid = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.ItemUsageID);
-            var maxheld     = ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.MaxHeld);
-            var itemtype    = ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
-
-            return new ItemParam(desc, kvp.Key, itemusageid, maxheld, basebuy, itemtype);
-        }
-        //internal ItemLot ReadItemLot(KeyValuePair<int,int> kvp)
-        //{
-        //    // kvp = KeyValuePair (paramID vs. itemlotdata_offset)
-        //    int lotstart = kvp.Value;
-
-        //    ItemLot lot = new ItemLot();
-
-        //    // Read populated lots until we hit a breakcondition or reach 10 total
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        int itemid = ItemLotOtherParam.ReadInt32(lotstart + (int)DS2SOffsets.ItemLotOffsets.Item1 + sizeof(Int32) * i);
-
-        //        // Traps for end of table data
-        //        if (itemid == 10)
-        //            break;
-        //        if (itemid == 60510000 && i > 0)
-        //            break;
-
-
-        //        // Read remaining params
-        //        int quantity = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Quantity1 + sizeof(byte) * i);
-        //        int reinforce = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Reinforcement1 + sizeof(byte) * i);
-        //        int infusion = ItemLotOtherParam.ReadByte(lotstart + (int)DS2SOffsets.ItemLotOffsets.Infusion1 + sizeof(byte) * i);
-        //        if (quantity == 0)
-        //            continue; // we're not interested in these.
-
-        //        // Valid Item: Store in item lot:
-        //        lot.AddDrop(itemid, quantity, reinforce, infusion);
-        //    }
-        //    return lot;
-        //}
-        
-        internal int ReadPrice(int itemid)
-        {
-            if (ItemParam == null)
-                throw new Exception("ItemParam not setup");
-            int offset = ItemParamOffsetDict[itemid];
-            return ItemParam.ReadInt32(offset + (int)DS2SOffsets.ItemParam.BaseBuyPrice);
-        }
-
-        // Params table writes
-        internal void WriteAllLots(List<ItemLot> lots)
-        {
-            lots.ForEach(lot => lot.StoreRow());
-            ItemLotOtherParam?.WriteModifiedParam();
-        }
-        internal void WriteSomeLots(List<ItemLot> somelots)
-        {
-            // Method used for just writing a few rows out of the Param
-            somelots.ForEach(lot => lot.ParamRow.WriteRow());
-        }
-
-        internal void WriteSomeShops(List<ShopInfo> shops, bool isshuf)
-        {
-            // Method used for just writing a few rows out of the Param
-            shops.ForEach(si => WriteShopInfo(si));
-            
-            foreach (var si in shops)
-            {
-                if (si == null)
-                    continue;
-
-                //WriteShopInfo(si);
-                int priceToWrite;
-                KeyValuePair<int, int> kvp_price;
-                if (isshuf)
-                    priceToWrite = si.NewBasePrice;
-                else
-                    priceToWrite = si.VanillaBasePrice;
-
-                kvp_price = new KeyValuePair<int, int>(si.ItemID, priceToWrite);
-                WritePrice(kvp_price);
-            }
-        }
-
-        internal void WriteAllShops(List<ShopInfo> all_shops, bool isshuf)
-        {
-            all_shops.ForEach(si => si.StoreRow());
-            ShopLineupParam?.WriteModifiedParam();
-            
-            foreach (var si in all_shops)
-            {
-                if (si == null)
-                    continue;
-
-                //WriteShopInfo(si);
-                int priceToWrite;
-                KeyValuePair<int, int> kvp_price;
-                if (isshuf)
-                    priceToWrite = si.NewBasePrice;
-                else
-                    priceToWrite = si.VanillaBasePrice;
-
-                kvp_price = new KeyValuePair<int, int>(si.ItemID, priceToWrite);
-                WritePrice(kvp_price);
-            }
-        }
-        internal void WritePrice(KeyValuePair<int, int> kvp)
-        {
-            if (!ItemParamOffsetDict.TryGetValue(kvp.Key, out var lotStart))
-                return;
-            if (ItemParam == null)
-                throw new Exception("WeaponParam not setup");
-
-            var price = BitConverter.GetBytes(kvp.Value);
-            ItemParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemParam.BaseBuyPrice, price);
-        }
-        internal void WriteShopInfo(ShopInfo SI)
-        {
-            // Write to game:
-            SI.ParamRow.WriteRow();
-        }
-        //internal void WriteItemLotTable(int paramID, ItemLot itemlot)
-        //{
-        //    if (itemlot == null)
-        //        return;
-
-        //    int lotStart = ItemLotOtherPODict[paramID];
-
-        //    // Pack relevant data together first:
-        //    var itembytes = itemlot.Items.SelectMany(id => BitConverter.GetBytes(id)).ToArray();
-        //    var quantbytes = itemlot.Quantities.ToArray();
-        //    var reinfbytes = itemlot.Reinforcements.ToArray();
-        //    var infusionbytes = itemlot.Infusions.ToArray();
-
-        //    // Write to game:
-        //    ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Item1, itembytes);
-        //    ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Quantity1, quantbytes);
-        //    ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Reinforcement1, reinfbytes);
-        //    ItemLotOtherParam.WriteBytes(lotStart + (int)DS2SOffsets.ItemLotOffsets.Infusion1, infusionbytes);
-        //}
-        
-        internal eItemType GetItemType(int itemid)
-        {
-            if (ItemParam == null)
-                throw new Exception("WeaponParam not setup");
-
-            int offset = ItemParamOffsetDict[itemid];
-            return (eItemType)ItemParam.ReadByte(offset + (int)DS2SOffsets.ItemParam.ItemType);
-        }
-
         
         #endregion
 

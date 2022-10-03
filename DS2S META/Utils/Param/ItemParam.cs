@@ -25,10 +25,21 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing ItemParam
     /// </summary>
-    internal class ItemParam
+    public class ItemParam
     {
+        internal Param.Row ParamRow;
+        internal int ID => ParamRow.ID;
+
         internal string MetaItemName;
+
+        internal int IconID;
         internal int ItemID;
+        internal int WeaponID;
+        internal int ArmourID;
+        internal int AmmunitionID;
+        internal int RingID;
+        internal int SpellID;
+        internal int GestureID;
         internal int ItemUsageID;
         internal int MaxHeld;
         internal int BaseBuyPrice;
@@ -43,29 +54,53 @@ namespace DS2S_META.Utils
         }
 
         // Constructor:
-        internal ItemParam(string metaItemName, int itemID, int itemUsageID, int maxHeld, int baseBuyPrice, byte itemType)
+        internal ItemParam(Param.Row paramrow)
         {
-            MetaItemName = metaItemName;
-            ItemID = itemID;
-            ItemUsageID = itemUsageID;
-            MaxHeld = maxHeld;
-            BaseBuyPrice = baseBuyPrice;
-            ItemType = (eItemType)itemType;
+            // Unpack data:
+            ParamRow = paramrow;
+
+            IconID = (int)ReadAt(0);
+            WeaponID = (int)ReadAt(5);
+            ArmourID = (int)ReadAt(6);
+            AmmunitionID = (int)ReadAt(7);
+            RingID = (int)ReadAt(8);
+            SpellID = (int)ReadAt(9);
+            GestureID = (int)ReadAt(10);
+            ItemID = GetItemID();
+            BaseBuyPrice = (int)ReadAt(12);
+            ItemUsageID = (int)ReadAt(17);
+            MaxHeld = (int)(short)ReadAt(20);
+            ItemType = (eItemType)ReadAt(24);
+        }
+        private int GetItemID()
+        {
+            // is this how they do it?
+            if (WeaponID != -1)
+                return WeaponID;
+            if (ArmourID != -1)
+                return ArmourID;
+            if (AmmunitionID != -1)
+                return AmmunitionID;
+            if (RingID != -1)
+                return RingID;
+            if (SpellID != -1)
+                return SpellID;
+            if (GestureID != -1)
+                return GestureID;
+            return IconID; // last ditch save
         }
 
-        //public override void Read()
+        //internal ItemParam(string metaItemName, int itemID, int itemUsageID, int maxHeld, int baseBuyPrice, byte itemType)
         //{
-        //    ////internal ItemParam ReadItem(KeyValuePair<int, int> kvp, string desc = "")
-        //    ////{
-        //    //int offset = kvp.Value;
-        //    //var basebuy = ItemParam.ReadInt32(offset + (int)Offsets.BaseBuyPrice);
-        //    //var itemusageid = ItemParam.ReadInt32(offset + (int)Offsets.ItemUsageID);
-        //    //var maxheld = ItemParam.ReadInt32(offset + (int)Offsets.MaxHeld);
-        //    //var itemtype = ItemParam.ReadByte(offset + (int)Offsets.ItemType);
-
-        //    ////    return new ItemParam(desc, kvp.Key, itemusageid, maxheld, basebuy, itemtype);
-        //    ////}
+        //    MetaItemName = metaItemName;
+        //    ItemID = itemID;
+        //    ItemUsageID = itemUsageID;
+        //    MaxHeld = maxHeld;
+        //    BaseBuyPrice = baseBuyPrice;
+        //    ItemType = (eItemType)itemType;
         //}
+
+        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
 
     }
 }
