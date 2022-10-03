@@ -555,6 +555,7 @@ namespace DS2S_META.Randomizer
                 var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
                 vanshop.ItemID = goodshop.ShuffledShop.ItemID;
                 vanshop.Quantity = goodshop.ShuffledShop.Quantity;
+                vanshop.PriceRate = goodshop.ShuffledShop.PriceRate;
                 cloneshops.Add(vanshop);
             }
 
