@@ -252,8 +252,18 @@ namespace DS2S_META.Randomizer
             if (item == null)
                 throw new NullReferenceException("Item shouldn't be null");
 
+            // Fix "unsellable items"
+            var baseprice = item.BaseBuyPrice;
+            if (baseprice <= 1)
+            {
+                item.BaseBuyPrice = 12000;
+                baseprice = 12000;
+                item.ParamRow.WriteRow(); // memory write change
+            }
+
+
             int pricenew = GetTypeRandomPrice(di.ItemID);
-            float pricerate = (float)pricenew / item.BaseBuyPrice;
+            float pricerate = (float)pricenew / baseprice;
 
             // Create:
             ShuffledShop = new ShopInfo(di, VanillaShop, pricerate);

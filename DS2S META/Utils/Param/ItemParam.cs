@@ -42,7 +42,15 @@ namespace DS2S_META.Utils
         internal int GestureID;
         internal int ItemUsageID;
         internal int MaxHeld;
-        internal int BaseBuyPrice;
+        internal int _basebuyprice;
+        internal int BaseBuyPrice {
+            get => _basebuyprice;
+            set
+            {
+                _basebuyprice = value;
+                WriteAt(12, BitConverter.GetBytes(value));
+            }
+        }
         internal eItemType ItemType;
 
         public enum Offsets
@@ -90,17 +98,12 @@ namespace DS2S_META.Utils
             return IconID; // last ditch save
         }
 
-        //internal ItemParam(string metaItemName, int itemID, int itemUsageID, int maxHeld, int baseBuyPrice, byte itemType)
-        //{
-        //    MetaItemName = metaItemName;
-        //    ItemID = itemID;
-        //    ItemUsageID = itemUsageID;
-        //    MaxHeld = maxHeld;
-        //    BaseBuyPrice = baseBuyPrice;
-        //    ItemType = (eItemType)itemType;
-        //}
-
         public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
-
+        public void WriteAt(int fieldindex, byte[] valuebytes)
+        {
+            // Note: this function isn't generalised properly yet
+            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
+            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
+        }
     }
 }

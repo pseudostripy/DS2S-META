@@ -75,7 +75,7 @@ namespace DS2S_META.Randomizer
 
 
         // Constructors:
-        internal RandomizerManager() 
+        internal RandomizerManager()
         {
             RNG = new Random(Environment.TickCount); // used for generate seed numbers
         }
@@ -115,7 +115,7 @@ namespace DS2S_META.Randomizer
             VanillaShops = Hook.ShopLineupParam.Rows.Select(row => new ShopInfo(row)).ToList();
             return;
         }
-        
+
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -140,8 +140,8 @@ namespace DS2S_META.Randomizer
             PrintAllRdz();
 
             // Randomize Game!
-            await Task.Run( () => WriteShuffledLots());
-            await Task.Run( () => WriteShuffledShops());
+            await Task.Run(() => WriteShuffledLots());
+            await Task.Run(() => WriteShuffledShops());
             //DisableUnusedShops();
             FixMaughlinEvent();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
@@ -149,11 +149,13 @@ namespace DS2S_META.Randomizer
         }
         internal void Unrandomize()
         {
-            if (Hook == null)
-                return;
+            if (Hook?.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || Hook?.ItemParam == null)
+                throw new Exception("Param tables are null");
 
-            WriteVanillaShops();
-            WriteVanillaLots();
+            // Restore all the param tables we changed:
+            Hook.ShopLineupParam.RestoreParam();
+            Hook.ItemLotOtherParam.RestoreParam();
+            Hook.ItemParam.RestoreParam();
 
             // Force an area reload.
             Hook.WarpLast();
@@ -407,7 +409,6 @@ namespace DS2S_META.Randomizer
         }
 
         // Memory modification:
-        // Params table writes
         internal void WriteAllLots(List<ItemLot> lots)
         {
             lots.ForEach(lot => lot.StoreRow());
@@ -451,13 +452,7 @@ namespace DS2S_META.Randomizer
             var shuffledshops = Data.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             WriteAllShops(shuffledshops, true);
         }
-        internal void WriteVanillaShops()
-        {
-            if (Hook?.ShopLineupParam == null)
-                return;
-            Hook.ShopLineupParam.RestoreParam();
-        }
-
+        
         // Utility:
         internal Dictionary<int, string> ReadShopNames()
         {
@@ -532,13 +527,6 @@ namespace DS2S_META.Randomizer
 
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
-        }
-        
-        internal void WriteVanillaLots()
-        {
-            if (Hook?.ItemLotOtherParam == null)
-                return;
-            Hook.ItemLotOtherParam.RestoreParam();
         }
         internal void FixMaughlinEvent()
         {

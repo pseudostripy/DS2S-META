@@ -48,7 +48,7 @@ namespace DS2S_META
 
         public Param? ShopLineupParam;   // Shops.
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
-        private Param? ItemParam;
+        public Param? ItemParam;
 
         public List<ItemParam> Items = new();
 
