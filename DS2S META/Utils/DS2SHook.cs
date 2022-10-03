@@ -1382,7 +1382,7 @@ namespace DS2S_META
         internal bool GetIsDroppable(int itemid)
         {
             if (!Setup || ItemParam == null || ItemUsageParamOffsetDict == null) return false;
-            var item = Items.Where(it => it.ItemID + 10000000 == itemid).FirstOrDefault();
+            var item = Items.Where(it => it.ItemID == itemid).FirstOrDefault();
 
             if (item == null)
                 throw new Exception("Cannot find item for GetIsDroppable");

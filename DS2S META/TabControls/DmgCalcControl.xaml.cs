@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace DS2S_META
     {
         // Fields:
         private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
+        internal ItemParam? Item;
+        Timer InventoryTimer = new Timer();
 
         public DmgCalcControl()
         {
@@ -33,18 +36,10 @@ namespace DS2S_META
         {
             InventoryTimer.Interval = 100;
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
+            lbxItems.ItemsSource = Weapons;
         }
 
         private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                if (Properties.Settings.Default.UpdateMaxLive)
-                    HandleMaxAvailable();
-            }));
-        }
-
-        private void HandleMaxAvailable()
         {
         }
 
@@ -57,13 +52,13 @@ namespace DS2S_META
         internal override void EnableCtrls(bool enable)
         {
             InventoryTimer.Enabled = enable;
-            btnCalculate.IsEnabled= enable;
+            btnCalculate.IsEnabled = enable;
 
             if (enable)
                 UpdateCreateEnabled();
         }
 
-        Timer InventoryTimer = new Timer();
+        
         private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             FilterItems();
@@ -112,13 +107,6 @@ namespace DS2S_META
             return true;
         }
 
-        private int MaxMinusHeld(DS2SItem item)
-        {
-            var max = Hook.GetMaxQuantity(item);
-            var held = Hook.GetHeld(item);
-            return max - held;
-        }
-
         private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
         {
             var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
@@ -150,18 +138,13 @@ namespace DS2S_META
             nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
 
-            btnCalculate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
-            if (!Properties.Settings.Default.UpdateMaxLive)
-                HandleMaxAvailable();
             HandleMaxItemCheckbox();
         }
 
         public void UpdateCreateEnabled()
         {
-            if (lbxItems.SelectedItem is not DS2SItem item)
-                return;
-
-            btnCalculate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            //if (lbxItems.SelectedItem is not DS2SItem item)
+            //    return;
         }
 
         internal void EnableStats(bool enable)
@@ -171,6 +154,7 @@ namespace DS2S_META
 
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
+            // TODO
         }
 
         //handles up and down scrolling
@@ -197,16 +181,6 @@ namespace DS2S_META
                 lbxItems.ScrollIntoView(lbxItems.SelectedItem);
                 return;
             }
-        }
-
-        //Changes the color of the Apply button
-        private async Task ChangeColor(Brush new_color)
-        {
-            btnCalculate.Background = new_color;
-
-            await Task.Delay(TimeSpan.FromSeconds(.25));
-
-            btnCalculate.Background = default(Brush);
         }
 
         //handles escape
@@ -293,6 +267,21 @@ namespace DS2S_META
         {
             if (txtSearch.Text != "")
                 FilterItems();
+        }
+
+        private void btnSet_Click(object sender, RoutedEventArgs e)
+        {
+            // Build up the item string:
+            var item = lbxItems.SelectedItem as DS2SItem;
+            if (item == null) return;
+
+            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
+            if (item == null) return;
+
+            var upgr = nudUpgrade.Value;
+            if (upgr == null) return;
+            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
+
         }
     }
 }

@@ -208,18 +208,16 @@ namespace DS2S_META
             if (!Hook.Hooked) return;
 
 
-            if (!TryGetSelectedItem(out DS2SItem? item))
-                return;
-            if (item == null)
-                return;
+            if (!TryGetSelectedItem(out DS2SItem? ds2sitem)) return;
+            if (ds2sitem == null) return;
 
             // update quantities based on newly selected item
             UpdateQuantityAndTextVis();
 
             // Update infusion/upgrade ..?
             cmbInfusion.Items.Clear();
-            if (item.Type == DS2SItem.ItemType.Weapon)
-                foreach (var infusion in Hook.GetWeaponInfusions(item.ID))
+            if (ds2sitem.Type == DS2SItem.ItemType.Weapon)
+                foreach (var infusion in Hook.GetWeaponInfusions(ds2sitem.ID))
                     cmbInfusion.Items.Add(infusion);
             else
                 cmbInfusion.Items.Add(DS2SInfusion.Infusions[0]);
@@ -227,10 +225,10 @@ namespace DS2S_META
             cmbInfusion.SelectedIndex = 0;
             cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
 
-            nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
+            nudUpgrade.Maximum = Hook.GetMaxUpgrade(ds2sitem);
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
 
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCreate.IsEnabled = Hook.GetIsDroppable(ds2sitem.itemID) || Properties.Settings.Default.SpawnUndroppable;
             if (!Properties.Settings.Default.UpdateMaxLive)
                 HandleMaxAvailable();
             HandleMaxItemCheckbox();
@@ -240,10 +238,10 @@ namespace DS2S_META
         {
             if (lbxItems.SelectedItem == null)
                 return;
-            if (lbxItems.SelectedItem is not DS2SItem item)
+            if (lbxItems.SelectedItem is not DS2SItem ds2sitem)
                 throw new NullReferenceException("Unknown item");
             
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCreate.IsEnabled = Hook.GetIsDroppable(ds2sitem.itemID) || Properties.Settings.Default.SpawnUndroppable;
         }
 
         internal void EnableStats(bool enable)

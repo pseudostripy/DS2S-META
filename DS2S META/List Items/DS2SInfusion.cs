@@ -18,20 +18,22 @@ namespace DS2S_META
         }
         public override string ToString()
         {
+            if (Name == "Normal")
+                return string.Empty;
             return Name;
         }
         public static List<DS2SInfusion> Infusions = new List<DS2SInfusion>()
         {
-                    new DS2SInfusion("Normal", 0),
-                    new DS2SInfusion("Fire", 1),
-                    new DS2SInfusion("Magic", 2),
-                    new DS2SInfusion("Lightning", 3),
-                    new DS2SInfusion("Dark", 4),
-                    new DS2SInfusion("Poison", 5),
-                    new DS2SInfusion("Bleed", 6),
-                    new DS2SInfusion("Raw", 7),
-                    new DS2SInfusion("Enchanted", 8),
-                    new DS2SInfusion("Mundane", 9)
+            new DS2SInfusion("Normal", 0),
+            new DS2SInfusion("Fire", 1),
+            new DS2SInfusion("Magic", 2),
+            new DS2SInfusion("Lightning", 3),
+            new DS2SInfusion("Dark", 4),
+            new DS2SInfusion("Poison", 5),
+            new DS2SInfusion("Bleed", 6),
+            new DS2SInfusion("Raw", 7),
+            new DS2SInfusion("Enchanted", 8),
+            new DS2SInfusion("Mundane", 9)
         };
         public byte AsByte()
         {

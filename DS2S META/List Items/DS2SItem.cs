@@ -20,6 +20,7 @@ namespace DS2S_META
 
         public string Name;
         public int ID;
+        public int itemID => Type == ItemType.Armor ? ID - 10000000 : ID; // Interface fix for DS2SItem to normal itemID
         public ItemType Type;
 
         public static Dictionary<int, string> Items = new Dictionary<int, string>()
