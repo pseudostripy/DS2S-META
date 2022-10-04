@@ -234,8 +234,9 @@ namespace DS2S_META
             public int ID { get; private set; }
             public int DataOffset { get; private set; }
             public byte[] RowBytes { get; set;} = Array.Empty<byte>();
+            private static readonly Regex re = new(@"\w+ -?(?<desc>.*)");
             public object[] Data => ReadRow();
-            public string Desc => Name.Substring(Name.LastIndexOf('-') + 2);
+            public string Desc => GetName();
 
             public Row(Param param, string name, int id, int offset)
             {
@@ -263,6 +264,13 @@ namespace DS2S_META
             public void WriteRow()
             {
                 Param.Pointer.WriteBytes(DataOffset, RowBytes);
+            }
+            public string GetName()
+            {
+                var match = re.Match(Name);
+                if (match == null)
+                    throw new NullReferenceException("Catch this if they ever don't abide by this scheme");
+                return match.Groups["desc"].Value.Trim();
             }
 
         }
