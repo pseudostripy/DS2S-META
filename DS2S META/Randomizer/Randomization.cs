@@ -83,7 +83,7 @@ namespace DS2S_META.Randomizer
         //internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
         //internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
 
-        internal string GetItemName(int itemid)
+        internal static string GetItemName(int itemid)
         {
             if (!RandomizerManager.TryGetItem(itemid, out var item))
                 return string.Empty;
@@ -288,7 +288,7 @@ namespace DS2S_META.Randomizer
         }
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaShop?.ParamDesc}{Environment.NewLine}");
+            StringBuilder sb = new($"{ParamID}: {VanillaShop?.ParamDesc}{Environment.NewLine}");
 
             // Display empty lots
             if (ShuffledShop == null || ShuffledShop.ItemID == 0)

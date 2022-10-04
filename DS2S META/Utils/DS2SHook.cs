@@ -1334,7 +1334,7 @@ namespace DS2S_META
             Items = ItemParam.Rows.Select(row => new ItemParam(row)).ToList();
             foreach(var item in Items)
             {
-                var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ItemID).FirstOrDefault();
+                var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ID).FirstOrDefault();
                 if (temp == null)
                     continue;
                 item.MetaItemName = temp.Name;
