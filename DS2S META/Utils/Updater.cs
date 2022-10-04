@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.IO.Enumeration;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace DS2S_META.Utils
 {
@@ -38,16 +39,19 @@ namespace DS2S_META.Utils
             await HttpHelper.AsyncDownloadFile(dlurl, dlOutfile);
 
             // Unzip file contents to dir
-            string dirname = Path.GetFileNameWithoutExtension(dlOutfile);
+            string dirname_url = Path.GetFileNameWithoutExtension(dlOutfile);
+            string dirname = FixDirectoryName(dirname_url);
             string newdir_install = $"{testdir}\\{dirname}";
             if (IsDuplicateDir(newdir_install)) return; // Do not force overwrite unexpected places
             Extract7zFile(dlOutfile, testdir);  // auto-unzips into newdircheck
             File.Delete(dlOutfile);             // remove the .7z binary
 
+            bool check = Directory.Exists(newdir_install);
+
             // Prepare directory names for batch script:
-            string newdir_reform = $"{testdir}\\DS2S META";
+            string newdir_reform_name = $"DS2S META"; // cannot be path!!
             string proctitle = "DS2S META";
-            string newexepath = $"{newdir_reform}\\{proctitle}.exe";
+            string newexepath = $"{testdir}\\{newdir_reform_name}\\{proctitle}.exe";
 
             // Save config stuff:
             // TODO
@@ -56,24 +60,24 @@ namespace DS2S_META.Utils
             if (File.Exists(batchScriptName))
                 File.Delete(batchScriptName);
 
-            // THOROUGHLY UNTESTED DO NOT TRUST
+            // Careful with this kinda stuff!
             using (StreamWriter writer = File.AppendText(batchScriptName))
             {
+                writer.WriteLine("cd ..");
                 writer.WriteLine(":Loop");
                 writer.WriteLine($"Tasklist /fi \"PID eq {currprocid}\" | find \":\"");
                 writer.WriteLine("if Errorlevel 1 (");
                 writer.WriteLine("  Timeout /T 1 /Nobreak");
                 writer.WriteLine("  Goto Loop");
                 writer.WriteLine(")");
-                writer.WriteLine($"del /Q \"{currdir}\"");      // remove dir contents
-                writer.WriteLine($"rmdir /Q \"{currdir}\"");    // remove empty dir
+                writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
                 //
-                writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform}\"");  // Rename new folder to DS2S META
-                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\"");        // Run the new executable
+                writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform_name}\"");     // Rename new folder to DS2S META
+                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\"");                // Run the new executable
             }
 
             // Run the above batch file in new thread
-            //RunBatchFile(batchScriptName);
+            RunBatchFile(batchScriptName);
             Application.Current.Shutdown(); // End current process (triggers .bat takeover)
         }
 
@@ -85,8 +89,10 @@ namespace DS2S_META.Utils
                 new ProcessStartInfo()
                 {
                     Arguments = $"/C {batfile} & Del {batfile}", // run and remove self
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
+                    //WindowStyle = ProcessWindowStyle.Hidden,
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    //CreateNoWindow = true,
+                    CreateNoWindow = false,
                     FileName = "cmd.exe"
                 }
             );
@@ -124,6 +130,15 @@ namespace DS2S_META.Utils
             {
                 throw new Exception(Ex.Message);
             }
+        }
+        private static string FixDirectoryName(string urldir)
+        {
+            // Removing the "." characters that github adds for spaces
+            string pattern = @"\.\d";
+            Regex re = new(pattern);
+            Match match = re.Match(urldir);
+            int index = match.Index;
+            return "DS2S META " + urldir.Substring(index + 1);
         }
     }
 
