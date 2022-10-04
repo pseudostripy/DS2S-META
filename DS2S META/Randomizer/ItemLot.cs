@@ -48,6 +48,11 @@ namespace DS2S_META.Randomizer
             Quantities = ReadListAt((int)MINILOTS.QUANT).SelectMany(b => b).ToList();
             Reinforcements = ReadListAt((int)MINILOTS.REINFORCEMENT).SelectMany(b => b).ToList();
             Infusions = ReadListAt((int)MINILOTS.INFUSION).SelectMany(b => b).ToList();
+
+            bool MalformedOrder = NumDrops != 0 && Quantities[NumDrops - 1] == 0; // see e.g. Ancient Dragon drop
+            if (MalformedOrder)
+                FixNonsense();
+
         }
                 
         public List<byte[]> ReadListAt(int fieldindex)
@@ -86,16 +91,25 @@ namespace DS2S_META.Randomizer
 
             return ilclone;
         }
-        //internal ItemLot CloneBlank()
-        //{
-        //    // Keep the underlying vanilla ParamRow, but reset fields
-        //    var ilclone = new ItemLot();
-        //    foreach (var di in Lot)
-        //    {
-        //        ilclone.AddDrop(di.Clone());
-        //    }
-        //    return ilclone;
-        //}
+        
+
+        internal void FixNonsense()
+        {
+            // This might get confusing.
+            // We're zeroing out the amount in memory, but the Vanilla shop
+            // still has its original copy of the amounts in the Quantities List.
+            // So the NumDrops is still correct and we'll only replace (in memory)
+            // enough to replicate the vanilla NumDrops. There's still be one leftover
+            // somewhere, but it's amount will be zeroed out in memory so we can 
+            // ignore it.
+            //
+            // Note that all the lot randomization is done with the Quantities
+            // list, not the underlying memory data for this class.
+            for (int i = NumDrops; i <= 10; i++)
+                StoreDataWrapper(MINILOTS.QUANT, i, 0); // force write 0 amount
+            StoreRow(); // commit to memory
+
+        }
         internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
             AddDrop(new DropInfo(itemID, (byte)quantity, (byte) reinforce, (byte) infusion));
