@@ -39,17 +39,14 @@ namespace DS2S_META
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
             lbxItems.ItemsSource = Weapons;
         }
-
         private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
         }
-
         internal override void ReloadCtrl()
         {
             lbxItems.SelectedIndex = -1;
             lbxItems.SelectedIndex = 0;
         }
-
         internal override void EnableCtrls(bool enable)
         {
             InventoryTimer.Enabled = enable;
@@ -76,7 +73,6 @@ namespace DS2S_META
 
             HandleSearchLabel();
         }
-
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             FilterItems();
@@ -304,6 +300,11 @@ namespace DS2S_META
             byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
             Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
             rapierrow.WriteRow();
+        }
+
+        private void btnUpdater_Click(object sender, RoutedEventArgs e)
+        {
+            Updater.InitiateUpdate();
         }
     }
 }
