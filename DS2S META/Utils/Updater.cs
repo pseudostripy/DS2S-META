@@ -21,6 +21,10 @@ namespace DS2S_META.Utils
     {
         public static async void InitiateUpdate(Uri uri, string newver)
         {
+            // Prog bar?
+            var progbar = new METAUpdating() { Width = 350, Height = 100 };
+            progbar.Show();
+
             // Get Download link from latest release:
             string urlpath = GetDownloadLink(uri.ToString(), newver);
 
@@ -29,7 +33,9 @@ namespace DS2S_META.Utils
             string currexepath = Assembly.GetExecutingAssembly().Location;
             string? currdir = new FileInfo(currexepath).Directory?.FullName;
             if (currdir == null) throw new NullReferenceException("Seems to be unable to find folder of current .exe");
-            string parentdir = $"{currdir}\\..";
+            var dirpar = Directory.GetParent(currdir);
+            if (dirpar == null) throw new NullReferenceException("Stop installing things on root :) ");
+            string parentdir = dirpar.ToString();
             string batchScriptName = $"{parentdir}\\tmpMetaUpdater.bat";
             
             
@@ -90,7 +96,7 @@ namespace DS2S_META.Utils
             }
 
             // Run the above batch file in new thread
-            RunBatchFile(batchScriptName);
+            //RunBatchFile(batchScriptName);
             Application.Current.Shutdown(); // End current process (triggers .bat takeover)
         }
 
@@ -103,17 +109,14 @@ namespace DS2S_META.Utils
         private static void RunBatchFile(string batfile)
         {
             // Run the above batch file in new thread
-            Process.Start(
-                new ProcessStartInfo()
-                {
-                    Arguments = $"/C {batfile} & Del {batfile}", // run and remove self
-                    //WindowStyle = ProcessWindowStyle.Hidden,
-                    WindowStyle = ProcessWindowStyle.Normal,
-                    //CreateNoWindow = true,
-                    CreateNoWindow = false,
-                    FileName = "cmd.exe"
-                }
-            );
+            ProcessStartInfo pro = new()
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/C {batfile} & Del {batfile}", // run and remove self
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            Process.Start(pro);
         }
         private static bool IsDuplicateDir(string? dirpath)
         {
@@ -137,6 +140,7 @@ namespace DS2S_META.Utils
             {
                 ProcessStartInfo pro = new()
                 {
+                    CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = zPath,
                     Arguments = string.Format($"x \"{sourceArchive}\" -o\"{destination}\"")

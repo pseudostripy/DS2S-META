@@ -42,7 +42,7 @@ namespace DS2S_META
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!cbxStopUpdateNotification.IsChecked == true)
+            if (cbxStopUpdateNotification.IsChecked == true)
                 Properties.Settings.Default.AcknowledgeUpdateVersion = NewMetaVersion;
         }
 

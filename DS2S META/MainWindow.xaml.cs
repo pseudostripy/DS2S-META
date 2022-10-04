@@ -29,14 +29,29 @@ namespace DS2S_META
     /// </summary>
     public partial class MainWindow : Window
     {
+        // Fields/Properties
         private string MetaVersion = "Version_Undefined";
         private Properties.Settings Settings;
+        DS2SHook Hook => ViewModel.Hook;
+        bool FormLoaded
+        {
+            get => ViewModel.GameLoaded;
+            set => ViewModel.GameLoaded = value;
+        }
+        public bool Reading
+        {
+            get => ViewModel.Reading;
+            set => ViewModel.Reading = value;
+        }
+        Timer UpdateTimer = new Timer();
+
         public MainWindow()
         {
             PortableSettingsProvider.SettingsFileName = "DS2S Meta.config";
             PortableSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Settings = Properties.Settings.Default;
             InitializeComponent();
+            GetVersion();
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
 
@@ -51,23 +66,30 @@ namespace DS2S_META
             }));
         }
 
+        public void GetVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var assemblyver = assembly.GetName().Version;
+            MetaVersion = assemblyver == null ? "version undefined" : assemblyver.ToString();
+        }
         private void LoadSettingsAfterUpgrade()
         {
-            if (Settings.IsUpgrading)
+            if (!Settings.IsUpgrading)
+                return;
+            
+            try
             {
-                try
-                {
-                    // Load previous settings from .config
-                    Settings.Upgrade();
-                }
-                catch (ConfigurationErrorsException)
-                {
-                    // Incompatible settings, keep current
-                }
-
-                Settings.IsUpgrading = false;
-                Settings.Save();
+                // Load previous settings from .config
+                Settings.Upgrade();
             }
+            catch (ConfigurationErrorsException)
+            {
+                // Incompatible settings, keep current
+            }
+
+            Settings.IsUpgrading = false;
+            Settings.Save();
+            ShowUpdateCompleteWindow();
         }
         private void ShowOnlineWarning()
         {
@@ -82,20 +104,29 @@ namespace DS2S_META
                 warning.ShowDialog();
             }
         }
-
-        DS2SHook Hook => ViewModel.Hook;
-        bool FormLoaded
+        private void ShowMetaUpdateWindow(Uri link, string ackverstring)
         {
-            get => ViewModel.GameLoaded;
-            set => ViewModel.GameLoaded = value;
+            var warning = new METAUpdate(link, ackverstring)
+            {
+                Title = "New Update Available",
+                Width = 450,
+                Height = 215
+            };
+            warning.ShowDialog();
         }
-        public bool Reading
+        private void ShowUpdateCompleteWindow()
         {
-            get => ViewModel.Reading;
-            set => ViewModel.Reading = value;
+            var warning = new METAUpdateComplete(MetaVersion)
+            {
+                Title = "New Update Available",
+                Width = 350,
+                Height = 120
+            };
+            warning.Show();
         }
 
-        Timer UpdateTimer = new Timer();
+
+        
         
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -151,16 +182,7 @@ namespace DS2S_META
                 MessageBox.Show(ex.Message);
             }
         }
-        private void ShowMetaUpdateWindow(Uri link, string ackverstring)
-        {
-            var warning = new METAUpdate(link, ackverstring)
-            {
-                Title = "New Update Available",
-                Width = 450,
-                Height = 215
-            };
-            warning.ShowDialog();
-        }
+        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
