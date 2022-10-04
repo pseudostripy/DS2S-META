@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using DS2S_META.Utils;
 
 namespace DS2S_META
 {
@@ -22,12 +23,12 @@ namespace DS2S_META
     public partial class METAUpdate : Window
     {
         private Uri Link;
-        private string CurrentMetaVersion;
-        public METAUpdate(Uri link, string curver)
+        private string NewMetaVersion;
+        public METAUpdate(Uri link, string newver)
         {
             InitializeComponent();
             Link = link;
-            CurrentMetaVersion = curver;
+            NewMetaVersion = newver;
 
             // Create hyperlink object dynamically
             Run runtext = new Run($"{Link}");
@@ -42,12 +43,17 @@ namespace DS2S_META
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!cbxStopUpdateNotification.IsChecked == true)
-                Properties.Settings.Default.AcknowledgeUpdateVersion = CurrentMetaVersion;
+                Properties.Settings.Default.AcknowledgeUpdateVersion = NewMetaVersion;
         }
 
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo { FileName = e.Uri.ToString(), UseShellExecute = true });
+        }
+
+        private void btnUpdater_Click(object sender, RoutedEventArgs e)
+        {
+            Updater.InitiateUpdate(Link, NewMetaVersion);
         }
     }
 }

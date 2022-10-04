@@ -12,11 +12,11 @@
              ResizeMode="NoResize"
              WindowStyle="SingleBorderWindow"
              WindowStartupLocation="CenterScreen"
-             d:DesignHeight="178.667" d:DesignWidth="350" Background="LightGray" Closing="Window_Closing">
+             d:DesignHeight="195.0" d:DesignWidth="350" Background="LightGray" Closing="Window_Closing">
     <Grid>
         <StackPanel Margin="25,0,25,0">
-            <Label Content="Info:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black"/>
-            <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="A new version has been released. It is linked in the top-right corner, or can be found here:"/>
+            <Label Content="Update:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black"/>
+            <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center" Text="A new version has been released! Update automatically with &quot;Install&quot;, or find a link to a manual update below, or in the corner of the META app."/>
             <Label x:Name="lblNewVersion" Visibility="Visible" HorizontalContentAlignment="Center">
                 <Hyperlink x:Name="lnkInfoUpdateLink" RequestNavigate="link_RequestNavigate" >
                     New version available!
@@ -25,7 +25,14 @@
             <Separator Visibility="Hidden" Height="3"/>
             <CheckBox x:Name="cbxStopUpdateNotification" HorizontalAlignment="Center" Content="Do not show again"/>
             <Separator Visibility="Hidden" Height="5"/>
-            <Button Content="Okay" IsCancel="True" Width="75"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Content="Skip" IsCancel="True" Width="75" Grid.Column="1"/>
+                <Button x:Name="btnUpdater" Content="Install" IsCancel="True" Width="75" Click="btnUpdater_Click"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>

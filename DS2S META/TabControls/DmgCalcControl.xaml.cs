@@ -302,9 +302,5 @@ namespace DS2S_META
             rapierrow.WriteRow();
         }
 
-        private void btnUpdater_Click(object sender, RoutedEventArgs e)
-        {
-            Updater.InitiateUpdate();
-        }
     }
 }

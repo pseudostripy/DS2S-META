@@ -19,39 +19,39 @@ namespace DS2S_META.Utils
 {
     public static class Updater
     {
-        public static async void InitiateUpdate()
+        public static async void InitiateUpdate(Uri uri, string newver)
         {
+            // Get Download link from latest release:
+            string urlpath = GetDownloadLink(uri.ToString(), newver);
+
             // Setup variables:
             int currprocid = Environment.ProcessId;
             string currexepath = Assembly.GetExecutingAssembly().Location;
             string? currdir = new FileInfo(currexepath).Directory?.FullName;
             if (currdir == null) throw new NullReferenceException("Seems to be unable to find folder of current .exe");
-            //string parentdir = $"{currdir}\\..";
-            string testdir = "C:\\Users\\adaml\\Documents\\Coding\\TESTING";
-            string testdeldir = $"{testdir}\\TESTDIR";
-            string batchScriptName = $"{testdir}\\tmpMetaUpdater.bat";
-            //string newprocdirtest = $"{parentdir}\\DS2S META 0.5.1.3"; // soon correct
+            string parentdir = $"{currdir}\\..";
+            string batchScriptName = $"{parentdir}\\tmpMetaUpdater.bat";
+            
             
             // Download new release binary (.7z)
-            string urlpath = @"https://github.com/pseudostripy/DS2S-META/releases/download/0.6.0.0/DS2S.META.0.6.0.2.7z";
             Uri dlurl = new Uri(urlpath);
             string dlfname_ext = Path.GetFileName(dlurl.LocalPath);
-            string dlOutfile = $"{testdir}\\{dlfname_ext}";
+            string dlOutfile = $"{parentdir}\\{dlfname_ext}";
             await HttpHelper.AsyncDownloadFile(dlurl, dlOutfile);
 
             // Unzip file contents to dir
             string dirname_url = Path.GetFileNameWithoutExtension(dlOutfile);
             string dirname = FixDirectoryName(dirname_url);
-            string newdir_install = $"{testdir}\\{dirname}";
+            string newdir_install = $"{parentdir}\\{dirname}";
             if (IsDuplicateDir(newdir_install)) return; // Do not force overwrite unexpected places
-            Extract7zFile(dlOutfile, testdir);  // auto-unzips into newdircheck
-            File.Delete(dlOutfile);             // remove the .7z binary
+            Extract7zFile(dlOutfile, parentdir);        // auto-unzips into newdircheck
+            File.Delete(dlOutfile);                     // remove the .7z binary
 
             bool check = Directory.Exists(newdir_install);
 
             // Prepare directory names for batch script:
             string newdir_reform_name = $"DS2S META"; // cannot be path!!
-            string newdir_reform_dir = $"{testdir}\\{newdir_reform_name}";
+            string newdir_reform_dir = $"{parentdir}\\{newdir_reform_name}";
             string proctitle = "DS2S META";
             string newexepath = $"{newdir_reform_dir}\\{proctitle}.exe";
 
@@ -60,7 +60,7 @@ namespace DS2S_META.Utils
             Settings.IsUpgrading = true;
             Settings.Save();
             string srcsettings = $"{currdir}\\DS2S META.config";
-            string destsettings_tmp = $"{testdir}\\_tmpsave.config"; // folder doesn't exist yet
+            string destsettings_tmp = $"{parentdir}\\_tmpsave.config"; // destination dir doesn't exist yet
             File.Copy(srcsettings, destsettings_tmp);
 
             // Safety check in case of previous error during update
@@ -95,6 +95,11 @@ namespace DS2S_META.Utils
         }
 
         // Utility
+        private static string GetDownloadLink(string repo, string newver)
+        {
+            string temp = repo.Replace("tag", "download");
+            return $"{temp}/DS2S.META.{newver}.7z";
+        }
         private static void RunBatchFile(string batfile)
         {
             // Run the above batch file in new thread
