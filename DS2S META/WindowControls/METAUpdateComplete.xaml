@@ -21,7 +21,7 @@
             </TextBlock>
             <Separator Visibility="Hidden" Height="5" />
             <Separator Visibility="Hidden" Height="5"/>
-            <Button Content="Okay" IsCancel="True" Width="75"/>
+            <Button Content="Okay" IsCancel="True" Width="75" Click="Button_Click"/>
         </StackPanel>
     </Grid>
 </Window>

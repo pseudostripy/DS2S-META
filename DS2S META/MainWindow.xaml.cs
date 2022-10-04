@@ -20,7 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.IO;
 
 namespace DS2S_META
 {
@@ -44,6 +44,7 @@ namespace DS2S_META
             set => ViewModel.Reading = value;
         }
         Timer UpdateTimer = new Timer();
+        private bool ShowUpdateComplete { get; set; } = false;
 
         public MainWindow()
         {
@@ -76,7 +77,9 @@ namespace DS2S_META
         {
             if (!Settings.IsUpgrading)
                 return;
-            
+
+            File.Create("./testupgrading.txt");
+
             try
             {
                 // Load previous settings from .config
@@ -89,7 +92,7 @@ namespace DS2S_META
 
             Settings.IsUpgrading = false;
             Settings.Save();
-            ShowUpdateCompleteWindow();
+            ShowUpdateComplete = true;
         }
         private void ShowOnlineWarning()
         {
@@ -116,27 +119,25 @@ namespace DS2S_META
         }
         private void ShowUpdateCompleteWindow()
         {
+            if (!ShowUpdateComplete)
+                return;
+
+            ShowUpdateComplete = false;
             var warning = new METAUpdateComplete(MetaVersion)
             {
                 Title = "New Update Available",
                 Width = 350,
                 Height = 150
             };
-            warning.Show();
+            warning.ShowDialog();
         }
-
-
-        
-        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
             var assemblyver = assembly.GetName().Version;
             MetaVersion = assemblyver == null ? "version undefined" : assemblyver.ToString();
-            //FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            //MetaVersion = assemblyver.ToString() ;
-
+            
             lblWindowName.Content = $"DS2 Scholar META {MetaVersion}";
             EnableTabs(false);
             InitAllTabs();
@@ -183,7 +184,6 @@ namespace DS2S_META
             }
         }
         
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Hook.EnableSpeedFactors)
@@ -216,6 +216,8 @@ namespace DS2S_META
 
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            Dispatcher.Invoke(new Action(() => ShowUpdateCompleteWindow()));
+            
             Dispatcher.Invoke(new Action(() =>
             {
                 UpdateMainProperties();

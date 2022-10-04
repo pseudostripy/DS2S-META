@@ -29,5 +29,10 @@ namespace DS2S_META
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Window.Close();
+        }
     }
 }

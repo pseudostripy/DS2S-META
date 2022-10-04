@@ -67,6 +67,7 @@ namespace DS2S_META.Utils
             string srcsettings = $"{currdir}\\DS2S META.config";
             string destsettings_tmp = $"{parentdir}\\_tmpsave.config"; // destination dir doesn't exist yet
             File.Copy(srcsettings, destsettings_tmp);
+            File.Copy(srcsettings, $"{destsettings_tmp}2");
 
             // Safety check in case of previous error during update
             if (File.Exists(batchScriptName))
