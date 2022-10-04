@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.IO.Enumeration;
 using System.Windows;
 using System.Text.RegularExpressions;
+using DS2S_META.Properties;
 
 namespace DS2S_META.Utils
 {
@@ -32,7 +33,7 @@ namespace DS2S_META.Utils
             //string newprocdirtest = $"{parentdir}\\DS2S META 0.5.1.3"; // soon correct
             
             // Download new release binary (.7z)
-            string urlpath = @"https://github.com/pseudostripy/DS2S-META/releases/download/0.6.0.0/DS2S.META.0.6.0.0.7z";
+            string urlpath = @"https://github.com/pseudostripy/DS2S-META/releases/download/0.6.0.0/DS2S.META.0.6.0.2.7z";
             Uri dlurl = new Uri(urlpath);
             string dlfname_ext = Path.GetFileName(dlurl.LocalPath);
             string dlOutfile = $"{testdir}\\{dlfname_ext}";
@@ -50,11 +51,17 @@ namespace DS2S_META.Utils
 
             // Prepare directory names for batch script:
             string newdir_reform_name = $"DS2S META"; // cannot be path!!
+            string newdir_reform_dir = $"{testdir}\\{newdir_reform_name}";
             string proctitle = "DS2S META";
-            string newexepath = $"{testdir}\\{newdir_reform_name}\\{proctitle}.exe";
+            string newexepath = $"{newdir_reform_dir}\\{proctitle}.exe";
 
-            // Save config stuff:
-            // TODO
+            // Save config stuff (to be loaded by new version)
+            Settings Settings = Properties.Settings.Default;
+            Settings.IsUpgrading = true;
+            Settings.Save();
+            string srcsettings = $"{currdir}\\DS2S META.config";
+            string destsettings_tmp = $"{testdir}\\_tmpsave.config"; // folder doesn't exist yet
+            File.Copy(srcsettings, destsettings_tmp);
 
             // Safety check in case of previous error during update
             if (File.Exists(batchScriptName))
@@ -63,6 +70,7 @@ namespace DS2S_META.Utils
             // Careful with this kinda stuff!
             using (StreamWriter writer = File.AppendText(batchScriptName))
             {
+                // Wait for current process to end
                 writer.WriteLine("cd ..");
                 writer.WriteLine(":Loop");
                 writer.WriteLine($"Tasklist /fi \"PID eq {currprocid}\" | find \":\"");
@@ -70,10 +78,15 @@ namespace DS2S_META.Utils
                 writer.WriteLine("  Timeout /T 1 /Nobreak");
                 writer.WriteLine("  Goto Loop");
                 writer.WriteLine(")");
+
+                // Filesystem updates
                 writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
-                //
                 writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform_name}\"");     // Rename new folder to DS2S META
-                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\"");                // Run the new executable
+                writer.WriteLine($"copy \"{destsettings_tmp}\" \"{newdir_reform_dir}\\DS2S META.config");
+                writer.WriteLine($"del {destsettings_tmp}");
+
+                // Run the new executable
+                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\"");                
             }
 
             // Run the above batch file in new thread

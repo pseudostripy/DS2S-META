@@ -3,6 +3,7 @@ using Octokit;
 using PropertyHook;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -36,16 +37,8 @@ namespace DS2S_META
             PortableSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Settings = Properties.Settings.Default;
             InitializeComponent();
-            if (Settings.ShowWarning)
-            {
-                var warning = new METAWarning()
-                {
-                    Title = "Online Warning",
-                    Width = 350,
-                    Height = 240
-                };
-                warning.ShowDialog();
-            }
+            LoadSettingsAfterUpgrade();
+            ShowOnlineWarning();
 
             Hook.OnHooked += Hook_OnHooked;
         }
@@ -56,6 +49,38 @@ namespace DS2S_META
             {
                 EnableTabs(Hook.Loaded);
             }));
+        }
+
+        private void LoadSettingsAfterUpgrade()
+        {
+            if (Settings.IsUpgrading)
+            {
+                try
+                {
+                    // Load previous settings from .config
+                    Settings.Upgrade();
+                }
+                catch (ConfigurationErrorsException)
+                {
+                    // Incompatible settings, keep current
+                }
+
+                Settings.IsUpgrading = false;
+                Settings.Save();
+            }
+        }
+        private void ShowOnlineWarning()
+        {
+            if (Settings.ShowWarning)
+            {
+                var warning = new METAWarning()
+                {
+                    Title = "Online Warning",
+                    Width = 350,
+                    Height = 240
+                };
+                warning.ShowDialog();
+            }
         }
 
         DS2SHook Hook => ViewModel.Hook;
@@ -71,6 +96,7 @@ namespace DS2S_META
         }
 
         Timer UpdateTimer = new Timer();
+        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

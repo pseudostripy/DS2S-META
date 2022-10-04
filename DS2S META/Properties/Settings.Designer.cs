@@ -346,5 +346,17 @@ namespace DS2S_META.Properties {
                 this["AcknowledgeUpdateVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IsUpgrading {
+            get {
+                return ((bool)(this["IsUpgrading"]));
+            }
+            set {
+                this["IsUpgrading"] = value;
+            }
+        }
     }
 }
