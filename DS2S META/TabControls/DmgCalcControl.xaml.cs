@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using Octokit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -282,6 +283,27 @@ namespace DS2S_META
             if (upgr == null) return;
             lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
 
+        }
+
+        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Hook == null)
+                return; // first call
+
+            float dmgmod;
+            if (cbxOHKO.IsChecked == true)
+                dmgmod = 1000;
+            else
+                dmgmod = 1;
+            
+            // Write to memory
+            var rapierrow = Hook.WeaponParam?.Rows.Where(row => row.ID == 1500000).First(); // Rapier
+            if (rapierrow == null)
+                throw new NullReferenceException("Pretty sure the rapier should be there!");
+            var F = rapierrow.Param.Fields[34];
+            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
+            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
+            rapierrow.WriteRow();
         }
     }
 }

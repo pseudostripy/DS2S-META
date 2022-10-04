@@ -45,6 +45,10 @@
         </StackPanel>
 
         <ListBox x:Name="lbxItems" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" SelectionChanged="lbxItems_SelectionChanged" PreviewKeyDown="KeyPressed" MaxHeight="450" />
-        <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" Grid.Row="2" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
+        <StackPanel Grid.Row="2">
+            <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
+            <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxMaxUpgrade_Checked" HorizontalAlignment="Center" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="8,0,0,0" />
+        </StackPanel>
+        
     </Grid>
 </local:METAControl>

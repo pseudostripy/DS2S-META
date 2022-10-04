@@ -79,10 +79,6 @@ namespace DS2S_META.Randomizer
             // Otherwise:
             return RandomizerManager.RandomGammaInt(2000, 50);
         }
-
-        //internal ItemParam GetItem(int itemid) => RandomizerManager.VanillaItemParams[itemid];
-        //internal string GetItemName(int itemid) => GetItem(itemid).MetaItemName;
-
         internal static string GetItemName(int itemid)
         {
             if (!RandomizerManager.TryGetItem(itemid, out var item))

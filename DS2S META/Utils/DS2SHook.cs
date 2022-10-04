@@ -49,8 +49,11 @@ namespace DS2S_META
         public Param? ShopLineupParam;   // Shops.
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
         public Param? ItemParam;
+        public Param? WeaponParam;
+        public Param? WeaponReinforceParam;
 
         public List<ItemParam> Items = new();
+        public List<WeaponParam> Weapons = new();
 
         private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
@@ -79,8 +82,7 @@ namespace DS2S_META
         private PHPointer NetSvrBloodstainManager;
 
         private PHPointer? LevelUpSoulsParam;
-        private PHPointer? WeaponParam;
-        private PHPointer? WeaponReinforceParam;
+        
         private PHPointer? CustomAttrSpecParam;
         private PHPointer? ArmorReinforceParam;
         
@@ -147,14 +149,12 @@ namespace DS2S_META
             WarpManager = BlankPHP;
             NetSvrBloodstainManager = BlankPHP;
             LevelUpSoulsParam = BlankPHP;
-            WeaponParam = BlankPHP;
-            WeaponReinforceParam = BlankPHP;
+            
             CustomAttrSpecParam = BlankPHP;
             ArmorReinforceParam = BlankPHP;
             ItemUseageParam = BlankPHP;
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
-            //ItemParam = BlankPHP;
-            //ItemLotOtherParam = BlankPHP; // World pickups, boss kills, covenant rewards etc.
+            
             
             BaseB = BlankPHP;
             Connection = BlankPHP;
@@ -204,8 +204,8 @@ namespace DS2S_META
             NetSvrBloodstainManager = CreateChildPointer(BaseA, (int)DS2SOffsets.NetSvrBloodstainManagerOffset1, (int)DS2SOffsets.NetSvrBloodstainManagerOffset2, (int)DS2SOffsets.NetSvrBloodstainManagerOffset3);
 
             LevelUpSoulsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.LevelUpSoulsParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            WeaponParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            WeaponReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
+            //WeaponParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponParamOffset, (int)DS2SOffsets.ParamDataOffset2);
+            //WeaponReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             CustomAttrSpecParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.CustomAttrSpecParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             //ItemParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemParamOffset, (int)DS2SOffsets.ParamDataOffset2);
@@ -223,17 +223,16 @@ namespace DS2S_META
             Camera5 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2);
 
             GetLevelRequirements();
-            WeaponParamOffsetDict = BuildOffsetDictionary(WeaponParam, "WEAPON_PARAM");
-            WeaponReinforceParamOffsetDict = BuildOffsetDictionary(WeaponReinforceParam, "WEAPON_REINFORCE_PARAM");
+            //WeaponParamOffsetDict = BuildOffsetDictionary(WeaponParam, "WEAPON_PARAM");
+            //WeaponReinforceParamOffsetDict = BuildOffsetDictionary(WeaponReinforceParam, "WEAPON_REINFORCE_PARAM");
             CustomAttrOffsetDict = BuildOffsetDictionary(CustomAttrSpecParam, "CUSTOM_ATTR_SPEC_PARAM");
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
-            //ItemParamOffsetDict = BuildOffsetDictionary(ItemParam, "ITEM_PARAM");
-            //ItemLotOtherPODict = BuildOffsetDictionary(ItemLotDropsParam, "ITEM_LOT_PARAM2");
-            //ItemLotOtherPODict = BuildOffsetDictionary(ItemLotOtherParam, "ITEM_LOT_PARAM2");
-            
+                        
             GetParams();
             GetVanillaItems();
+            if (WeaponParam != null)
+                Weapons = WeaponParam.Rows.Select(row => new WeaponParam(row, WeaponReinforceParam)).ToList();
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -1151,6 +1150,14 @@ namespace DS2S_META
                     ItemParam = param;
                     break;
 
+                case "WEAPON_PARAM":
+                    WeaponParam = param;
+                    break;
+
+                case "WEAPON_REINFORCE_PARAM":
+                    WeaponReinforceParam = param;
+                    break;
+
                 default:
                     break;
             }
@@ -1275,40 +1282,6 @@ namespace DS2S_META
         }
         private int GetHeldInInventoryUnstackable(int id)
         {
-            // For non-stackable items, e.g. armour, spells need to count how many instances of their ids are found.
-            // Currently this isn't called for armour, and spells are returning the "uses" value rather than "held".
-
-            // TODO Armour / Spells etc.
-            //var inventorySlot = 0x30;
-            //var itemOffset = 0x0;
-            //var boxOffset = 0x4;
-            //var heldOffset = 0x8;
-            //var nextOffset = 0x10;
-
-            //var endPointer = AvailableItemBag.ReadIntPtr(0x10).ToInt64();
-            //var bagSize = endPointer - AvailableItemBag.Resolve().ToInt64();
-
-            //var inventory = AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
-
-            //while (inventorySlot < bagSize)
-            //{
-            //    // For non-stackable items, e.g. armour, spells need to count how many instances of their ids are found.
-            //    // Currently this isn't called for armour, and spells are returning the "uses" value rather than "held".
-
-            //    // Get next item in inventory
-            //    var itemID = BitConverter.ToInt32(inventory, inventorySlot + itemOffset);
-
-            //    if (itemID == id)
-            //    {
-            //        var boxValue = BitConverter.ToInt32(inventory, inventorySlot + boxOffset);
-            //        var held = BitConverter.ToInt32(inventory, inventorySlot + heldOffset);
-
-            //        if (boxValue == 0) // consumables?
-            //            return held;
-            //    }
-            //    inventorySlot += nextOffset;
-            //}
-
             return 0;
         }
 
@@ -1323,8 +1296,10 @@ namespace DS2S_META
         {
             if (!Setup || WeaponReinforceParam == null || WeaponParam == null)
                 return 0;
-            var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
-            return WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.MaxUpgrade);
+            var weaponRow = Weapons.Where(wp => wp.ID == id).FirstOrDefault();
+            if (weaponRow == null) return 0;
+
+            return weaponRow.ReinforceParam.MaxReinforce;
         }
         internal void GetVanillaItems()
         {
@@ -1362,8 +1337,12 @@ namespace DS2S_META
                 throw new Exception("WeaponParam not setup");
 
             var infusions = new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
-            var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
-            var customAttrID = WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.CustomAttrID);
+            var weaponRow = Weapons.Where(wp => wp.ID == id).FirstOrDefault();
+            if (weaponRow == null) return infusions;
+
+            int customAttrID = weaponRow.ReinforceParam.CustomSpecAttrID;
+            //var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
+            //var customAttrID = WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.CustomAttrID);
             var bitField = CustomAttrSpecParam.ReadInt32(CustomAttrOffsetDict[customAttrID]);
 
             if (bitField == 0)
