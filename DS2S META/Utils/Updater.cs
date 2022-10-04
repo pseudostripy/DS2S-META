@@ -53,8 +53,7 @@ namespace DS2S_META.Utils
             Extract7zFile(dlOutfile, parentdir);        // auto-unzips into newdircheck
             File.Delete(dlOutfile);                     // remove the .7z binary
 
-            bool check = Directory.Exists(newdir_install);
-
+            
             // Prepare directory names for batch script:
             string newdir_reform_name = $"DS2S META"; // cannot be path!!
             string newdir_reform_dir = $"{parentdir}\\{newdir_reform_name}";
@@ -96,7 +95,7 @@ namespace DS2S_META.Utils
             }
 
             // Run the above batch file in new thread
-            //RunBatchFile(batchScriptName);
+            RunBatchFile(batchScriptName);
             Application.Current.Shutdown(); // End current process (triggers .bat takeover)
         }
 
