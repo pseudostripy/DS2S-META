@@ -123,6 +123,7 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
+            FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
             GetLootToRandomize(); // set Data field
             KeysPlacedSoFar = new List<int>(); // nice bug :)
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
@@ -214,14 +215,17 @@ namespace DS2S_META.Randomizer
 
                 // Remove events:
                 if (tolose.Contains(si.ID))
+                {
+                    si.ClearShop();
                     continue;
+                }
 
                 // Keep and don't disable events:
                 if (tokeep.Contains(si.ID))
                 {
                     var shopid = LEvents.Where(le => le.KeepID == si.ID).First();
                     var normshop = si.Clone();
-                    normshop.DisableFlag = -1;
+                    normshop.DisableFlag = -1; // never disable
                     PTF.Add(normshop);
                     continue;
                 }

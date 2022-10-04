@@ -168,7 +168,6 @@ namespace DS2S_META.Randomizer
         {
             // List of things to exclude because duplicates:
             1,              // Blank
-            75400601,       // Missing content
         };
     }
     internal class LinkedShopEvent

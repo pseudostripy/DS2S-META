@@ -158,6 +158,12 @@ namespace DS2S_META.Randomizer
             return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
         
+        public void ClearShop()
+        {
+            ItemID = 0;
+            Quantity = 0;
+            StoreRow();
+        }
         public void WriteAt(int fieldindex, byte[] valuebytes)
         {
             // Note: this function isn't generalised properly yet
