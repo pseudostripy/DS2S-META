@@ -107,7 +107,7 @@ namespace DS2S_META
         }
         private void ShowMetaUpdateWindow(Uri link, string ackverstring)
         {
-            var warning = new METAUpdate(link, ackverstring)
+            var warning = new METAUpdate(link, ackverstring, Hook)
             {
                 Title = "New Update Available",
                 Width = 450,

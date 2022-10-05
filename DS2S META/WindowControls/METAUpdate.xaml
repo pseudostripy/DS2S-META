@@ -31,7 +31,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button Content="Skip" IsCancel="True" Width="75" Grid.Column="1"/>
-                <Button x:Name="btnUpdater" Content="Install" IsCancel="True" Width="75" Click="btnUpdater_Click"/>
+                <Button x:Name="btnUpdater" Content="Install" IsCancel="False" Width="75" Click="btnUpdater_Click"/>
             </Grid>
         </StackPanel>
     </Grid>
