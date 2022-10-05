@@ -107,7 +107,7 @@ namespace DS2S_META
         }
         private void ShowMetaUpdateWindow(Uri link, string ackverstring)
         {
-            var warning = new METAUpdate(link, ackverstring, Hook)
+            var warning = new METAUpdate(link, ackverstring)
             {
                 Title = "New Update Available",
                 Width = 450,
@@ -121,13 +121,8 @@ namespace DS2S_META
                 return;
 
             ShowUpdateComplete = false;
-            var warning = new METAUpdateComplete(MetaVersion)
-            {
-                Title = "Update Complete",
-                Width = 350,
-                Height = 150
-            };
-            warning.ShowDialog();
+            cbxUpdateOK.Visibility = Visibility.Visible;
+            this.Activate();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -214,8 +209,8 @@ namespace DS2S_META
 
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() => ShowUpdateCompleteWindow()));
-            
+            Dispatcher.BeginInvoke(new Action(() => ShowUpdateCompleteWindow()));
+
             Dispatcher.Invoke(new Action(() =>
             {
                 UpdateMainProperties();
@@ -333,6 +328,22 @@ namespace DS2S_META
         private void SpawnUndroppable_Checked(object sender, RoutedEventArgs e)
         {
             metaItems.UpdateCreateEnabled();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
+        {
+            cbxUpdateOK.IsChecked = false;
+            cbxUpdateOK.Visibility = Visibility.Hidden;
         }
     }
 }

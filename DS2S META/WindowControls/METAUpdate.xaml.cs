@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using DS2S_META.Utils;
+using PropertyHook;
 
 namespace DS2S_META
 {
@@ -22,10 +23,9 @@ namespace DS2S_META
     /// </summary>
     public partial class METAUpdate : Window
     {
-        private DS2SHook Hook;
         private Uri Link;
         private string NewMetaVersion;
-        public METAUpdate(Uri link, string newver, DS2SHook hook)
+        public METAUpdate(Uri link, string newver)
         {
             InitializeComponent();
             Link = link;
@@ -39,7 +39,6 @@ namespace DS2S_META
 
             // Update UI
             lblNewVersion.Content = hyperobj;
-            Hook = hook;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -55,12 +54,6 @@ namespace DS2S_META
 
         private void btnUpdater_Click(object sender, RoutedEventArgs e)
         {
-            if (Hook.Hooked)
-            {
-                txtUpdateMsg.Text = "Please close DS2 before installing update.";
-                return;
-            }
-
             Updater.InitiateUpdate(Link, NewMetaVersion);
         }
     }

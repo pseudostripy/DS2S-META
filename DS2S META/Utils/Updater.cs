@@ -14,6 +14,7 @@ using System.IO.Enumeration;
 using System.Windows;
 using System.Text.RegularExpressions;
 using DS2S_META.Properties;
+using System.CodeDom;
 
 namespace DS2S_META.Utils
 {
@@ -88,10 +89,13 @@ namespace DS2S_META.Utils
                 writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
                 writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform_name}\"");     // Rename new folder to DS2S META
                 writer.WriteLine($"copy \"{destsettings_tmp}\" \"{newdir_reform_dir}\\DS2S META.config");
+                writer.WriteLine($"cd {newdir_reform_dir}");
                 writer.WriteLine($"del {destsettings_tmp}");
 
                 // Run the new executable
-                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\"");                
+                
+                writer.WriteLine($"start \"{proctitle}\" \"{newexepath}\""); // foreground
+                writer.WriteLine("Timeout /T 1 /Nobreak");
             }
 
             // Run the above batch file in new thread

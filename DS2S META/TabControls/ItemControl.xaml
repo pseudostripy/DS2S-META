@@ -41,7 +41,7 @@
             <Separator Height="25" Visibility="Hidden"/>
             <CheckBox x:Name="cbxMax" Content="Max" Margin="0,2,0,0" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" />
             <Separator Height="5" Visibility="Hidden"/>
-            <Button x:Name="btnCreate" Content="Create" Click="btnCreate_Click" PreviewKeyDown="KeyPressed"/>
+            <Button x:Name="btnCreate" Content="Create" Click="btnCreate_Click" PreviewKeyDown="KeyPressed" Background="#FFDDDDDD"/>
         </StackPanel>
         <ListBox x:Name="lbxItems" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" SelectionChanged="lbxItems_SelectionChanged" PreviewKeyDown="KeyPressed" />
     </Grid>
