@@ -78,8 +78,6 @@ namespace DS2S_META
             if (!Settings.IsUpgrading)
                 return;
 
-            File.Create("./testupgrading.txt");
-
             try
             {
                 // Load previous settings from .config
@@ -125,7 +123,7 @@ namespace DS2S_META
             ShowUpdateComplete = false;
             var warning = new METAUpdateComplete(MetaVersion)
             {
-                Title = "New Update Available",
+                Title = "Update Complete",
                 Width = 350,
                 Height = 150
             };
