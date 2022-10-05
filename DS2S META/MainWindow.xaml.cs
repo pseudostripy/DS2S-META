@@ -91,6 +91,16 @@ namespace DS2S_META
             Settings.IsUpgrading = false;
             Settings.Save();
             ShowUpdateComplete = true;
+
+            string updaterlog = "..\\updaterlog.log";
+            if (!File.Exists(updaterlog))
+                throw new Exception("Cannot find expected log after update");
+            using (StreamWriter logwriter = File.AppendText(updaterlog))
+            {
+                logwriter.WriteLine("Update complete!");
+                logwriter.WriteLine("Removing log file");
+            };
+            File.Delete(updaterlog);
         }
         private void ShowOnlineWarning()
         {
