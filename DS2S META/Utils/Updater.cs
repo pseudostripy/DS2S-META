@@ -15,6 +15,7 @@ using System.Windows;
 using System.Text.RegularExpressions;
 using DS2S_META.Properties;
 using System.CodeDom;
+using System.Reflection.Metadata;
 
 namespace DS2S_META.Utils
 {
@@ -175,11 +176,42 @@ namespace DS2S_META.Utils
                     logwriter.WriteLine($"Error creating batch script file at: \"{batchScriptName}\". Exiting update.");
                 }
                 logwriter.WriteLine($"Batch script created successfully at: \"{batchScriptName}\"");
-                logwriter.WriteLine("Passing execution over to batch script and ending this process");
+                
+
+                // Run the above batch file in new thread
+                Process? batchproc = RunBatchFile(batchScriptName);
+                if (batchproc == null)
+                {
+                    logwriter.WriteLine("Batch file is a null process. Exiting update.");
+                    return;
+                }
+                int batchprocid = batchproc.Id;
+
+                // Ensure the batch file started:
+                watch = new Stopwatch();
+                watch.Start();
+                int customtimeout_ms = 1000; // really shouldn't take this long to boot a process
+                bool batchprocfound = false;
+                while (watch.ElapsedMilliseconds < customtimeout_ms)
+                {
+                    Process[] processlist = Process.GetProcesses();
+                    batchprocfound = processlist.Any(pr => pr.Id == batchprocid);
+
+                    if (batchprocfound)
+                        break;
+                }
+                
+                if (batchprocfound)
+                    logwriter.WriteLine("Batch script started successfully");
+                else
+                {
+                    logwriter.WriteLine($"Batch script process failed to start within {customtimeout_ms}ms, probably something more fundamentally wrong. Exiting update.");
+                    return;
+                }
+                logwriter.WriteLine("Ending old meta execution and passing over to batch script");
             }
 
-            // Run the above batch file in new thread
-            RunBatchFile(batchScriptName);
+            // wait until batch file process has started before killing this one.
             Application.Current.Shutdown(); // End current process (triggers .bat takeover)
         }
 
@@ -189,7 +221,7 @@ namespace DS2S_META.Utils
             string temp = repo.Replace("tag", "download");
             return $"{temp}/DS2S.META.{newver}.7z";
         }
-        private static void RunBatchFile(string batfile)
+        private static Process? RunBatchFile(string batfile)
         {
             // Run the above batch file in new thread
             ProcessStartInfo pro = new()
@@ -199,7 +231,7 @@ namespace DS2S_META.Utils
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden
             };
-            Process.Start(pro);
+            return Process.Start(pro);
         }
         private static bool IsDuplicateDir(string? dirpath)
         {
