@@ -100,7 +100,10 @@ namespace DS2S_META
                 logwriter.WriteLine("Update complete!");
                 logwriter.WriteLine("Removing log file");
             };
-            File.Delete(updaterlog);
+
+            #if !DEBUG
+                File.Delete(updaterlog);
+            #endif
         }
         private void ShowOnlineWarning()
         {

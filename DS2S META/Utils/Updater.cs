@@ -123,7 +123,10 @@ namespace DS2S_META.Utils
                 int currprocid = Environment.ProcessId;
                 batchScriptName = $"{parentdir}\\tmpMetaUpdater.bat";
                 logwriter.WriteLine($"Checking for batch file from corrupted update");
-                
+
+                // write to this in the batch file whilst normal log is locked by this thread
+                string updaterlog2 = $"{parentdir}\\updaterlog2.log"; 
+
                 // Safety check:
                 if (File.Exists(batchScriptName))
                 {
@@ -143,8 +146,9 @@ namespace DS2S_META.Utils
                 {
                     // Wait for current process to end
                     writer.WriteLine($"SET logfile=\"{updaterlog}\""); // setup variable
-                    writer.WriteLine("ECHO Batch file execution started successfully. >> %logfile%"); // >> = append
-                    writer.WriteLine("ECHO Waiting for previous DS2S META version process to end >> %logfile%");
+                    writer.WriteLine($"SET logfiletwo=\"{updaterlog2}\""); // setup variable
+                    writer.WriteLine("ECHO Batch file execution started successfully. >> %logfiletwo%"); // >> = append
+                    writer.WriteLine("ECHO Waiting for previous DS2S META version process to end >> %logfiletwo%");
                     writer.WriteLine("cd ..");
                     writer.WriteLine(":Loop");
                     writer.WriteLine($"Tasklist /fi \"PID eq {currprocid}\" | find \":\"");
@@ -153,9 +157,17 @@ namespace DS2S_META.Utils
                     writer.WriteLine("  Goto Loop");
                     writer.WriteLine(")");
 
-                    // Filesystem updates
+                    // Now the file is definitely unlocked:
+                    writer.WriteLine($"ECHO Transferring messages from logupdater2.log >> %logfile%");
+                    writer.WriteLine($"ECHO Batch file execution started successfully. >> %logfile%"); // >> = append
+                    writer.WriteLine($"ECHO Waiting for previous DS2S META version process to end >> %logfile%");
+
+                    // Continue as normal:
                     writer.WriteLine("ECHO Old DS2S META process ended successfully >> %logfile%");
-                    writer.WriteLine("ECHO Removing old running folder >> %logfile%");
+                    writer.WriteLine("ECHO Removing logupdater2.log >> %logfile%");
+                    writer.WriteLine($"del {updaterlog2}");
+                    writer.WriteLine($"ECHO logupdater2.log removed succesfully >> %logfile%");
+                    writer.WriteLine($"ECHO Removing old running folder >> %logfile%");
                     writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
                     writer.WriteLine($"ECHO Copying directory: {newdir_install} to: {newdir_reform_dir} >> %logfile%");
                     writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform_name}\"");     // Rename new folder to DS2S META

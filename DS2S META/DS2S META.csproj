@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.6.0.3</AssemblyVersion>	  
+	<AssemblyVersion>0.6.0.2</AssemblyVersion>	  
   </PropertyGroup>
 
   <ItemGroup>
@@ -3038,7 +3038,7 @@
     </Page>
   </ItemGroup>
 
-  <Target Name="PostBuild" Condition="$(ConfigurationName) == Release" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
 		  <Output TaskParameter="Assemblies" ItemName="Targets" />
 	  </GetAssemblyIdentity>
