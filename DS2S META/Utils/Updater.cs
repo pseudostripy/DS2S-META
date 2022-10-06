@@ -32,6 +32,8 @@ namespace DS2S_META.Utils
 
             string batchScriptName;
             string updaterlog = $"{parentdir}\\updaterlog.log";
+            if (File.Exists(updaterlog))
+                File.Delete(updaterlog); // start from scratch
             using (StreamWriter logwriter = File.AppendText(updaterlog))
             {
                 logwriter.WriteLine("> Log Creation");
@@ -67,17 +69,27 @@ namespace DS2S_META.Utils
                 }
                 logwriter.WriteLine("Extraction directory check: success");
                 logwriter.WriteLine($"Extracting \"{dlOutfile}\" to \"{newdir_install}\"");
-                Extract7zFile(dlOutfile, parentdir);        // auto-unzips into newdircheck
-                if (!File.Exists($"{newdir_install}\\DS2S META.exe"))
-                {
-                    logwriter.WriteLine("Failure during extraction! Exiting update.");
+                var watch = new Stopwatch();
+                watch.Start();
+                int maxtimeout = 10000; // 10s
+                bool extraction_timeout = Extract7zFile(dlOutfile, parentdir, maxtimeout); // auto-unzips into newdircheck
+                watch.Stop();
+                bool extraction_files_found = File.Exists($"{newdir_install}\\DS2S META.exe");
+                if (extraction_timeout)
+                    logwriter.WriteLine($"Extraction process timeout, likely missing executable. To investigate. Exiting update.");
+                else
+                    // didn't timeout
+                    if (extraction_files_found)
+                        logwriter.WriteLine($"Extraction successful in {watch.ElapsedMilliseconds}ms"); // files copied & fast
+                    else
+                        logwriter.WriteLine($"Extraction process ended prematurely. Exiting update."); // medium case to investigate
+                if (extraction_timeout || !extraction_files_found)
                     return;
-                }
-                logwriter.WriteLine("Update extracted successfully");
+                logwriter.WriteLine("Removing downloaded zip file...");
                 File.Delete(dlOutfile); // remove the .7z binary
                 if (File.Exists(dlOutfile))
                 {
-                    logwriter.WriteLine($"Issue removing the extracted archive at: \"{dlOutfile}\"");
+                    logwriter.WriteLine($"Issue removing the download zip file at: \"{dlOutfile}\"");
                 }
                 logwriter.WriteLine($"Downloaded Zip file: \"{dlOutfile}\" successfully removed");
 
@@ -201,7 +213,7 @@ namespace DS2S_META.Utils
             MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
             return true;
         }
-        public static void Extract7zFile(string sourceArchive, string destination)
+        public static bool Extract7zFile(string sourceArchive, string destination, int maxtimeout)
         {
             // I know this is duplicated directory finding, but its cleaner to leave this method atomic
             string currexepath = Assembly.GetExecutingAssembly().Location;
@@ -217,7 +229,9 @@ namespace DS2S_META.Utils
                     Arguments = string.Format($"x \"{sourceArchive}\" -o\"{destination}\"")
                 };
                 Process? x = Process.Start(pro);
-                x?.WaitForExit();
+                bool? exited = x?.WaitForExit(maxtimeout);
+                bool didtimeout = !(exited ?? false);
+                return didtimeout;
             }
             catch (Exception Ex)
             {
