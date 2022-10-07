@@ -9,11 +9,8 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing Weapons
     /// </summary>
-    public class WeaponReinforce
+    public class WeaponReinforceRow : Param.Row
     {
-        internal Param.Row ParamRow;
-        internal int ID => ParamRow.ID;
-
         internal int _maxReinforce;
         internal int MaxReinforce
         {
@@ -28,21 +25,18 @@ namespace DS2S_META.Utils
 
         
         // Constructor:
-        internal WeaponReinforce(Param.Row paramrow)
+        public WeaponReinforceRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            // Unpack data:
-            ParamRow = paramrow;
-
             MaxReinforce = (int)ReadAt(18);
             CustomSpecAttrID = (int)ReadAt(58);
         }
         
-        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
+        public object ReadAt(int fieldindex) => Data[fieldindex];
         public void WriteAt(int fieldindex, byte[] valuebytes)
         {
             // Note: this function isn't generalised properly yet
-            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
+            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
+            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
         }
     }
 }

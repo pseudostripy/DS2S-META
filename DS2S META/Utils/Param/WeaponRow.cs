@@ -9,13 +9,10 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing Weapons
     /// </summary>
-    public class WeaponRow
+    public class WeaponRow : Param.Row
     {
-        internal Param.Row ParamRow;
-        internal int ID => ParamRow.ID;
-
-        internal float _damageMultiplier;
-        internal float DamageMultiplier
+        public float _damageMultiplier;
+        public float DamageMultiplier
         {
             get => _damageMultiplier;
             set
@@ -24,8 +21,8 @@ namespace DS2S_META.Utils
                 WriteAt(34, BitConverter.GetBytes(value));
             }
         }
-        internal int _reinforceID;
-        internal int ReinforceID
+        public int _reinforceID;
+        public int ReinforceID
         {
             get => _reinforceID;
             set
@@ -34,25 +31,23 @@ namespace DS2S_META.Utils
                 WriteAt(2, BitConverter.GetBytes(value));
             }
         }
-        internal WeaponReinforce ReinforceParam;
+
+        // Linked param:
+        internal WeaponReinforceRow ReinforceParam => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.PNAME.WEAPON_REINFORCE_PARAM, ReinforceID);
         
         // Constructor:
-        internal WeaponRow(Param.Row paramrow, Param wrparam)
+        public WeaponRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            // Unpack data:
-            ParamRow = paramrow;
-
             DamageMultiplier = (float)ReadAt(34);
             ReinforceID = (int)ReadAt(2);
-            ReinforceParam = new(wrparam.Rows.Where(row => row.ID == ReinforceID).First());
         }
         
-        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
+        public object ReadAt(int fieldindex) => Data[fieldindex];
         public void WriteAt(int fieldindex, byte[] valuebytes)
         {
             // Note: this function isn't generalised properly yet
-            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
+            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
+            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
         }
     }
 }

@@ -124,7 +124,7 @@ namespace DS2S_META
                 dmgmod = 1;
 
             // Write to memory
-            var rapierrow = Hook.WeaponParam?.Rows.Where(row => row.ID == 1500000).First(); // Rapier
+            var rapierrow = ParamMan.WeaponParam?.Rows.FirstOrDefault(r => r.ID == 1500000) as WeaponRow; // Rapier
             if (rapierrow == null)
                 throw new NullReferenceException("Pretty sure the rapier should be there!");
             var F = rapierrow.Param.Fields[34];

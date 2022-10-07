@@ -48,12 +48,9 @@ namespace DS2S_META
 
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
         public Param? ItemParam;
-        public Param? WeaponParam;
-        public Param? WeaponReinforceParam;
-
+        
         public List<ItemRow> Items = new();
-        public List<WeaponRow> Weapons = new();
-
+        
         private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
         private PHPointer ItemGiveFunc;
@@ -231,9 +228,7 @@ namespace DS2S_META
                         
             GetParams();
             GetVanillaItems();
-            if (WeaponParam != null)
-                Weapons = WeaponParam.Rows.Select(row => new WeaponRow(row, WeaponReinforceParam)).ToList();
-
+            
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
 
@@ -1154,13 +1149,13 @@ namespace DS2S_META
                     ItemParam = param;
                     break;
 
-                case "WEAPON_PARAM":
-                    WeaponParam = param;
-                    break;
+                //case "WEAPON_PARAM":
+                //    WeaponParam = param;
+                //    break;
 
-                case "WEAPON_REINFORCE_PARAM":
-                    WeaponReinforceParam = param;
-                    break;
+                //case "WEAPON_REINFORCE_PARAM":
+                //    WeaponReinforceParam = param;
+                //    break;
 
                 default:
                     break;
@@ -1297,12 +1292,11 @@ namespace DS2S_META
         }
         internal int GetWeaponMaxUpgrade(int id)
         {
-            if (!Setup || WeaponReinforceParam == null || WeaponParam == null)
+            if (!Setup || ParamMan.WeaponReinforceParam == null || ParamMan.WeaponParam == null)
                 return 0;
-            var weaponRow = Weapons.Where(wp => wp.ID == id).FirstOrDefault();
-            if (weaponRow == null) return 0;
 
-            return weaponRow.ReinforceParam.MaxReinforce;
+            var wprow = (WeaponRow)ParamMan.WeaponParam.Rows.Where(row => row.ID == id).First();
+            return wprow.ReinforceParam.MaxReinforce;
         }
         internal void GetVanillaItems()
         {
@@ -1332,20 +1326,18 @@ namespace DS2S_META
         internal List<DS2SInfusion> GetWeaponInfusions(int id)
         {
             // Tidy up guard clauses once params are handled better
-            if (WeaponParam == null)
+            if (ParamMan.WeaponParam == null)
                 throw new Exception("WeaponParam not setup");
-            if (WeaponReinforceParam == null)
+            if (ParamMan.WeaponReinforceParam == null)
                 throw new Exception("WeaponParam not setup");
             if (CustomAttrSpecParam == null)
                 throw new Exception("WeaponParam not setup");
 
             var infusions = new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
-            var weaponRow = Weapons.Where(wp => wp.ID == id).FirstOrDefault();
+            var weaponRow = ParamMan.WeaponParam.Rows.FirstOrDefault(wp => wp.ID == id) as WeaponRow;
             if (weaponRow == null) return infusions;
 
             int customAttrID = weaponRow.ReinforceParam.CustomSpecAttrID;
-            //var reinforceParamID = WeaponParam.ReadInt32(WeaponParamOffsetDict[id] + (int)DS2SOffsets.WeaponParam.ReinforceID);
-            //var customAttrID = WeaponReinforceParam.ReadInt32(WeaponReinforceParamOffsetDict[reinforceParamID] + (int)DS2SOffsets.WeaponReinforceParam.CustomAttrID);
             var bitField = CustomAttrSpecParam.ReadInt32(CustomAttrOffsetDict[customAttrID]);
 
             if (bitField == 0)

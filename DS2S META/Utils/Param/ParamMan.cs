@@ -19,22 +19,38 @@ namespace DS2S_META.Utils
         public static DS2SHook Hook;
         public static readonly string ExeDir = Environment.CurrentDirectory;
         public static List<Param> RawParamsList = new();
-        public static Dictionary<string, Param> AllParams = new();
+        public static Dictionary<PNAME, Param> AllParams = new();
+        public static Dictionary<PNAME, string> ParamStringNames = new();
+        public static Dictionary<string, PNAME> ParamsFromStrings = new(); // inverse of above
         
         // Params:
-        public static Param? ShopLineupParam => AllParams["SHOP_LINEUP_PARAM"];
-        public static Param? WeaponParam => AllParams["WEAPON_PARAM"];
-        public static Param? ItemParam => AllParams["ITEM_PARAM"];
-        public static Param? WeaponReinforceParam => AllParams["WEAPON_REINFORCE_PARAM"];
+        public static Param? ShopLineupParam => AllParams[PNAME.SHOP_LINEUP_PARAM];
+        public static Param? WeaponParam => AllParams[PNAME.WEAPON_PARAM];
+        public static Param? ItemParam => AllParams[PNAME.ITEM_PARAM];
+        public static Param? WeaponReinforceParam => AllParams[PNAME.WEAPON_REINFORCE_PARAM];
         
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
+            SetupParamStringNames();
             GetRawParams();
             BuildParamDictionary();
         }
 
         // Core setup:
+        private static void SetupParamStringNames()
+        {
+            var d = new Dictionary<PNAME, string>();
+
+            d.Add(PNAME.SHOP_LINEUP_PARAM, "SHOP_LINEUP_PARAM");
+            d.Add(PNAME.WEAPON_PARAM, "WEAPON_PARAM");
+            d.Add(PNAME.WEAPON_REINFORCE_PARAM, "WEAPON_REINFORCE_PARAM");
+            d.Add(PNAME.ITEM_PARAM, "ITEM_PARAM");
+            d.Add(PNAME.ITEM_LOT_PARAM2, "ITEM_LOT_PARAM2");
+            
+            ParamStringNames = d;
+            ParamsFromStrings = d.ToDictionary(kvp => kvp.Value, kvp => kvp.Key); // reverse them
+        }
         private static void GetRawParams()
         {
             List<Param> paramList = new List<Param>();
@@ -80,21 +96,29 @@ namespace DS2S_META.Utils
         private static void BuildParamDictionary()
         {
             foreach(var param in RawParamsList)
-                AllParams.Add(param.Name, param);
+                AllParams.Add(ParamsFromStrings[param.Name], param);
         }
         private static int hex2int(string hexbyte)
         {
             return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
         }
-
         private static void RowOverloadHandler(Param param)
         {
             // couldn't find a way to do this dynamically :(
-            switch (param.Name)
+            PNAME pname = ParamsFromStrings[param.Name];
+            switch (pname)
             {
                 // Just save the ones we care about
-                case "SHOP_LINEUP_PARAM":
+                case PNAME.SHOP_LINEUP_PARAM:
                     param.initialise<ShopRow>();
+                    break;
+
+                case PNAME.WEAPON_PARAM:
+                    param.initialise<WeaponRow>();
+                    break;
+
+                case PNAME.WEAPON_REINFORCE_PARAM:
+                    param.initialise<WeaponReinforceRow>();
                     break;
 
                 default:
@@ -103,11 +127,31 @@ namespace DS2S_META.Utils
                     break;
             }
         }
-
         private static PHPointer GetParamPointer(int[] offsets)
         {
             return Hook.CreateChildPointer(Hook.BaseA, offsets);
         }
+        
+        // Core Functionality:
+        public static T GetLink<T>(PNAME pname, int linkID)
+        {
+            var lookup =  AllParams[pname].Rows
+                            .Where(row => row.ID == linkID).OfType<T>();
+            if (lookup.Count() == 0)
+                return default;
+            return lookup.First();
+        }
+
+        // This is an extra indirection to avoid typo bugs
+        public enum PNAME
+        {
+            SHOP_LINEUP_PARAM,
+            WEAPON_PARAM,
+            WEAPON_REINFORCE_PARAM,
+            ITEM_PARAM,
+            ITEM_LOT_PARAM2,
+        }
+
 
     }
 }
