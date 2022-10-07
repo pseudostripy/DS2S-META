@@ -98,7 +98,7 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        internal ItemParam ItemParam => RandomizerManager.VanillaItemParams[ItemID];
+        internal ItemRow ItemParam => RandomizerManager.VanillaItemParams[ItemID];
         internal int VanillaBasePrice
         {
             get

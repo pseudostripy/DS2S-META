@@ -25,7 +25,7 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing ItemParam
     /// </summary>
-    public class ItemParam
+    public class ItemRow
     {
         internal Param.Row ParamRow;
         internal int ID => ParamRow.ID;
@@ -62,7 +62,7 @@ namespace DS2S_META.Utils
         }
 
         // Constructor:
-        internal ItemParam(Param.Row paramrow)
+        internal ItemRow(Param.Row paramrow)
         {
             // Unpack data:
             ParamRow = paramrow;

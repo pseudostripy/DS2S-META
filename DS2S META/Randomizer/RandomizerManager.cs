@@ -34,7 +34,7 @@ namespace DS2S_META.Randomizer
         private List<int> KeysPlacedSoFar = new(); // to tidy
         internal int CurrSeed;
         //
-        internal static Dictionary<int, ItemParam> VanillaItemParams = new();
+        internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
         internal static bool TryGetItemName(int itemid, out string name)
         {
@@ -42,13 +42,13 @@ namespace DS2S_META.Randomizer
             name = found ? GetItemName(itemid) : "";
             return found;
         }
-        internal static bool TryGetItem(int itemid, out ItemParam? item)
+        internal static bool TryGetItem(int itemid, out ItemRow? item)
         {
             bool found = VanillaItemParams.ContainsKey(itemid);
             item = found ? VanillaItemParams[itemid] : null;
             return found;
         }
-        internal int GetItemMaxUpgrade(ItemParam item)
+        internal int GetItemMaxUpgrade(ItemRow item)
         {
             if (Hook == null)
                 return 0;
@@ -383,7 +383,7 @@ namespace DS2S_META.Randomizer
         {
             if (Hook == null)
                 return;
-            if (!TryGetItem(di.ItemID, out ItemParam? item))
+            if (!TryGetItem(di.ItemID, out ItemRow? item))
                 return;
             if (item == null)
                 return;
@@ -404,7 +404,7 @@ namespace DS2S_META.Randomizer
         }
         private void FixReinforcement(DropInfo di)
         {
-            if (!TryGetItem(di.ItemID, out ItemParam? item))
+            if (!TryGetItem(di.ItemID, out ItemRow? item))
                 return;
             if (item == null)
                 return;

@@ -9,7 +9,7 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing Weapons
     /// </summary>
-    public class WeaponParam
+    public class WeaponRow
     {
         internal Param.Row ParamRow;
         internal int ID => ParamRow.ID;
@@ -37,7 +37,7 @@ namespace DS2S_META.Utils
         internal WeaponReinforce ReinforceParam;
         
         // Constructor:
-        internal WeaponParam(Param.Row paramrow, Param wrparam)
+        internal WeaponRow(Param.Row paramrow, Param wrparam)
         {
             // Unpack data:
             ParamRow = paramrow;

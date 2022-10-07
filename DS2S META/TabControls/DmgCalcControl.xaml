@@ -12,7 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition/>
-            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Margin="5">
             <Grid Margin="10,10,10,10">
@@ -39,7 +39,7 @@
                 <Label Content="Upgrade" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,0,3,0" HorizontalContentAlignment="Center" />
                 <wpfTool:IntegerUpDown x:Name="nudUpgrade" Minimum="0" Maximum="0" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0" ValueChanged="nudUpgrade_ValueChanged"/>
                 <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
-                <Label x:Name="lblSelectedWeapon" Content="WEAPON UNSELECTED " VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="4" Margin="0,5,0,0" Grid.Column="1" HorizontalContentAlignment="Center" />
+                <Label x:Name="lblSelectedWeapon" Content="WEAPON UNSELECTED " VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="4" Margin="0,5,0,0" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" />
                 <Button x:Name="btnSet" Content="Set Weapon" Click="btnSet_Click" PreviewKeyDown="KeyPressed" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
             </Grid>
         </StackPanel>
@@ -47,7 +47,20 @@
         <ListBox x:Name="lbxItems" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" SelectionChanged="lbxItems_SelectionChanged" PreviewKeyDown="KeyPressed" MaxHeight="450" />
         <StackPanel Grid.Row="2">
             <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
-            <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxMaxUpgrade_Checked" HorizontalAlignment="Center" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="8,0,0,0" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label x:Name="lblNameTest" Content="Hello World!" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
+            </Grid>
+            
+            <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" HorizontalAlignment="Center" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="8,0,0,0" />
         </StackPanel>
         
     </Grid>

@@ -22,15 +22,18 @@ namespace DS2S_META
     {
         // Fields:
         private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
-        internal ItemParam? Item;
+        private DS2SItem SelDs2item;
+        internal ItemRow? Item;
         Timer InventoryTimer = new Timer();
         private bool upgradeManualOverride = false;
 
+        // Constructor
         public DmgCalcControl()
         {
             InitializeComponent();
         }
 
+        // Initialisation
         public override void InitTab()
         {
             InventoryTimer.Interval = 100;
@@ -56,15 +59,20 @@ namespace DS2S_META
             upgradeManualOverride = false;
         }
 
-        
-        private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Core
+        private void GetWeaponProperties()
         {
-            FilterItems();
+            if (SelDs2item == null)
+                throw new Exception("Null weapon selected");
+
+
         }
 
-        //Clear items and add the ones that match text in search box
+        // Main interactions:
         private void FilterItems()
         {
+            //Clear items and add the ones that match text in search box
+
             // Update listbox
             lbxItems.ItemsSource = Weapons.Where(wp => wp.NameContains(txtSearch.Text));
             
@@ -77,15 +85,83 @@ namespace DS2S_META
         {
             FilterItems();
         }
-
-        //Handles the "Searching..." label on the text box
         private void HandleSearchLabel()
         {
+            //Handles the "Searching..." label on the text box
             if (txtSearch.Text == "")
                 lblSearch.Visibility = Visibility.Visible;
             else
                 lblSearch.Visibility = Visibility.Hidden;
 
+        }
+
+        private void btnSet_Click(object sender, RoutedEventArgs e)
+        {
+            // Build up the item string:
+            var item = lbxItems.SelectedItem as DS2SItem;
+            if (item == null) return;
+
+            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
+            if (item == null) return;
+
+            var upgr = nudUpgrade.Value;
+            if (upgr == null) return;
+
+            // Success: Store, Show, Enable:
+            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
+            SelDs2item = item;
+            btnCalculate.IsEnabled = true;
+        }
+        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Hook == null)
+                return; // first call
+
+            float dmgmod;
+            if (cbxOHKO.IsChecked == true)
+                dmgmod = 1000;
+            else
+                dmgmod = 1;
+
+            // Write to memory
+            var rapierrow = Hook.WeaponParam?.Rows.Where(row => row.ID == 1500000).First(); // Rapier
+            if (rapierrow == null)
+                throw new NullReferenceException("Pretty sure the rapier should be there!");
+            var F = rapierrow.Param.Fields[34];
+            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
+            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
+            rapierrow.WriteRow();
+        }
+        private void btnCalculate_Click(object sender, RoutedEventArgs e)
+        {
+            GetWeaponProperties();
+        }
+        private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
+        {
+            if (cbxMax.IsChecked == true)
+            {
+                upgradeManualOverride = false;
+                nudUpgrade.Value = nudUpgrade.Maximum;
+                return;
+            }
+        }
+        private int? HandleMaxItemCheckbox()
+        {
+            // Max checkbox is false
+            if (cbxMax.IsChecked != true)
+                return upgradeManualOverride ? nudUpgrade.Value : 0;
+
+            // Max checkbox is true:
+            if (upgradeManualOverride)
+                return nudUpgrade.Value <= nudUpgrade.Maximum ? nudUpgrade.Value : nudUpgrade.Maximum;
+
+            // Max checkbox is true && noManualOverride yet
+            return nudUpgrade.Maximum;
+        }
+        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (nudUpgrade.Value != nudUpgrade.Maximum)
+                upgradeManualOverride = true;
         }
 
         private bool TryGetSelectedItem(out DS2SItem? item)
@@ -103,14 +179,12 @@ namespace DS2S_META
 
             return true;
         }
-
         private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
         {
             var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
             //Checks if cbxMaxUpgrade is checked and sets the value to max value
             HandleMaxItemCheckbox();
         }
-
         private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Guard clauses
@@ -145,17 +219,7 @@ namespace DS2S_META
             nudUpgrade.Value = HandleMaxItemCheckbox();
         }
 
-        internal void EnableStats(bool enable)
-        {
-            btnCalculate.IsEnabled = enable;
-        }
-
-        private void btnCalculate_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO
-        }
-
-        //handles up and down scrolling
+        // Events handling etc:
         private void ScrollListbox(KeyEventArgs e)
         {
             //Scroll down through Items listbox and go back to bottom at end
@@ -180,8 +244,6 @@ namespace DS2S_META
                 return;
             }
         }
-
-        //handles escape
         private void KeyPressed(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -213,45 +275,12 @@ namespace DS2S_META
 
             ScrollListbox(e);
         }
-
-        //Select number in nud
-        private void nudUpgrade_Click(object sender, EventArgs e)
+        private void txtSearch_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            nudUpgrade.Focus();
+            txtSearch.SelectAll();
+            txtSearch.Focus();
+            e.Handled = true;
         }
-
-        private void SearchAllCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            //checkbox changed, refresh search filter (if txtSearch is not empty)
-            if (txtSearch.Text != "")
-                FilterItems();
-        }
-
-        private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
-        {
-            
-            if (cbxMax.IsChecked == true)
-            {
-                upgradeManualOverride = false;
-                nudUpgrade.Value = nudUpgrade.Maximum;
-                return;
-            }
-        }
-
-        private int? HandleMaxItemCheckbox()
-        {
-            // Max checkbox is false
-            if (cbxMax.IsChecked != true)
-                return upgradeManualOverride ? nudUpgrade.Value : 0;
-
-            // Max checkbox is true:
-            if (upgradeManualOverride)
-                return nudUpgrade.Value <= nudUpgrade.Maximum ? nudUpgrade.Value : nudUpgrade.Maximum;
-
-            // Max checkbox is true && noManualOverride yet
-            return nudUpgrade.Maximum;
-        }
-
         private void cmbInfusion_KeyDown(object sender, KeyEventArgs e)
         {
             //Create selected index as item
@@ -261,60 +290,9 @@ namespace DS2S_META
                 return;
             }
         }
-        //Select all text in search box
-        private void txtSearch_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void nudUpgrade_Click(object sender, EventArgs e)
         {
-            txtSearch.SelectAll();
-            txtSearch.Focus();
-            e.Handled = true;
-        }
-
-        private void SearchAllCheckbox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (txtSearch.Text != "")
-                FilterItems();
-        }
-
-        private void btnSet_Click(object sender, RoutedEventArgs e)
-        {
-            // Build up the item string:
-            var item = lbxItems.SelectedItem as DS2SItem;
-            if (item == null) return;
-
-            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
-            if (item == null) return;
-
-            var upgr = nudUpgrade.Value;
-            if (upgr == null) return;
-            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
-
-        }
-
-        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Hook == null)
-                return; // first call
-
-            float dmgmod;
-            if (cbxOHKO.IsChecked == true)
-                dmgmod = 1000;
-            else
-                dmgmod = 1;
-            
-            // Write to memory
-            var rapierrow = Hook.WeaponParam?.Rows.Where(row => row.ID == 1500000).First(); // Rapier
-            if (rapierrow == null)
-                throw new NullReferenceException("Pretty sure the rapier should be there!");
-            var F = rapierrow.Param.Fields[34];
-            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
-            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
-            rapierrow.WriteRow();
-        }
-
-        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (nudUpgrade.Value != nudUpgrade.Maximum)
-                upgradeManualOverride = true;
+            nudUpgrade.Focus();
         }
     }
 }

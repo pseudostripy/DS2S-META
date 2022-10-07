@@ -52,8 +52,8 @@ namespace DS2S_META
         public Param? WeaponParam;
         public Param? WeaponReinforceParam;
 
-        public List<ItemParam> Items = new();
-        public List<WeaponParam> Weapons = new();
+        public List<ItemRow> Items = new();
+        public List<WeaponRow> Weapons = new();
 
         private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
@@ -64,7 +64,8 @@ namespace DS2S_META
         private PHPointer WarpManager;
         private PHPointer WarpFunc;
 
-        private PHPointer BaseA;
+        public  PHPointer BaseA;
+
         private PHPointer PlayerName;
         private PHPointer AvailableItemBag;
         private PHPointer ItemGiveWindow;
@@ -232,7 +233,10 @@ namespace DS2S_META
             GetParams();
             GetVanillaItems();
             if (WeaponParam != null)
-                Weapons = WeaponParam.Rows.Select(row => new WeaponParam(row, WeaponReinforceParam)).ToList();
+                Weapons = WeaponParam.Rows.Select(row => new WeaponRow(row, WeaponReinforceParam)).ToList();
+
+            // Slowly migrate to param handling class:
+            ParamMan.Initialise(this);
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -1121,6 +1125,7 @@ namespace DS2S_META
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new Param(pointer, offsets, paramDef, name);
+                param.initialise<Param.Row>();
 
                 // Save param
                 StoreLocalParam(param);
@@ -1306,7 +1311,7 @@ namespace DS2S_META
             if (ItemParam == null)
                 throw new NullReferenceException("Shouldn't get here");
 
-            Items = ItemParam.Rows.Select(row => new ItemParam(row)).ToList();
+            Items = ItemParam.Rows.Select(row => new ItemRow(row)).ToList();
             foreach(var item in Items)
             {
                 var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ID).FirstOrDefault();

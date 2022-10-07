@@ -11,6 +11,7 @@ using DS2S_META.Utils;
 using System.Security.Cryptography;
 using System.Printing.IndexedProperties;
 using System.Linq;
+using System.Reflection;
 
 namespace DS2S_META
 {
@@ -42,8 +43,11 @@ namespace DS2S_META
             Name = name;
             Type = Paramdef.ParamType;
             RowLength = ParamDef.GetRowSize();
+        }
+        public void initialise<T>() where T : Row
+        {
             BuildNameDictionary();
-            BuildOffsetDictionary();
+            BuildOffsetDictionary<T>();
             BuildCells();
         }
         private void BuildNameDictionary()
@@ -68,7 +72,7 @@ namespace DS2S_META
                 NameDictionary.Add(id, name);
             };
         }
-        private void BuildOffsetDictionary()
+        private void BuildOffsetDictionary<T>() where T : Row
         {
             string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
             if (paramType != Type)
@@ -89,6 +93,12 @@ namespace DS2S_META
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
             Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
 
+            // Setup constructor for new row data
+            Type[] argtypes = new Type[] { typeof(Param), typeof(string), typeof(int), typeof(int) };
+            ConstructorInfo? ctor = typeof(T).GetConstructor(argtypes);
+            if (ctor == null)
+                throw new NullReferenceException("Cannot find appropriate row constructor");
+
             while (param < OffsetsTableLength)
             {
                 int itemID = BitConverter.ToInt32(Bytes, param + paramID);
@@ -101,7 +111,7 @@ namespace DS2S_META
                     OffsetDict.Add(itemID, itemParamOffset);
 
                 Rows.Add(new(this, name, itemID, itemParamOffset));
-
+                ctor.Invoke(new object[] { this, name, itemID, itemParamOffset });
                 param += nextParam;
             }
         }
