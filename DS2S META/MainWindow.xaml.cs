@@ -260,7 +260,6 @@ namespace DS2S_META
             }));
             
         }
-
         private void UpdateMainProperties()
         {
             Hook.UpdateMainProperties();
@@ -291,6 +290,7 @@ namespace DS2S_META
             metaInternal.EnableCtrls(enable);
             metaItems.EnableCtrls(enable);
             metaCovenant.EnableCtrls(enable);
+            metatabDmgCalc.EnableCtrls(enable);
         }
         private void ReloadAllTabs()
         {
@@ -298,6 +298,7 @@ namespace DS2S_META
             metaStats.ReloadCtrl();
             metaItems.ReloadCtrl();
             metaBonfire.ReloadCtrl();
+            metatabDmgCalc.ReloadCtrl();
         }
         private void UpdateAllTabs()
         {
@@ -311,52 +312,37 @@ namespace DS2S_META
         {
             Process.Start(new ProcessStartInfo { FileName = e.Uri.ToString(), UseShellExecute = true });
         }
-
         private void SaveAllTabs()
         {
             SaveHotkeys();
         }
-
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)
         {
             metaStats.EnableCtrls(Hook.Loaded);
         }
-
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+        private void SpawnUndroppable_Checked(object sender, RoutedEventArgs e)
+        {
+            metaItems.UpdateCreateEnabled();
+        }
+        private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
+        {
+            cbxUpdateOK.IsChecked = false;
+            cbxUpdateOK.Visibility = Visibility.Hidden;
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
-
         private void MainWindowClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void SpawnUndroppable_Checked(object sender, RoutedEventArgs e)
-        {
-            metaItems.UpdateCreateEnabled();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
-        {
-            cbxUpdateOK.IsChecked = false;
-            cbxUpdateOK.Visibility = Visibility.Hidden;
-        }
     }
 }

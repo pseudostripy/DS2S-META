@@ -18,15 +18,13 @@ using System.Windows.Shapes;
 
 namespace DS2S_META
 {
-    /// <summary>
-    /// Interaction logic for ItemControl.xaml
-    /// </summary>
     public partial class DmgCalcControl : METAControl
     {
         // Fields:
         private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
         internal ItemParam? Item;
         Timer InventoryTimer = new Timer();
+        private bool upgradeManualOverride = false;
 
         public DmgCalcControl()
         {
@@ -46,14 +44,16 @@ namespace DS2S_META
         {
             lbxItems.SelectedIndex = -1;
             lbxItems.SelectedIndex = 0;
+            nudUpgrade.Value = 0;
         }
         internal override void EnableCtrls(bool enable)
         {
             InventoryTimer.Enabled = enable;
             btnCalculate.IsEnabled = enable;
 
-            if (enable)
-                UpdateCreateEnabled();
+            nudUpgrade.Value = 0;
+            nudUpgrade.Maximum = 5;
+            upgradeManualOverride = false;
         }
 
         
@@ -115,13 +115,17 @@ namespace DS2S_META
         {
             // Guard clauses
             if (!Hook.Hooked)
+            {
+                MessageBox.Show("Please open Dark Souls 2 first.");
                 return;
+            };
             if (!TryGetSelectedItem(out var item))
                 return;
             if (item == null)
                 return;
 
             // Update infusion/upgrade ..?
+            var selid = cmbInfusion.SelectedIndex;
             cmbInfusion.Items.Clear();
             if (item.Type != DS2SItem.ItemType.Weapon)
                 cmbInfusion.Items.Add(DS2SInfusion.Infusions[0]);
@@ -129,19 +133,16 @@ namespace DS2S_META
                 foreach (var infusion in Hook.GetWeaponInfusions(item.ID))
                     cmbInfusion.Items.Add(infusion);
 
-            cmbInfusion.SelectedIndex = 0;
+            if (selid <= cmbInfusion.Items.Count)
+                cmbInfusion.SelectedIndex = selid; // keep previous selection
+            else
+                cmbInfusion.SelectedIndex = 0; 
             cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
+
 
             nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
-
-            HandleMaxItemCheckbox();
-        }
-
-        public void UpdateCreateEnabled()
-        {
-            //if (lbxItems.SelectedItem is not DS2SItem item)
-            //    return;
+            nudUpgrade.Value = HandleMaxItemCheckbox();
         }
 
         internal void EnableStats(bool enable)
@@ -228,19 +229,27 @@ namespace DS2S_META
 
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
         {
-            if (!TryGetSelectedItem(out DS2SItem? item))
+            
+            if (cbxMax.IsChecked == true)
+            {
+                upgradeManualOverride = false;
+                nudUpgrade.Value = nudUpgrade.Maximum;
                 return;
-            
-            HandleMaxItemCheckbox();
-            
+            }
         }
 
-        private void HandleMaxItemCheckbox()
+        private int? HandleMaxItemCheckbox()
         {
-            if (cbxMax.IsChecked == true)
-                nudUpgrade.Value = nudUpgrade.Maximum;
-            else
-                nudUpgrade.Value = 0;
+            // Max checkbox is false
+            if (cbxMax.IsChecked != true)
+                return upgradeManualOverride ? nudUpgrade.Value : 0;
+
+            // Max checkbox is true:
+            if (upgradeManualOverride)
+                return nudUpgrade.Value <= nudUpgrade.Maximum ? nudUpgrade.Value : nudUpgrade.Maximum;
+
+            // Max checkbox is true && noManualOverride yet
+            return nudUpgrade.Maximum;
         }
 
         private void cmbInfusion_KeyDown(object sender, KeyEventArgs e)
@@ -302,5 +311,10 @@ namespace DS2S_META
             rapierrow.WriteRow();
         }
 
+        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (nudUpgrade.Value != nudUpgrade.Maximum)
+                upgradeManualOverride = true;
+        }
     }
 }
