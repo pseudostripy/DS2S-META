@@ -150,22 +150,30 @@ namespace DS2S_META.Utils
                     writer.WriteLine("ECHO Batch file execution started successfully. >> %logfiletwo%"); // >> = append
                     writer.WriteLine("ECHO Waiting for previous DS2S META version process to end >> %logfiletwo%");
                     writer.WriteLine("cd ..");
+                    writer.WriteLine($"ECHO Current working directory changed to %cd% >> %logfiletwo%");
+                    writer.WriteLine($"ECHO Searching for process pid = {currprocid} >> %logfiletwo%");
                     writer.WriteLine(":Loop");
+                    writer.WriteLine("ECHO Current errorlevel = %errorlevel% >> %logfiletwo%");
+                    writer.WriteLine($"ECHO tasklist result...>> %logfiletwo%");
+                    writer.WriteLine($"tasklist /fi \"PID eq {currprocid}\" >> %logfiletwo%");
                     writer.WriteLine($"Tasklist /fi \"PID eq {currprocid}\" | find \":\"");
                     writer.WriteLine("if Errorlevel 1 (");
+                    writer.WriteLine($"ECHO Process PID {currprocid} is still active, waiting 1s >> %logfiletwo%");
                     writer.WriteLine("  Timeout /T 1 /Nobreak");
                     writer.WriteLine("  Goto Loop");
                     writer.WriteLine(")");
+                    writer.WriteLine("ECHO Broke out of wait loop, META process should be ended >> %logfiletwo%");
 
                     // Now the file is definitely unlocked:
                     writer.WriteLine($"ECHO Transferring messages from logupdater2.log >> %logfile%");
-                    writer.WriteLine($"ECHO Batch file execution started successfully. >> %logfile%"); // >> = append
-                    writer.WriteLine($"ECHO Waiting for previous DS2S META version process to end >> %logfile%");
-
+                    writer.WriteLine($"type \"{updaterlog2}\" >> \"{updaterlog}\"");
+                    
                     // Continue as normal:
                     writer.WriteLine("ECHO Old DS2S META process ended successfully >> %logfile%");
                     writer.WriteLine("ECHO Removing logupdater2.log >> %logfile%");
-                    writer.WriteLine($"del {updaterlog2}");
+#if !DEBUG
+                    writer.WriteLine($"del \"{updaterlog2}\"");
+#endif
                     writer.WriteLine($"ECHO logupdater2.log removed succesfully >> %logfile%");
                     writer.WriteLine($"ECHO Removing old running folder >> %logfile%");
                     writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
@@ -174,7 +182,7 @@ namespace DS2S_META.Utils
                     writer.WriteLine($"ECHO Copying temp settings file to {newdir_reform_dir}\\DS2S META.config >> %logfile%");
                     writer.WriteLine($"copy \"{destsettings_tmp}\" \"{newdir_reform_dir}\\DS2S META.config");
                     writer.WriteLine($"ECHO Removing temp settings file >> %logfile%");
-                    writer.WriteLine($"del {destsettings_tmp}");
+                    writer.WriteLine($"del \"{destsettings_tmp}\"");
                     writer.WriteLine("ECHO Fixing working directory for new DS2S META thread >> %logfile%");
                     writer.WriteLine($"cd {newdir_reform_dir}");
 
@@ -214,7 +222,7 @@ namespace DS2S_META.Utils
                 }
                 
                 if (batchprocfound)
-                    logwriter.WriteLine("Batch script started successfully");
+                    logwriter.WriteLine($"Batch script started successfully with PID {batchprocid}");
                 else
                 {
                     logwriter.WriteLine($"Batch script process failed to start within {customtimeout_ms}ms, probably something more fundamentally wrong. Exiting update.");
@@ -239,9 +247,9 @@ namespace DS2S_META.Utils
             ProcessStartInfo pro = new()
             {
                 FileName = "cmd.exe",
-                Arguments = $"/C {batfile} & Del {batfile}", // run and remove self
+                Arguments = $"/C \"\"{batfile}\" & Del \"{batfile}\"\"", // run and remove self
                 CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
+                WindowStyle = ProcessWindowStyle.Hidden,
             };
             return Process.Start(pro);
         }
