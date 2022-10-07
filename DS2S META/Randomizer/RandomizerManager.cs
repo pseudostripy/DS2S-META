@@ -19,8 +19,8 @@ namespace DS2S_META.Randomizer
         List<Randomization> Data = new List<Randomization>(); // Combined info list
         internal static Random RNG = new Random();
         private List<ItemLot> VanillaLots = new();
-        private List<ShopInfo> VanillaShops = new();
-        private List<ShopInfo> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
+        private List<ShopRow> VanillaShops = new();
+        private List<ShopRow> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
         internal ItemSetBase Logic = new CasualItemSet();
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
@@ -85,8 +85,7 @@ namespace DS2S_META.Randomizer
         {
             Hook = hook; // Required for reading game params in memory
 
-            // Get Vanilla Params:1
-            //var parShopDesc = ReadShopNames();
+            // Param collecting:
             GetVanillaShops();
             GetVanillaLots();
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
@@ -112,7 +111,7 @@ namespace DS2S_META.Randomizer
             if (Hook?.ShopLineupParam == null)
                 throw new NullReferenceException("Shouldn't get here");
 
-            VanillaShops = Hook.ShopLineupParam.Rows.Select(row => new ShopInfo(row)).ToList();
+            VanillaShops = Hook.ShopLineupParam.Rows.OfType<ShopRow>().ToList();
             return;
         }
 
@@ -143,7 +142,6 @@ namespace DS2S_META.Randomizer
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
             await Task.Run(() => WriteShuffledShops());
-            //DisableUnusedShops();
             FixMaughlinEvent();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
@@ -195,11 +193,11 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
-        internal List<ShopInfo> FixShopEvents()
+        internal List<ShopRow> FixShopEvents()
         {
             // Remove shop & trade menu resets on certain events so they stay randomised
             // Go through and clone the "normal" shops:
-            var PTF = new List<ShopInfo>();
+            var PTF = new List<ShopRow>();
             
             var LEvents = ShopRules.GetLinkedEvents();
 
@@ -208,30 +206,30 @@ namespace DS2S_META.Randomizer
             var tolose = LEvents.SelectMany(le => le.RemoveIDs);
 
 
-            foreach (var si in VanillaShops)
+            foreach (var SR in VanillaShops)
             {
-                if (ShopRules.Exclusions.Contains(si.ID))
+                if (ShopRules.Exclusions.Contains(SR.ID))
                     continue; // empty shops etc
 
                 // Remove events:
-                if (tolose.Contains(si.ID))
+                if (tolose.Contains(SR.ID))
                 {
-                    si.ClearShop();
+                    SR.ClearShop();
                     continue;
                 }
 
                 // Keep and don't disable events:
-                if (tokeep.Contains(si.ID))
+                if (tokeep.Contains(SR.ID))
                 {
-                    var shopid = LEvents.Where(le => le.KeepID == si.ID).First();
-                    var normshop = si.Clone();
+                    var shopid = LEvents.Where(le => le.KeepID == SR.ID).First();
+                    var normshop = SR.Clone();
                     normshop.DisableFlag = -1; // never disable
                     PTF.Add(normshop);
                     continue;
                 }
 
                 // Everything else:
-                PTF.Add(si.Clone());
+                PTF.Add(SR.Clone());
             }
             return PTF;
         }
@@ -423,20 +421,15 @@ namespace DS2S_META.Randomizer
             // Method used for just writing a few rows out of the Param
             somelots.ForEach(lot => lot.ParamRow.WriteRow());
         }
-        internal void WriteSomeShops(List<ShopInfo> shops, bool isshuf)
+        internal void WriteSomeShops(List<ShopRow> shops, bool isshuf)
         {
             // Method used for just writing a few rows out of the Param
-            shops.ForEach(si => WriteShopInfo(si));
+            shops.ForEach(SR => SR.WriteRow());
         }
-        internal void WriteAllShops(List<ShopInfo> all_shops, bool isshuf)
+        internal void WriteAllShops(List<ShopRow> all_shops, bool isshuf)
         {
-            all_shops.ForEach(si => si.StoreRow());
+            all_shops.ForEach(SR => SR.StoreRow());
             Hook?.ShopLineupParam?.WriteModifiedParam();
-        }
-        internal void WriteShopInfo(ShopInfo SI)
-        {
-            // Write to game:
-            SI.ParamRow.WriteRow();
         }
         internal void WriteShuffledLots()
         {
@@ -548,7 +541,7 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
             };
 
-            var cloneshops = new List<ShopInfo>();
+            var cloneshops = new List<ShopRow>();
             foreach (LinkedShopEvent LE in maughlin_events)
             {
                 var goodshop = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();

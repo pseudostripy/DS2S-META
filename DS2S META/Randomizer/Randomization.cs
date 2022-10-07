@@ -206,16 +206,16 @@ namespace DS2S_META.Randomizer
     internal class ShopRdz : Randomization
     {
         // Subclass fields:
-        internal ShopInfo VanillaShop = new();
-        internal ShopInfo ShuffledShop = new();
+        internal ShopRow VanillaShop;
+        internal ShopRow ShuffledShop;
 
         // Constructors:
         internal ShopRdz(int paramid) : base(paramid) { }
-        internal ShopRdz(KeyValuePair<int, ShopInfo> VanKvp) : base(VanKvp.Key)
+        internal ShopRdz(KeyValuePair<int, ShopRow> VanKvp) : base(VanKvp.Key)
         {
             VanillaShop = VanKvp.Value;
         }
-        internal ShopRdz(ShopInfo vanshop) : base(vanshop.ID)
+        internal ShopRdz(ShopRow vanshop) : base(vanshop.ID)
         {
             VanillaShop = vanshop;
         }
@@ -257,12 +257,12 @@ namespace DS2S_META.Randomizer
                 item.ParamRow.WriteRow(); // memory write change
             }
 
-
             int pricenew = GetTypeRandomPrice(di.ItemID);
             float pricerate = (float)pricenew / baseprice;
 
             // Create:
-            ShuffledShop = new ShopInfo(di, VanillaShop, pricerate);
+            ShuffledShop = VanillaShop.Clone();
+            ShuffledShop.SetValues(di, VanillaShop, pricerate);
         }
         internal override bool HasShuffledItemID(int itemID)
         {

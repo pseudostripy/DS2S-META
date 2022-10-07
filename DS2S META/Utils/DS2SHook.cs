@@ -1125,6 +1125,11 @@ namespace DS2S_META
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new Param(pointer, offsets, paramDef, name);
+
+                // Testing some reflection:
+                if (param.Name == "SHOP_LINEUP_PARAM")
+                    param.initialise<ShopRow>();
+
                 param.initialise<Param.Row>();
 
                 // Save param
@@ -1137,7 +1142,6 @@ namespace DS2S_META
         {
             return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
         }
-
         private void StoreLocalParam(Param param)
         {
             switch (param.Name)
@@ -1167,7 +1171,6 @@ namespace DS2S_META
                     break;
             }
         }
-
         internal PHPointer GetParamPointer(int[] offsets)
         {
             return CreateChildPointer(BaseA, offsets);

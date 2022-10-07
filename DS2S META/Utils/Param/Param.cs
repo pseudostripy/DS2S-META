@@ -47,8 +47,8 @@ namespace DS2S_META
         public void initialise<T>() where T : Row
         {
             BuildNameDictionary();
-            BuildOffsetDictionary<T>();
             BuildCells();
+            BuildOffsetDictionary<T>();
         }
         private void BuildNameDictionary()
         {
@@ -110,8 +110,9 @@ namespace DS2S_META
                 if (!OffsetDict.ContainsKey(itemID))
                     OffsetDict.Add(itemID, itemParamOffset);
 
-                Rows.Add(new(this, name, itemID, itemParamOffset));
-                ctor.Invoke(new object[] { this, name, itemID, itemParamOffset });
+                // Create the new object of type Row (or class "T" inheriting from Row)
+                T row = (T)ctor.Invoke(new object[] { this, name, itemID, itemParamOffset });
+                Rows.Add(row);
                 param += nextParam;
             }
         }

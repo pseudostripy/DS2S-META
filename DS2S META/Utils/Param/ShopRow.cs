@@ -6,24 +6,14 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using DS2S_META.Utils;
 
-
-
-
 namespace DS2S_META.Randomizer
 {
     /// <summary>
-    /// This class is not strictly required, but it provides useful
-    /// shorthand checks for many of the variables used in the randomizer.
+    /// This class provides easier access to the shop substructure fields
+    /// of ShopLineupParam
     /// </summary>
-    internal class ShopInfo
+    internal class ShopRow : Param.Row
     {
-        // Fields:
-        internal Param.Row ParamRow; // Raw DS2 memory
-        internal int ID => ParamRow.ID; // shorthand
-
-        //internal string? ParamDesc => Data.Name;
-        internal string ParamDesc { get; set; }
-        
         // Behind-fields
         private int _itemid;
         private int _enableflag;
@@ -110,15 +100,11 @@ namespace DS2S_META.Randomizer
                 return item.BaseBuyPrice;
             }
         }
+        internal string? ParamDesc => Desc;
 
         // Constructors:
-        internal ShopInfo() { }
-        internal ShopInfo(Param.Row shoprow)
+        public ShopRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            // Unpack data:
-            ParamRow = shoprow;
-            ParamDesc = ParamRow.Desc;
-
             // Initial field setting:
             ItemID = (int)ReadAt(0);
             EnableFlag = (int)ReadAt(2);
@@ -129,11 +115,13 @@ namespace DS2S_META.Randomizer
             Quantity = (int)ReadAt(8);
         }
 
-        internal ShopInfo(DropInfo DI, ShopInfo VanShop, float pricerate)
+        // Methods:
+        internal ShopRow Clone()
         {
-            // Collision might be ok?
-            ParamRow = VanShop.ParamRow;
-            
+            return (ShopRow)MemberwiseClone();
+        }
+        internal void SetValues(DropInfo DI, ShopRow VanShop, float pricerate)
+        {
             // Used to construct things from various information sources:
             ItemID          = DI.ItemID;
             Quantity        = DI.Quantity;
@@ -142,16 +130,9 @@ namespace DS2S_META.Randomizer
             DisableFlag     = VanShop.DisableFlag;
             MaterialID      = VanShop.MaterialID;
             DuplicateItemID = VanShop.DuplicateItemID;
-            ParamDesc       = VanShop.ParamDesc;
             //
             PriceRate = pricerate;
         }
-        internal ShopInfo Clone()
-        {
-            return (ShopInfo)MemberwiseClone();
-        }
-
-        // Methods:
         internal List<DropInfo> ConvertToDropInfo()
         {
             // Assume no infusion or reinforcement, to consider later.
@@ -167,14 +148,14 @@ namespace DS2S_META.Randomizer
         public void WriteAt(int fieldindex, byte[] valuebytes)
         {
             // Note: this function isn't generalised properly yet
-            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
+            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
+            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
         }
-        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
+        public object ReadAt(int fieldindex) => Data[fieldindex];
         public void StoreRow()
         {
             // Convenience wrapper
-            ParamRow.Param.StoreRowBytes(ParamRow);
+            Param.StoreRowBytes(this);
         }
     }
 }
