@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using static DS2S_META.DS2SOffsets;
 using static SoulsFormats.PARAMDEF;
 using SoulsFormats;
+using DS2S_META.Randomizer;
 
 namespace DS2S_META.Utils
 {
@@ -19,8 +20,9 @@ namespace DS2S_META.Utils
         public static readonly string ExeDir = Environment.CurrentDirectory;
         public static List<Param> RawParamsList = new();
         public static Dictionary<string, Param> AllParams = new();
-
+        
         // Params:
+        public static Param? ShopLineupParam => AllParams["SHOP_LINEUP_PARAM"];
         public static Param? WeaponParam => AllParams["WEAPON_PARAM"];
         public static Param? ItemParam => AllParams["ITEM_PARAM"];
         public static Param? WeaponReinforceParam => AllParams["WEAPON_REINFORCE_PARAM"];
@@ -45,7 +47,6 @@ namespace DS2S_META.Utils
                 string[] pointers = File.ReadAllLines(path);
                 AddParam(paramList, paramPath, path, pointers);
             }
-
             RawParamsList = paramList;
         }
         private static void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
@@ -68,10 +69,10 @@ namespace DS2S_META.Utils
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new Param(pointer, offsets, paramDef, name);
-                param.initialise<Param.Row>();
 
+                RowOverloadHandler(param);
+                
                 // Save param
-                StoreLocalParam(param);
                 paramList.Add(param);
             }
             paramList.Sort();
@@ -86,34 +87,21 @@ namespace DS2S_META.Utils
             return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
         }
 
-        private static void StoreLocalParam(Param param)
+        private static void RowOverloadHandler(Param param)
         {
-            //switch (param.Name)
-            //{
-            //    // Just save the ones we care about
-            //    case "SHOP_LINEUP_PARAM":
-            //        ShopLineupParam = param;
-            //        break;
+            // couldn't find a way to do this dynamically :(
+            switch (param.Name)
+            {
+                // Just save the ones we care about
+                case "SHOP_LINEUP_PARAM":
+                    param.initialise<ShopRow>();
+                    break;
 
-            //    case "ITEM_LOT_PARAM2":
-            //        ItemLotOtherParam = param;
-            //        break;
-
-            //    case "ITEM_PARAM":
-            //        ItemParam = param;
-            //        break;
-
-            //    case "WEAPON_PARAM":
-            //        WeaponParam = param;
-            //        break;
-
-            //    case "WEAPON_REINFORCE_PARAM":
-            //        WeaponReinforceParam = param;
-            //        break;
-
-            //    default:
-            //        break;
-            //}
+                default:
+                    // Generic no extension:
+                    param.initialise<Param.Row>();
+                    break;
+            }
         }
 
         private static PHPointer GetParamPointer(int[] offsets)

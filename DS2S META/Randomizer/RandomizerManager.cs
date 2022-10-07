@@ -108,10 +108,10 @@ namespace DS2S_META.Randomizer
         }
         internal void GetVanillaShops()
         {
-            if (Hook?.ShopLineupParam == null)
+            var vanshops = ParamMan.ShopLineupParam?.Rows.OfType<ShopRow>().ToList();
+            if (vanshops == null)
                 throw new NullReferenceException("Shouldn't get here");
-
-            VanillaShops = Hook.ShopLineupParam.Rows.OfType<ShopRow>().ToList();
+            VanillaShops = vanshops;
             return;
         }
 
@@ -148,11 +148,11 @@ namespace DS2S_META.Randomizer
         }
         internal void Unrandomize()
         {
-            if (Hook?.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || Hook?.ItemParam == null)
+            if (ParamMan.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || Hook?.ItemParam == null)
                 throw new Exception("Param tables are null");
 
             // Restore all the param tables we changed:
-            Hook.ShopLineupParam.RestoreParam();
+            ParamMan.ShopLineupParam?.RestoreParam();
             Hook.ItemLotOtherParam.RestoreParam();
             Hook.ItemParam.RestoreParam();
 
@@ -429,7 +429,7 @@ namespace DS2S_META.Randomizer
         internal void WriteAllShops(List<ShopRow> all_shops, bool isshuf)
         {
             all_shops.ForEach(SR => SR.StoreRow());
-            Hook?.ShopLineupParam?.WriteModifiedParam();
+            ParamMan.ShopLineupParam?.WriteModifiedParam();
         }
         internal void WriteShuffledLots()
         {

@@ -46,7 +46,6 @@ namespace DS2S_META
 
         public static bool Reading { get; set; }
 
-        public Param? ShopLineupParam;   // Shops.
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
         public Param? ItemParam;
         public Param? WeaponParam;
@@ -1147,10 +1146,6 @@ namespace DS2S_META
             switch (param.Name)
             {
                 // Just save the ones we care about
-                case "SHOP_LINEUP_PARAM":
-                    ShopLineupParam = param;
-                    break;
-
                 case "ITEM_LOT_PARAM2":
                     ItemLotOtherParam = param;
                     break;
