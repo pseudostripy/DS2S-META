@@ -161,7 +161,11 @@ namespace DS2S_META
         private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (nudUpgrade.Value != nudUpgrade.Maximum)
+            {
+                cbxMax.IsChecked = false;
                 upgradeManualOverride = true;
+            }
+                
         }
 
         private bool TryGetSelectedItem(out DS2SItem? item)
@@ -289,10 +293,6 @@ namespace DS2S_META
                 e.Handled = true; //Do not pass keypress along
                 return;
             }
-        }
-        private void nudUpgrade_Click(object sender, EventArgs e)
-        {
-            nudUpgrade.Focus();
         }
     }
 }
