@@ -1154,10 +1154,6 @@ namespace DS2S_META
             return CreateChildPointer(BaseA, offsets);
         }
         
-
-
-        private static Dictionary<int, int> WeaponParamOffsetDict = new();
-        private static Dictionary<int, int> WeaponReinforceParamOffsetDict = new();
         private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
         private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
         

@@ -283,7 +283,7 @@ namespace DS2S_META
                 byte upgrval = (byte)(nudUpgrade.Value ?? 1);
                 var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
                 if (infusion == null)
-                    throw new NullReferenceException("Null Infusion?");
+                    infusion = DS2SInfusion.Infusions[0];
                 var infuidval = infusion.AsByte();
                  
 
