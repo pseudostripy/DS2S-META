@@ -398,7 +398,7 @@ namespace DS2S_META
             else
             {
                 nudQuantity.Value = nudQuantity.Maximum == 0 ? 0 : 1;
-                nudUpgrade.Value = nudQuantity.Minimum;
+                nudUpgrade.Value = 0;
             }
         }
 
