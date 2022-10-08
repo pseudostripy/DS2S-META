@@ -58,7 +58,8 @@ namespace DS2S_META.Randomizer
             {
                 case eItemType.WEAPON1: // & shields
                 case eItemType.WEAPON2: // & staves
-                    return Hook.GetWeaponMaxUpgrade(item.ItemID);
+                    var upgr = item.WeaponRow?.MaxUpgrade;
+                    return upgr ?? 0;
                 case eItemType.HEADARMOUR:
                 case eItemType.CHESTARMOUR:
                 case eItemType.GAUNTLETS:
@@ -148,13 +149,13 @@ namespace DS2S_META.Randomizer
         }
         internal void Unrandomize()
         {
-            if (ParamMan.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || Hook?.ItemParam == null)
+            if (ParamMan.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || ParamMan.ItemParam == null)
                 throw new Exception("Param tables are null");
 
             // Restore all the param tables we changed:
             ParamMan.ShopLineupParam?.RestoreParam();
-            Hook.ItemLotOtherParam.RestoreParam();
-            Hook.ItemParam.RestoreParam();
+            Hook.ItemLotOtherParam?.RestoreParam();
+            ParamMan.ItemParam?.RestoreParam();
 
             // Force an area reload.
             Hook.WarpLast();
@@ -379,18 +380,14 @@ namespace DS2S_META.Randomizer
         }
         private void FixInfusion(DropInfo di)
         {
-            if (Hook == null)
-                return;
-            if (!TryGetItem(di.ItemID, out ItemRow? item))
-                return;
-            if (item == null)
-                return;
+            var item = ParamMan.GetItemFromID(di.ItemID);
+            if (item == null) return;
 
             switch (item.ItemType)
             {
                 case eItemType.WEAPON1:
                 case eItemType.WEAPON2:
-                    var infusionOptions = Hook.GetWeaponInfusions(item.ItemID);
+                    var infusionOptions = item.GetInfusionList();
                     if (!infusionOptions.Any(ds2I => ds2I.ID == di.Infusion))
                         di.Infusion = 0; // Don't allow a "new" infusion
                     return;

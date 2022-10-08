@@ -22,7 +22,8 @@ namespace DS2S_META
     {
         // Fields:
         private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
-        private DS2SItem SelDs2item;
+        private DS2SItem? SelDs2item;
+        private WeaponRow Wep;
         internal ItemRow? Item;
         Timer InventoryTimer = new Timer();
         private bool upgradeManualOverride = false;
@@ -65,7 +66,11 @@ namespace DS2S_META
             if (SelDs2item == null)
                 throw new Exception("Null weapon selected");
 
+            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
+            if (wep != null)
+                Wep = wep; // save to class for easier access
 
+            lblNameTest.Content = $"lMod = {Wep.WTypeRow?.lMod}, rMod = {Wep.WTypeRow?.rMod}";
         }
 
         // Main interactions:
@@ -168,20 +173,23 @@ namespace DS2S_META
                 
         }
 
-        private bool TryGetSelectedItem(out DS2SItem? item)
+        private bool TryGetSelectedWeapon(out WeaponRow? wep)
         {
-            item = default;
+            // Get weapon selected in listbox
+            wep = default;
             if (lbxItems == null)
                 return false;
 
             if (lbxItems.SelectedIndex == -1)
                 return false;
 
-            item = (DS2SItem)lbxItems.SelectedItem;
+            var item = (DS2SItem)lbxItems.SelectedItem;
             if (item == null)
                 return false;
 
-            return true;
+            if (TryGetWeapon(item.ID, out wep))
+                return true;
+            return false;
         }
         private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -189,27 +197,28 @@ namespace DS2S_META
             //Checks if cbxMaxUpgrade is checked and sets the value to max value
             HandleMaxItemCheckbox();
         }
-        private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private bool TryGetWeapon(int id, out WeaponRow? wep)
         {
+            wep = default;
             // Guard clauses
             if (!Hook.Hooked)
             {
                 MessageBox.Show("Please open Dark Souls 2 first.");
-                return;
+                return false;
             };
-            if (!TryGetSelectedItem(out var item))
+            
+            wep = ParamMan.GetWeaponFromID(id); // get weapon
+            return wep != null;
+        }
+        private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!TryGetSelectedWeapon(out var wep))
                 return;
-            if (item == null)
-                return;
+            if (wep == null) return;
 
             // Update infusion/upgrade ..?
             var selid = cmbInfusion.SelectedIndex;
-            cmbInfusion.Items.Clear();
-            if (item.Type != DS2SItem.ItemType.Weapon)
-                cmbInfusion.Items.Add(DS2SInfusion.Infusions[0]);
-            else
-                foreach (var infusion in Hook.GetWeaponInfusions(item.ID))
-                    cmbInfusion.Items.Add(infusion);
+            cmbInfusion.ItemsSource = wep.GetInfusionList();
 
             if (selid <= cmbInfusion.Items.Count)
                 cmbInfusion.SelectedIndex = selid; // keep previous selection
@@ -217,8 +226,7 @@ namespace DS2S_META
                 cmbInfusion.SelectedIndex = 0; 
             cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
 
-
-            nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
+            nudUpgrade.Maximum = wep.MaxUpgrade;
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
             nudUpgrade.Value = HandleMaxItemCheckbox();
         }

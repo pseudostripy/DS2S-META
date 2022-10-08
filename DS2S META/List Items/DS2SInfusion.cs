@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DS2S_META
 {
-    class DS2SInfusion
+    public class DS2SInfusion
     {
         public string Name;
         public int ID;

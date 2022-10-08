@@ -25,25 +25,91 @@ namespace DS2S_META.Utils
     /// <summary>
     /// Data Class for storing ItemParam
     /// </summary>
-    public class ItemRow
+    public class ItemRow : Param.Row
     {
-        internal Param.Row ParamRow;
-        internal int ID => ParamRow.ID;
-
+        // Misc Fields:
         internal string MetaItemName;
-
-        internal int IconID;
         internal int ItemID;
-        internal int WeaponID;
-        internal int ArmourID;
-        internal int AmmunitionID;
-        internal int RingID;
-        internal int SpellID;
-        internal int GestureID;
-        internal int ItemUsageID;
-        internal int MaxHeld;
+
+        // Behind-fields:
+        private int _iconID;
+        private int _weaponID;
+        private int _armourID;
+        private int _ammunitionID;
+        private int _ringID;
+        private int _spellID;
+        private int _gestureID;
         internal int _basebuyprice;
-        internal int BaseBuyPrice {
+        private int _itemUsageID;
+        private int _maxheld;
+        private eItemType _itemtype;
+
+        // Properties:
+        internal int IconID
+        {
+            get => _iconID;
+            set
+            {
+                _iconID = value;
+                WriteAt(0, BitConverter.GetBytes(value));
+            }
+        }
+        internal int WeaponID
+        {
+            get => _weaponID;
+            set
+            {
+                _weaponID = value;
+                WriteAt(5, BitConverter.GetBytes(value));
+            }
+        }
+        internal int ArmourID
+        {
+            get => _armourID;
+            set
+            {
+                _armourID = value;
+                WriteAt(6, BitConverter.GetBytes(value));
+            }
+        }
+        internal int AmmunitionID
+        {
+            get => _ammunitionID;
+            set
+            {
+                _ammunitionID = value;
+                WriteAt(7, BitConverter.GetBytes(value));
+            }
+        }
+        internal int RingID
+        {
+            get => _ringID;
+            set
+            {
+                _ringID = value;
+                WriteAt(8, BitConverter.GetBytes(value));
+            }
+        }
+        internal int SpellID
+        {
+            get => _spellID;
+            set
+            {
+                _ringID = value;
+                WriteAt(9, BitConverter.GetBytes(value));
+            }
+        }
+        internal int GestureID
+        {
+            get => _gestureID;
+            set
+            {
+                _gestureID = value;
+                WriteAt(10, BitConverter.GetBytes(value));
+            }
+        }
+        internal int BaseBuyPrice
+        {
             get => _basebuyprice;
             set
             {
@@ -51,7 +117,35 @@ namespace DS2S_META.Utils
                 WriteAt(12, BitConverter.GetBytes(value));
             }
         }
-        internal eItemType ItemType;
+        internal int ItemUsageID
+        {
+            get => _itemUsageID;
+            set
+            {
+                _itemUsageID = value;
+                WriteAt(17, BitConverter.GetBytes(value));
+            }
+        }
+        internal int MaxHeld
+        {
+            get => _maxheld;
+            set
+            {
+                _maxheld = value;
+                WriteAt(20, BitConverter.GetBytes(value));
+            }
+        }
+        internal eItemType ItemType
+        {
+            get => _itemtype;
+            set
+            {
+                _itemtype = value;
+                WriteAt(24, BitConverter.GetBytes((byte)value));
+            }
+        }
+
+        internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.PNAME.WEAPON_PARAM, WeaponID);
 
         public enum Offsets
         {
@@ -62,11 +156,8 @@ namespace DS2S_META.Utils
         }
 
         // Constructor:
-        internal ItemRow(Param.Row paramrow)
+        public ItemRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            // Unpack data:
-            ParamRow = paramrow;
-
             IconID = (int)ReadAt(0);
             WeaponID = (int)ReadAt(5);
             ArmourID = (int)ReadAt(6);
@@ -74,11 +165,12 @@ namespace DS2S_META.Utils
             RingID = (int)ReadAt(8);
             SpellID = (int)ReadAt(9);
             GestureID = (int)ReadAt(10);
-            ItemID = GetItemID();
             BaseBuyPrice = (int)ReadAt(12);
             ItemUsageID = (int)ReadAt(17);
             MaxHeld = (int)(short)ReadAt(20);
             ItemType = (eItemType)ReadAt(24);
+
+            ItemID = GetItemID();
         }
         private int GetItemID()
         {
@@ -97,13 +189,12 @@ namespace DS2S_META.Utils
                 return GestureID;
             return IconID; // last ditch save
         }
-
-        public object ReadAt(int fieldindex) => ParamRow.Data[fieldindex];
-        public void WriteAt(int fieldindex, byte[] valuebytes)
+        public List<DS2SInfusion> GetInfusionList()
         {
-            // Note: this function isn't generalised properly yet
-            int fieldoffset = ParamRow.Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, ParamRow.RowBytes, fieldoffset, valuebytes.Length);
+            // Method needs updating for armour etc
+            if (WeaponID == -1 || WeaponRow == null)
+                return new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
+            return WeaponRow.GetInfusionList();
         }
     }
 }

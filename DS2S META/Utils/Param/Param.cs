@@ -283,6 +283,13 @@ namespace DS2S_META
                     throw new NullReferenceException("Catch this if they ever don't abide by this scheme");
                 return match.Groups["desc"].Value.Trim();
             }
+            public object ReadAt(int fieldindex) => Data[fieldindex];
+            public void WriteAt(int fieldindex, byte[] valuebytes)
+            {
+                // Note: this function isn't generalised properly yet
+                int fieldoffset = Param.Fields[fieldindex].FieldOffset;
+                Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
+            }
 
         }
 

@@ -11,8 +11,8 @@ namespace DS2S_META.Utils
     /// </summary>
     public class WeaponReinforceRow : Param.Row
     {
-        internal int _maxReinforce;
-        internal int MaxReinforce
+        public int _maxReinforce;
+        public int MaxReinforce
         {
             get => _maxReinforce;
             set
@@ -21,22 +21,36 @@ namespace DS2S_META.Utils
                 WriteAt(18, BitConverter.GetBytes(value));
             }
         }
-        internal int CustomSpecAttrID;
+        public int CustomSpecAttrID;
 
-        
+        public CustomAttrSpecRow? CustomAttrSpec => ParamMan.GetLink<CustomAttrSpecRow>(ParamMan.PNAME.CUSTOM_ATTR_SPEC_PARAM, CustomSpecAttrID);
+
+
         // Constructor:
         public WeaponReinforceRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
             MaxReinforce = (int)ReadAt(18);
             CustomSpecAttrID = (int)ReadAt(58);
         }
-        
-        public object ReadAt(int fieldindex) => Data[fieldindex];
-        public void WriteAt(int fieldindex, byte[] valuebytes)
+
+        // Methods:
+        public List<DS2SInfusion> GetInfusionList()
         {
-            // Note: this function isn't generalised properly yet
-            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
+            var infusions = new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
+            if (CustomAttrSpec == null)
+                return infusions;
+
+            var bitField = CustomAttrSpec?.AllowedInfusionsBitfield;
+            if (bitField == 0)
+                return infusions;
+
+            for (int i = 1; i < DS2SInfusion.Infusions.Count; i++)
+            {
+                if ((bitField & (1 << i)) != 0)
+                    infusions.Add(DS2SInfusion.Infusions[i]);
+            }
+
+            return infusions;
         }
     }
 }

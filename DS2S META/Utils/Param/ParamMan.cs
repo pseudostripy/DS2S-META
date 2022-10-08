@@ -16,6 +16,12 @@ namespace DS2S_META.Utils
     public static class ParamMan
     {
         // Top-level Fields
+        private static bool _loaded = false;
+        public static bool IsLoaded
+        {
+            get => _loaded;
+            private set => _loaded = value;
+        }
         public static DS2SHook Hook;
         public static readonly string ExeDir = Environment.CurrentDirectory;
         public static List<Param> RawParamsList = new();
@@ -28,6 +34,8 @@ namespace DS2S_META.Utils
         public static Param? WeaponParam => AllParams[PNAME.WEAPON_PARAM];
         public static Param? ItemParam => AllParams[PNAME.ITEM_PARAM];
         public static Param? WeaponReinforceParam => AllParams[PNAME.WEAPON_REINFORCE_PARAM];
+        public static Param? WeaponTypeParam => AllParams[PNAME.WEAPON_TYPE_PARAM];
+        public static Param? CustomAttrSpecParam => AllParams[PNAME.CUSTOM_ATTR_SPEC_PARAM];
         
         public static void Initialise(DS2SHook hook)
         {
@@ -35,6 +43,7 @@ namespace DS2S_META.Utils
             SetupParamStringNames();
             GetRawParams();
             BuildParamDictionary();
+            IsLoaded = true;
         }
 
         // Core setup:
@@ -47,6 +56,8 @@ namespace DS2S_META.Utils
             d.Add(PNAME.WEAPON_REINFORCE_PARAM, "WEAPON_REINFORCE_PARAM");
             d.Add(PNAME.ITEM_PARAM, "ITEM_PARAM");
             d.Add(PNAME.ITEM_LOT_PARAM2, "ITEM_LOT_PARAM2");
+            d.Add(PNAME.WEAPON_TYPE_PARAM, "WEAPON_TYPE_PARAM");
+            d.Add(PNAME.CUSTOM_ATTR_SPEC_PARAM, "CUSTOM_ATTR_SPEC_PARAM");
             
             ParamStringNames = d;
             ParamsFromStrings = d.ToDictionary(kvp => kvp.Value, kvp => kvp.Key); // reverse them
@@ -121,6 +132,18 @@ namespace DS2S_META.Utils
                     param.initialise<WeaponReinforceRow>();
                     break;
 
+                case PNAME.WEAPON_TYPE_PARAM:
+                    param.initialise<WeaponTypeRow>();
+                    break;
+
+                case PNAME.ITEM_PARAM:
+                    param.initialise<ItemRow>();
+                    break;
+
+                case PNAME.CUSTOM_ATTR_SPEC_PARAM:
+                    param.initialise<CustomAttrSpecRow>();
+                    break;
+
                 default:
                     // Generic no extension:
                     param.initialise<Param.Row>();
@@ -133,13 +156,29 @@ namespace DS2S_META.Utils
         }
         
         // Core Functionality:
-        public static T GetLink<T>(PNAME pname, int linkID)
+        public static T? GetLink<T>(PNAME pname, int linkID)
         {
-            var lookup =  AllParams[pname].Rows
+            var lookup = AllParams[pname].Rows
                             .Where(row => row.ID == linkID).OfType<T>();
             if (lookup.Count() == 0)
                 return default;
             return lookup.First();
+        }
+        public static ItemRow? GetItemFromID(int id)
+        {
+            // Just a useful QOL to avoid replicating code everywhere
+            if (ItemParam == null)
+                throw new Exception("Weapon param table not initialised");
+
+            return ItemParam.Rows.FirstOrDefault(row => row.ID == id) as ItemRow;
+        }
+        public static WeaponRow? GetWeaponFromID(int id)
+        {
+            // Just a useful QOL to avoid replicating code everywhere
+            if (WeaponParam == null)
+                throw new Exception("Weapon param table not initialised");
+
+            return WeaponParam.Rows.FirstOrDefault(row => row.ID == id) as WeaponRow;
         }
 
         // This is an extra indirection to avoid typo bugs
@@ -150,6 +189,8 @@ namespace DS2S_META.Utils
             WEAPON_REINFORCE_PARAM,
             ITEM_PARAM,
             ITEM_LOT_PARAM2,
+            WEAPON_TYPE_PARAM,
+            CUSTOM_ATTR_SPEC_PARAM,
         }
 
 

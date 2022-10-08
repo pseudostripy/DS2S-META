@@ -254,7 +254,7 @@ namespace DS2S_META.Randomizer
             {
                 item.BaseBuyPrice = 12000;
                 baseprice = 12000;
-                item.ParamRow.WriteRow(); // memory write change
+                item.WriteRow(); // memory write change
             }
 
             int pricenew = GetTypeRandomPrice(di.ItemID);

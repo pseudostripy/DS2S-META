@@ -11,17 +11,12 @@ namespace DS2S_META.Utils
     /// </summary>
     public class WeaponRow : Param.Row
     {
-        public float _damageMultiplier;
-        public float DamageMultiplier
-        {
-            get => _damageMultiplier;
-            set
-            {
-                _damageMultiplier = value;
-                WriteAt(34, BitConverter.GetBytes(value));
-            }
-        }
+        // Behind-fields:
         public int _reinforceID;
+        public int _weapontypeID;
+        public float _damageMultiplier;
+
+        // Properties:
         public int ReinforceID
         {
             get => _reinforceID;
@@ -31,23 +26,45 @@ namespace DS2S_META.Utils
                 WriteAt(2, BitConverter.GetBytes(value));
             }
         }
+        public int WeaponTypeID
+        {
+            get => _weapontypeID;
+            set
+            {
+                _weapontypeID = value;
+                WriteAt(4, BitConverter.GetBytes(value));
+            }
+        }
+        public float DamageMultiplier
+        {
+            get => _damageMultiplier;
+            set
+            {
+                _damageMultiplier = value;
+                WriteAt(34, BitConverter.GetBytes(value));
+            }
+        }
+        internal int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
 
         // Linked param:
-        internal WeaponReinforceRow ReinforceParam => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.PNAME.WEAPON_REINFORCE_PARAM, ReinforceID);
-        
+        internal WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.PNAME.WEAPON_REINFORCE_PARAM, ReinforceID);
+        internal WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.PNAME.WEAPON_TYPE_PARAM, WeaponTypeID);
+
+        // Methods:
+        public List<DS2SInfusion> GetInfusionList()
+        {
+            if (ReinforceRow == null)
+                return new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
+            return ReinforceRow.GetInfusionList();
+        }
+            
+
         // Constructor:
         public WeaponRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            DamageMultiplier = (float)ReadAt(34);
             ReinforceID = (int)ReadAt(2);
-        }
-        
-        public object ReadAt(int fieldindex) => Data[fieldindex];
-        public void WriteAt(int fieldindex, byte[] valuebytes)
-        {
-            // Note: this function isn't generalised properly yet
-            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
+            WeaponTypeID = (int)ReadAt(4);
+            DamageMultiplier = (float)ReadAt(34);
         }
     }
 }

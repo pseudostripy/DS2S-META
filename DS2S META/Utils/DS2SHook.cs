@@ -47,7 +47,6 @@ namespace DS2S_META
         public static bool Reading { get; set; }
 
         public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
-        public Param? ItemParam;
         
         public List<ItemRow> Items = new();
         
@@ -79,8 +78,6 @@ namespace DS2S_META
         private PHPointer NetSvrBloodstainManager;
 
         private PHPointer? LevelUpSoulsParam;
-        
-        private PHPointer? CustomAttrSpecParam;
         private PHPointer? ArmorReinforceParam;
         
         private PHPointer ItemUseageParam;
@@ -147,7 +144,6 @@ namespace DS2S_META
             NetSvrBloodstainManager = BlankPHP;
             LevelUpSoulsParam = BlankPHP;
             
-            CustomAttrSpecParam = BlankPHP;
             ArmorReinforceParam = BlankPHP;
             ItemUseageParam = BlankPHP;
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
@@ -201,14 +197,9 @@ namespace DS2S_META
             NetSvrBloodstainManager = CreateChildPointer(BaseA, (int)DS2SOffsets.NetSvrBloodstainManagerOffset1, (int)DS2SOffsets.NetSvrBloodstainManagerOffset2, (int)DS2SOffsets.NetSvrBloodstainManagerOffset3);
 
             LevelUpSoulsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.LevelUpSoulsParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            //WeaponParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            //WeaponReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.WeaponReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            CustomAttrSpecParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.CustomAttrSpecParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            //ItemParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
             ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
-            //ItemLotOtherParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamItemLotOtherOffset);
             
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
             Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
@@ -220,17 +211,14 @@ namespace DS2S_META
             Camera5 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2);
 
             GetLevelRequirements();
-            //WeaponParamOffsetDict = BuildOffsetDictionary(WeaponParam, "WEAPON_PARAM");
-            //WeaponReinforceParamOffsetDict = BuildOffsetDictionary(WeaponReinforceParam, "WEAPON_REINFORCE_PARAM");
-            CustomAttrOffsetDict = BuildOffsetDictionary(CustomAttrSpecParam, "CUSTOM_ATTR_SPEC_PARAM");
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
                         
             GetParams();
-            GetVanillaItems();
             
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
+            GetVanillaItems();
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -1145,9 +1133,9 @@ namespace DS2S_META
                     ItemLotOtherParam = param;
                     break;
 
-                case "ITEM_PARAM":
-                    ItemParam = param;
-                    break;
+                //case "ITEM_PARAM":
+                //    ItemParam = param;
+                //    break;
 
                 //case "WEAPON_PARAM":
                 //    WeaponParam = param;
@@ -1170,7 +1158,6 @@ namespace DS2S_META
 
         private static Dictionary<int, int> WeaponParamOffsetDict = new();
         private static Dictionary<int, int> WeaponReinforceParamOffsetDict = new();
-        private static Dictionary<int, int> CustomAttrOffsetDict = new();
         private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
         private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
         
@@ -1202,49 +1189,36 @@ namespace DS2S_META
             return dictionary;
         }
 
-        internal int GetMaxUpgrade(DS2SItem item)
+        internal int GetMaxUpgrade(ItemRow item)
         {
-            switch (item.Type)
+            switch (item.ItemType)
             {
-                case DS2SItem.ItemType.Weapon:
-                    return GetWeaponMaxUpgrade(item.ID);
-                case DS2SItem.ItemType.Armor:
-                    return GetArmorMaxUpgrade(item.ID);
-                case DS2SItem.ItemType.Item:
-                case DS2SItem.ItemType.Ring:
+                case eItemType.WEAPON1:
+                case eItemType.WEAPON2:
+                    var upgr = item.WeaponRow?.MaxUpgrade;
+                    return upgr ?? 0;
+
+                // TODO
+                //case DS2SItem.ItemType.Armor:
+                //    return GetArmorMaxUpgrade(item.ID);
+                default:
                     return 0;
             }
-
-            return 0;
         }
-        internal int GetMaxQuantity(DS2SItem item)
+        
+        internal int GetHeld(ItemRow itemrow)
         {
-            switch (item.Type)
+            switch (itemrow.ItemType)
             {
-                case DS2SItem.ItemType.Ring:
-                case DS2SItem.ItemType.Weapon:
-                case DS2SItem.ItemType.Armor:
-                    return 1;
-                case DS2SItem.ItemType.Item:
-                    return GetMaxItemQuantity(item.ID);
-            }
-
-            return 0;
-        }
-        internal int GetHeld(DS2SItem item)
-        {
-            switch (item.Type)
-            {
-                case DS2SItem.ItemType.Ring:
-                case DS2SItem.ItemType.Weapon:
-                case DS2SItem.ItemType.Armor:
+                //case eItemType.AMMO+
                     // return GetHeldInInventoryUnstackable(item.ID); // TODO
-                    return 0;
-                case DS2SItem.ItemType.Item:
-                    return GetHeldInInventoryStackable(item.ID);
-            }
+            
+                case eItemType.CONSUMABLE:
+                    return GetHeldInInventoryStackable(itemrow.ID);
 
-            return 0;
+                default:
+                    return 0;
+            }
         }
         
         private int GetHeldInInventoryStackable(int id)
@@ -1290,20 +1264,13 @@ namespace DS2S_META
             return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
             //return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
         }
-        internal int GetWeaponMaxUpgrade(int id)
-        {
-            if (!Setup || ParamMan.WeaponReinforceParam == null || ParamMan.WeaponParam == null)
-                return 0;
-
-            var wprow = (WeaponRow)ParamMan.WeaponParam.Rows.Where(row => row.ID == id).First();
-            return wprow.ReinforceParam.MaxReinforce;
-        }
+        
         internal void GetVanillaItems()
         {
-            if (ItemParam == null)
-                throw new NullReferenceException("Shouldn't get here");
-
-            Items = ItemParam.Rows.Select(row => new ItemRow(row)).ToList();
+            if (ParamMan.ItemParam == null)
+                throw new NullReferenceException("Should be loaded by this point I think");
+            Items = ParamMan.ItemParam.Rows.OfType<ItemRow>().ToList();
+            
             foreach(var item in Items)
             {
                 var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ID).FirstOrDefault();
@@ -1313,50 +1280,14 @@ namespace DS2S_META
             }
             return;
         }
-        private int GetMaxItemQuantity(int itemid)
-        {
-            if (!Setup || ItemParam == null) return 0;
-            var item = Items.Where(it => it.ItemID == itemid);
-            if (item.Count() == 0)
-                throw new Exception("Cannot find maximum amount to hold for this item");
-
-            return item.First().MaxHeld;
-        }
-
-        internal List<DS2SInfusion> GetWeaponInfusions(int id)
-        {
-            // Tidy up guard clauses once params are handled better
-            if (ParamMan.WeaponParam == null)
-                throw new Exception("WeaponParam not setup");
-            if (ParamMan.WeaponReinforceParam == null)
-                throw new Exception("WeaponParam not setup");
-            if (CustomAttrSpecParam == null)
-                throw new Exception("WeaponParam not setup");
-
-            var infusions = new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
-            var weaponRow = ParamMan.WeaponParam.Rows.FirstOrDefault(wp => wp.ID == id) as WeaponRow;
-            if (weaponRow == null) return infusions;
-
-            int customAttrID = weaponRow.ReinforceParam.CustomSpecAttrID;
-            var bitField = CustomAttrSpecParam.ReadInt32(CustomAttrOffsetDict[customAttrID]);
-
-            if (bitField == 0)
-                return infusions;
-
-            for (int i = 1; i < DS2SInfusion.Infusions.Count; i++)
-            {
-                if ((bitField & (1 << i)) != 0)
-                    infusions.Add(DS2SInfusion.Infusions[i]);
-            }
-
-            return infusions;
-        }
+        
 
         // TODO ARCHAIC
-        internal bool GetIsDroppable(int itemid)
+        internal bool GetIsDroppable(int id)
         {
-            if (!Setup || ItemParam == null || ItemUsageParamOffsetDict == null) return false;
-            var item = Items.Where(it => it.ItemID == itemid).FirstOrDefault();
+            if (!ParamMan.IsLoaded) return false;
+            if (!Setup || ItemUsageParamOffsetDict == null) return false;
+            var item = Items.Where(it => it.ID == id).FirstOrDefault();
 
             if (item == null)
                 throw new Exception("Cannot find item for GetIsDroppable");
