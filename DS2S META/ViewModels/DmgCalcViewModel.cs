@@ -23,7 +23,7 @@ namespace DS2S_META.ViewModels
         {
             _weaponList = new ObservableCollection<DS2SItem>(DS2SItemCategory.AllWeapons);
             WeaponCollectionView = CollectionViewSource.GetDefaultView(_weaponList);
-            //WeaponCollectionView.Filter += FilterWeapons;
+            WeaponCollectionView.Filter += FilterWeapons;
         }
         
         public WeaponRow? Wep { get; set; }
@@ -52,7 +52,7 @@ namespace DS2S_META.ViewModels
         }
 
         // Commands:
-        public ICommand? SetWeapon { get; set; }
+        public ICommand? SetWeapon { get; private set; }
 
         // Properties:
         private float _lMod = 0;

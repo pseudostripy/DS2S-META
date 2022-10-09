@@ -46,7 +46,7 @@
             </Grid>
         </StackPanel>
 
-        <ListBox x:Name="lbxWeapons" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" ItemsSource="{Binding WeaponCollectionView}" PreviewKeyDown="KeyPressed" MaxHeight="200" />
+        <ListBox x:Name="lbxWeapons" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" ItemsSource="{Binding WeaponCollectionView}" SelectedItem="{Binding SelectedItem}" PreviewKeyDown="KeyPressed" MaxHeight="200" />
         <StackPanel Grid.Row="2">
             <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
             <Grid>

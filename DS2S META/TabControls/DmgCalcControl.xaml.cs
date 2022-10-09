@@ -39,7 +39,6 @@ namespace DS2S_META
         {
             InventoryTimer.Interval = 100;
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
-            /*lbxItems.ItemsSource = Weapons*/;
         }
         private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {

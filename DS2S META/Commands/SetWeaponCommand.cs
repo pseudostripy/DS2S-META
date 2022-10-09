@@ -45,8 +45,8 @@ namespace DS2S_META.ViewModels.Commands
             ////var upgr = nudUpgrade.Value;
             ////if (upgr == null) return;
             //var upgr = 0; // todo
-            MessageBox.Show("TESTING");
             DCVM.Wep = ParamMan.GetWeaponFromID(DCVM.SelectedItem?.itemID);
+            int debug = 1;
         }
     }
 }
