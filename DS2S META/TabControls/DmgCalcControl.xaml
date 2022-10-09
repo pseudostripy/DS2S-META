@@ -41,8 +41,7 @@
                 <wpfTool:IntegerUpDown x:Name="nudUpgrade" Value="{Binding UpgradeVal}" Minimum="0" Maximum="{Binding NudUpgrMax}" ClipValueToMinMax="True" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0"/>
                 <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
                 <Label x:Name="lblSelectedWeapon" Content="{Binding SetWepLabel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" />
-                <Button x:Name="btnSet" Content="Set Weapon" Command="{Binding SetWeapon}" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <CheckBox x:Name="cbxLeftHand" Grid.Row="5" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
+                <CheckBox x:Name="cbxLeftHand" Grid.Row="4" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
             </Grid>
         </StackPanel>
 
@@ -67,7 +66,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label x:Name="lblHmodText" Content="hMod" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
+                <Label x:Name="lblHmodText" Content="{Binding hModString}" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
                 <Label x:Name="lblHmodValue" Content="{Binding hMod}" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" VerticalContentAlignment="Center"/>
 
             </Grid>

@@ -24,7 +24,9 @@ namespace DS2S_META.ViewModels
         // Constructor
         public DmgCalcViewModel()
         {
-            _weaponList = new ObservableCollection<DS2SItem>(DS2SItemCategory.AllWeapons);
+            var wepCat = DS2SItemCategory.AllWeapons;
+            wepCat.Sort();
+            _weaponList = new ObservableCollection<DS2SItem>(wepCat); // alphabetical
             _infusionList = new ObservableCollection<DS2SInfusion>(new List<DS2SInfusion>());
 
             WeaponCollectionView = CollectionViewSource.GetDefaultView(_weaponList);
@@ -33,21 +35,23 @@ namespace DS2S_META.ViewModels
             WeaponCollectionView.Filter += FilterWeapons;
         }
         
-        public WeaponRow? WepStore { get; set; }
         public WeaponRow? WepSel { get; set; }
 
-        public int UpgrSel { get; set; }
-        public int UpgrStore { get; set; }
-        public DS2SInfusion InfusionStore { get; set; }
-
-        private string _setWepLabel = "UNSELECTED WEAPON";
+        public string hModString
+        {
+            get
+            {
+                string strhand = LeftHandSelected ? "lMod" : "rMod";
+                return $"hMod ({strhand})";
+            }
+        }
         public string SetWepLabel
         {
-            get => _setWepLabel;
-            set
+            get
             {
-                _setWepLabel = value;
-                OnPropertyChanged();
+                if (SelectedItem == null) 
+                    return "UNSELECTED WEAPON";
+                return $"{SelectedInfusion} {SelectedItem?.Name} +{UpgradeVal}";
             }
         }
         private int _nudUpgrMax = 5;
@@ -70,6 +74,7 @@ namespace DS2S_META.ViewModels
             _infusionList = new ObservableCollection<DS2SInfusion>(inflist);
             InfusionCollectionView = CollectionViewSource.GetDefaultView(_infusionList);
             OnPropertyChanged(nameof(InfusionCollectionView));
+            OnPropertyChanged(nameof(SetWepLabel));
         }
 
         private bool FilterWeapons(object obj)
@@ -84,8 +89,8 @@ namespace DS2S_META.ViewModels
                 return;
 
             // Update the ones we care about:
-            lMod = WepStore?.WTypeRow?.lMod ?? 0;
-            rMod = WepStore?.WTypeRow?.rMod ?? 0;
+            lMod = WepSel?.WTypeRow?.lMod ?? 0;
+            rMod = WepSel?.WTypeRow?.rMod ?? 0;
         }
 
         public DS2SHook? Hook { get; set; }
@@ -106,7 +111,7 @@ namespace DS2S_META.ViewModels
             set
             {
                 if (SetField(ref _lMod, value))
-                    OnPropertyChanged(nameof(lMod));
+                    OnPropertyChanged(nameof(hMod));
             }
         }
         private float _rMod = 0;
@@ -116,7 +121,7 @@ namespace DS2S_META.ViewModels
             set
             {
                 if (SetField(ref _rMod, value))
-                    OnPropertyChanged(nameof(rMod));
+                    OnPropertyChanged(nameof(hMod));
             }
         }
 
@@ -136,7 +141,8 @@ namespace DS2S_META.ViewModels
             set
             {
                 _leftHandSelected = value;
-                OnPropertyChanged(nameof(LeftHandSelected));
+                OnPropertyChanged(nameof(hModString));
+                OnPropertyChanged(nameof(hMod));
             }
         }
 
@@ -157,7 +163,11 @@ namespace DS2S_META.ViewModels
         public DS2SInfusion SelectedInfusion
         {
             get => _selectedInfusion;
-            set => _selectedInfusion = value;
+            set
+            {
+                _selectedInfusion = value;
+                OnPropertyChanged(nameof(SetWepLabel));
+            }
         }
 
         private int _upgradeval = 0;
@@ -167,6 +177,7 @@ namespace DS2S_META.ViewModels
             {
                 _upgradeval = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(SetWepLabel));
             }
         }
 

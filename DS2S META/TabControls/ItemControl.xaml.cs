@@ -53,11 +53,11 @@ namespace DS2S_META
         }
         private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                if (Properties.Settings.Default.UpdateMaxLive)
-                    HandleMaxAvailable();
-            }));
+            //Dispatcher.Invoke(new Action(() =>
+            //{
+            //    if (Properties.Settings.Default.UpdateMaxLive)
+            //        HandleMaxAvailable();
+            //}));
         }
 
         private void HandleMaxAvailable()
