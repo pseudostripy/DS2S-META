@@ -18,15 +18,49 @@ namespace DS2S_META.ViewModels
         private ObservableCollection<DS2SItem> _weaponList;
         public ICollectionView? WeaponCollectionView { get; }
 
+        private ObservableCollection<DS2SInfusion> _infusionList;
+        public ICollectionView? InfusionCollectionView { get; set; }
+
         // Constructor
         public DmgCalcViewModel()
         {
             _weaponList = new ObservableCollection<DS2SItem>(DS2SItemCategory.AllWeapons);
+            _infusionList = new ObservableCollection<DS2SInfusion>(new List<DS2SInfusion>());
+
             WeaponCollectionView = CollectionViewSource.GetDefaultView(_weaponList);
+            InfusionCollectionView = CollectionViewSource.GetDefaultView(_infusionList);
+
             WeaponCollectionView.Filter += FilterWeapons;
         }
         
-        public WeaponRow? Wep { get; set; }
+        public WeaponRow? WepStore { get; set; }
+        public WeaponRow? WepSel { get; set; }
+
+        public int UpgrSel { get; set; }
+        public int UpgrStore { get; set; }
+        public DS2SInfusion InfusionStore { get; set; }
+
+        private int _nudUpgrMax = 5;
+        public int NudUpgrMax {
+            get => _nudUpgrMax;
+            set
+            {
+                _nudUpgrMax = value;
+                OnPropertyChanged(nameof(NudUpgrMax));
+            }
+        }
+
+        private void UpdateWepStats()
+        {
+            WepSel = ParamMan.GetWeaponFromID(SelectedItem?.itemID);
+            NudUpgrMax = WepSel?.MaxUpgrade ?? 0;
+
+            var inflist = WepSel?.GetInfusionList();
+            if (inflist == null) return;
+            _infusionList = new ObservableCollection<DS2SInfusion>(inflist);
+            InfusionCollectionView = CollectionViewSource.GetDefaultView(_infusionList);
+            OnPropertyChanged(nameof(InfusionCollectionView));
+        }
 
         private bool FilterWeapons(object obj)
         {
@@ -40,8 +74,8 @@ namespace DS2S_META.ViewModels
                 return;
 
             // Update the ones we care about:
-            lMod = Wep?.WTypeRow?.lMod ?? 0;
-            rMod = Wep?.WTypeRow?.rMod ?? 0;
+            lMod = WepStore?.WTypeRow?.lMod ?? 0;
+            rMod = WepStore?.WTypeRow?.rMod ?? 0;
         }
 
         public DS2SHook? Hook { get; set; }
@@ -96,6 +130,7 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        // UI properties:
         private DS2SItem? _selectedItem;
         public DS2SItem? SelectedItem
         {
@@ -103,8 +138,19 @@ namespace DS2S_META.ViewModels
             set
             {
                 SetField(ref _selectedItem, value);
+                OnPropertyChanged();
+                UpdateWepStats();
             }
         }
+
+        public DS2SInfusion _selectedInfusion;
+        public DS2SInfusion SelectedInfusion
+        {
+            get => _selectedInfusion;
+            set => _selectedInfusion = value;
+        }
+        
+        public int UpgradeVal { get; set; } = 0;
 
     }
 }

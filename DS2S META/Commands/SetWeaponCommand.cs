@@ -35,17 +35,14 @@ namespace DS2S_META.ViewModels.Commands
         // Do the actual stuff?
         public void Execute(object? parameter)
         {
-            //var ds2sitem = parameter as DS2SItem;
-            //if (ds2sitem == null) return;
 
             ////var inf = cmbInfusion.SelectedItem as DS2SInfusion;
             ////if (item == null) return;
             //var inf = DS2SInfusion.Infusions[0]; // todo
 
-            ////var upgr = nudUpgrade.Value;
-            ////if (upgr == null) return;
-            //var upgr = 0; // todo
-            DCVM.Wep = ParamMan.GetWeaponFromID(DCVM.SelectedItem?.itemID);
+            var upgr = DCVM.UpgradeVal;
+
+            DCVM.WepStore = ParamMan.GetWeaponFromID(DCVM.SelectedItem?.itemID);
             int debug = 1;
         }
     }

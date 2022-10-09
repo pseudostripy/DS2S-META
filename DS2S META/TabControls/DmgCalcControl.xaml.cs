@@ -112,26 +112,26 @@ namespace DS2S_META
 
         }
 
-        private void btnSet_Click(object sender, RoutedEventArgs e)
-        {
-            // Build up the item string:
-            var item = lbxWeapons.SelectedItem as DS2SItem;
-            if (item == null) return;
+        //private void btnSet_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // Build up the item string:
+        //    var item = lbxWeapons.SelectedItem as DS2SItem;
+        //    if (item == null) return;
 
-            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
-            if (item == null) return;
+        //    var inf = cmbInfusion.SelectedItem as DS2SInfusion;
+        //    if (item == null) return;
 
-            var upgr = nudUpgrade.Value;
-            if (upgr == null) return;
+        //    var upgr = nudUpgrade.Value;
+        //    if (upgr == null) return;
 
-            // Success: Store, Show, Enable:
-            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
-            SelDs2item = item;
+        //    // Success: Store, Show, Enable:
+        //    lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
+        //    SelDs2item = item;
 
-            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
+        //    var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
             
-            btnCalculate.IsEnabled = true;
-        }
+        //    btnCalculate.IsEnabled = true;
+        //}
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
             if (Hook == null)
@@ -166,86 +166,86 @@ namespace DS2S_META
                 return;
             }
         }
-        private int? HandleMaxItemCheckbox()
-        {
-            // Max checkbox is false
-            if (cbxMax.IsChecked != true)
-                return upgradeManualOverride ? nudUpgrade.Value : 0;
+        //private int? HandleMaxItemCheckbox()
+        //{
+        //    // Max checkbox is false
+        //    if (cbxMax.IsChecked != true)
+        //        return upgradeManualOverride ? nudUpgrade.Value : 0;
 
-            // Max checkbox is true:
-            if (upgradeManualOverride)
-                return nudUpgrade.Value <= nudUpgrade.Maximum ? nudUpgrade.Value : nudUpgrade.Maximum;
+        //    // Max checkbox is true:
+        //    if (upgradeManualOverride)
+        //        return nudUpgrade.Value <= nudUpgrade.Maximum ? nudUpgrade.Value : nudUpgrade.Maximum;
 
-            // Max checkbox is true && noManualOverride yet
-            return nudUpgrade.Maximum;
-        }
-        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (nudUpgrade.Value != nudUpgrade.Maximum)
-            {
-                cbxMax.IsChecked = false;
-                upgradeManualOverride = true;
-            }
+        //    // Max checkbox is true && noManualOverride yet
+        //    return nudUpgrade.Maximum;
+        //}
+        //private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        //{
+        //    if (nudUpgrade.Value != nudUpgrade.Maximum)
+        //    {
+        //        cbxMax.IsChecked = false;
+        //        upgradeManualOverride = true;
+        //    }
                 
-        }
+        //}
 
-        private bool TryGetSelectedWeapon(out WeaponRow? wep)
-        {
-            // Get weapon selected in listbox
-            wep = default;
-            if (lbxWeapons == null)
-                return false;
+        //private bool TryGetSelectedWeapon(out WeaponRow? wep)
+        //{
+        //    // Get weapon selected in listbox
+        //    wep = default;
+        //    if (lbxWeapons == null)
+        //        return false;
 
-            if (lbxWeapons.SelectedIndex == -1)
-                return false;
+        //    if (lbxWeapons.SelectedIndex == -1)
+        //        return false;
 
-            var item = (DS2SItem)lbxWeapons.SelectedItem;
-            if (item == null)
-                return false;
+        //    var item = (DS2SItem)lbxWeapons.SelectedItem;
+        //    if (item == null)
+        //        return false;
 
-            if (TryGetWeapon(item.ID, out wep))
-                return true;
-            return false;
-        }
-        private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
-            //Checks if cbxMaxUpgrade is checked and sets the value to max value
-            HandleMaxItemCheckbox();
-        }
-        private bool TryGetWeapon(int id, out WeaponRow? wep)
-        {
-            wep = default;
-            // Guard clauses
-            if (!Hook.Hooked)
-            {
-                MessageBox.Show("Please open Dark Souls 2 first.");
-                return false;
-            };
+        //    if (TryGetWeapon(item.ID, out wep))
+        //        return true;
+        //    return false;
+        //}
+        //private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
+        //    //Checks if cbxMaxUpgrade is checked and sets the value to max value
+        //    HandleMaxItemCheckbox();
+        //}
+        //private bool TryGetWeapon(int id, out WeaponRow? wep)
+        //{
+        //    wep = default;
+        //    // Guard clauses
+        //    if (!Hook.Hooked)
+        //    {
+        //        MessageBox.Show("Please open Dark Souls 2 first.");
+        //        return false;
+        //    };
             
-            wep = ParamMan.GetWeaponFromID(id); // get weapon
-            return wep != null;
-        }
-        private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!TryGetSelectedWeapon(out var wep))
-                return;
-            if (wep == null) return;
+        //    wep = ParamMan.GetWeaponFromID(id); // get weapon
+        //    return wep != null;
+        //}
+        //private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (!TryGetSelectedWeapon(out var wep))
+        //        return;
+        //    if (wep == null) return;
 
-            // Update infusion/upgrade ..?
-            var selid = cmbInfusion.SelectedIndex;
-            cmbInfusion.ItemsSource = wep.GetInfusionList();
+        //    // Update infusion/upgrade ..?
+        //    var selid = cmbInfusion.SelectedIndex;
+        //    cmbInfusion.ItemsSource = wep.GetInfusionList();
 
-            if (selid <= cmbInfusion.Items.Count)
-                cmbInfusion.SelectedIndex = selid; // keep previous selection
-            else
-                cmbInfusion.SelectedIndex = 0; 
-            cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
+        //    if (selid <= cmbInfusion.Items.Count)
+        //        cmbInfusion.SelectedIndex = selid; // keep previous selection
+        //    else
+        //        cmbInfusion.SelectedIndex = 0; 
+        //    cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
 
-            nudUpgrade.Maximum = wep.MaxUpgrade;
-            nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
-            nudUpgrade.Value = HandleMaxItemCheckbox();
-        }
+        //    nudUpgrade.Maximum = wep.MaxUpgrade;
+        //    nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
+        //    nudUpgrade.Value = HandleMaxItemCheckbox();
+        //}
 
         // Events handling etc:
         private void ScrollListbox(KeyEventArgs e)
