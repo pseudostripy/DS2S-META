@@ -27,7 +27,6 @@ namespace DS2S_META
         //private WeaponRow Wep;
         internal ItemRow? Item;
         Timer InventoryTimer = new Timer();
-        private bool upgradeManualOverride = false;
         
         // Constructor
         public DmgCalcControl()
@@ -54,10 +53,6 @@ namespace DS2S_META
         {
             InventoryTimer.Enabled = enable;
             btnCalculate.IsEnabled = enable;
-
-            nudUpgrade.Value = 0;
-            nudUpgrade.Maximum = 5;
-            upgradeManualOverride = false;
         }
 
         // Core
@@ -160,12 +155,12 @@ namespace DS2S_META
         }
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
         {
-            if (cbxMax.IsChecked == true)
-            {
-                upgradeManualOverride = false;
-                nudUpgrade.Value = nudUpgrade.Maximum;
-                return;
-            }
+            //if (cbxMax.IsChecked == true)
+            //{
+            //    upgradeManualOverride = false;
+            //    nudUpgrade.Value = nudUpgrade.Maximum;
+            //    return;
+            //}
         }
         //private int? HandleMaxItemCheckbox()
         //{
@@ -318,14 +313,6 @@ namespace DS2S_META
                 e.Handled = true; //Do not pass keypress along
                 return;
             }
-        }
-
-        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            // Workaround hack for Maximum Binding not working properly
-            if (DataContext == null) return;
-            var dc = DataContext as DmgCalcViewModel;
-            nudUpgrade.Maximum = dc?.NudUpgrMax;
         }
     }
 }

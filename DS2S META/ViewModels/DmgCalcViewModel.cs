@@ -40,6 +40,16 @@ namespace DS2S_META.ViewModels
         public int UpgrStore { get; set; }
         public DS2SInfusion InfusionStore { get; set; }
 
+        private string _setWepLabel = "UNSELECTED WEAPON";
+        public string SetWepLabel
+        {
+            get => _setWepLabel;
+            set
+            {
+                _setWepLabel = value;
+                OnPropertyChanged();
+            }
+        }
         private int _nudUpgrMax = 5;
         public int NudUpgrMax {
             get => _nudUpgrMax;
