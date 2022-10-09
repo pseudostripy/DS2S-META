@@ -320,25 +320,6 @@ namespace DS2S_META
             }
         }
 
-        private void btnSetDebug_Click(object sender, RoutedEventArgs e)
-        {
-            // Build up the item string:
-            var item = lbxWeapons.SelectedItem as DS2SItem;
-            if (item == null) return;
-
-            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
-            if (item == null) return;
-
-            var upgr = nudUpgrade.Value;
-            if (upgr == null) return;
-
-            // Success: Store, Show, Enable:
-            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
-            SelDs2item = item;
-
-            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
-
-            btnCalculate.IsEnabled = true;
-        }
+        
     }
 }

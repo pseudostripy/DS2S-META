@@ -44,7 +44,7 @@ namespace DS2S_META.ViewModels
             rMod = Wep?.WTypeRow?.rMod ?? 0;
         }
 
-        private DS2SHook? Hook;
+        public DS2SHook? Hook { get; set; }
         public void InitViewModel(DS2SHook hook)
         {
             Hook = hook;
@@ -52,7 +52,7 @@ namespace DS2S_META.ViewModels
         }
 
         // Commands:
-        public ICommand? SetWeapon;
+        public ICommand? SetWeapon { get; set; }
 
         // Properties:
         private float _lMod = 0;
