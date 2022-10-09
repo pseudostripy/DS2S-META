@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using DS2S_META.ViewModels;
 using Octokit;
 using System;
 using System.Collections.Generic;
@@ -319,6 +320,12 @@ namespace DS2S_META
             }
         }
 
-        
+        private void nudUpgrade_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            // Workaround hack for Maximum Binding not working properly
+            if (DataContext == null) return;
+            var dc = DataContext as DmgCalcViewModel;
+            nudUpgrade.Maximum = dc?.NudUpgrMax;
+        }
     }
 }

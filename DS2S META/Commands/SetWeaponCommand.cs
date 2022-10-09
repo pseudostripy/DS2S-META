@@ -41,6 +41,7 @@ namespace DS2S_META.ViewModels.Commands
             //var inf = DS2SInfusion.Infusions[0]; // todo
 
             var upgr = DCVM.UpgradeVal;
+            DCVM.UpgradeVal = 3;
 
             DCVM.WepStore = ParamMan.GetWeaponFromID(DCVM.SelectedItem?.itemID);
             int debug = 1;

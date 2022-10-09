@@ -149,8 +149,16 @@ namespace DS2S_META.ViewModels
             get => _selectedInfusion;
             set => _selectedInfusion = value;
         }
-        
-        public int UpgradeVal { get; set; } = 0;
+
+        private int _upgradeval = 0;
+        public int UpgradeVal {
+            get => _upgradeval;
+            set
+            {
+                _upgradeval = value;
+                OnPropertyChanged();
+            }
+        }
 
     }
 }
