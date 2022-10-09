@@ -41,8 +41,7 @@
                 <wpfTool:IntegerUpDown x:Name="nudUpgrade" Minimum="0" Maximum="0" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0" ValueChanged="nudUpgrade_ValueChanged"/>
                 <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
                 <Label x:Name="lblSelectedWeapon" Content="WEAPON UNSELECTED " VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" />
-                <Button x:Name="btnSet" Content="Set Weapon" Command="{Binding SetWeapon}" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <Button x:Name="btnSetDebug" Content="Set Weapon" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="btnSetDebug_Click"/>
+                <Button x:Name="btnSet" Content="Set Weapon" Command="{Binding DataContext.SetWeapon}" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <CheckBox x:Name="cbxLeftHand" Grid.Row="5" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
             </Grid>
         </StackPanel>

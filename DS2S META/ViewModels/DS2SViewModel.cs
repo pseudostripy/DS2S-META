@@ -1,6 +1,7 @@
 ﻿using PropertyHook;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace DS2S_META.ViewModels
 {
     internal class DS2SViewModel : ObservableObject
     {
+        
         public DS2SHook Hook { get; private set; }
         public bool GameLoaded { get; set; }
         public bool Reading
@@ -18,13 +20,19 @@ namespace DS2S_META.ViewModels
             set => DS2SHook.Reading = value;
         }
 
+
+
         public DS2SViewModel()
         {
             Hook = new DS2SHook(5000, 5000);
             Hook.OnHooked += Hook_OnHooked;
             Hook.OnUnhooked += Hook_OnUnhooked;
             Hook.Start();
+
+            DmgCalcViewModel = new DmgCalcViewModel();
+            ViewModels.Add(DmgCalcViewModel);
         }
+        
         public Brush ForegroundID
         {
             get
@@ -89,6 +97,9 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        ObservableCollection<ViewModelBase> ViewModels = new();
+        public DmgCalcViewModel DmgCalcViewModel { get; set; }
+
         public void UpdateMainProperties()
         {
             OnPropertyChanged(nameof(ForegroundID));
@@ -98,6 +109,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ForegroundOnline));
             OnPropertyChanged(nameof(ForegroundVersion));
             OnPropertyChanged(nameof(GameLoaded));
+
+            DmgCalcViewModel.UpdateViewModel();
         }
 
         private void Hook_OnHooked(object? sender, PHEventArgs e)

@@ -49,7 +49,6 @@ namespace DS2S_META.ViewModels
         {
             Hook = hook;
             SetWeapon = new SetWeaponCommand(this);
-            
         }
 
         // Commands:

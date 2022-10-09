@@ -265,7 +265,7 @@
                 </TabItem>
                 <TabItem Header="Dmg Calc PLACEHOLDER" >
                     <Grid Background="LightGray">
-                        <local:DmgCalcControl x:Name="metatabDmgCalc" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
             </TabControl>

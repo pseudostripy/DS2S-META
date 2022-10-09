@@ -49,9 +49,8 @@ namespace DS2S_META
         }
         Timer UpdateTimer = new Timer();
         private bool ShowUpdateComplete { get; set; } = false;
-        ObservableCollection<ViewModelBase> ViewModels = new();
-
-        public DmgCalcViewModel DmgCalcViewModel { get; set; }
+        
+        //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
         public MainWindow()
         {
@@ -62,12 +61,15 @@ namespace DS2S_META
             GetVersion();
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
-
-            DmgCalcViewModel = new DmgCalcViewModel();
-            ViewModels.Add(DmgCalcViewModel);
             Hook.OnHooked += Hook_OnHooked;
+
+            // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
+            //DmgCalcViewModel = new DmgCalcViewModel();
+            //ViewModels.Add(DmgCalcViewModel);
         }
 
+        //ObservableCollection<ViewModelBase> ViewModels = new();
+        
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
@@ -253,7 +255,7 @@ namespace DS2S_META
                         {
                             Reading = true;
                             UpdateProperties();
-                            UpdateAllViewModels();
+                            //UpdateAllViewModels();
                             UpdateAllTabs();
                             Reading = false;
                         }
@@ -284,7 +286,7 @@ namespace DS2S_META
             metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
             InitHotkeys();
-            DmgCalcViewModel.InitViewModel(Hook);
+            ViewModel.DmgCalcViewModel.InitViewModel(Hook);
         }
         private void UpdateProperties()
         {
@@ -294,11 +296,11 @@ namespace DS2S_META
             Hook.UpdateBonfireProperties();
             Hook.UpdateCovenantProperties();
         }
-        private void UpdateAllViewModels()
-        {
-            foreach(var vm in ViewModels)
-                vm.UpdateViewModel();
-        }
+        //private void UpdateAllViewModels()
+        //{
+        //    foreach(var vm in ViewModels)
+        //        vm.UpdateViewModel();
+        //}
 
         private void EnableTabs(bool enable)
         {

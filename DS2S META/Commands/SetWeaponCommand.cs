@@ -1,10 +1,12 @@
 ﻿using DS2S_META.Utils;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.Toolkit.Primitives;
 
@@ -22,6 +24,7 @@ namespace DS2S_META.ViewModels.Commands
         {
             _dcvm = dcvm;
         }
+        
         public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter)
@@ -42,7 +45,7 @@ namespace DS2S_META.ViewModels.Commands
             ////var upgr = nudUpgrade.Value;
             ////if (upgr == null) return;
             //var upgr = 0; // todo
-
+            MessageBox.Show("TESTING");
             DCVM.Wep = ParamMan.GetWeaponFromID(DCVM.SelectedItem?.itemID);
         }
     }
