@@ -12,8 +12,8 @@ namespace DS2S_META.Utils
     public class WeaponTypeRow : Param.Row
     {
         // Behind-fields
-        internal float _lMod;
-        internal float _rMod;
+        private float _lMod;
+        private float _rMod;
 
         internal float lMod
         {

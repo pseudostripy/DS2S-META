@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace DS2S_META
+namespace DS2S_META.ViewModels
 {
     internal class DS2SViewModel : ObservableObject
     {
@@ -57,7 +57,7 @@ namespace DS2S_META
             get
             {
                 if (!Hook.Hooked)
-                    return String.Empty;
+                    return string.Empty;
 
                 if (Hook.Online)
                     return "Yes";
@@ -69,14 +69,13 @@ namespace DS2S_META
             get
             {
                 if (!Hook.Hooked)
-                    return Brushes.Black; 
+                    return Brushes.Black;
 
                 if (Hook.Online)
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
         }
-
         public Brush ForegroundVersion
         {
             get

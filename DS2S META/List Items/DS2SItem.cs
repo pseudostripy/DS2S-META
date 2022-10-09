@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DS2S_META
 {
-    class DS2SItem : IComparable<DS2SItem>
+    public class DS2SItem : IComparable<DS2SItem>
     {
         public enum ItemType
         {

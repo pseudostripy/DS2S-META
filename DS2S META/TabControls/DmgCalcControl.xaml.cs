@@ -23,11 +23,11 @@ namespace DS2S_META
         // Fields:
         private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
         private DS2SItem? SelDs2item;
-        private WeaponRow Wep;
+        //private WeaponRow Wep;
         internal ItemRow? Item;
         Timer InventoryTimer = new Timer();
         private bool upgradeManualOverride = false;
-
+        
         // Constructor
         public DmgCalcControl()
         {
@@ -39,15 +39,15 @@ namespace DS2S_META
         {
             InventoryTimer.Interval = 100;
             InventoryTimer.Elapsed += InventoryTimer_Elapsed;
-            lbxItems.ItemsSource = Weapons;
+            /*lbxItems.ItemsSource = Weapons*/;
         }
         private void InventoryTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
         }
         internal override void ReloadCtrl()
         {
-            lbxItems.SelectedIndex = -1;
-            lbxItems.SelectedIndex = 0;
+            lbxWeapons.SelectedIndex = -1;
+            lbxWeapons.SelectedIndex = 0;
             nudUpgrade.Value = 0;
         }
         internal override void EnableCtrls(bool enable)
@@ -61,30 +61,43 @@ namespace DS2S_META
         }
 
         // Core
-        private void GetWeaponProperties()
-        {
-            if (SelDs2item == null)
-                throw new Exception("Null weapon selected");
+        //private void GetWeaponProperties()
+        //{
+        //    if (SelDs2item == null)
+        //        throw new Exception("Null weapon selected");
 
-            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
-            if (wep != null)
-                Wep = wep; // save to class for easier access
+        //    var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
+        //    if (wep != null)
+        //        Wep = wep; // save to class for easier access
 
-            lblNameTest.Content = $"lMod = {Wep.WTypeRow?.lMod}, rMod = {Wep.WTypeRow?.rMod}";
-        }
+
+        //    lblHmodValue.Content = $"lMod = {Wep.WTypeRow?.lMod}, rMod = {Wep.WTypeRow?.rMod}";
+        //}
+        //private void SetHmodValue()
+        //{
+        //    if (Wep == null)
+        //    {
+        //        lblHmodValue.Content = naempty;
+        //        return;
+        //    }
+
+        //    string lmod = $"{Wep.WTypeRow?.lMod:F2}";
+        //    string rmod = $"{Wep.WTypeRow?.rMod:F2}";
+        //    lblHmodValue.Content = cbxLeftHand.IsChecked == true ? lmod : rmod;
+        //}
 
         // Main interactions:
         private void FilterItems()
         {
-            //Clear items and add the ones that match text in search box
+            ////Clear items and add the ones that match text in search box
 
-            // Update listbox
-            lbxItems.ItemsSource = Weapons.Where(wp => wp.NameContains(txtSearch.Text));
+            //// Update listbox
+            //lbxWeapons.ItemsSource = Weapons.Where(wp => wp.NameContains(txtSearch.Text));
             
-            if (lbxItems.Items.Count > 0)
-                lbxItems.SelectedIndex = 0;
+            //if (lbxWeapons.Items.Count > 0)
+            //    lbxWeapons.SelectedIndex = 0;
 
-            HandleSearchLabel();
+            //HandleSearchLabel();
         }
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -103,7 +116,7 @@ namespace DS2S_META
         private void btnSet_Click(object sender, RoutedEventArgs e)
         {
             // Build up the item string:
-            var item = lbxItems.SelectedItem as DS2SItem;
+            var item = lbxWeapons.SelectedItem as DS2SItem;
             if (item == null) return;
 
             var inf = cmbInfusion.SelectedItem as DS2SInfusion;
@@ -115,6 +128,9 @@ namespace DS2S_META
             // Success: Store, Show, Enable:
             lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
             SelDs2item = item;
+
+            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
+            
             btnCalculate.IsEnabled = true;
         }
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
@@ -139,7 +155,7 @@ namespace DS2S_META
         }
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
-            GetWeaponProperties();
+            //GetWeaponProperties();
         }
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)
         {
@@ -177,13 +193,13 @@ namespace DS2S_META
         {
             // Get weapon selected in listbox
             wep = default;
-            if (lbxItems == null)
+            if (lbxWeapons == null)
                 return false;
 
-            if (lbxItems.SelectedIndex == -1)
+            if (lbxWeapons.SelectedIndex == -1)
                 return false;
 
-            var item = (DS2SItem)lbxItems.SelectedItem;
+            var item = (DS2SItem)lbxWeapons.SelectedItem;
             if (item == null)
                 return false;
 
@@ -240,8 +256,8 @@ namespace DS2S_META
                 e.Handled = true;//Do not pass keypress along
 
                 //One liner meme that does the exact same thing as the code above
-                lbxItems.SelectedIndex = ((lbxItems.SelectedIndex - 1) + lbxItems.Items.Count) % lbxItems.Items.Count;
-                lbxItems.ScrollIntoView(lbxItems.SelectedItem);
+                lbxWeapons.SelectedIndex = ((lbxWeapons.SelectedIndex - 1) + lbxWeapons.Items.Count) % lbxWeapons.Items.Count;
+                lbxWeapons.ScrollIntoView(lbxWeapons.SelectedItem);
                 return;
             }
 
@@ -251,8 +267,8 @@ namespace DS2S_META
                 e.Handled = true;//Do not pass keypress along
 
                 //One liner meme that does the exact same thing as the code above
-                lbxItems.SelectedIndex = (lbxItems.SelectedIndex + 1) % lbxItems.Items.Count;
-                lbxItems.ScrollIntoView(lbxItems.SelectedItem);
+                lbxWeapons.SelectedIndex = (lbxWeapons.SelectedIndex + 1) % lbxWeapons.Items.Count;
+                lbxWeapons.ScrollIntoView(lbxWeapons.SelectedItem);
                 return;
             }
         }
@@ -276,7 +292,7 @@ namespace DS2S_META
             if (sender == cmbInfusion)
                 return;
             //Prevents up and down Key from moving the cursor left and right when nothing in item box
-            if (lbxItems.Items.Count == 0)
+            if (lbxWeapons.Items.Count == 0)
             {
                 if (e.Key == Key.Up)
                     e.Handled = true; //Do not pass keypress along
@@ -301,6 +317,27 @@ namespace DS2S_META
                 e.Handled = true; //Do not pass keypress along
                 return;
             }
+        }
+
+        private void btnSetDebug_Click(object sender, RoutedEventArgs e)
+        {
+            // Build up the item string:
+            var item = lbxWeapons.SelectedItem as DS2SItem;
+            if (item == null) return;
+
+            var inf = cmbInfusion.SelectedItem as DS2SInfusion;
+            if (item == null) return;
+
+            var upgr = nudUpgrade.Value;
+            if (upgr == null) return;
+
+            // Success: Store, Show, Enable:
+            lblSelectedWeapon.Content = $"{inf} {item} +{upgr}";
+            SelDs2item = item;
+
+            var wep = ParamMan.GetWeaponFromID(SelDs2item.itemID);
+
+            btnCalculate.IsEnabled = true;
         }
     }
 }

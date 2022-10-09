@@ -21,6 +21,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Collections.ObjectModel;
+using DS2S_META.ViewModels;
 
 namespace DS2S_META
 {
@@ -29,6 +31,8 @@ namespace DS2S_META
     /// </summary>
     public partial class MainWindow : Window
     {
+        // Eventually most of this should go into a MainWindowViewModel like in ERDebugTool
+
         // Fields/Properties
         private string MetaVersion = "Version_Undefined";
         private Properties.Settings Settings;
@@ -45,6 +49,9 @@ namespace DS2S_META
         }
         Timer UpdateTimer = new Timer();
         private bool ShowUpdateComplete { get; set; } = false;
+        ObservableCollection<ViewModelBase> ViewModels = new();
+
+        public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
         public MainWindow()
         {
@@ -56,6 +63,8 @@ namespace DS2S_META
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
 
+            DmgCalcViewModel = new DmgCalcViewModel();
+            ViewModels.Add(DmgCalcViewModel);
             Hook.OnHooked += Hook_OnHooked;
         }
 
@@ -218,8 +227,9 @@ namespace DS2S_META
             Settings.Save();
         }
 
-        
 
+        
+        
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() => ShowUpdateCompleteWindow()));
@@ -243,6 +253,7 @@ namespace DS2S_META
                         {
                             Reading = true;
                             UpdateProperties();
+                            UpdateAllViewModels();
                             UpdateAllTabs();
                             Reading = false;
                         }
@@ -273,6 +284,7 @@ namespace DS2S_META
             metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
             InitHotkeys();
+            DmgCalcViewModel.InitViewModel(Hook);
         }
         private void UpdateProperties()
         {
@@ -282,6 +294,12 @@ namespace DS2S_META
             Hook.UpdateBonfireProperties();
             Hook.UpdateCovenantProperties();
         }
+        private void UpdateAllViewModels()
+        {
+            foreach(var vm in ViewModels)
+                vm.UpdateViewModel();
+        }
+
         private void EnableTabs(bool enable)
         {
             metaPlayer.EnableCtrls(enable);

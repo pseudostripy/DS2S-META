@@ -5,9 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:local="clr-namespace:DS2S_META"
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+             xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+             d:DataContext="{d:DesignInstance viewmodels:DmgCalcViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -39,12 +40,14 @@
                 <Label Content="Upgrade" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,0,3,0" HorizontalContentAlignment="Center" />
                 <wpfTool:IntegerUpDown x:Name="nudUpgrade" Minimum="0" Maximum="0" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0" ValueChanged="nudUpgrade_ValueChanged"/>
                 <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
-                <Label x:Name="lblSelectedWeapon" Content="WEAPON UNSELECTED " VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="4" Margin="0,5,0,0" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" />
-                <Button x:Name="btnSet" Content="Set Weapon" Click="btnSet_Click" PreviewKeyDown="KeyPressed" Grid.Row="5" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
+                <Label x:Name="lblSelectedWeapon" Content="WEAPON UNSELECTED " VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" />
+                <Button x:Name="btnSet" Content="Set Weapon" Command="{Binding SetWeapon}" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button x:Name="btnSetDebug" Content="Set Weapon" PreviewKeyDown="KeyPressed" Grid.Row="4" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="btnSetDebug_Click"/>
+                <CheckBox x:Name="cbxLeftHand" Grid.Row="5" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
             </Grid>
         </StackPanel>
 
-        <ListBox x:Name="lbxItems" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" SelectionChanged="lbxItems_SelectionChanged" PreviewKeyDown="KeyPressed" MaxHeight="200" />
+        <ListBox x:Name="lbxWeapons" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" ItemsSource="{Binding WeaponCollectionView}" PreviewKeyDown="KeyPressed" MaxHeight="200" />
         <StackPanel Grid.Row="2">
             <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
             <Grid>
@@ -52,12 +55,22 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label x:Name="lblNameTest" Content="Hello World!" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblHmodText" Content="hMod" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
+                <Label x:Name="lblHmodValue" Content="{Binding hMod}" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" VerticalContentAlignment="Center"/>
+
             </Grid>
             
             <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" HorizontalAlignment="Center" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="8,0,0,0" />

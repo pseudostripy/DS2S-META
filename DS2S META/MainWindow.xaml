@@ -5,13 +5,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:p="clr-namespace:DS2S_META.Properties"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:local="clr-namespace:DS2S_META"
+        xmlns:local="clr-namespace:DS2S_META" xmlns:local1="clr-namespace:DS2S_META.ViewModels"
         mc:Ignorable="d"
         Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" ResizeMode="NoResize" WindowStyle="None" SizeToContent="WidthAndHeight" >
 
     <Window.DataContext>
-        <local:DS2SViewModel x:Name="ViewModel"/>
+        <local1:DS2SViewModel x:Name="ViewModel"/>
     </Window.DataContext>
 
 
