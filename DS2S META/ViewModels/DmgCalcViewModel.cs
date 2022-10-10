@@ -97,7 +97,8 @@ namespace DS2S_META.ViewModels
             pScale = (int)Math.Floor( CalcScaling() );
             pBase = (int)Math.Floor( WepSel?.ReinforceRow?.GetPhysDmg(UpgradeVal) ?? 0 );
             OnPropertyChanged(nameof(pAR));
-            
+
+            CounterDmg = WepSel?.CounterDmg ?? 0;
         }
 
         public float CalcScaling()
@@ -157,8 +158,14 @@ namespace DS2S_META.ViewModels
             get => _pScale;
             set => SetField(ref _pScale, value);
         }
-        public int pAR => pBase + pScale;
+        public short _counterDmg = 0;
+        public short CounterDmg
+        {
+            get => _counterDmg;
+            set => SetField(ref _counterDmg, value);
+        }
 
+        public int pAR => pBase + pScale;
 
         public float hMod { 
             get

@@ -77,6 +77,8 @@
                 <Label x:Name="lblpScaleValue" Content="{Binding pScale}" Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center"/>
                 <Label x:Name="lblpAR" Content="pAR" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="4"/>
                 <Label x:Name="lblpARValue" Content="{Binding pAR}" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblC" Content="Cm" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblCmValue" Content="{Binding CounterDmg}" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center"/>
             </Grid>
             
             

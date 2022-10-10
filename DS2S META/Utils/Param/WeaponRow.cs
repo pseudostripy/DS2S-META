@@ -44,13 +44,14 @@ namespace DS2S_META.Utils
                 WriteAt(34, BitConverter.GetBytes(value));
             }
         }
-        internal int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
+        public short CounterDmg;
 
         // Linked param:
         internal WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.PNAME.WEAPON_REINFORCE_PARAM, ReinforceID);
         internal WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.PNAME.WEAPON_TYPE_PARAM, WeaponTypeID);
 
-        // Methods:
+        // Wrappers
+        internal int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
         public List<DS2SInfusion> GetInfusionList()
         {
             if (ReinforceRow == null)
@@ -65,6 +66,7 @@ namespace DS2S_META.Utils
             ReinforceID = (int)ReadAt(2);
             WeaponTypeID = (int)ReadAt(4);
             DamageMultiplier = (float)ReadAt(34);
+            CounterDmg = (short)ReadAt(46);
         }
     }
 }
