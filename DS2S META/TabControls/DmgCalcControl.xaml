@@ -71,7 +71,7 @@
 
             </Grid>
             
-            <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" HorizontalAlignment="Center" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="8,0,0,0" />
+            
         </StackPanel>
         
     </Grid>

@@ -128,26 +128,7 @@ namespace DS2S_META
             
         //    btnCalculate.IsEnabled = true;
         //}
-        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Hook == null)
-                return; // first call
-
-            float dmgmod;
-            if (cbxOHKO.IsChecked == true)
-                dmgmod = 1000;
-            else
-                dmgmod = 1;
-
-            // Write to memory
-            var rapierrow = ParamMan.WeaponParam?.Rows.FirstOrDefault(r => r.ID == 1500000) as WeaponRow; // Rapier
-            if (rapierrow == null)
-                throw new NullReferenceException("Pretty sure the rapier should be there!");
-            var F = rapierrow.Param.Fields[34];
-            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
-            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
-            rapierrow.WriteRow();
-        }
+        
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
             int test = 1;

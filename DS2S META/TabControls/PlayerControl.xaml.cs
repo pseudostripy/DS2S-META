@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -255,6 +256,27 @@ namespace DS2S_META
         {
             cbxGravity.IsChecked = !cbxGravity.IsChecked;
         }
+        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!Hook.Hooked)
+                return; // first call
+
+            float dmgmod;
+            if (cbxOHKO.IsChecked == true)
+                dmgmod = 1000;
+            else
+                dmgmod = 1;
+
+            // Write to memory
+            var rapierrow = ParamMan.WeaponParam?.Rows.FirstOrDefault(r => r.ID == 1500000) as WeaponRow; // Rapier
+            if (rapierrow == null)
+                throw new NullReferenceException("Pretty sure the rapier should be there!");
+            var F = rapierrow.Param.Fields[34];
+            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
+            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
+            rapierrow.WriteRow();
+        }
+
 
         private void btnStore_Click(object sender, RoutedEventArgs e)
         {
