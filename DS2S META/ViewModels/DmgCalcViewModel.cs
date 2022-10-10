@@ -64,6 +64,7 @@ namespace DS2S_META.ViewModels
             }
         }
 
+
         private void UpdateWepStats()
         {
             WepSel = ParamMan.GetWeaponFromID(SelectedItem?.itemID);
@@ -91,6 +92,26 @@ namespace DS2S_META.ViewModels
             // Update the ones we care about:
             lMod = WepSel?.WTypeRow?.lMod ?? 0;
             rMod = WepSel?.WTypeRow?.rMod ?? 0;
+
+            // Calc scaling:
+            pScale = (int)Math.Floor( CalcScaling() );
+            pBase = (int)Math.Floor( WepSel?.ReinforceRow?.GetPhysDmg(UpgradeVal) ?? 0 );
+            OnPropertyChanged(nameof(pAR));
+            
+        }
+
+        public float CalcScaling()
+        {
+            // Always do str/dex:
+            var strbonus = Hook?.GetBonus(DS2SHook.BNSTYPE.STR);
+            var strsf = WepSel?.ReinforceRow?.WeaponStatsAffectRow?.ReadScalingValue(WeaponStatsAffectRow.SCTYPE.STR, UpgradeVal); // scale factor
+
+            var dexbonus = Hook?.GetBonus(DS2SHook.BNSTYPE.DEX);
+            var dexsf = WepSel?.ReinforceRow?.WeaponStatsAffectRow?.ReadScalingValue(WeaponStatsAffectRow.SCTYPE.DEX, UpgradeVal);
+
+            var scaling = strsf * strbonus + dexsf * dexbonus;
+            if (scaling == null) return 0;
+            return (float)scaling;
         }
 
         public DS2SHook? Hook { get; set; }
@@ -124,6 +145,20 @@ namespace DS2S_META.ViewModels
                     OnPropertyChanged(nameof(hMod));
             }
         }
+        private int _pBase = 0;
+        public int pBase
+        {
+            get => _pBase;
+            set => SetField(ref _pBase, value);
+        }
+        private int _pScale = 0;
+        public int pScale
+        {
+            get => _pScale;
+            set => SetField(ref _pScale, value);
+        }
+        public int pAR => pBase + pScale;
+
 
         public float hMod { 
             get

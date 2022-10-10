@@ -183,6 +183,7 @@ namespace DS2S_META
 
         public const string SetWarpTargetFuncAoB = "48 89 5C 24 08 48 89 74 24 20 57 48 83 EC 60 0F B7 FA";
         public const string WarpFuncAoB = "40 53 48 83 EC 60 8B 02 48 8B D9 89 01 8B 42 04";
+        
 
         public const int EventManagerOffset = 0x70;
         public const int WarpManagerOffset = 0x70;

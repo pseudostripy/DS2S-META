@@ -58,6 +58,7 @@ namespace DS2S_META.Utils
             d.Add(PNAME.ITEM_LOT_PARAM2, "ITEM_LOT_PARAM2");
             d.Add(PNAME.WEAPON_TYPE_PARAM, "WEAPON_TYPE_PARAM");
             d.Add(PNAME.CUSTOM_ATTR_SPEC_PARAM, "CUSTOM_ATTR_SPEC_PARAM");
+            d.Add(PNAME.WEAPON_STATS_AFFECT_PARAM, "WEAPON_STATS_AFFECT_PARAM");
             
             ParamStringNames = d;
             ParamsFromStrings = d.ToDictionary(kvp => kvp.Value, kvp => kvp.Key); // reverse them
@@ -144,6 +145,10 @@ namespace DS2S_META.Utils
                     param.initialise<CustomAttrSpecRow>();
                     break;
 
+                case PNAME.WEAPON_STATS_AFFECT_PARAM:
+                    param.initialise<WeaponStatsAffectRow>();
+                    break;
+
                 default:
                     // Generic no extension:
                     param.initialise<Param.Row>();
@@ -193,6 +198,7 @@ namespace DS2S_META.Utils
             ITEM_LOT_PARAM2,
             WEAPON_TYPE_PARAM,
             CUSTOM_ATTR_SPEC_PARAM,
+            WEAPON_STATS_AFFECT_PARAM,
         }
 
 

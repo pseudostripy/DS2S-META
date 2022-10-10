@@ -12,6 +12,9 @@ namespace DS2S_META.Utils
     public class WeaponReinforceRow : Param.Row
     {
         public int _maxReinforce;
+
+        public float MinUpgrDmgPhys;
+        public float MaxUpgrDmgPhys;
         public int MaxReinforce
         {
             get => _maxReinforce;
@@ -21,15 +24,20 @@ namespace DS2S_META.Utils
                 WriteAt(18, BitConverter.GetBytes(value));
             }
         }
+        public int WeaponStatsAffectID;
         public int CustomSpecAttrID;
 
+        public WeaponStatsAffectRow? WeaponStatsAffectRow => ParamMan.GetLink<WeaponStatsAffectRow>(ParamMan.PNAME.WEAPON_STATS_AFFECT_PARAM, WeaponStatsAffectID);
         public CustomAttrSpecRow? CustomAttrSpec => ParamMan.GetLink<CustomAttrSpecRow>(ParamMan.PNAME.CUSTOM_ATTR_SPEC_PARAM, CustomSpecAttrID);
 
 
         // Constructor:
         public WeaponReinforceRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
+            MinUpgrDmgPhys = (float)ReadAt(0);
+            MaxUpgrDmgPhys = (float)ReadAt(9);
             MaxReinforce = (int)ReadAt(18);
+            WeaponStatsAffectID = (int)ReadAt(19);
             CustomSpecAttrID = (int)ReadAt(58);
         }
 
@@ -51,6 +59,11 @@ namespace DS2S_META.Utils
             }
 
             return infusions;
+        }
+
+        public float GetPhysDmg(int upgr)
+        {
+            return MinUpgrDmgPhys + (MaxUpgrDmgPhys - MinUpgrDmgPhys) * upgr / MaxReinforce;
         }
     }
 }

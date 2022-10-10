@@ -16,6 +16,7 @@ using SoulsFormats;
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
 using System.Windows.Automation;
+using System.Runtime.Serialization;
 
 namespace DS2S_META
 {
@@ -58,6 +59,7 @@ namespace DS2S_META
         private PHPointer SetWarpTargetFunc;
         private PHPointer WarpManager;
         private PHPointer WarpFunc;
+        private PHPointer SomePlayerStats;
 
         public  PHPointer BaseA;
 
@@ -120,6 +122,7 @@ namespace DS2S_META
             SetWarpTargetFunc = RegisterAbsoluteAOB(DS2SOffsets.SetWarpTargetFuncAoB);
             ApplySpEffect = RegisterAbsoluteAOB(DS2SOffsets.ApplySpEffectAoB);
             WarpFunc = RegisterAbsoluteAOB(DS2SOffsets.WarpFuncAoB);
+            //SomePlayerStats = RegisterAbsoluteAOB(DS2SOffsets.SomePlayerStats);
 
             BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
 
@@ -209,6 +212,9 @@ namespace DS2S_META
             Camera3 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2, (int)DS2SOffsets.CameraOffset2);
             Camera4 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2, (int)DS2SOffsets.CameraOffset3);
             Camera5 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2);
+
+            //SomePlayerStats = CreateChildPointer(BaseA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718);
+            SomePlayerStats = CreateChildPointer(BaseA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170);
 
             GetLevelRequirements();
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
@@ -1251,6 +1257,24 @@ namespace DS2S_META
         private int GetHeldInInventoryUnstackable(int id)
         {
             return 0;
+        }
+
+        private const int tbo = 0x7A8; // table bonus offset
+        public enum BNSTYPE
+        {
+            STR = 0,
+            DEX = 1,
+            MAGIC = 2,
+            FIRE = 3,
+            LIGHTNING = 4,
+            DARK = 5,
+            POISON = 6,
+            BLEED = 7,
+        }
+        public int GetBonus(BNSTYPE bnstype)
+        {
+            if (!Hooked) return 0;
+            return SomePlayerStats.ReadInt32(tbo + 36*(int)bnstype);
         }
 
         // ARCHAIC TO TIDY

@@ -54,6 +54,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -68,7 +69,14 @@
                 </Grid.RowDefinitions>
                 <Label x:Name="lblHmodText" Content="{Binding hModString}" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
                 <Label x:Name="lblHmodValue" Content="{Binding hMod}" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" VerticalContentAlignment="Center"/>
-
+                <Label x:Name="lblpMod" Content="pMod" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
+                <Label x:Name="lblpModValue" Content="6.0 ??todo??" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
+                <Label x:Name="lblpBase" Content="pBase" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblpBaseValue" Content="{Binding pBase}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblpScale" Content="pScale" Grid.Row="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblpScaleValue" Content="{Binding pScale}" Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                <Label x:Name="lblpAR" Content="pAR" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="4"/>
+                <Label x:Name="lblpARValue" Content="{Binding pAR}" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center"/>
             </Grid>
             
             
