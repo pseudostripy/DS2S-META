@@ -8,6 +8,15 @@ namespace DS2S_META.Randomizer
 {
     internal static class ShopRules
     {
+        private static LinkedShopEvent TradeShop(int keepID, params int[] removeIDs)
+        {
+            var lse = new LinkedShopEvent(keepID, removeIDs)
+            {
+                IsTrade = true
+            };
+            return lse;
+        }
+
         internal static List<LinkedShopEvent> GetLinkedEvents() 
         {
             List<LinkedShopEvent> LinkedEvents = new List<LinkedShopEvent>()
@@ -68,32 +77,32 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76600306, 76600314), // Carhillion Magic Weapon
                 new LinkedShopEvent(76600307, 76600315), // Carhillion Yearn
                 //
-                new LinkedShopEvent(76801000, 76801200), // Straid Pursuer UGS
-                new LinkedShopEvent(76801001, 76801201), // Straid Pursuer Greatshield
-                new LinkedShopEvent(76801002, 76801202), // Straid Giant Stone Axe
-                new LinkedShopEvent(76801003, 76801203), // Straid Dragonrider Halberd
-                new LinkedShopEvent(76801004, 76801204), // Straid Dragonrider Bow
-                new LinkedShopEvent(76801005, 76801205), // Straid Dragonrider Twinblade
-                new LinkedShopEvent(76801006, 76801206), // Straid Dragonrider Greatshield
-                new LinkedShopEvent(76801007, 76801207), // Straid Warped Sword
-                new LinkedShopEvent(76801008, 76801208), // Straid Barbed Club
-                new LinkedShopEvent(76801009, 76801209), // Straid Arced Sword
-                new LinkedShopEvent(76801010, 76801210), // Straid Chariot Lance
-                new LinkedShopEvent(76801011, 76801211), // Straid Shield Crossbow
-                new LinkedShopEvent(76801012, 76801212), // Straid Roaring Halberd
-                new LinkedShopEvent(76801013, 76801213), // Straid Bone Scythe
-                new LinkedShopEvent(76801014, 76801214), // Straid Mytha's Bent Blade
-                new LinkedShopEvent(76801015, 76801215), // Straid Smelter Sword
-                new LinkedShopEvent(76801016, 76801216), // Straid Spotted Whip
-                new LinkedShopEvent(76801017, 76801217), // Straid Gargoyles Bident
+                TradeShop(76801000, 76801200), // Straid Pursuer UGS
+                TradeShop(76801001, 76801201), // Straid Pursuer Greatshield
+                TradeShop(76801002, 76801202), // Straid Giant Stone Axe
+                TradeShop(76801003, 76801203), // Straid Dragonrider Halberd
+                TradeShop(76801004, 76801204), // Straid Dragonrider Bow
+                TradeShop(76801005, 76801205), // Straid Dragonrider Twinblade
+                TradeShop(76801006, 76801206), // Straid Dragonrider Greatshield
+                TradeShop(76801007, 76801207), // Straid Warped Sword
+                TradeShop(76801008, 76801208), // Straid Barbed Club
+                TradeShop(76801009, 76801209), // Straid Arced Sword
+                TradeShop(76801010, 76801210), // Straid Chariot Lance
+                TradeShop(76801011, 76801211), // Straid Shield Crossbow
+                TradeShop(76801012, 76801212), // Straid Roaring Halberd
+                TradeShop(76801013, 76801213), // Straid Bone Scythe
+                TradeShop(76801014, 76801214), // Straid Mytha's Bent Blade
+                TradeShop(76801015, 76801215), // Straid Smelter Sword
+                TradeShop(76801016, 76801216), // Straid Spotted Whip
+                TradeShop(76801017, 76801217), // Straid Gargoyles Bident
             
-                new LinkedShopEvent(76801100, 76801300), // Straid Heavy Homing Soul Arrow
-                new LinkedShopEvent(76801101, 76801301), // Straid Toxic Mist
-                new LinkedShopEvent(76801102, 76801302), // Straid Soul Shower
-                new LinkedShopEvent(76801103, 76801303), // Straid Acid Surge
-                new LinkedShopEvent(76801104, 76801304), // Straid Sacred Oath
-                new LinkedShopEvent(76801105, 76801305), // Straid Repel
-                new LinkedShopEvent(76801106, 76801306), // Straid Lifedrain Patch
+                TradeShop(76801100, 76801300), // Straid Heavy Homing Soul Arrow
+                TradeShop(76801101, 76801301), // Straid Toxic Mist
+                TradeShop(76801102, 76801302), // Straid Soul Shower
+                TradeShop(76801103, 76801303), // Straid Acid Surge
+                TradeShop(76801104, 76801304), // Straid Sacred Oath
+                TradeShop(76801105, 76801305), // Straid Repel
+                TradeShop(76801106, 76801306), // Straid Lifedrain Patch
                 //
                 new LinkedShopEvent(76900300, 76900310), // Licia Heal
                 new LinkedShopEvent(76900301, 76900311), // Licia Med Heal
@@ -107,45 +116,45 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76900309, 76900319), // Licia Guidance
             
                 // 1000s = Normal 1100 = ??, 2000 = free, 2100 = ??
-                new LinkedShopEvent(77601000, 77601100, 77602000, 77602100), // Ornifex Dragonslayer Spear
-                new LinkedShopEvent(77601001, 77601101, 77602001, 77602101), // Ornifex Lost Sinner Sword
-                new LinkedShopEvent(77601002, 77601102, 77602002, 77602102), // Ornifex Iron King Hammer
-                new LinkedShopEvent(77601003, 77601103, 77602003, 77602103), // Ornifex Butcher's Knife
-                new LinkedShopEvent(77601004, 77601104, 77602004, 77602104), // Ornifex Spider's Silk
-                new LinkedShopEvent(77601005, 77601105, 77602005, 77602105), // Ornifex Spider's Fang
-                new LinkedShopEvent(77601006, 77601106, 77602006, 77602106), // Ornifex Thorned Greatsword
-                new LinkedShopEvent(77601007, 77601107, 77602007, 77602107), // Ornifex King's Mirror
-                new LinkedShopEvent(77601008, 77601108, 77602008, 77602108), // Ornifex Sacred Chime Hammer
-                new LinkedShopEvent(77601009, 77601109, 77602009, 77602109), // Ornifex Ruler's Sword
-                new LinkedShopEvent(77601010, 77601110, 77602010, 77602110), // Ornifex King's UGS
-                new LinkedShopEvent(77601011, 77601111, 77602011, 77602111), // Ornifex King's Shield
-                new LinkedShopEvent(77601012, 77601112, 77602012, 77602112), // Ornifex Spitfire Spear
-                new LinkedShopEvent(77601013, 77601113, 77602013, 77602113), // Ornifex Drakewing UGS
-                new LinkedShopEvent(77601014, 77601114, 77602014, 77602114), // Ornifex Curved Dragon Greatsword
-                new LinkedShopEvent(77601015, 77601115, 77602015, 77602115), // Ornifex Scythe of Want
-                new LinkedShopEvent(77601016, 77601116, 77602016, 77602116), // Ornifex Chimne of Want
-                new LinkedShopEvent(77601017, 77601117, 77602017, 77602117), // Ornifex Bow of Want
-                new LinkedShopEvent(77601018, 77601118, 77602018, 77602118), // Ornifex Defender's Greatsword
-                new LinkedShopEvent(77601019, 77601119, 77602019, 77602119), // Ornifex Defender's Shield
-                new LinkedShopEvent(77601020, 77601120, 77602020, 77602120), // Ornifex Watcher's Greatsword
-                new LinkedShopEvent(77601021, 77601121, 77602021, 77602121), // Ornifex Watcher's Shield
+                TradeShop(77601000, 77601100, 77602000, 77602100), // Ornifex Dragonslayer Spear
+                TradeShop(77601001, 77601101, 77602001, 77602101), // Ornifex Lost Sinner Sword
+                TradeShop(77601002, 77601102, 77602002, 77602102), // Ornifex Iron King Hammer
+                TradeShop(77601003, 77601103, 77602003, 77602103), // Ornifex Butcher's Knife
+                TradeShop(77601004, 77601104, 77602004, 77602104), // Ornifex Spider's Silk
+                TradeShop(77601005, 77601105, 77602005, 77602105), // Ornifex Spider's Fang
+                TradeShop(77601006, 77601106, 77602006, 77602106), // Ornifex Thorned Greatsword
+                TradeShop(77601007, 77601107, 77602007, 77602107), // Ornifex King's Mirror
+                TradeShop(77601008, 77601108, 77602008, 77602108), // Ornifex Sacred Chime Hammer
+                TradeShop(77601009, 77601109, 77602009, 77602109), // Ornifex Ruler's Sword
+                TradeShop(77601010, 77601110, 77602010, 77602110), // Ornifex King's UGS
+                TradeShop(77601011, 77601111, 77602011, 77602111), // Ornifex King's Shield
+                TradeShop(77601012, 77601112, 77602012, 77602112), // Ornifex Spitfire Spear
+                TradeShop(77601013, 77601113, 77602013, 77602113), // Ornifex Drakewing UGS
+                TradeShop(77601014, 77601114, 77602014, 77602114), // Ornifex Curved Dragon Greatsword
+                TradeShop(77601015, 77601115, 77602015, 77602115), // Ornifex Scythe of Want
+                TradeShop(77601016, 77601116, 77602016, 77602116), // Ornifex Chimne of Want
+                TradeShop(77601017, 77601117, 77602017, 77602117), // Ornifex Bow of Want
+                TradeShop(77601018, 77601118, 77602018, 77602118), // Ornifex Defender's Greatsword
+                TradeShop(77601019, 77601119, 77602019, 77602119), // Ornifex Defender's Shield
+                TradeShop(77601020, 77601120, 77602020, 77602120), // Ornifex Watcher's Greatsword
+                TradeShop(77601021, 77601121, 77602021, 77602121), // Ornifex Watcher's Shield
 
-                new LinkedShopEvent(77601022, 77602022), // Ornifex Moonlight Greatsword
-                new LinkedShopEvent(77601023, 77602023), // Ornifex Crypt Blacksword
-                new LinkedShopEvent(77601024, 77602024), // Ornifex Chaos Blade
-                new LinkedShopEvent(77601025, 77602025), // Ornifex Dragonslayer Greatbow
-                new LinkedShopEvent(77601026, 77602026), // Ornifex Yorgh's Spear
-                new LinkedShopEvent(77601027, 77602027), // Ornifex Wrathful Axe
-                new LinkedShopEvent(77601028, 77602028), // Ornifex Chime Of Screams
-                new LinkedShopEvent(77601029, 77602029), // Ornifex Fume Sword
-                new LinkedShopEvent(77601030, 77602030), // Ornifex Fume UGS
-                new LinkedShopEvent(77601031, 77602031), // Ornifex Bewitched Alonne Sword
-                new LinkedShopEvent(77601032, 77602032), // Ornifex Aged Smelter Sword
-                new LinkedShopEvent(77601033, 77602033), // Ornifex Ivory Straight Sword
-                new LinkedShopEvent(77601034, 77602034), // Ornifex Loyce Shield
-                new LinkedShopEvent(77601035, 77602035), // Ornifex Loyce Greatsword
-                new LinkedShopEvent(77601036, 77602036), // Ornifex Ivory King UGS
-                new LinkedShopEvent(77601037, 77602037), // Ornifex Eleum Loyce
+                TradeShop(77601022, 77602022), // Ornifex Moonlight Greatsword
+                TradeShop(77601023, 77602023), // Ornifex Crypt Blacksword
+                TradeShop(77601024, 77602024), // Ornifex Chaos Blade
+                TradeShop(77601025, 77602025), // Ornifex Dragonslayer Greatbow
+                TradeShop(77601026, 77602026), // Ornifex Yorgh's Spear
+                TradeShop(77601027, 77602027), // Ornifex Wrathful Axe
+                TradeShop(77601028, 77602028), // Ornifex Chime Of Screams
+                TradeShop(77601029, 77602029), // Ornifex Fume Sword
+                TradeShop(77601030, 77602030), // Ornifex Fume UGS
+                TradeShop(77601031, 77602031), // Ornifex Bewitched Alonne Sword
+                TradeShop(77601032, 77602032), // Ornifex Aged Smelter Sword
+                TradeShop(77601033, 77602033), // Ornifex Ivory Straight Sword
+                TradeShop(77601034, 77602034), // Ornifex Loyce Shield
+                TradeShop(77601035, 77602035), // Ornifex Loyce Greatsword
+                TradeShop(77601036, 77602036), // Ornifex Ivory King UGS
+                TradeShop(77601037, 77602037), // Ornifex Eleum Loyce
                 //
                 new LinkedShopEvent(77700600, 77700604), // Shalquoir Prism Stones
                 new LinkedShopEvent(77700601, 77700605), // Shalquoir Alluring Skulls
@@ -177,6 +186,7 @@ namespace DS2S_META.Randomizer
         // can spread across all sorts of scenarios
         internal int KeepID;
         internal List<int> RemoveIDs;
+        internal bool IsTrade = false;
 
         internal LinkedShopEvent(int keepID, params int[] removeIDs)
         {

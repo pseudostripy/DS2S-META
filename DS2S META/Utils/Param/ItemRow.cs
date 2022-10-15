@@ -187,7 +187,7 @@ namespace DS2S_META.Utils
                 return SpellID;
             if (GestureID != -1)
                 return GestureID;
-            return IconID; // last ditch save
+            return IconID; // consumables are here I think
         }
         public List<DS2SInfusion> GetInfusionList()
         {

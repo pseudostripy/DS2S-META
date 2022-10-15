@@ -91,7 +91,8 @@ namespace DS2S_META.Randomizer
             GetVanillaLots();
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             Logic = new CasualItemSet();
-            FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
+            FixShopEvents1(); // Update PTF with shop places
+            FixShopEvents2(); // Fix trades
             AddShopLogic();
 
             // Add descriptions
@@ -123,7 +124,8 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
-            FixedVanillaShops = FixShopEvents(); // Update PTF with shop places
+            FixShopEvents1(); // Update PTF with shop places
+            FixShopEvents2(); // Fix trades
             GetLootToRandomize(); // set Data field
             KeysPlacedSoFar = new List<int>(); // nice bug :)
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
@@ -194,9 +196,11 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
-        internal List<ShopRow> FixShopEvents()
+        internal void FixShopEvents1()
         {
-            // Remove shop & trade menu resets on certain events so they stay randomised
+            // This function stops shops from re-randomizing
+            // when npcs move or update their shops
+
             // Go through and clone the "normal" shops:
             var PTF = new List<ShopRow>();
             
@@ -232,8 +236,23 @@ namespace DS2S_META.Randomizer
                 // Everything else:
                 PTF.Add(SR.Clone());
             }
-            return PTF;
+            FixedVanillaShops = PTF;
         }
+        internal void FixShopEvents2()
+        {
+            // This is for sorting out Straid/Ornifex trades
+            var LEvents = ShopRules.GetLinkedEvents();
+            var tradeshopsidlist = LEvents.Where(le => le.IsTrade).Select(le => le.KeepID);
+            var tradeshops = FixedVanillaShops.Where(shp => tradeshopsidlist.Contains(shp.ID));
+                                              
+            foreach (var SR in tradeshops)
+            {
+                SR.EnableFlag = -1; // enable immediately
+            }
+
+
+        }
+
         internal void AddShopLogic()
         {
             foreach (var si in FixedVanillaShops)
