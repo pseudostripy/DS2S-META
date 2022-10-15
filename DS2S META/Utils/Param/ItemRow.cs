@@ -95,7 +95,7 @@ namespace DS2S_META.Utils
             get => _spellID;
             set
             {
-                _ringID = value;
+                _spellID = value;
                 WriteAt(9, BitConverter.GetBytes(value));
             }
         }

@@ -40,27 +40,16 @@ namespace DS2S_META.Randomizer
         }
         protected int GetTypeRandomPrice(int itemid)
         {
-            if (!RandomizerManager.TryGetItem(itemid, out var item))
+            if (!RandomizerManager.TryGetItem(itemid, out var item) || item == null)
                 return RandomizerManager.RandomGammaInt(3000, 50); // generic guess
 
-            if (item == null)
-                throw new NullReferenceException("Shouldn't be possible to get here");
-
-            switch (item.ItemType)
+            return item.ItemType switch
             {
-                case eItemType.AMMO:
-                    return RandomizerManager.RandomGammaInt(100, 10);
-
-                case eItemType.CONSUMABLE:
-                    return GetConsumableRandomPrice(item.ItemID);
-
-                case eItemType.WEAPON1:
-                case eItemType.WEAPON2:
-                    return RandomizerManager.RandomGammaInt(5000, 100);
-
-                default:
-                    return RandomizerManager.RandomGammaInt(3000, 50);
-            }
+                eItemType.AMMO => RandomizerManager.RandomGammaInt(100, 10),
+                eItemType.CONSUMABLE => GetConsumableRandomPrice(item.ItemID),
+                eItemType.WEAPON1 or eItemType.WEAPON2 => RandomizerManager.RandomGammaInt(5000, 100),
+                _ => RandomizerManager.RandomGammaInt(3000, 50),
+            };
         }
         protected int GetConsumableRandomPrice(int itemid)
         {

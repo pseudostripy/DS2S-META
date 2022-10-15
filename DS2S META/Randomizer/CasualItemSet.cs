@@ -177,7 +177,7 @@ namespace DS2S_META.Randomizer
             D.Add(10106350, SafeInfo("[FOFG] First corpse in the lower fire area"));
             D.Add(10106360, SafeInfo("[FOFG] Second corpse in the lower fire area"));
             D.Add(10106370, SafeInfo("[FOFG] Just before pursuer arena", KEYID.SOLDIER));
-            D.Add(10106371, SafeInfo("[FOFG] Just before pursuer arena in NG+", KEYID.SOLDIER));
+            D.Add(10106371, NGPlusInfo("[FOFG] Just before pursuer arena in NG+", KEYID.SOLDIER));
             D.Add(10106380, SafeInfo("[FOFG] On topmost ledge of the circular room"));
             D.Add(10106290, SafeInfo("[FOFG] Vanilla Drangleic set: In a crevasse in floor near the eagles nest", KEYID.SOLDIER));
             D.Add(10106390, SafeInfo("[FOFG] Behind corner outside cardinal tower"));
@@ -241,10 +241,10 @@ namespace DS2S_META.Randomizer
             D.Add(10185040, MChestInfo("[Wharf] Metal chest in house next to central courtyard"));
             D.Add(10185050, MChestInfo("[Wharf] Metal chest in the topmost house with dark stalkers"));
             D.Add(10185060, MChestInfo("[Wharf] Metal chest in the secret alcove in the poison jar room"));
-            D.Add(10185070, MChestInfo("[Wharf] Metal chest behind illusory wall in the house where gavlan is"));
-            D.Add(10185071, MChestNGPlusInfo("[Wharf] Metal chest behind illusory wall in the house where Gavlan is in NG+"));
-            D.Add(10185080, WChestInfo("[Wharf] Wooden chest behind illusory wall in the house where Gavlan is"));
-            D.Add(10185081, WChestNGPlusInfo("[Wharf] Wooden chest behind illusory wall in the house where Gavlan is in NG+"));
+            D.Add(10185070, MChestInfo("[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan"));
+            D.Add(10185071, MChestNGPlusInfo("[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan NG+"));
+            D.Add(10185080, WChestInfo("[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan"));
+            D.Add(10185081, WChestNGPlusInfo("[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan in NG+"));
             D.Add(10185100, WChestInfo("[Wharf] Trapped wooden chest in the topmost house with dark stalkers"));
             D.Add(10185110, MChestInfo("[Wharf] Metal chest in the poison jar room"));
             D.Add(10185120, MChestInfo("[Wharf] Metal chest after Flexile Sentry"));
@@ -379,7 +379,7 @@ namespace DS2S_META.Randomizer
             D.Add(226100, BossInfo("[GraveOfSaints] Royal rat vanguard drop"));
             D.Add(10346020, SafeInfo("[GraveOfSaints] 2nd floor on other side of the drawbridges", KEYID.PHARROS));
             D.Add(10346030, SafeInfo("[GraveOfSaints] In the first circular room of Grave of Saints"));
-            D.Add(10346031, SafeInfo("[GraveOfSaints] In the first circular room of Grave of Saints in NG+"));
+            D.Add(10346031, NGPlusInfo("[GraveOfSaints] In the first circular room of Grave of Saints in NG+"));
             D.Add(10346040, SafeInfo("[GraveOfSaints] 2nd floor left side next to table"));
             D.Add(10346050, SafeInfo("[GraveOfSaints] 1st floor on other side of the drawbridges", KEYID.PHARROS));
             D.Add(10346060, SafeInfo("[GraveOfSaints] In the middle circle of the circular room, after Rat Vanguard"));
@@ -436,7 +436,7 @@ namespace DS2S_META.Randomizer
 
             // Huntman's Copse:
             D.Add(154000, BossInfo("[Copse] Skeleton Lords drop", KEYID.ROTUNDA));
-            D.Add(154001, BossInfo("[Copse] Skeleton Lords drop in NG+", KEYID.ROTUNDA));
+            D.Add(154001, BossNGPlusInfo("[Copse] Skeleton Lords drop in NG+", KEYID.ROTUNDA));
             D.Add(1770000, NpcInfo("[Copse] Gift from Felkin when over 20INT and 20FTH", KEYID.ROTUNDA));
             D.Add(10046080, SafeInfo("[Copse] On ground after rotating rotunda towards Huntsman's Copse", KEYID.ROTUNDA));
             D.Add(10235010, MChestInfo("[Copse] Metal chest in the cave with the giant basilisk", KEYID.ROTUNDA));
@@ -469,7 +469,7 @@ namespace DS2S_META.Randomizer
 
             // Chariot Arena:
             D.Add(619100, BossInfo("[Chariot] Executioner's Chariot drop", KEYID.ROTUNDA));
-            D.Add(619101, BossInfo("[Chariot] Executioner's Chariot drop in NG+", KEYID.ROTUNDA));
+            D.Add(619101, BossNGPlusInfo("[Chariot] Executioner's Chariot drop in NG+", KEYID.ROTUNDA));
             D.Add(2003000, CovFineInfo("[Chariot] Brotherhood of Blood join", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
             D.Add(2003011, CovInfo("[Chariot] Brotherhood of Blood 1st rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
             D.Add(2003012, CovInfo("[Chariot] Brotherhood of Blood 2nd rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
@@ -506,7 +506,7 @@ namespace DS2S_META.Randomizer
             D.Add(10176220, SafeInfo("[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak", KEYID.ROTUNDA));
             D.Add(10176221, NGPlusInfo("[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak in NG+", KEYID.ROTUNDA));
             D.Add(10176230, SafeInfo("[HarvestValley] A corpse in the first poison area", KEYID.ROTUNDA));
-            D.Add(10176231, SafeInfo("[HarvestValley] A corpse in the first poison area in NG+", KEYID.ROTUNDA));
+            D.Add(10176231, NGPlusInfo("[HarvestValley] A corpse in the first poison area in NG+", KEYID.ROTUNDA));
             D.Add(10176250, SafeInfo("[HarvestValley] A corpse in the first poison area", KEYID.ROTUNDA));
             D.Add(10176260, SafeInfo("[HarvestValley] A corpse in the first poison area", KEYID.ROTUNDA));
             D.Add(10176270, SafeInfo("[HarvestValley] A corpse in the first poison area", KEYID.ROTUNDA));
@@ -520,7 +520,7 @@ namespace DS2S_META.Randomizer
             D.Add(10176400, SafeInfo("[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KEYID.ROTUNDA));
             D.Add(10176410, SafeInfo("[HarvestValley] In the poison filled tunnel further Earthen Peak", KEYID.ROTUNDA));
             D.Add(10176460, SafeInfo("[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads", KEYID.ROTUNDA));
-            D.Add(10176461, SafeInfo("[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads in NG+", KEYID.ROTUNDA));
+            D.Add(10176461, NGPlusInfo("[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads in NG+", KEYID.ROTUNDA));
             D.Add(10176470, SafeInfo("[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KEYID.ROTUNDA));
             D.Add(10176480, SafeInfo("[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KEYID.ROTUNDA));
             D.Add(10176490, SafeInfo("[HarvestValley] In the middle of the area with multiple sickle undeads", KEYID.ROTUNDA));
@@ -688,7 +688,7 @@ namespace DS2S_META.Randomizer
             D.Add(10335040, MChestInfo("[Pharros] Vanilla Santier's spear: metal chest behind three-part Pharros door in the lower level", KSO(KEYID.BRANCH, KEYID.PHARROS)));
             D.Add(10336000, SafeInfo("[Pharros] In water before the first bonfire", KEYID.BRANCH));
             D.Add(10336010, SafeInfo("[Pharros] In the room with Gavlan", KEYID.BRANCH));
-            D.Add(10336011, SafeInfo("[Pharros] In the room with Gavlan in NG+", KEYID.BRANCH));
+            D.Add(10336011, NGPlusInfo("[Pharros] In the room with Gavlan in NG+", KEYID.BRANCH));
             D.Add(10336020, SafeInfo("[Pharros] Corpse, behind three-part Pharros' door in the upper level", KSO(KEYID.BRANCH, KEYID.PHARROS)));
             D.Add(10336040, SafeInfo("[Pharros] In water in the far side of the first (lower) big hall", KEYID.BRANCH));
             D.Add(10336041, NGPlusInfo("[Pharros] In water in the big hall right after Gyrm's Respite bonfire in NG+", KEYID.BRANCH));
@@ -810,7 +810,7 @@ namespace DS2S_META.Randomizer
             D.Add(504001, BossNGPlusInfo("[Drangleic] Looking Glass Knight drop in NG+", KEYID.AMANA));
             D.Add(20215150, MChestInfo("[Drangleic] Vanilla ascetic chest: metal chest after Looking Glass Knight", KEYID.AMANA));
             D.Add(20216060, SafeInfo("[Drangleic] Between the stone horse-knights", KEYID.AMANA));
-            D.Add(20216061, SafeInfo("[Drangleic] Between the stone horse-knights in NG+", KEYID.AMANA));
+            D.Add(20216061, NGPlusInfo("[Drangleic] Between the stone horse-knights in NG+", KEYID.AMANA));
             D.Add(20216070, SafeInfo("[Drangleic] Between the stone horse-knights", KEYID.AMANA));
             D.Add(20216120, SafeInfo("[Drangleic] Between the stone horse-knights", KEYID.AMANA));
             D.Add(20216080, SafeInfo("[Drangleic] Vanilla skulls: first right side in Mirror Knight approach corridor", KEYID.AMANA));
@@ -913,7 +913,7 @@ namespace DS2S_META.Randomizer
             D.Add(10156000, SafeInfo("[AldiasKeep] In front of the skeleton dragon", KEYID.ALDIASKEEP));
             D.Add(10156010, SafeInfo("[AldiasKeep] In the mirror room", KEYID.ALDIASKEEP));
             D.Add(10156030, SafeInfo("[AldiasKeep] Under a table in the long corridor", KEYID.ALDIASKEEP));
-            D.Add(10156031, NGPlusInfo("[AldiasKeep] Under a table in the long corridor in ng+", KEYID.ALDIASKEEP));
+            D.Add(10156031, NGPlusInfo("[AldiasKeep] Under a table in the long corridor in NG+", KEYID.ALDIASKEEP));
             D.Add(10156040, SafeInfo("[AldiasKeep] Inside a barrel in the corner in side room with caged Gargoyle", KSO(KEYID.ALDIASKEEP, KEYID.ALDIASKEY)));
             D.Add(10156140, SafeInfo("[AldiasKeep] On table in side room with caged Gargoyle", KSO(KEYID.ALDIASKEEP, KEYID.ALDIASKEY)));
             D.Add(10156050, SafeInfo("[AldiasKeep] Room just before Guardian dragon, where the second ogre breaks through", KEYID.ALDIASKEEP));
@@ -922,7 +922,7 @@ namespace DS2S_META.Randomizer
             D.Add(10156070, SafeInfo("[AldiasKeep] In the acid pool", KEYID.ALDIASKEEP));
             D.Add(10156100, SafeInfo("[AldiasKeep] In the acid pool", KEYID.ALDIASKEEP));
             D.Add(10156160, SafeInfo("[AldiasKeep] In the acid pool", KEYID.ALDIASKEEP));
-            D.Add(10156161, NGPlusInfo("[AldiasKeep] In the acid pool in ng+", KEYID.ALDIASKEEP));
+            D.Add(10156161, NGPlusInfo("[AldiasKeep] In the acid pool in NG+", KEYID.ALDIASKEEP));
             D.Add(10156020, SafeInfo("[AldiasKeep] Vanilla alluring skulls: in the Foregarden courtyard", KEYID.ALDIASKEEP));
             D.Add(10156080, SafeInfo("[AldiasKeep] In the Foregarden courtyard", KEYID.ALDIASKEEP));
             D.Add(10156170, SafeInfo("[AldiasKeep] In the Foregarden courtyard", KEYID.ALDIASKEEP));
@@ -940,7 +940,7 @@ namespace DS2S_META.Randomizer
             D.Add(10276030, SafeInfo("[Aerie] Corpse in the first dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276120, SafeInfo("[Aerie] Corpse in the first dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276040, SafeInfo("[Aerie] In the cave under the first dragon nest", KEYID.ALDIASKEEP));
-            D.Add(10276041, SafeInfo("[Aerie] In the cave under the first dragon nest in NG+", KEYID.ALDIASKEEP));
+            D.Add(10276041, NGPlusInfo("[Aerie] In the cave under the first dragon nest in NG+", KEYID.ALDIASKEEP));
             D.Add(10276190, SafeInfo("[Aerie] In the cave under the first dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276060, SafeInfo("[Aerie] Near the hollow priest by the second dragon nest", KEYID.ALDIASKEEP));
             D.Add(10276061, NGPlusInfo("[Aerie] Near the hollow priest by the second dragon nest in NG+", KEYID.ALDIASKEEP));
@@ -978,7 +978,7 @@ namespace DS2S_META.Randomizer
             D.Add(60004000, SafeInfo("[MemoryJeigh] Vanilla Soul of a Giant: Giant corpse at end of all memories", KEYID.ASHENMIST));
             D.Add(20106100, SafeInfo("[MemoryJeigh] First left in Giant Lord's memory", KEYID.MEMORYJEIGH));
             D.Add(20106110, SafeInfo("[MemoryJeigh] On the battlefield, just before Giant Lord", KEYID.MEMORYJEIGH));
-            D.Add(20106111, SafeInfo("[MemoryJeigh] On the battlefield, just before Giant Lord in NG+", KEYID.MEMORYJEIGH));
+            D.Add(20106111, NGPlusInfo("[MemoryJeigh] On the battlefield, just before Giant Lord in NG+", KEYID.MEMORYJEIGH));
             D.Add(20106120, SafeInfo("[MemoryJeigh] Up the second set of stairs in the Giant Lord memory", KEYID.MEMORYJEIGH));
 
             // Memory of Orro
@@ -1003,7 +1003,7 @@ namespace DS2S_META.Randomizer
             D.Add(20105010, MChestInfo("[MemoryVammar] Metal chest in the corner of the main battlefield area", KEYID.ASHENMIST));
             D.Add(20106000, SafeInfo("[MemoryVammar] Behind a corner in the first corridor after Drummond", KEYID.ASHENMIST));
             D.Add(20106010, SafeInfo("[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield", KEYID.ASHENMIST));
-            D.Add(20106011, SafeInfo("[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield in NG+", KEYID.ASHENMIST));
+            D.Add(20106011, NGPlusInfo("[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield in NG+", KEYID.ASHENMIST));
             D.Add(20106020, SafeInfo("[MemoryVammar] In the corner of the roof", KEYID.ASHENMIST));
             D.Add(20106030, SafeInfo("[MemoryVammar] Vanilla Giant Warrior Club: in the far right corner of the main battlefield area", KEYID.ASHENMIST));
             D.Add(20106040, SafeInfo("[MemoryVammar] At the top of the final stairs in Memory of Vammar", KEYID.ASHENMIST));
@@ -1105,7 +1105,7 @@ namespace DS2S_META.Randomizer
 
             // DLC2:
             D.Add(675000, BossInfo("[DLC2] Fume Knight drop", KEYID.DLC2));
-            D.Add(675010, BossInfo("[DLC2] Fume Knight drop in NG+", KEYID.DLC2));
+            D.Add(675010, BossNGPlusInfo("[DLC2] Fume Knight drop in NG+", KEYID.DLC2));
             D.Add(305010, BossInfo("[DLC2] Blue Smelter demon drop", KEYID.BLUESMELTER));
             D.Add(680000, BossInfo("[DLC2] Sir Alonne drop", KEYID.ALONNE));
             D.Add(60019000, SafeInfo("[DLC2] Vanilla Smelter Wedge x6: Very first ash pile before the first chain bridge", KEYID.DLC2));
