@@ -242,7 +242,7 @@ namespace DS2S_META.Randomizer
             D.Add(10185050, MChestInfo("[Wharf] Metal chest in the topmost house with dark stalkers"));
             D.Add(10185060, MChestInfo("[Wharf] Metal chest in the secret alcove in the poison jar room"));
             D.Add(10185070, MChestInfo("[Wharf] Metal chest behind illusory wall in the house where gavlan is"));
-            D.Add(10185071, MChestInfo("[Wharf] Metal chest behind illusory wall in the house where Gavlan is in NG+"));
+            D.Add(10185071, MChestNGPlusInfo("[Wharf] Metal chest behind illusory wall in the house where Gavlan is in NG+"));
             D.Add(10185080, WChestInfo("[Wharf] Wooden chest behind illusory wall in the house where Gavlan is"));
             D.Add(10185081, WChestNGPlusInfo("[Wharf] Wooden chest behind illusory wall in the house where Gavlan is in NG+"));
             D.Add(10185100, WChestInfo("[Wharf] Trapped wooden chest in the topmost house with dark stalkers"));
