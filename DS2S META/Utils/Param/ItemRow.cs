@@ -117,7 +117,7 @@ namespace DS2S_META.Utils
                 WriteAt(12, BitConverter.GetBytes(value));
             }
         }
-        internal int ItemUsageID
+        public int ItemUsageID
         {
             get => _itemUsageID;
             set
@@ -146,6 +146,8 @@ namespace DS2S_META.Utils
         }
 
         internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.PNAME.WEAPON_PARAM, WeaponID);
+        internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.PNAME.ITEM_USAGE_PARAM, ItemUsageID);
+        internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.PNAME.ARROW_PARAM, AmmunitionID);
 
         public enum Offsets
         {

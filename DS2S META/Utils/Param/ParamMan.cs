@@ -36,7 +36,10 @@ namespace DS2S_META.Utils
         public static Param? WeaponReinforceParam => AllParams[PNAME.WEAPON_REINFORCE_PARAM];
         public static Param? WeaponTypeParam => AllParams[PNAME.WEAPON_TYPE_PARAM];
         public static Param? CustomAttrSpecParam => AllParams[PNAME.CUSTOM_ATTR_SPEC_PARAM];
-        
+        public static Param? PlayerStatusClassParam => AllParams[PNAME.PLAYER_STATUS_CLASS_PARAM];
+        public static Param? ItemUsageParam => AllParams[PNAME.ITEM_USAGE_PARAM];
+        public static Param? ArrowParam => AllParams[PNAME.ARROW_PARAM];
+
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
@@ -59,7 +62,10 @@ namespace DS2S_META.Utils
             d.Add(PNAME.WEAPON_TYPE_PARAM, "WEAPON_TYPE_PARAM");
             d.Add(PNAME.CUSTOM_ATTR_SPEC_PARAM, "CUSTOM_ATTR_SPEC_PARAM");
             d.Add(PNAME.WEAPON_STATS_AFFECT_PARAM, "WEAPON_STATS_AFFECT_PARAM");
-            
+            d.Add(PNAME.PLAYER_STATUS_CLASS_PARAM, "PLAYER_STATUS_PARAM");
+            d.Add(PNAME.ITEM_USAGE_PARAM, "ITEM_USAGE_PARAM");
+            d.Add(PNAME.ARROW_PARAM, "ARROW_PARAM");
+
             ParamStringNames = d;
             ParamsFromStrings = d.ToDictionary(kvp => kvp.Value, kvp => kvp.Key); // reverse them
         }
@@ -149,6 +155,18 @@ namespace DS2S_META.Utils
                     param.initialise<WeaponStatsAffectRow>();
                     break;
 
+                case PNAME.PLAYER_STATUS_CLASS_PARAM:
+                    param.initialise<PlayerStatusClassRow>();
+                    break;
+
+                case PNAME.ITEM_USAGE_PARAM:
+                    param.initialise<ItemUsageRow>();
+                    break;
+
+                case PNAME.ARROW_PARAM:
+                    param.initialise<ArrowRow>();
+                    break;
+
                 default:
                     // Generic no extension:
                     param.initialise<Param.Row>();
@@ -199,6 +217,9 @@ namespace DS2S_META.Utils
             WEAPON_TYPE_PARAM,
             CUSTOM_ATTR_SPEC_PARAM,
             WEAPON_STATS_AFFECT_PARAM,
+            PLAYER_STATUS_CLASS_PARAM,
+            ITEM_USAGE_PARAM,
+            ARROW_PARAM,
         }
 
 

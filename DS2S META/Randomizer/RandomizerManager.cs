@@ -125,6 +125,8 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             FixShopEvents1(); // Update PTF with shop places
+            RandomizeStartingClasses();
+            
             GetLootToRandomize(); // set Data field
             KeysPlacedSoFar = new List<int>(); // nice bug :)
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
@@ -161,6 +163,7 @@ namespace DS2S_META.Randomizer
             ParamMan.ShopLineupParam?.RestoreParam();
             Hook.ItemLotOtherParam?.RestoreParam();
             ParamMan.ItemParam?.RestoreParam();
+            ParamMan.PlayerStatusClassParam?.RestoreParam();
 
             // Force an area reload.
             Hook.WarpLast();
@@ -173,6 +176,157 @@ namespace DS2S_META.Randomizer
 
 
         // Core Logic
+        internal void RandomizeStartingClasses()
+        {
+            int BOSSSOULUSAGE = 2000;
+            int ITEMUSAGEKEY = 2700;
+            int SOULUSAGE = 1900;
+
+            var classids = new List<int>() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
+            var classrows = ParamMan.PlayerStatusClassParam?.Rows.Where(row => classids.Contains(row.ID))
+                                                            .OfType<PlayerStatusClassRow>();
+            if (classrows == null) throw new Exception("Failed to find classes in param");
+            
+            // Setup lists to draw from randomly:
+            var all_items = ParamMan.ItemParam?.Rows.OfType<ItemRow>();
+            var all_consumables = all_items?.Where(it => it.ItemType == eItemType.CONSUMABLE)
+                                            .Where(it => it.ItemUsageID != ITEMUSAGEKEY && it.ItemUsageID != BOSSSOULUSAGE)
+                                            .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_consumables == null) throw new Exception("Items not loaded from Param table");
+            //
+            var all_rings = all_items?.Where(it => it.ItemType == eItemType.RING)
+                                       .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_rings == null) throw new Exception("Rings not loaded correctly from param");
+            //
+            var all_weapons = all_items?.Where(it => it.ItemType == eItemType.WEAPON1 || it.ItemType == eItemType.WEAPON2)
+                                        .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_weapons == null) throw new Exception("Weapons not loaded correctly from ItemParam");
+            //
+            var all_arrows = all_items?.Where(it => it.ItemType == eItemType.AMMO)
+                                        .Where(it => it.ArrowRow?.AmmunitionType == (int)ArrowRow.AmmoType.ARROW).ToList();
+            if (all_arrows == null) throw new Exception("Arrows not loaded correctly from ItemParam");
+            //
+            var all_bolts = all_items?.Where(it => it.ItemType == eItemType.AMMO)
+                                        .Where(it => it.ArrowRow?.AmmunitionType == (int)ArrowRow.AmmoType.BOLT).ToList();
+            if (all_bolts == null) throw new Exception("Bolts not loaded correctly from ItemParam");
+            //
+            var all_head = all_items?.Where(it => it.ItemType == eItemType.HEADARMOUR)
+                                        .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_head == null) throw new Exception("Head armour not loaded correctly from ItemParam");
+            var all_body = all_items?.Where(it => it.ItemType == eItemType.CHESTARMOUR)
+                                        .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_body == null) throw new Exception("Body armour not loaded correctly from ItemParam");
+            var all_arms = all_items?.Where(it => it.ItemType == eItemType.GAUNTLETS)
+                                        .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_arms == null) throw new Exception("Arms armour not loaded correctly from ItemParam");
+            var all_legs = all_items?.Where(it => it.ItemType == eItemType.LEGARMOUR)
+                                        .Where(it => it.MetaItemName != String.Empty).ToList();
+            if (all_legs == null) throw new Exception("Legs armour not loaded correctly from ItemParam");
+
+            // Main randomizing loop for each class
+            foreach (var classrow in classrows)
+            {
+                // Delete the defaults:
+                classrow.Wipe();
+
+                // Class Items:
+                var numItems = RandomGammaInt(2, 1);
+                numItems = Math.Min(numItems, 7);
+
+                for (int i= 0; i < numItems; i++)
+                {
+                    var randitem = all_consumables[RNG.Next(all_consumables.Count)];
+                    classrow.WriteAtItemArray(i, randitem.ItemID);
+                    if (randitem.ItemUsageID == SOULUSAGE)
+                        classrow.WriteAtItemQuantArray(i, 1);
+                    else
+                        classrow.WriteAtItemQuantArray(i, (short)RNG.Next(5));
+                }
+
+                // Class Rings 15% chance:
+                int ringnum = 0;
+                while (RNG.Next(100) > 85 && ringnum < 4)
+                {
+                    var randring = all_rings[RNG.Next(all_rings.Count)];
+                    classrow.WriteAtRingArray(ringnum, randring.IconID); // if you allow +1 rings etc you don't get an icon!
+                    ringnum++;
+                };
+
+                // Class Right-hand weapons 40% chance:
+                int rhwepnum = 0;
+                while (RNG.Next(100) < 40 && rhwepnum < 3)
+                {
+                    var randwep = all_weapons[RNG.Next(all_weapons.Count)];
+                    classrow.WriteAtRHWepArray(rhwepnum, randwep.ItemID);
+                    classrow.WriteAtRHWepReinforceArray(rhwepnum, GetRandomReinforce());
+                    rhwepnum++;
+                };
+                
+                // Class Left-hand weapons 40% chance:
+                int lhwepnum = 0;
+                while (RNG.Next(100) < 40 && lhwepnum < 3)
+                {
+                    var randwep = all_weapons[RNG.Next(all_weapons.Count)];
+                    classrow.WriteAtLHWepArray(lhwepnum, randwep.ItemID);
+                    classrow.WriteAtLHWepReinforceArray(lhwepnum, GetRandomReinforce());
+                    lhwepnum++;
+                };
+
+                // Class Arrows 20% chance:
+                int arrownum = 0;
+                while (RNG.Next(100) < 20 && lhwepnum < 2)
+                {
+                    var randarrow = all_arrows[RNG.Next(all_arrows.Count)];
+                    classrow.WriteAtArrowArray(arrownum, randarrow.ItemID);
+                    classrow.WriteAtArrowAmountArray(arrownum, (short)RNG.Next(30));
+                    arrownum++;
+                };
+
+                // Class Bolts 20% chance:
+                int boltnum = 0;
+                while (RNG.Next(100) < 20 && lhwepnum < 2)
+                {
+                    var randbolt = all_bolts[RNG.Next(all_bolts.Count)];
+                    classrow.WriteAtBoltArray(boltnum, randbolt.ItemID);
+                    classrow.WriteAtBoltAmountArray(boltnum, (short)RNG.Next(30));
+                    boltnum++;
+                };
+
+                // Class Armour: each piece 50% chance
+                if (RNG.Next(100) < 50)
+                    classrow.HeadArmour = all_head[RNG.Next(all_head.Count)].ID;
+                if (RNG.Next(100) < 50)
+                    classrow.BodyArmour = all_body[RNG.Next(all_body.Count)].ID;
+                if (RNG.Next(100) < 50)
+                    classrow.HandsArmour = all_arms[RNG.Next(all_arms.Count)].ID;
+                if (RNG.Next(100) < 50)
+                    classrow.LegsArmour = all_legs[RNG.Next(all_legs.Count)].ID;
+
+                // Class Levels:
+                classrow.Vigor = GetRandomLevel();
+                classrow.Endurance = GetRandomLevel();
+                classrow.Attunement = GetRandomLevel();
+                classrow.Vitality = GetRandomLevel();
+                classrow.Strength = GetRandomLevel();
+                classrow.Dexterity = GetRandomLevel();
+                classrow.Intelligence = GetRandomLevel();
+                classrow.Faith = GetRandomLevel();
+                classrow.Adaptability = GetRandomLevel();
+                classrow.SetSoulLevel();
+
+                if (classrow.SoulLevel < 0)
+                {
+                    var diff_to_fix = Math.Abs(classrow.SoulLevel);
+                    // add it to vgr for now as testing:
+                    classrow.Vigor += (short)(diff_to_fix + 1);
+                    classrow.SetSoulLevel();
+                }
+                
+                // Commit all changes to memory
+                classrow.WriteRow();
+            }
+
+        }
         internal void GetLootToRandomize()
         {
             Data = new List<Randomization>(); // Reset
@@ -672,6 +826,22 @@ namespace DS2S_META.Randomizer
             double S = RVe.Sum();
             double RVgamma = S / scaleB;
             return RVgamma;
+        }
+        internal int GetRandomReinforce()
+        {
+            var tmp = RNG.Next(100);
+            if (tmp < 60) return 0;
+            if (tmp < 90) return 1;
+            if (tmp < 95) return 2;
+            if (tmp < 99) return 3;
+            return 4;
+        }
+        internal short GetRandomLevel()
+        {
+            int lvlmean = 7;
+            //var randlvl = (short)RandomGammaInt(lvlmean, 1);
+            var randlvl = (short)RandomGaussianInt(lvlmean, 3, 1);
+            return (short)(randlvl <= 0 ? 1 : randlvl);
         }
     }
 }
