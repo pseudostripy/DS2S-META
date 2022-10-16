@@ -232,7 +232,7 @@ namespace DS2S_META.Randomizer
                 if (shopkeep == null) throw new Exception("Error in finding linked shop ID");
                 
                 // Different situations to handle for trades/normal npc move events:
-                if (LE.FreeTrade || LE.CopyID != 0)
+                if (LE.IsTrade)
                 {
                     // All Ornifex trades (the ones with a "1" seem to be foricbly enabled after the free trade)
                     var shopft = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
