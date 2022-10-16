@@ -33,6 +33,7 @@ namespace DS2S_META.Randomizer
         private List<int> Unfilled = new();
         private List<int> KeysPlacedSoFar = new(); // to tidy
         internal int CurrSeed;
+        private const int FREETRADEEVENT = 100100;
         //
         internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -92,7 +93,6 @@ namespace DS2S_META.Randomizer
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             Logic = new CasualItemSet();
             FixShopEvents1(); // Update PTF with shop places
-            FixShopEvents2(); // Fix trades
             AddShopLogic();
 
             // Add descriptions
@@ -125,7 +125,6 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             FixShopEvents1(); // Update PTF with shop places
-            FixShopEvents2(); // Fix trades
             GetLootToRandomize(); // set Data field
             KeysPlacedSoFar = new List<int>(); // nice bug :)
             Unfilled = Enumerable.Range(0, Data.Count).ToList();
@@ -146,8 +145,12 @@ namespace DS2S_META.Randomizer
             await Task.Run(() => WriteShuffledLots());
             await Task.Run(() => WriteShuffledShops());
             FixMaughlinEvent();
+            FixOrnifexEvent();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
+
+            // maybe enable all the 1s too and see if they get removed on event
+
         }
         internal void Unrandomize()
         {
@@ -203,56 +206,58 @@ namespace DS2S_META.Randomizer
 
             // Go through and clone the "normal" shops:
             var PTF = new List<ShopRow>();
-            
             var LEvents = ShopRules.GetLinkedEvents();
 
             // Get list of all undisabled:
             var tokeep = LEvents.Select(le => le.KeepID);
             var tolose = LEvents.SelectMany(le => le.RemoveIDs);
 
+            // Clone vanilla shops, edit and then remove bad rows:
+            foreach(var SR in VanillaShops)
+                PTF.Add(SR.Clone()); 
 
-            foreach (var SR in VanillaShops)
+            // Remove exclusions from list
+            foreach(var excl in ShopRules.Exclusions)
             {
-                if (ShopRules.Exclusions.Contains(SR.ID))
-                    continue; // empty shops etc
+                var torem = PTF.FirstOrDefault(SR => SR.ID == excl);
+                if (torem == null) continue;
+                PTF.Remove(torem);
+            }
 
-                // Remove events:
-                if (tolose.Contains(SR.ID))
+            // Sort out linked events:
+            foreach (var LE in LEvents)
+            {
+                // Sort out tokeep
+                var shopkeep = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
+                if (shopkeep == null) throw new Exception("Error in finding linked shop ID");
+                
+                // Different situations to handle for trades/normal npc move events:
+                if (LE.FreeTrade || LE.CopyID != 0)
                 {
-                    SR.ClearShop();
-                    continue;
-                }
+                    // All Ornifex trades (the ones with a "1" seem to be foricbly enabled after the free trade)
+                    var shopft = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
+                    if (shopft == null) throw new Exception("Error finding trade ID");
+                    shopft.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+                    shopft.DisableFlag = -1;
+                    shopft.WriteRow(); // save to memory
 
-                // Keep and don't disable events:
-                if (tokeep.Contains(SR.ID))
+                    // Remove these from list of what is to be populated
+                    if (LE.CopyID != 0)
+                        PTF.Remove(shopft); // copy still happens in final function
+                }
+                
+                // Sort out to remove:
+                foreach(var torem in LE.RemoveIDs)
                 {
-                    var shopid = LEvents.Where(le => le.KeepID == SR.ID).First();
-                    var normshop = SR.Clone();
-                    normshop.DisableFlag = -1; // never disable
-                    PTF.Add(normshop);
-                    continue;
+                    var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
+                    if (shoprem == null) continue;
+                    shoprem.ClearShop(); // Memory write!
+                    PTF.Remove(shoprem);
                 }
-
-                // Everything else:
-                PTF.Add(SR.Clone());
             }
             FixedVanillaShops = PTF;
         }
-        internal void FixShopEvents2()
-        {
-            // This is for sorting out Straid/Ornifex trades
-            var LEvents = ShopRules.GetLinkedEvents();
-            var tradeshopsidlist = LEvents.Where(le => le.IsTrade).Select(le => le.KeepID);
-            var tradeshops = FixedVanillaShops.Where(shp => tradeshopsidlist.Contains(shp.ID));
-                                              
-            foreach (var SR in tradeshops)
-            {
-                SR.EnableFlag = -1; // enable immediately
-            }
-
-
-        }
-
+        
         internal void AddShopLogic()
         {
             foreach (var si in FixedVanillaShops)
@@ -575,6 +580,38 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
             WriteSomeShops(cloneshops, true);
+        }
+        internal void FixOrnifexEvent()
+        {
+            // Need to make her stuff copies of the freetrades for continuity
+            var ornifex_copies = ShopRules.GetLinkedEvents()
+                                          .Where(LE => LE.IsTrade && LE.CopyID != 0);
+
+            var updateshops = new List<ShopRow>();
+            foreach (LinkedShopEvent LE in ornifex_copies)
+            {
+                var shop_to_copy = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.CopyID).First();
+                if (shop_to_copy.ShuffledShop == null)
+                    throw new NullReferenceException("Shouldn't get here");
+
+                var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
+                if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
+                //var shop_to_edit = Data.OfType<ShopRdz>().FirstOrDefault(rdz => rdz.ParamID == LE.KeepID);
+
+                // Note the event enable/disable are already handled way earlier.
+                shop_to_edit.ItemID = shop_to_copy.ShuffledShop.ItemID;
+                shop_to_edit.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
+                shop_to_edit.Quantity = shop_to_copy.ShuffledShop.Quantity;
+                shop_to_edit.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
+
+                // Finally, fix the original shops to be free:
+                shop_to_copy.ShuffledShop.PriceRate = 0;
+                updateshops.Add(shop_to_copy.ShuffledShop);
+                updateshops.Add(shop_to_edit);
+            }
+
+            if (Hook == null) return;
+            WriteSomeShops(updateshops, true);
         }
 
         // RNG related:

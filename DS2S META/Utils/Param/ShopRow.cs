@@ -145,13 +145,6 @@ namespace DS2S_META.Randomizer
             Quantity = 0;
             StoreRow();
         }
-        public void WriteAt(int fieldindex, byte[] valuebytes)
-        {
-            // Note: this function isn't generalised properly yet
-            int fieldoffset = Param.Fields[fieldindex].FieldOffset;
-            Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
-        }
-        public object ReadAt(int fieldindex) => Data[fieldindex];
         public void StoreRow()
         {
             // Convenience wrapper

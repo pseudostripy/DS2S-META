@@ -16,6 +16,25 @@ namespace DS2S_META.Randomizer
             };
             return lse;
         }
+        private static LinkedShopEvent FreeTradeShop(int keepID, params int[] removeIDs)
+        {
+            var lse = new LinkedShopEvent(keepID, removeIDs)
+            {
+                IsTrade = true,
+                FreeTrade = true,
+            };
+            return lse;
+        }
+        private static LinkedShopEvent TradeShopCopy(int copyID, int keepID, params int[] removeIDs)
+        {
+            var lse = new LinkedShopEvent(keepID, removeIDs)
+            {
+                IsTrade = true,
+                FreeTrade = false,
+                CopyID = copyID,
+            };
+            return lse;
+        }
 
         internal static List<LinkedShopEvent> GetLinkedEvents() 
         {
@@ -116,45 +135,133 @@ namespace DS2S_META.Randomizer
                 new LinkedShopEvent(76900309, 76900319), // Licia Guidance
             
                 // 1000s = Normal 1100 = ??, 2000 = free, 2100 = ??
-                TradeShop(77601000, 77601100, 77602000, 77602100), // Ornifex Dragonslayer Spear
-                TradeShop(77601001, 77601101, 77602001, 77602101), // Ornifex Lost Sinner Sword
-                TradeShop(77601002, 77601102, 77602002, 77602102), // Ornifex Iron King Hammer
-                TradeShop(77601003, 77601103, 77602003, 77602103), // Ornifex Butcher's Knife
-                TradeShop(77601004, 77601104, 77602004, 77602104), // Ornifex Spider's Silk
-                TradeShop(77601005, 77601105, 77602005, 77602105), // Ornifex Spider's Fang
-                TradeShop(77601006, 77601106, 77602006, 77602106), // Ornifex Thorned Greatsword
-                TradeShop(77601007, 77601107, 77602007, 77602107), // Ornifex King's Mirror
-                TradeShop(77601008, 77601108, 77602008, 77602108), // Ornifex Sacred Chime Hammer
-                TradeShop(77601009, 77601109, 77602009, 77602109), // Ornifex Ruler's Sword
-                TradeShop(77601010, 77601110, 77602010, 77602110), // Ornifex King's UGS
-                TradeShop(77601011, 77601111, 77602011, 77602111), // Ornifex King's Shield
-                TradeShop(77601012, 77601112, 77602012, 77602112), // Ornifex Spitfire Spear
-                TradeShop(77601013, 77601113, 77602013, 77602113), // Ornifex Drakewing UGS
-                TradeShop(77601014, 77601114, 77602014, 77602114), // Ornifex Curved Dragon Greatsword
-                TradeShop(77601015, 77601115, 77602015, 77602115), // Ornifex Scythe of Want
-                TradeShop(77601016, 77601116, 77602016, 77602116), // Ornifex Chimne of Want
-                TradeShop(77601017, 77601117, 77602017, 77602117), // Ornifex Bow of Want
-                TradeShop(77601018, 77601118, 77602018, 77602118), // Ornifex Defender's Greatsword
-                TradeShop(77601019, 77601119, 77602019, 77602119), // Ornifex Defender's Shield
-                TradeShop(77601020, 77601120, 77602020, 77602120), // Ornifex Watcher's Greatsword
-                TradeShop(77601021, 77601121, 77602021, 77602121), // Ornifex Watcher's Shield
+                //TradeShop(77601000, 77601100, 77602000, 77602100), // Ornifex Dragonslayer Spear
+                //TradeShop(77601001, 77601101, 77602001, 77602101), // Ornifex Lost Sinner Sword
+                //TradeShop(77601002, 77601102, 77602002, 77602102), // Ornifex Iron King Hammer
+                //TradeShop(77601003, 77601103, 77602003, 77602103), // Ornifex Butcher's Knife
+                //TradeShop(77601004, 77601104, 77602004, 77602104), // Ornifex Spider's Silk
+                //TradeShop(77601005, 77601105, 77602005, 77602105), // Ornifex Spider's Fang
+                //TradeShop(77601006, 77601106, 77602006, 77602106), // Ornifex Thorned Greatsword
+                //TradeShop(77601007, 77601107, 77602007, 77602107), // Ornifex King's Mirror
+                //TradeShop(77601008, 77601108, 77602008, 77602108), // Ornifex Sacred Chime Hammer
+                //TradeShop(77601009, 77601109, 77602009, 77602109), // Ornifex Ruler's Sword
+                //TradeShop(77601010, 77601110, 77602010, 77602110), // Ornifex King's UGS
+                //TradeShop(77601011, 77601111, 77602011, 77602111), // Ornifex King's Shield
+                //TradeShop(77601012, 77601112, 77602012, 77602112), // Ornifex Spitfire Spear
+                //TradeShop(77601013, 77601113, 77602013, 77602113), // Ornifex Drakewing UGS
+                //TradeShop(77601014, 77601114, 77602014, 77602114), // Ornifex Curved Dragon Greatsword
+                //TradeShop(77601015, 77601115, 77602015, 77602115), // Ornifex Scythe of Want
+                //TradeShop(77601016, 77601116, 77602016, 77602116), // Ornifex Chimne of Want
+                //TradeShop(77601017, 77601117, 77602017, 77602117), // Ornifex Bow of Want
+                //TradeShop(77601018, 77601118, 77602018, 77602118), // Ornifex Defender's Greatsword
+                //TradeShop(77601019, 77601119, 77602019, 77602119), // Ornifex Defender's Shield
+                //TradeShop(77601020, 77601120, 77602020, 77602120), // Ornifex Watcher's Greatsword
+                //TradeShop(77601021, 77601121, 77602021, 77602121), // Ornifex Watcher's Shield
+                
+                
+                //FreeTradeShop(77602000, 77602100), // Ornifex Dragonslayer Spear
+                //FreeTradeShop(77602001, 77602101), // Ornifex Lost Sinner Sword
+                //FreeTradeShop(77602002, 77602102), // Ornifex Iron King Hammer
+                //FreeTradeShop(77602003, 77602103), // Ornifex Butcher's Knife
+                //FreeTradeShop(77602004, 77602104), // Ornifex Spider's Silk
+                //FreeTradeShop(77602005, 77602105), // Ornifex Spider's Fang
+                //FreeTradeShop(77602006, 77602106), // Ornifex Thorned Greatsword
+                //FreeTradeShop(77602007, 77602107), // Ornifex King's Mirror
+                //FreeTradeShop(77602008, 77602108), // Ornifex Sacred Chime Hammer
+                //FreeTradeShop(77602009, 77602109), // Ornifex Ruler's Sword
+                //FreeTradeShop(77602010, 77602110), // Ornifex King's UGS
+                //FreeTradeShop(77602011, 77602111), // Ornifex King's Shield
+                //FreeTradeShop(77602012, 77602112), // Ornifex Spitfire Spear
+                //FreeTradeShop(77602013, 77602113), // Ornifex Drakewing UGS
+                //FreeTradeShop(77602014, 77602114), // Ornifex Curved Dragon Greatsword
+                //FreeTradeShop(77602015, 77602115), // Ornifex Scythe of Want
+                //FreeTradeShop(77602016, 77602116), // Ornifex Chimne of Want
+                //FreeTradeShop(77602017, 77602117), // Ornifex Bow of Want
+                //FreeTradeShop(77602018, 77602118), // Ornifex Defender's Greatsword
+                //FreeTradeShop(77602019, 77602119), // Ornifex Defender's Shield
+                //FreeTradeShop(77602020, 77602120), // Ornifex Watcher's Greatsword
+                //FreeTradeShop(77602021, 77602121), // Ornifex Watcher's Shield
+                FreeTradeShop(77602000), // Ornifex Dragonslayer Spear
+                FreeTradeShop(77602001), // Ornifex Lost Sinner Sword
+                FreeTradeShop(77602002), // Ornifex Iron King Hammer
+                FreeTradeShop(77602003), // Ornifex Butcher's Knife
+                FreeTradeShop(77602004), // Ornifex Spider's Silk
+                FreeTradeShop(77602005), // Ornifex Spider's Fang
+                FreeTradeShop(77602006), // Ornifex Thorned Greatsword
+                FreeTradeShop(77602007), // Ornifex King's Mirror
+                FreeTradeShop(77602008), // Ornifex Sacred Chime Hammer
+                FreeTradeShop(77602009), // Ornifex Ruler's Sword
+                FreeTradeShop(77602010), // Ornifex King's UGS
+                FreeTradeShop(77602011), // Ornifex King's Shield
+                FreeTradeShop(77602012), // Ornifex Spitfire Spear
+                FreeTradeShop(77602013), // Ornifex Drakewing UGS
+                FreeTradeShop(77602014), // Ornifex Curved Dragon Greatsword
+                FreeTradeShop(77602015), // Ornifex Scythe of Want
+                FreeTradeShop(77602016), // Ornifex Chimne of Want
+                FreeTradeShop(77602017), // Ornifex Bow of Want
+                FreeTradeShop(77602018), // Ornifex Defender's Greatsword
+                FreeTradeShop(77602019), // Ornifex Defender's Shield
+                FreeTradeShop(77602020), // Ornifex Watcher's Greatsword
+                FreeTradeShop(77602021), // Ornifex Watcher's Shield
 
-                TradeShop(77601022, 77602022), // Ornifex Moonlight Greatsword
-                TradeShop(77601023, 77602023), // Ornifex Crypt Blacksword
-                TradeShop(77601024, 77602024), // Ornifex Chaos Blade
-                TradeShop(77601025, 77602025), // Ornifex Dragonslayer Greatbow
-                TradeShop(77601026, 77602026), // Ornifex Yorgh's Spear
-                TradeShop(77601027, 77602027), // Ornifex Wrathful Axe
-                TradeShop(77601028, 77602028), // Ornifex Chime Of Screams
-                TradeShop(77601029, 77602029), // Ornifex Fume Sword
-                TradeShop(77601030, 77602030), // Ornifex Fume UGS
-                TradeShop(77601031, 77602031), // Ornifex Bewitched Alonne Sword
-                TradeShop(77601032, 77602032), // Ornifex Aged Smelter Sword
-                TradeShop(77601033, 77602033), // Ornifex Ivory Straight Sword
-                TradeShop(77601034, 77602034), // Ornifex Loyce Shield
-                TradeShop(77601035, 77602035), // Ornifex Loyce Greatsword
-                TradeShop(77601036, 77602036), // Ornifex Ivory King UGS
-                TradeShop(77601037, 77602037), // Ornifex Eleum Loyce
+                FreeTradeShop(77602022), // Ornifex Moonlight Greatsword
+                FreeTradeShop(77602023), // Ornifex Crypt Blacksword
+                FreeTradeShop(77602024), // Ornifex Chaos Blade
+                FreeTradeShop(77602025), // Ornifex Dragonslayer Greatbow
+                FreeTradeShop(77602026), // Ornifex Yorgh's Spear
+                FreeTradeShop(77602027), // Ornifex Wrathful Axe
+                FreeTradeShop(77602028), // Ornifex Chime Of Screams
+                FreeTradeShop(77602029), // Ornifex Fume Sword
+                FreeTradeShop(77602030), // Ornifex Fume UGS
+                FreeTradeShop(77602031), // Ornifex Bewitched Alonne Sword
+                FreeTradeShop(77602032), // Ornifex Aged Smelter Sword
+                FreeTradeShop(77602033), // Ornifex Ivory Straight Sword
+                FreeTradeShop(77602034), // Ornifex Loyce Shield
+                FreeTradeShop(77602035), // Ornifex Loyce Greatsword
+                FreeTradeShop(77602036), // Ornifex Ivory King UGS
+                FreeTradeShop(77602037), // Ornifex Eleum Loyce
+
+                ////
+                //// Copy, Keep, Remove
+                TradeShopCopy(77602000, 77601000, 77601100), // Ornifex Dragonslayer Spear
+                TradeShopCopy(77602001, 77601001, 77601101), // Ornifex Lost Sinner Sword
+                TradeShopCopy(77602002, 77601002, 77601102), // Ornifex Iron King Hammer
+                TradeShopCopy(77602003, 77601003, 77601103), // Ornifex Butcher's Knife
+                TradeShopCopy(77602004, 77601004, 77601104), // Ornifex Spider's Silk
+                TradeShopCopy(77602005, 77601005, 77601105), // Ornifex Spider's Fang
+                TradeShopCopy(77602006, 77601006, 77601106), // Ornifex Thorned Greatsword
+                TradeShopCopy(77602007, 77601007, 77601107), // Ornifex King's Mirror
+                TradeShopCopy(77602008, 77601008, 77601108), // Ornifex Sacred Chime Hammer
+                TradeShopCopy(77602009, 77601009, 77601109), // Ornifex Ruler's Sword
+                TradeShopCopy(77602010, 77601010, 77601110), // Ornifex King's UGS
+                TradeShopCopy(77602011, 77601011, 77601111), // Ornifex King's Shield
+                TradeShopCopy(77602012, 77601012, 77601112), // Ornifex Spitfire Spear
+                TradeShopCopy(77602013, 77601013, 77601113), // Ornifex Drakewing UGS
+                TradeShopCopy(77602014, 77601014, 77601114), // Ornifex Curved Dragon Greatsword
+                TradeShopCopy(77602015, 77601015, 77601115), // Ornifex Scythe of Want
+                TradeShopCopy(77602016, 77601016, 77601116), // Ornifex Chimne of Want
+                TradeShopCopy(77602017, 77601017, 77601117), // Ornifex Bow of Want
+                TradeShopCopy(77602018, 77601018, 77601118), // Ornifex Defender's Greatsword
+                TradeShopCopy(77602019, 77601019, 77601119), // Ornifex Defender's Shield
+                TradeShopCopy(77602020, 77601020, 77601120), // Ornifex Watcher's Greatsword
+                TradeShopCopy(77602021, 77601021, 77601121), // Ornifex Watcher's Shield
+
+                TradeShopCopy(77602022, 77601022), // Ornifex Moonlight Greatsword
+                TradeShopCopy(77602023, 77601023), // Ornifex Crypt Blacksword
+                TradeShopCopy(77602024, 77601024), // Ornifex Chaos Blade
+                TradeShopCopy(77602025, 77601025), // Ornifex Dragonslayer Greatbow
+                TradeShopCopy(77602026, 77601026), // Ornifex Yorgh's Spear
+                TradeShopCopy(77602027, 77601027), // Ornifex Wrathful Axe
+                TradeShopCopy(77602028, 77601028), // Ornifex Chime Of Screams
+                TradeShopCopy(77602029, 77601029), // Ornifex Fume Sword
+                TradeShopCopy(77602030, 77601030), // Ornifex Fume UGS
+                TradeShopCopy(77602031, 77601031), // Ornifex Bewitched Alonne Sword
+                TradeShopCopy(77602032, 77601032), // Ornifex Aged Smelter Sword
+                TradeShopCopy(77602033, 77601033), // Ornifex Ivory Straight Sword
+                TradeShopCopy(77602034, 77601034), // Ornifex Loyce Shield
+                TradeShopCopy(77602035, 77601035), // Ornifex Loyce Greatsword
+                TradeShopCopy(77602036, 77601036), // Ornifex Ivory King UGS
+                TradeShopCopy(77602037, 77601037), // Ornifex Eleum Loyce
                 //
                 new LinkedShopEvent(77700600, 77700604), // Shalquoir Prism Stones
                 new LinkedShopEvent(77700601, 77700605), // Shalquoir Alluring Skulls
@@ -187,6 +294,8 @@ namespace DS2S_META.Randomizer
         internal int KeepID;
         internal List<int> RemoveIDs;
         internal bool IsTrade = false;
+        internal bool FreeTrade = false;
+        internal int CopyID = 0;
 
         internal LinkedShopEvent(int keepID, params int[] removeIDs)
         {
