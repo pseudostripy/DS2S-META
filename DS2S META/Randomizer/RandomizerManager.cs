@@ -240,7 +240,13 @@ namespace DS2S_META.Randomizer
                     if (randitem.ItemUsageID == SOULUSAGE)
                         classrow.WriteAtItemQuantArray(i, 1);
                     else
-                        classrow.WriteAtItemQuantArray(i, (short)RNG.Next(5));
+                    {
+                        var quant = RNG.Next(5);
+                        if (quant == 0)
+                            quant = 1;
+                        classrow.WriteAtItemQuantArray(i, (short)quant);
+                    }
+                        
                 }
 
                 // Class Rings 15% chance:
