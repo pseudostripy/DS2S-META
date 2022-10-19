@@ -320,7 +320,7 @@ namespace DS2S_META.Randomizer
                 classrow.Adaptability = GetRandomLevel();
                 classrow.SetSoulLevel();
 
-                if (classrow.SoulLevel < 0)
+                if (classrow.SoulLevel <= 0)
                 {
                     var diff_to_fix = Math.Abs(classrow.SoulLevel);
                     // add it to vgr for now as testing:

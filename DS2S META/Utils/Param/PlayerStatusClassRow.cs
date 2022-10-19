@@ -11,6 +11,8 @@ namespace DS2S_META.Utils
     /// </summary>
     public class PlayerStatusClassRow : Param.Row
     {
+        public const int SL_OFFSET = 53; // all stats 6 = SL1
+
         // Behind-fields
         private short _soulLevel;
         private short _vigor;
@@ -208,7 +210,7 @@ namespace DS2S_META.Utils
         {
             var sumlevel = Vigor + Endurance + Attunement + Vitality + Strength
                                 + Dexterity + Intelligence + Faith + Adaptability;
-            SoulLevel = (short)((short)sumlevel - 54);
+            SoulLevel = (short)((short)sumlevel - SL_OFFSET);
         }
 
 
