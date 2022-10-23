@@ -64,11 +64,13 @@ namespace DS2S_META.Randomizer
                 ShopCopy(70400602, 70400605), // Gilligan bleeding serum
                 //new LinkedShopEvent(70400602, 70400605), // Gilligan bleeding serum
                 //
-                new LinkedShopEvent(72600400, 72600401, 72600402), // Gavlan Ring of Giants
-                new LinkedShopEvent(72600600, 72600604), // Gavlan poison moss
-                new LinkedShopEvent(72600601, 72600605), // Gavlan rotten pine resin
-                new LinkedShopEvent(72600602, 72600606), // Gavlan poison throwing knife
-                new LinkedShopEvent(72600603, 72600607), // Gavlan poison arrow
+                //new LinkedShopEvent(72600400, 72600401, 72600402), // Gavlan Ring of Giants
+                ShopCopy(72600400, 72600401), // Gavlan Ring of Giants
+                ShopCopy(72600400, 72600402), // Gavlan Ring of Giants
+                ShopCopy(72600600, 72600604), // Gavlan poison moss
+                ShopCopy(72600601, 72600605), // Gavlan rotten pine resin
+                ShopCopy(72600602, 72600606), // Gavlan poison throwing knife
+                ShopCopy(72600603, 72600607), // Gavlan poison arrow
                 //
                 new LinkedShopEvent(75400600, 75400601), // Melentia lifegems
                 new LinkedShopEvent(75400609, 75400610, 75400611, 75400612, 75400613, 75400614), // Melentia brightbugs

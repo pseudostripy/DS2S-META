@@ -796,6 +796,8 @@ namespace DS2S_META.Randomizer
 
         internal void FixGilliganEvent()
         {
+            // And Gavlan Events
+
             // Need to make her stuff copies of the freetrades for continuity
             var updateshops = new List<ShopRow>();
 
@@ -805,9 +807,6 @@ namespace DS2S_META.Randomizer
                 if (shop_to_copy.ShuffledShop == null)
                     throw new NullReferenceException("Shouldn't get here");
 
-                //var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
-                //if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
-                
                 // Note the event enable/disable are already handled way earlier.
                 shp.ItemID = shop_to_copy.ShuffledShop.ItemID;
                 shp.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
