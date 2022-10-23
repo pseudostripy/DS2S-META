@@ -102,6 +102,8 @@ namespace DS2S_META.Randomizer
         }
         internal string? ParamDesc => Desc;
 
+        internal int CopyShopFromParamID = 0;
+
         // Constructors:
         public ShopRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {

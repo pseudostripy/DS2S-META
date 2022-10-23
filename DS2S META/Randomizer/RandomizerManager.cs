@@ -20,6 +20,7 @@ namespace DS2S_META.Randomizer
         internal static Random RNG = new Random();
         private List<ItemLot> VanillaLots = new();
         private List<ShopRow> VanillaShops = new();
+        internal List<ShopRow> ShopsToFillByCopying = new();
         private List<ShopRow> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
         internal ItemSetBase Logic = new CasualItemSet();
         internal List<DropInfo> LTR_flatlist = new();
@@ -124,6 +125,7 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
+            ShopsToFillByCopying = new(); // reset this list
             FixShopEvents1(); // Update PTF with shop places
             RandomizeStartingClasses();
             
@@ -146,8 +148,7 @@ namespace DS2S_META.Randomizer
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
             await Task.Run(() => WriteShuffledShops());
-            FixMaughlinEvent();
-            FixOrnifexEvent();
+            FixFinalShopEvents();
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
 
@@ -359,6 +360,12 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
             FixFlatList(); // ensure correct number of keys etc
         }
+        private void FixFinalShopEvents()
+        {
+            FixMaughlinEvent();
+            FixOrnifexEvent();
+            FixGilliganEvent();
+        }
         internal void FixShopEvents1()
         {
             // This function stops shops from re-randomizing
@@ -404,10 +411,23 @@ namespace DS2S_META.Randomizer
                     // Remove these from list of what is to be populated
                     if (LE.CopyID != 0)
                         PTF.Remove(shopft); // copy still happens in final function
+                } 
+                
+                else if (LE.IsCopy)
+                {
+                    foreach (var torem in LE.RemoveIDs)
+                    {
+                        var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
+                        if (shoprem == null) continue;
+                        shoprem.ClearShop(); // Memory write!
+                        shoprem.CopyShopFromParamID = LE.CopyID;
+                        ShopsToFillByCopying.Add(shoprem); // add it to the "deal with later" list
+                        PTF.Remove(shoprem); // remove from "deal with now" list
+                    }
                 }
                 
                 // Sort out to remove:
-                foreach(var torem in LE.RemoveIDs)
+                foreach (var torem in LE.RemoveIDs)
                 {
                     var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
                     if (shoprem == null) continue;
@@ -768,6 +788,34 @@ namespace DS2S_META.Randomizer
                 shop_to_copy.ShuffledShop.PriceRate = 0;
                 updateshops.Add(shop_to_copy.ShuffledShop);
                 updateshops.Add(shop_to_edit);
+            }
+
+            if (Hook == null) return;
+            WriteSomeShops(updateshops, true);
+        }
+
+        internal void FixGilliganEvent()
+        {
+            // Need to make her stuff copies of the freetrades for continuity
+            var updateshops = new List<ShopRow>();
+
+            foreach (var shp in ShopsToFillByCopying)
+            {
+                var shop_to_copy = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == shp.CopyShopFromParamID).First();
+                if (shop_to_copy.ShuffledShop == null)
+                    throw new NullReferenceException("Shouldn't get here");
+
+                //var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
+                //if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
+                
+                // Note the event enable/disable are already handled way earlier.
+                shp.ItemID = shop_to_copy.ShuffledShop.ItemID;
+                shp.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
+                shp.Quantity = shop_to_copy.ShuffledShop.Quantity;
+                shp.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
+
+                // Add to list to commit to memory
+                updateshops.Add(shp);
             }
 
             if (Hook == null) return;

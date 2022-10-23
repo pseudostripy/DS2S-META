@@ -35,23 +35,34 @@ namespace DS2S_META.Randomizer
             };
             return lse;
         }
+        private static LinkedShopEvent ShopCopy(int copyID, params int[] removeIDs)
+        {
+            var lse = new LinkedShopEvent(copyID, removeIDs)
+            {
+                IsTrade = false,
+                FreeTrade = false,
+                CopyID = copyID,
+            };
+            return lse;
+        }
 
         internal static List<LinkedShopEvent> GetLinkedEvents() 
         {
             List<LinkedShopEvent> LinkedEvents = new List<LinkedShopEvent>()
             {
-                new LinkedShopEvent(70400000, 70400004), // Gilligan club
-                new LinkedShopEvent(70400001, 70400005), // Gilligan claws
-                new LinkedShopEvent(70400002, 70400006), // Gilligan whip
-                new LinkedShopEvent(70400003, 70400007), // Gilligan wooden shield
-                new LinkedShopEvent(70400200, 70400204), // Gilligan thief mask
-                new LinkedShopEvent(70400201, 70400205), // Gilligan black leather armour
-                new LinkedShopEvent(70400202, 70400206), // Gilligan black leather gloves
-                new LinkedShopEvent(70400203, 70400207), // Gilligan black leather boots
-                new LinkedShopEvent(70400500, 70400501), // Gilligan ladder miniature
-                new LinkedShopEvent(70400600, 70400603), // Gilligan ooze
-                new LinkedShopEvent(70400601, 70400604), // Gilligan lacerating knife
-                new LinkedShopEvent(70400602, 70400605), // Gilligan bleeding serum
+                ShopCopy(70400000, 70400004), // Gilligan club
+                ShopCopy(70400001, 70400005), // Gilligan claws
+                ShopCopy(70400002, 70400006), // Gilligan whip
+                ShopCopy(70400003, 70400007), // Gilligan wooden shield
+                ShopCopy(70400200, 70400204), // Gilligan thief mask
+                ShopCopy(70400201, 70400205), // Gilligan black leather armour
+                ShopCopy(70400202, 70400206), // Gilligan black leather gloves
+                ShopCopy(70400203, 70400207), // Gilligan black leather boots
+                ShopCopy(70400500, 70400501), // Gilligan ladder miniature
+                ShopCopy(70400600, 70400603), // Gilligan ooze
+                ShopCopy(70400601, 70400604), // Gilligan lacerating knife
+                ShopCopy(70400602, 70400605), // Gilligan bleeding serum
+                //new LinkedShopEvent(70400602, 70400605), // Gilligan bleeding serum
                 //
                 new LinkedShopEvent(72600400, 72600401, 72600402), // Gavlan Ring of Giants
                 new LinkedShopEvent(72600600, 72600604), // Gavlan poison moss
@@ -296,6 +307,7 @@ namespace DS2S_META.Randomizer
         internal bool IsTrade = false;
         internal bool FreeTrade = false;
         internal int CopyID = 0;
+        internal bool IsCopy => CopyID != 0;
 
         internal LinkedShopEvent(int keepID, params int[] removeIDs)
         {
