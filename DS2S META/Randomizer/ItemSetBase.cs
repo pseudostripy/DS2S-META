@@ -358,6 +358,11 @@ namespace DS2S_META.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(desc, PICKUPTYPE.BOSS, new KeySet(reqkey));
         }
+        internal RandoInfo BossVolInfo(string desc, KEYID reqkey = KEYID.NONE)
+        {
+            // This is essentially a flag on top of safeinfo
+            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), new KeySet(reqkey));
+        }
         internal RandoInfo BossNGPlusInfo(string desc, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
@@ -496,7 +501,9 @@ namespace DS2S_META.Randomizer
             }
             return true; // No keyset has all keys placed yet, so this is dangerous; try somewhere else
         }
-        private bool IsPlaced(KEYID kid, List<int> placedSoFar)
+        
+        // Softlock logic:
+        private static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
             // Function to handle different checks depending on KeyTypes I guess:
             switch (kid)

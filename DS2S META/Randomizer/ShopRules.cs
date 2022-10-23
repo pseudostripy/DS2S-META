@@ -62,9 +62,7 @@ namespace DS2S_META.Randomizer
                 ShopCopy(70400600, 70400603), // Gilligan ooze
                 ShopCopy(70400601, 70400604), // Gilligan lacerating knife
                 ShopCopy(70400602, 70400605), // Gilligan bleeding serum
-                //new LinkedShopEvent(70400602, 70400605), // Gilligan bleeding serum
                 //
-                //new LinkedShopEvent(72600400, 72600401, 72600402), // Gavlan Ring of Giants
                 ShopCopy(72600400, 72600401), // Gavlan Ring of Giants
                 ShopCopy(72600400, 72600402), // Gavlan Ring of Giants
                 ShopCopy(72600600, 72600604), // Gavlan poison moss
@@ -74,17 +72,7 @@ namespace DS2S_META.Randomizer
                 //
                 new LinkedShopEvent(75400600, 75400601), // Melentia lifegems
                 new LinkedShopEvent(75400609, 75400610, 75400611, 75400612, 75400613, 75400614), // Melentia brightbugs
-                //
-                // Maughlin is handled separately because of memes
-                //new LinkedShopEvent(76100211, 76100219), // Maughlin royal sodlier helm
-                //new LinkedShopEvent(76100212, 76100220), // Maughlin royal sodlier armour
-                //new LinkedShopEvent(76100213, 76100221), // Maughlin royal sodlier gauntlets
-                //new LinkedShopEvent(76100214, 76100222), // Maughlin royal sodlier leggings
-                //new LinkedShopEvent(76100215, 76100223), // Maughlin elite knight helm
-                //new LinkedShopEvent(76100216, 76100224), // Maughlin elite knight armour
-                //new LinkedShopEvent(76100217, 76100225), // Maughlin elite knight gauntlets
-                //new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
-            
+
                 // Note: Chloanne's descriptions are messed up:
                 new LinkedShopEvent(76200600, 76200601), // Chloanne bonfire ascetic
                 new LinkedShopEvent(76200602, 76200603), // Chloanne large titanite shard

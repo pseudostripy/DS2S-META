@@ -793,7 +793,6 @@ namespace DS2S_META.Randomizer
             if (Hook == null) return;
             WriteSomeShops(updateshops, true);
         }
-
         internal void FixGilliganEvent()
         {
             // And Gavlan Events

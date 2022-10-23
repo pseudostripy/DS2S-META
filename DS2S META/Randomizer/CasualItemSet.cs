@@ -768,7 +768,7 @@ namespace DS2S_META.Randomizer
             D.Add(309610, BossInfo("[Drangleic] Twin Dragonriders drop", KEYID.DRANGLEIC));
             D.Add(332000, BossInfo("[Drangleic] Throne Watcher and Defender drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
             D.Add(332001, BossNGPlusInfo("[Drangleic] Throne Watcher and Defender drop in NG+", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
-            D.Add(627000, BossInfo("[Drangleic] Nashandra drop", KSO(KEYID.DRANGLEIC, KEYID.KINGSRING)));
+            D.Add(627000, BossVolInfo("[Drangleic] Nashandra drop", KEYID.CREDITS));
             D.Add(2006000, CovFineInfo("[Drangleic] Pilgrims of Dark join", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC)));
             D.Add(2006011, CovFineInfo("[Drangleic] Pilgrims of Dark, one dungeon cleared", KEYID.DARKLURKER));
             D.Add(2006012, CovFineInfo("[Drangleic] Pilgrims of Dark, three dungeons cleared", KEYID.DARKLURKER));
