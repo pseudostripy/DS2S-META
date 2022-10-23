@@ -135,7 +135,7 @@ namespace DS2S_META
             {
                 Title = "New Update Available",
                 Width = 450,
-                Height = 215
+                Height = 280
             };
             warning.ShowDialog();
         }
