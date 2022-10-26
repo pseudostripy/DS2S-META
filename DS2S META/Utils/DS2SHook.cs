@@ -711,7 +711,7 @@ namespace DS2S_META
             Array.Copy(bytes, 0x0, asm, 0x1A, bytes.Length);
             bytes = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
             Array.Copy(bytes, 0x0, asm, 0x2E, bytes.Length);
-
+             
             Execute(asm);
             Free(effectStruct);
             Free(unk);
