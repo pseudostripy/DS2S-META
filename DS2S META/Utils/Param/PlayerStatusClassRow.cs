@@ -175,7 +175,7 @@ namespace DS2S_META.Utils
             for (int i = 0; i < 10; i++)
             {
                 WriteAtItemArray(i, -1);
-                WriteAtArrowAmountArray(i, 0);
+                WriteAtItemQuantArray(i, 0);
                 WriteAtSpellArray(i, -1);
             }
 

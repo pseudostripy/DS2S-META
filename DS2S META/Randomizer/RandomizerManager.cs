@@ -291,7 +291,7 @@ namespace DS2S_META.Randomizer
 
                 // Class Bolts 20% chance:
                 int boltnum = 0;
-                while (RNG.Next(100) < 20 && lhwepnum < 2)
+                while (RNG.Next(100) < 20 && boltnum < 2)
                 {
                     var randbolt = all_bolts[RNG.Next(all_bolts.Count)];
                     classrow.WriteAtBoltArray(boltnum, randbolt.ItemID);
