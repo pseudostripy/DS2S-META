@@ -133,7 +133,6 @@ namespace DS2S_META
             AvailableItemBag = BlankPHP;
             ItemGiveWindow = BlankPHP;
             PlayerBaseMisc = BlankPHP;
-            PlayerCtrl = BlankPHP;
             PlayerPosition = BlankPHP;
             PlayerGravity = BlankPHP;
             PlayerParam = BlankPHP;
