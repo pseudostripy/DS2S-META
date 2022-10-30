@@ -173,8 +173,8 @@ namespace DS2S_META
             }
 
             Version = "Scholar";
-
-            BaseA = CreateBasePointer(BasePointerFromSetupPointer(BaseASetup));
+            IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
+            BaseA = CreateBasePointer(bp_orig);
             if (BaseA.Resolve() == IntPtr.Zero)
             {
                 BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
@@ -236,6 +236,7 @@ namespace DS2S_META
         {
             Version = "Not Hooked";
             Setup = false;
+            ParamMan.Uninitialise();
         }
 
         public void UpdateName()

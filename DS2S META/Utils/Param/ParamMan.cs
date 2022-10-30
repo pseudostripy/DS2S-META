@@ -48,6 +48,15 @@ namespace DS2S_META.Utils
             BuildParamDictionary();
             IsLoaded = true;
         }
+        public static void Uninitialise()
+        {
+            // OnUnhooked
+            RawParamsList = new();
+            AllParams = new();
+            ParamStringNames = new();
+            ParamsFromStrings = new();
+            _loaded = false;
+    }
 
         // Core setup:
         private static void SetupParamStringNames()
