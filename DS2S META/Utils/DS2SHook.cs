@@ -87,8 +87,8 @@ namespace DS2S_META
         
         private PHPointer ItemUseageParam;
         private PHPointer ItemLotDropsParam; // Enemy drop tables
-        
-        
+
+        private PHPointer BaseASetup;
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
         private PHPointer Connection;
@@ -113,11 +113,13 @@ namespace DS2S_META
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
             Version = "Not Hooked";
+            BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseAAob); // needed to get DS2 Version
+
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
 
-        public void SetupPointers()
+        public void RegisterAOBs()
         {
             SpeedFactorAccel = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAccelOffset);
             SpeedFactorAnim = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAnimOffset);
@@ -126,8 +128,6 @@ namespace DS2S_META
             GiveSoulsFunc = RegisterAbsoluteAOB(DS2SOffsets.GiveSoulsFuncAoB);
             ItemGiveFunc = RegisterAbsoluteAOB(DS2SOffsets.ItemGiveFunc);
             ItemStruct2dDisplay = RegisterAbsoluteAOB(DS2SOffsets.ItemStruct2dDisplay);
-            //DisplayItem = RegisterAbsoluteAOB(DS2SOffsets.DisplayItem);
-            DisplayItem = RegisterAbsoluteAOB(Offsets.DisplayItem);
             SetWarpTargetFunc = RegisterAbsoluteAOB(DS2SOffsets.SetWarpTargetFuncAoB);
             ApplySpEffect = RegisterAbsoluteAOB(DS2SOffsets.ApplySpEffectAoB);
             WarpFunc = RegisterAbsoluteAOB(DS2SOffsets.WarpFuncAoB);
@@ -135,38 +135,42 @@ namespace DS2S_META
 
             BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
 
-            // Just make them not null:
-            var BlankPHP = SpeedFactorAccel; // TODO
-            BaseA = BlankPHP;
-            PlayerName = BlankPHP;
-            AvailableItemBag = BlankPHP;
-            ItemGiveWindow = BlankPHP;
-            PlayerBaseMisc = BlankPHP;
-            PlayerPosition = BlankPHP;
-            PlayerGravity = BlankPHP;
-            PlayerParam = BlankPHP;
-            PlayerType = BlankPHP;
-            SpEffectCtrl = BlankPHP;
+            // Version Specific AOBs:
+            //DisplayItem = RegisterAbsoluteAOB(DS2SOffsets.DisplayItem);
+            DisplayItem = RegisterAbsoluteAOB(Offsets.DisplayItem);
 
-            PlayerMapData = BlankPHP;
-            EventManager = BlankPHP;
-            BonfireLevels = BlankPHP;
-            WarpManager = BlankPHP;
-            NetSvrBloodstainManager = BlankPHP;
-            LevelUpSoulsParam = BlankPHP;
+            //// Just make them not null:
+            //var BlankPHP = SpeedFactorAccel; // TODO
+            ////BaseA = BlankPHP;
+            //PlayerName = BlankPHP;
+            //AvailableItemBag = BlankPHP;
+            //ItemGiveWindow = BlankPHP;
+            //PlayerBaseMisc = BlankPHP;
+            //PlayerPosition = BlankPHP;
+            //PlayerGravity = BlankPHP;
+            //PlayerParam = BlankPHP;
+            //PlayerType = BlankPHP;
+            //SpEffectCtrl = BlankPHP;
 
-            ArmorReinforceParam = BlankPHP;
-            ItemUseageParam = BlankPHP;
-            ItemLotDropsParam = BlankPHP; // Enemy drop tables
+            //PlayerMapData = BlankPHP;
+            //EventManager = BlankPHP;
+            //BonfireLevels = BlankPHP;
+            //WarpManager = BlankPHP;
+            //NetSvrBloodstainManager = BlankPHP;
+            //LevelUpSoulsParam = BlankPHP;
+
+            //ArmorReinforceParam = BlankPHP;
+            //ItemUseageParam = BlankPHP;
+            //ItemLotDropsParam = BlankPHP; // Enemy drop tables
 
 
-            BaseB = BlankPHP;
-            Connection = BlankPHP;
-            Camera = BlankPHP;
-            Camera2 = BlankPHP;
-            Camera3 = BlankPHP;
-            Camera4 = BlankPHP;
-            Camera5 = BlankPHP;
+            //BaseB = BlankPHP;
+            //Connection = BlankPHP;
+            //Camera = BlankPHP;
+            //Camera2 = BlankPHP;
+            //Camera3 = BlankPHP;
+            //Camera4 = BlankPHP;
+            //Camera5 = BlankPHP;
         }
 
         // DS2 & BBJ Process Info Data
@@ -188,9 +192,10 @@ namespace DS2S_META
 
             // Initial Setup & Version Checks:
             BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
-            GetDS2Ver();
-            GetBBJType(isOldBbj);
-            SetupPointers(); // Absolute AoBs
+            DS2Ver = GetDS2Ver();
+            BBJType = GetBBJType(isOldBbj);
+            RegisterAOBs(); // Absolute AoBs
+            RescanAOB();
             
             // Further pointer setup... todo?
             PlayerName = CreateChildPointer(BaseA, (int)DS2SOffsets.PlayerNameOffset);
@@ -245,42 +250,39 @@ namespace DS2S_META
         internal void BasePointerSetup(out bool isOldBbj)
         {
             // Attempt "normal" version:
-            PHPointer basea_setup = RegisterAbsoluteAOB(DS2SOffsets.BaseAAob);
-            IntPtr bp_orig = BasePointerFromSetupPointer(basea_setup);
+            IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
             BaseA = CreateBasePointer(bp_orig);
             isOldBbj = BaseA.Resolve() == IntPtr.Zero;
             if (!isOldBbj)
                 return;
 
             // Old BBJ mod BasePointer adjustment:
-            basea_setup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
+            BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
             RescanAOB();
-            BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(basea_setup));
+            BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
         }
-        internal void GetDS2Ver()
+        internal DS2VER GetDS2Ver()
         {
             var moduleSz = Process?.MainModule?.ModuleMemorySize;
             switch (moduleSz)
             {
                 case V102sz:
                     Offsets = new DS2SOffsetsV102();
-                    DS2Ver = DS2VER.V102_VULNPATCH;
-                    break;
+                    return DS2VER.V102_VULNPATCH;
 
                 case V103sz:
                     Offsets = new DS2SOffsetsV103();
-                    DS2Ver = DS2VER.V103_ONLINEPATCH;
-                    break;
+                    return DS2VER.V103_ONLINEPATCH;
+
+                default:
+                    throw new Exception("Unexpected Sotfs Module Size, likely not supported.");
             }
         }
-        internal void GetBBJType(bool isOldBbj)
+        internal BBJTYPE GetBBJType(bool isOldBbj)
         {
             if (isOldBbj)
-            {
-                BBJType = BBJTYPE.OLDBBJ;
-                return;
-            }
-                
+                return BBJTYPE.OLDBBJ;
+            
 
             // check for new bbj
             int jumpfcn_offset_V102 = 0x037B4BC;
@@ -297,11 +299,9 @@ namespace DS2S_META
             switch (testbyte)
             {
                 case NOBBJBYTE:
-                    BBJType = BBJTYPE.NOBBJ;
-                    break;
+                    return BBJTYPE.NOBBJ;
                 case NEWBBJBYTE:
-                    BBJType = BBJTYPE.NEWBBJ;
-                    break;
+                    return BBJTYPE.NEWBBJ;
                 default:
                     throw new Exception("Probably an issue with setting up the pointers/addresses");
             }
