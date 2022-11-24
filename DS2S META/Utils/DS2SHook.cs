@@ -292,9 +292,10 @@ namespace DS2S_META
             var module_addr = Process?.MainModule?.BaseAddress;
             if (module_addr == null)
                 throw new Exception("Unknown DS2 MainModule size");
+            var jmp_ptr = IntPtr.Add((IntPtr)module_addr, jmpfcn_offset);
 
             // Read a byte to see if the bbj inject is there:
-            var jumpinj = CreateBasePointer((IntPtr)module_addr, jmpfcn_offset);
+            var jumpinj = CreateBasePointer(jmp_ptr);
             byte testbyte = jumpinj.ReadByte(0);
             switch (testbyte)
             {
