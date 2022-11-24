@@ -36,8 +36,10 @@ namespace DS2S_META
         public const int AvailableItemBagOffset = 0x10;
         public const int ItemGiveWindowPointer = 0x22E0;
         public const string ItemStruct2dDisplay = "40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11";
-        //public const string DisplayItem = "48 8B 89 D8 00 00 00 48 85 C9 0F 85 40 5E 00 00";
-        public const string DisplayItem = "48 8B 89 D8 00 00 00 48 85 C9 0F 85 20 5E 00 00";
+
+
+        public string? DisplayItem;
+        
 
         public const int PlayerBaseMiscOffset = 0xC0;
         public enum PlayerBaseMisc

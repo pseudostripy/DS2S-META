@@ -17,6 +17,7 @@ using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
 using System.Windows.Automation;
 using System.Runtime.Serialization;
+using Octokit;
 
 namespace DS2S_META
 {
@@ -44,6 +45,9 @@ namespace DS2S_META
                 OnPropertyChanged(nameof(Version));
             }
         }
+        public DS2VER DS2Ver;
+        public BBJTYPE BBJType;
+        internal DS2SOffsets Offsets;
 
         public static bool Reading { get; set; }
 
@@ -51,7 +55,6 @@ namespace DS2S_META
         
         public List<ItemRow> Items = new();
         
-        private PHPointer BaseASetup;
         private PHPointer GiveSoulsFunc;
         private PHPointer ItemGiveFunc;
         private PHPointer ItemStruct2dDisplay;
@@ -110,7 +113,12 @@ namespace DS2S_META
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
             Version = "Not Hooked";
-            BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseAAob);
+            OnHooked += DS2Hook_OnHooked;
+            OnUnhooked += DS2Hook_OnUnhooked;
+        }
+
+        public void SetupPointers()
+        {
             SpeedFactorAccel = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAccelOffset);
             SpeedFactorAnim = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAnimOffset);
             SpeedFactorJump = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorJumpOffset);
@@ -118,7 +126,8 @@ namespace DS2S_META
             GiveSoulsFunc = RegisterAbsoluteAOB(DS2SOffsets.GiveSoulsFuncAoB);
             ItemGiveFunc = RegisterAbsoluteAOB(DS2SOffsets.ItemGiveFunc);
             ItemStruct2dDisplay = RegisterAbsoluteAOB(DS2SOffsets.ItemStruct2dDisplay);
-            DisplayItem = RegisterAbsoluteAOB(DS2SOffsets.DisplayItem); 
+            //DisplayItem = RegisterAbsoluteAOB(DS2SOffsets.DisplayItem);
+            DisplayItem = RegisterAbsoluteAOB(Offsets.DisplayItem);
             SetWarpTargetFunc = RegisterAbsoluteAOB(DS2SOffsets.SetWarpTargetFuncAoB);
             ApplySpEffect = RegisterAbsoluteAOB(DS2SOffsets.ApplySpEffectAoB);
             WarpFunc = RegisterAbsoluteAOB(DS2SOffsets.WarpFuncAoB);
@@ -127,7 +136,7 @@ namespace DS2S_META
             BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
 
             // Just make them not null:
-            var BlankPHP = BaseASetup; // TODO
+            var BlankPHP = SpeedFactorAccel; // TODO
             BaseA = BlankPHP;
             PlayerName = BlankPHP;
             AvailableItemBag = BlankPHP;
@@ -138,19 +147,19 @@ namespace DS2S_META
             PlayerParam = BlankPHP;
             PlayerType = BlankPHP;
             SpEffectCtrl = BlankPHP;
-            
+
             PlayerMapData = BlankPHP;
             EventManager = BlankPHP;
             BonfireLevels = BlankPHP;
             WarpManager = BlankPHP;
             NetSvrBloodstainManager = BlankPHP;
             LevelUpSoulsParam = BlankPHP;
-            
+
             ArmorReinforceParam = BlankPHP;
             ItemUseageParam = BlankPHP;
             ItemLotDropsParam = BlankPHP; // Enemy drop tables
-            
-            
+
+
             BaseB = BlankPHP;
             Connection = BlankPHP;
             Camera = BlankPHP;
@@ -158,11 +167,17 @@ namespace DS2S_META
             Camera3 = BlankPHP;
             Camera4 = BlankPHP;
             Camera5 = BlankPHP;
-            
-            OnHooked += DS2Hook_OnHooked;
-            OnUnhooked += DS2Hook_OnUnhooked;
         }
-        
+
+        // DS2 & BBJ Process Info Data
+        private const int V102sz = 0x20B6000;
+        private const int V103sz = 0x1D76000;
+        private const byte NOBBJBYTE = 0xF3;
+        private const byte NEWBBJBYTE = 0x49;
+        public enum DS2VER { V102_VULNPATCH, V103_ONLINEPATCH }
+        public enum BBJTYPE {NOBBJ, OLDBBJ, NEWBBJ }
+        public bool isCP => DS2Ver == DS2VER.V103_ONLINEPATCH;
+
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             if (!Is64Bit)
@@ -171,17 +186,13 @@ namespace DS2S_META
                 return;
             }
 
-            Version = "Scholar";
-            IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
-            BaseA = CreateBasePointer(bp_orig);
-            if (BaseA.Resolve() == IntPtr.Zero)
-            {
-                BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
-                RescanAOB();
-                BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
-                Version = "Scholar BabyJump DLL";
-            }
-
+            // Initial Setup & Version Checks:
+            BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
+            GetDS2Ver();
+            GetBBJType(isOldBbj);
+            SetupPointers(); // Absolute AoBs
+            
+            // Further pointer setup... todo?
             PlayerName = CreateChildPointer(BaseA, (int)DS2SOffsets.PlayerNameOffset);
             AvailableItemBag = CreateChildPointer(PlayerName, (int)DS2SOffsets.AvailableItemBagOffset, (int)DS2SOffsets.AvailableItemBagOffset);
             ItemGiveWindow = CreateChildPointer(BaseA, (int)DS2SOffsets.ItemGiveWindowPointer);
@@ -227,9 +238,92 @@ namespace DS2S_META
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
+            Version = GetStringVersion();
             Setup = true;
         }
 
+        internal void BasePointerSetup(out bool isOldBbj)
+        {
+            // Attempt "normal" version:
+            PHPointer basea_setup = RegisterAbsoluteAOB(DS2SOffsets.BaseAAob);
+            IntPtr bp_orig = BasePointerFromSetupPointer(basea_setup);
+            BaseA = CreateBasePointer(bp_orig);
+            isOldBbj = BaseA.Resolve() == IntPtr.Zero;
+            if (!isOldBbj)
+                return;
+
+            // Old BBJ mod BasePointer adjustment:
+            basea_setup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
+            RescanAOB();
+            BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(basea_setup));
+        }
+        internal void GetDS2Ver()
+        {
+            var moduleSz = Process?.MainModule?.ModuleMemorySize;
+            switch (moduleSz)
+            {
+                case V102sz:
+                    Offsets = new DS2SOffsetsV102();
+                    DS2Ver = DS2VER.V102_VULNPATCH;
+                    break;
+
+                case V103sz:
+                    Offsets = new DS2SOffsetsV103();
+                    DS2Ver = DS2VER.V103_ONLINEPATCH;
+                    break;
+            }
+        }
+        internal void GetBBJType(bool isOldBbj)
+        {
+            if (isOldBbj)
+            {
+                BBJType = BBJTYPE.OLDBBJ;
+                return;
+            }
+                
+
+            // check for new bbj
+            int jumpfcn_offset_V102 = 0x037B4BC;
+            int jumpfcn_offset_V103 = 0x0381E1C;
+            var jmpfcn_offset = isCP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
+
+            var module_addr = Process?.MainModule?.BaseAddress;
+            if (module_addr == null)
+                throw new Exception("Unknown DS2 MainModule size");
+
+            // Read a byte to see if the bbj inject is there:
+            var jumpinj = CreateBasePointer((IntPtr)module_addr, jmpfcn_offset);
+            byte testbyte = jumpinj.ReadByte(0);
+            switch (testbyte)
+            {
+                case NOBBJBYTE:
+                    BBJType = BBJTYPE.NOBBJ;
+                    break;
+                case NEWBBJBYTE:
+                    BBJType = BBJTYPE.NEWBBJ;
+                    break;
+                default:
+                    throw new Exception("Probably an issue with setting up the pointers/addresses");
+            }
+        }
+        private string GetStringVersion()
+        {
+            string verstr = isCP ? "V1.03" : "V1.02";
+            switch (BBJType)
+            {
+                case BBJTYPE.NOBBJ:
+                    return $"{verstr} (unmodded)";
+
+                case BBJTYPE.OLDBBJ:
+                    return $"{verstr} (old bbj mod)";
+
+                case BBJTYPE.NEWBBJ:
+                    return $"{verstr} (bbj mod)";
+
+                default:
+                    return $"{verstr} unexpected mod check??";
+            }
+        }
       
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {

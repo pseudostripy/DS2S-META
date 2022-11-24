@@ -229,9 +229,9 @@ namespace DS2S_META
             Settings.Save();
         }
 
+        
 
-        
-        
+
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() => ShowUpdateCompleteWindow()));
