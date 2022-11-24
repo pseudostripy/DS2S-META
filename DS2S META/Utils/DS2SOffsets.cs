@@ -10,6 +10,12 @@ namespace DS2S_META
     {
         #region BaseA
 
+        // Version Specific:
+        public string? DisplayItem;
+        public int[]? PlayerStatsOffsets;
+        public string? ApplySpEffectAoB;
+
+        // Version Agnostic
         public const string BaseAAob = "48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6";
         public const string BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
         public const int BasePtrOffset1 = 0x3;
@@ -36,10 +42,6 @@ namespace DS2S_META
         public const int AvailableItemBagOffset = 0x10;
         public const int ItemGiveWindowPointer = 0x22E0;
         public const string ItemStruct2dDisplay = "40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11";
-
-
-        public string? DisplayItem;
-        
 
         public const int PlayerBaseMiscOffset = 0xC0;
         public enum PlayerBaseMisc
@@ -178,8 +180,7 @@ namespace DS2S_META
         }
 
         public const int SpEffectCtrlOffset = 0x3E0;
-        //public const string ApplySpEffectAoB = "E9 ? ? ? ? E9 ? ? ? ? 50 5A 41 51 59";
-        public const string ApplySpEffectAoB = "48 89 6c 24 f8 48 8d 64 24 f8 48 8d 2d 33 a7 0a 00";
+        
 
         public const int CharacterFlagsOffset = 0x490;
 

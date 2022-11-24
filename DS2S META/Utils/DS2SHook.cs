@@ -121,6 +121,7 @@ namespace DS2S_META
 
         public void RegisterAOBs()
         {
+            BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
             SpeedFactorAccel = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAccelOffset);
             SpeedFactorAnim = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAnimOffset);
             SpeedFactorJump = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorJumpOffset);
@@ -129,48 +130,11 @@ namespace DS2S_META
             ItemGiveFunc = RegisterAbsoluteAOB(DS2SOffsets.ItemGiveFunc);
             ItemStruct2dDisplay = RegisterAbsoluteAOB(DS2SOffsets.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(DS2SOffsets.SetWarpTargetFuncAoB);
-            ApplySpEffect = RegisterAbsoluteAOB(DS2SOffsets.ApplySpEffectAoB);
             WarpFunc = RegisterAbsoluteAOB(DS2SOffsets.WarpFuncAoB);
-            //SomePlayerStats = RegisterAbsoluteAOB(DS2SOffsets.SomePlayerStats);
-
-            BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
-
+            
             // Version Specific AOBs:
-            //DisplayItem = RegisterAbsoluteAOB(DS2SOffsets.DisplayItem);
+            ApplySpEffect = RegisterAbsoluteAOB(Offsets.ApplySpEffectAoB);
             DisplayItem = RegisterAbsoluteAOB(Offsets.DisplayItem);
-
-            //// Just make them not null:
-            //var BlankPHP = SpeedFactorAccel; // TODO
-            ////BaseA = BlankPHP;
-            //PlayerName = BlankPHP;
-            //AvailableItemBag = BlankPHP;
-            //ItemGiveWindow = BlankPHP;
-            //PlayerBaseMisc = BlankPHP;
-            //PlayerPosition = BlankPHP;
-            //PlayerGravity = BlankPHP;
-            //PlayerParam = BlankPHP;
-            //PlayerType = BlankPHP;
-            //SpEffectCtrl = BlankPHP;
-
-            //PlayerMapData = BlankPHP;
-            //EventManager = BlankPHP;
-            //BonfireLevels = BlankPHP;
-            //WarpManager = BlankPHP;
-            //NetSvrBloodstainManager = BlankPHP;
-            //LevelUpSoulsParam = BlankPHP;
-
-            //ArmorReinforceParam = BlankPHP;
-            //ItemUseageParam = BlankPHP;
-            //ItemLotDropsParam = BlankPHP; // Enemy drop tables
-
-
-            //BaseB = BlankPHP;
-            //Connection = BlankPHP;
-            //Camera = BlankPHP;
-            //Camera2 = BlankPHP;
-            //Camera3 = BlankPHP;
-            //Camera4 = BlankPHP;
-            //Camera5 = BlankPHP;
         }
 
         // DS2 & BBJ Process Info Data
@@ -228,8 +192,7 @@ namespace DS2S_META
             Camera4 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2, (int)DS2SOffsets.CameraOffset3);
             Camera5 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2);
 
-            //SomePlayerStats = CreateChildPointer(BaseA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718);
-            SomePlayerStats = CreateChildPointer(BaseA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170);
+            SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
 
             GetLevelRequirements();
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
@@ -325,7 +288,16 @@ namespace DS2S_META
                     return $"{verstr} unexpected mod check??";
             }
         }
-      
+        public IntPtr BasePointerFromSetupPointer(PHPointer pointer)
+        {
+            var readInt = pointer.ReadInt32(DS2SOffsets.BasePtrOffset1);
+            return pointer.ReadIntPtr(readInt + DS2SOffsets.BasePtrOffset2);
+        }
+        public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
+        {
+            return pointer.ReadIntPtr(0x0121D4D0 + DS2SOffsets.BasePtrOffset2);
+        }
+
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
             Version = "Not Hooked";
@@ -510,15 +482,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(EnableSpeedFactors));
         }
 
-        public IntPtr BasePointerFromSetupPointer(PHPointer pointer)
-        {
-            var readInt = pointer.ReadInt32(DS2SOffsets.BasePtrOffset1);
-            return pointer.ReadIntPtr(readInt + DS2SOffsets.BasePtrOffset2);
-        }
-        public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
-        {
-            return pointer.ReadIntPtr(0x0121D4D0 + DS2SOffsets.BasePtrOffset2);
-        }
+        
 
         public byte FastQuit
         {
