@@ -18,7 +18,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition x:Name="TopRow"/>
+                    <RowDefinition x:Name="TopRow" MinHeight="50"/>
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
