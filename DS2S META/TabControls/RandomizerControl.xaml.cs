@@ -25,8 +25,9 @@ namespace DS2S_META
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
         internal RandomizerManager RM = new RandomizerManager();
         public static bool IsRandomized = false;
+        private int Seed => Convert.ToInt32(txtSeed.Text);
 
-        
+
         // FrontEnd:
         public RandomizerControl()
         {
@@ -45,47 +46,72 @@ namespace DS2S_META
         {
             FixSeedVisibility();
         }
-        private async void btnRandomize_Click(object sender, RoutedEventArgs e)
+        private void btnRerandomize_Click(object sender, RoutedEventArgs e)
         {
-            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
-            if (!Hook.Hooked)
-            {
-                MsgMissingDS2();
-                return;
-            }
+            PopulateNewSeed();
+            rando_core_process(RANDOPROCTYPE.Rerand);
+        }
+        private void btnRandomize_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsRandomized)
+                rando_core_process(RANDOPROCTYPE.Unrand);
+            else
+                rando_core_process(RANDOPROCTYPE.Rand);
+            //randomizerSetup();
 
-            if (!RM.IsInitialized)
-                RM.Initalize(Hook);
+            //// Inform user of progress..
+            //btnRandomize.IsEnabled = false;
+            //lblWorking.Visibility = Visibility.Visible;
 
-            // Warn user about the incoming warp
-            if (Properties.Settings.Default.ShowWarnRandowarp)
-            {
-                var randowarning = new RandoWarpWarning()
-                {
-                    Title = "Randomizer Warp Warning",
-                    Width = 375,
-                    Height = 175,
-                };
-                randowarning.ShowDialog();
-            }
-
-
+            //var tasks = new List<Task>();
+            //if (IsRandomized)
+            //    await Task.Run( () => RM.Unrandomize());
+            //else
+            //    await Task.Run( () => RM.Randomize(Seed));
+            //IsRandomized = RM.IsRandomized;
 
 
-            // Sort out seeding
-            if (txtSeed.Text == "")
-                PopulateNewSeed();
-            int seed = Convert.ToInt32(txtSeed.Text);
+            //// Update UI:
+            //btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
+            //Color bkg = IsRandomized ? LIGHTPURPLE : LIGHTGREEN;
+            //lblGameRandomization.Background = new SolidColorBrush(bkg);
+
+            //if (IsRandomized)
+            //    txtGameState.Text = $"Game is Randomized!{Environment.NewLine} Seed: {ZeroPadString(RM.CurrSeed)}";
+            //else
+            //    txtGameState.Text = $"Game is Normal!";
+
+
+            //// Restore after completion:
+            //lblWorking.Visibility = Visibility.Hidden;
+            //btnRandomize.IsEnabled = true;
+        }
+        private enum RANDOPROCTYPE { Rand, Unrand, Rerand }
+        private async void rando_core_process(RANDOPROCTYPE rpt)
+        {
+            randomizerSetup();
 
             // Inform user of progress..
             btnRandomize.IsEnabled = false;
             lblWorking.Visibility = Visibility.Visible;
 
+            int seed = Seed;
             var tasks = new List<Task>();
-            if (IsRandomized)
-                await Task.Run( () => RM.Unrandomize());
-            else
-                await Task.Run(() => RM.Randomize(seed));
+            switch (rpt)
+            {
+                case RANDOPROCTYPE.Rand:
+                    await Task.Run(() => RM.Randomize(seed));
+                    break;
+                case RANDOPROCTYPE.Unrand:
+                    await Task.Run(() => RM.Unrandomize());
+                    break;
+                case RANDOPROCTYPE.Rerand:
+                    if (IsRandomized)
+                        await Task.Run(() => RM.Unrandomize());
+                    await Task.Run(() => RM.Randomize(seed));
+                    break;
+            }
+
             IsRandomized = RM.IsRandomized;
 
 
@@ -104,6 +130,34 @@ namespace DS2S_META
             lblWorking.Visibility = Visibility.Hidden;
             btnRandomize.IsEnabled = true;
         }
+
+        private bool randomizerSetup()
+        {
+            if (!ensureHooked())
+                return false;
+
+            if (!RM.IsInitialized)
+                RM.Initalize(Hook);
+
+            // Warn user about the incoming warp
+            if (Properties.Settings.Default.ShowWarnRandowarp)
+            {
+                var randowarning = new RandoWarpWarning()
+                {
+                    Title = "Randomizer Warp Warning",
+                    Width = 375,
+                    Height = 175,
+                };
+                randowarning.ShowDialog();
+            }
+
+            // Sort out seeding
+            if (txtSeed.Text == "")
+                PopulateNewSeed();
+
+            return true;
+        }
+
         private string ZeroPadString(int seed)
         {
             return seed.ToString().PadLeft(10, '0');
@@ -113,7 +167,6 @@ namespace DS2S_META
             MessageBox.Show("Please open Dark Souls 2 first.");
             return;
         }
-
         private void imgGenerate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             PopulateNewSeed();
@@ -122,6 +175,16 @@ namespace DS2S_META
         {
             int seed = RM.GetRandom();
             txtSeed.Text = ZeroPadString(seed); // 10 is max value of digits of int32 in decimal
+        }
+        private bool ensureHooked()
+        {
+            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
+            if (Hook.Hooked)
+                return true;
+
+            // Window warning to user:
+            MsgMissingDS2();
+            return false;
         }
     }
 }
