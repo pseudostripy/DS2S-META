@@ -1,13 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
+    public class LinkNGDrop
+    {
+        public int origID;
+        public int ngplusID;
+
+        public LinkNGDrop(int origID, int ngplusID)
+        {
+            this.origID = origID;
+            this.ngplusID = ngplusID;
+        }
+    }
+
+
     internal abstract class ItemSetBase
     {
+        // All others are simply the NGplus paramID rounded to nearest 10
+        internal List<LinkNGDrop> LinkedNGs = new() { new LinkNGDrop(675000, 675010) };
+
+        internal List<LinkedDrop> LinkedDrops = new()
+        {
+            StraightCopy(318000, 60008000), // Pursuer Fight/Platform
+        };
+
+        internal static LinkedDrop StraightCopy(int id1, int id2)
+        {
+            return new LinkedDrop(id1, id2);
+        }
+
         // Other Logic related things:
         internal List<PICKUPTYPE> BanKeyTypes = new List<PICKUPTYPE>()
         {
@@ -39,7 +66,19 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
+            PICKUPTYPE.LINKEDSLAVE,
         };
+        internal List<PICKUPTYPE> BanFromBeingRandomized = new List<PICKUPTYPE>()
+        {
+            // List of places where loot cannot come from:
+            PICKUPTYPE.EXOTIC,
+            PICKUPTYPE.CRAMMED,
+            PICKUPTYPE.UNRESOLVED,
+            PICKUPTYPE.REMOVED,
+            PICKUPTYPE.LINKEDSLAVE,
+            PICKUPTYPE.COVENANTHARD,
+        };
+
         internal List<int> CrowDuplicates = new List<int>()
         {
             // Prism: keep C loot:
@@ -368,9 +407,10 @@ namespace DS2S_META.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
         }
-        internal RandoInfo VolBossInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo LinkedSlave(string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), new KeySet(reqkey));
+            // This is essentially a flag on top of safeinfo
+            return new RandoInfo(desc, PICKUPTYPE.LINKEDSLAVE, new KeySet(reqkey));
         }
 
         // Overloads for multiple key options:
@@ -484,6 +524,17 @@ namespace DS2S_META.Randomizer
             var LI = D[rdz.ParamID];
             return LI.AvoidsTypes(bantypes);
         }
+        internal bool HasTypes(Randomization rdz, List<PICKUPTYPE> hastypes)
+        {
+            var LI = D[rdz.ParamID];
+            return LI.HasType(hastypes);
+        }
+        internal bool HasType(Randomization rdz, PICKUPTYPE typ)
+        {
+            if (D.TryGetValue(rdz.ParamID, out var LI))
+                return LI.HasType(typ);
+            return false;
+        }
         internal bool IsBannedType(Randomization rdz, RandomizerManager.SetType parentset)
         {
             return !IsAllowedType(rdz, parentset);
@@ -502,6 +553,16 @@ namespace DS2S_META.Randomizer
             return true; // No keyset has all keys placed yet, so this is dangerous; try somewhere else
         }
         
+        internal IEnumerable<KeyValuePair<int, RandoInfo>> WhereHasType(PICKUPTYPE pickuptype)
+        {
+            return D.Where(kvp => kvp.Value.HasType(pickuptype));
+        }
+        internal IEnumerable<KeyValuePair<int, RandoInfo>> WhereHasType(List<PICKUPTYPE> oktypes)
+        {
+            // returns true if param contains ANY type in oktypes
+            return D.Where(kvp => kvp.Value.HasType(oktypes));
+        }
+
         // Softlock logic:
         private static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {

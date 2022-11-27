@@ -25,6 +25,8 @@ namespace DS2S_META.Randomizer
         internal List<byte> Infusions = new();
 
         internal int NumDrops => Quantities.Where(q => q != 0).Count();
+        internal List<DropInfo> Flatlist => GetFlatlist();
+        internal bool IsEmpty => NumDrops == 0;
 
         public override string ToString()
         {
@@ -73,10 +75,20 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> GetFlatlist()
         {
             List<DropInfo> flatlist = new();
-            for (int i = 0; i < NumDrops; i++)
+            int legitdrops = 0;
+            for (int i = 0; i < 10; i++) // 10 rows in loot tables
             {
-                DropInfo di = new DropInfo(Items[i], Quantities[i], Reinforcements[i], Infusions[i]);
+                // See ancient dragon etc.
+                if (Quantities[i] == 0)
+                    continue;
+
+                DropInfo di = new(Items[i], Quantities[i], Reinforcements[i], Infusions[i]);
                 flatlist.Add(di);
+                legitdrops++;
+
+                // Check if finished
+                if (legitdrops == NumDrops)
+                    break;
             }
             return flatlist;
         }
@@ -91,6 +103,12 @@ namespace DS2S_META.Randomizer
 
             return ilclone;
         }
+        internal void CloneValuesFrom(ItemLot tocopy)
+        {
+            // be a little careful if you haven't blanked it properly before!
+            for (int i = 0; i < 10; i++)
+                AddDrop(tocopy.Items[i], tocopy.Quantities[i], tocopy.Reinforcements[i], tocopy.Infusions[i]);
+        }
         
 
         internal void FixNonsense()
@@ -99,7 +117,7 @@ namespace DS2S_META.Randomizer
             // We're zeroing out the amount in memory, but the Vanilla shop
             // still has its original copy of the amounts in the Quantities List.
             // So the NumDrops is still correct and we'll only replace (in memory)
-            // enough to replicate the vanilla NumDrops. There's still be one leftover
+            // enough to replicate the vanilla NumDrops. There'll still be one leftover
             // somewhere, but it's amount will be zeroed out in memory so we can 
             // ignore it.
             //
@@ -117,7 +135,7 @@ namespace DS2S_META.Randomizer
         internal void AddDrop(DropInfo DI)
         {
             // This is the main way to adjust the fields in this class,
-            // and handled the backend setting of the ParamRow bytes
+            // and handles the backend setting of the ParamRow bytes
             int id = NumDrops;
             if (id > 10)
                 throw new Exception("Trying to add too many DropInfos to this lot.");

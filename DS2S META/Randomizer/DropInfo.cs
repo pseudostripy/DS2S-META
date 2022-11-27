@@ -54,5 +54,14 @@ namespace DS2S_META.Randomizer
 
         // Query Utility
         internal bool HasItem(int itemid) => ItemID == itemid;
+        
+        // Todo, improve properly
+        internal bool IsEqualTo(DropInfo di2)
+        {
+            return ItemID == di2.ItemID &&
+                    Quantity == di2.Quantity &&
+                    Infusion == di2.Infusion &&
+                    Reinforcement == di2.Reinforcement;
+        }
     }
 }

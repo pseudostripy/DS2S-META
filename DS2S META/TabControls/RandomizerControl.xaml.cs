@@ -57,34 +57,6 @@ namespace DS2S_META
                 rando_core_process(RANDOPROCTYPE.Unrand);
             else
                 rando_core_process(RANDOPROCTYPE.Rand);
-            //randomizerSetup();
-
-            //// Inform user of progress..
-            //btnRandomize.IsEnabled = false;
-            //lblWorking.Visibility = Visibility.Visible;
-
-            //var tasks = new List<Task>();
-            //if (IsRandomized)
-            //    await Task.Run( () => RM.Unrandomize());
-            //else
-            //    await Task.Run( () => RM.Randomize(Seed));
-            //IsRandomized = RM.IsRandomized;
-
-
-            //// Update UI:
-            //btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
-            //Color bkg = IsRandomized ? LIGHTPURPLE : LIGHTGREEN;
-            //lblGameRandomization.Background = new SolidColorBrush(bkg);
-
-            //if (IsRandomized)
-            //    txtGameState.Text = $"Game is Randomized!{Environment.NewLine} Seed: {ZeroPadString(RM.CurrSeed)}";
-            //else
-            //    txtGameState.Text = $"Game is Normal!";
-
-
-            //// Restore after completion:
-            //lblWorking.Visibility = Visibility.Hidden;
-            //btnRandomize.IsEnabled = true;
         }
         private enum RANDOPROCTYPE { Rand, Unrand, Rerand }
         private async void rando_core_process(RANDOPROCTYPE rpt)
@@ -111,7 +83,6 @@ namespace DS2S_META
                     await Task.Run(() => RM.Randomize(seed));
                     break;
             }
-
             IsRandomized = RM.IsRandomized;
 
 

@@ -9,6 +9,21 @@ using DS2S_META.Utils;
 namespace DS2S_META.Randomizer
 {
 
+    internal enum RDZ_STATUS
+    {
+        // Enum used to denote required further post-processing situations
+        EXCLUDED,
+        SHOPREMOVE,
+        STANDARD,
+        CROWS,
+        COMPLETE,
+        FILL_BY_COPY,
+        UNLOCKTRADE, // enable immediately
+        MAKEFREE,
+        TRADE_SHOP_COPY,
+        INITIALIZING,
+    }
+
     /// <summary>
     /// Parent class combining Vanilla and Shuffled Data for Items/Shop subclasses
     /// </summary>
@@ -17,7 +32,8 @@ namespace DS2S_META.Randomizer
         // Fields
         internal int ParamID;
         internal abstract List<DropInfo> Flatlist { get; }
-
+        internal RDZ_STATUS Status = RDZ_STATUS.INITIALIZING;
+        internal bool IsHandled = false;
 
         // Constructors:
         internal Randomization(int pid)
@@ -25,7 +41,7 @@ namespace DS2S_META.Randomizer
             ParamID = pid;
         }
 
-        // Methods:
+        // Abstract Methods:
         internal abstract string printdata();
         internal abstract bool IsSaturated();
         internal abstract void AddShuffledItem(DropInfo item);
@@ -34,6 +50,9 @@ namespace DS2S_META.Randomizer
         internal abstract int GetShuffledItemQuant(int itemID);
         internal abstract string GetNeatDescription();
         internal abstract void AdjustQuantity(DropInfo di);
+        internal abstract void ResetShuffled();
+        
+        // Common Methods:
         protected int RoundUpNearestMultiple(int val, int m)
         {
             return (int)Math.Ceiling((double)val / m) * m;
@@ -76,6 +95,10 @@ namespace DS2S_META.Randomizer
                 return string.Empty;
 
             return item.MetaItemName;
+        }
+        internal void MarkHandled()
+        {
+            IsHandled = true;
         }
     }
 
@@ -189,6 +212,28 @@ namespace DS2S_META.Randomizer
         {
             throw new NotImplementedException();
         }
+        internal override void ResetShuffled()
+        {
+            ShuffledLot = VanillaLot.CloneBlank();
+            IsHandled = false;
+        }
+
+        internal List<DropInfo> GetUniqueFlatlist(List<DropInfo> avoid_these)
+        {
+            // Return a flat list of drops that do not overlap with the supplied ones.
+            // This is a way to remove the NGPlus duplicates which are unchanged.
+            List<DropInfo> res = new();
+            foreach (var di in Flatlist)
+            {
+                if (avoid_these.Any(di2 => di2.IsEqualTo(di)))
+                    continue;
+                res.Add(di);
+            }
+            return res;
+        }
+
+        // Extra Utility:
+        internal bool IsEmpty => VanillaLot.IsEmpty; // Vanilla Lot has 0 drops
     }
 
 
@@ -199,14 +244,10 @@ namespace DS2S_META.Randomizer
         internal ShopRow ShuffledShop;
 
         // Constructors:
-        internal ShopRdz(int paramid) : base(paramid) { }
-        internal ShopRdz(KeyValuePair<int, ShopRow> VanKvp) : base(VanKvp.Key)
-        {
-            VanillaShop = VanKvp.Value;
-        }
         internal ShopRdz(ShopRow vanshop) : base(vanshop.ID)
         {
             VanillaShop = vanshop;
+            ShuffledShop = VanillaShop.Clone();
         }
 
         // Methods:
@@ -249,8 +290,7 @@ namespace DS2S_META.Randomizer
             int pricenew = GetTypeRandomPrice(di.ItemID);
             float pricerate = (float)pricenew / baseprice;
 
-            // Create:
-            ShuffledShop = VanillaShop.Clone();
+            // Update:
             ShuffledShop.SetValues(di, VanillaShop, pricerate);
         }
         internal override bool HasShuffledItemID(int itemID)
@@ -310,6 +350,16 @@ namespace DS2S_META.Randomizer
                     return;
             }
         }
-
+        internal override void ResetShuffled()
+        {
+            ShuffledShop = VanillaShop.Clone();
+            IsHandled = false;
+        }
+        internal void ZeroiseShuffledShop()
+        {
+            // Sets things so that the shop is removed from game
+            ShuffledShop.ItemID = 0;
+            ShuffledShop.Quantity = 0;
+        }
     }
 }

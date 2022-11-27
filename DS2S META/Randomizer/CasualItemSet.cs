@@ -6,6 +6,26 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
+    internal class LinkedDrop
+    {
+        // Setup to link item drops to ensure just one in the pool,
+        // and to link it with another drop if required
+        internal int MasterID;
+        internal List<int> SlaveIDs;
+        internal bool IsTrade = false;
+        internal bool FreeTrade = false;
+        internal int CopyID = 0;
+        internal bool IsCopy => CopyID != 0;
+
+        // mainID: add this drop to the randomization table
+        // copyID: don't add drop to table, just copy randomized result from mainID
+        internal LinkedDrop(int mainID, params int[] copyIDs)
+        {
+            MasterID = mainID;
+            SlaveIDs = copyIDs.ToList();
+        }
+    }
+
     internal class CasualItemSet : ItemSetBase
     {
         internal CasualItemSet()
@@ -17,7 +37,10 @@ namespace DS2S_META.Randomizer
         {
             setupLootInfoDictionary();
         }
+        
+        
 
+        
         // Main info setup (no skips):
         internal void setupLootInfoDictionary()
         {
@@ -120,6 +143,7 @@ namespace DS2S_META.Randomizer
             // Forest of Fallen Giants:
             D.Add(309600, BossInfo("[FOFG] Last giant drop"));
             D.Add(318000, BossInfo("[FOFG] Pursuer (in the proper arena) drop", KEYID.SOLDIER));
+            D.Add(60008000, LinkedSlave("[FOFG] Pursuer (on the platform) drop"));
             D.Add(10105020, WChestInfo("[FOFG] Wooden chest under the bridge after the drawgate"));
             D.Add(10105021, WChestNGPlusInfo("[FOFG] Wooden chest under the bridge after the drawgate in NG+"));
             D.Add(10106110, SafeInfo("[FOFG] Corpse in the watery cave in the beginning of the area"));
@@ -203,8 +227,7 @@ namespace DS2S_META.Randomizer
             D.Add(10106610, SafeInfo("[FOFG] Second corpse at rooftop near Soldier's Rest bonfire", KEYID.SOLDIER));
             D.Add(10106620, SafeInfo("[FOFG] Third corpse at rooftop near Soldier's Rest bonfire", KEYID.SOLDIER));
             D.Add(10106630, SafeInfo("[FOFG] Fourth corpse at rooftop near Soldier's Rest bonfire", KEYID.SOLDIER));
-            D.Add(60008000, VolInfo("[FOFG] Pursuer (on the platform) drop"));
-
+            
             // Heide's Tower of Flame:
             D.Add(611000, BossInfo("[Heides] Dragonrider boss drop"));
             D.Add(625000, BossInfo("[Heides] Old Dragonslayer boss drop"));
@@ -446,7 +469,7 @@ namespace DS2S_META.Randomizer
             D.Add(10236021, NGPlusInfo("[Copse] Next to a big cliff face guarded by a sickle undead in NG+", KEYID.ROTUNDA));
             D.Add(10236030, SafeInfo("[Copse] On the left side of the path before the first stone bridge", KEYID.ROTUNDA));
             D.Add(10236040, SafeInfo("[Copse] On a ledge on the way to Executioner's Chariot", KEYID.ROTUNDA));
-            D.Add(10236050, SafeInfo("[Copse] Corpse in the necromancer cave closest to the Undead Lockaway” bonfire", KEYID.ROTUNDA));
+            D.Add(10236050, SafeInfo("[Copse] Corpse in the necromancer cave closest to the Undead Lockaway bonfire", KEYID.ROTUNDA));
             D.Add(10236060, SafeInfo("[Copse] On small ledge with a necromancer", KEYID.ROTUNDA));
             D.Add(10236070, SafeInfo("[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area", KEYID.ROTUNDA));
             D.Add(10236071, NGPlusInfo("[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area in NG+", KEYID.ROTUNDA));
@@ -484,9 +507,9 @@ namespace DS2S_META.Randomizer
 
             // Harvest Valley:
             D.Add(2007000, CovFineInfo("[HarvestValley] Heirs of the Sun join", KEYID.ROTUNDA));
-            D.Add(2007011, CovInfo("[HarvestValley] Heirs of the Sun 1st rank price", KEYID.ROTUNDA));
-            D.Add(2007012, CovInfo("[HarvestValley] Heirs of the Sun 2nd rank price", KEYID.ROTUNDA));
-            D.Add(2007013, CovInfo("[HarvestValley] Heirs of the Sun 3rd rank price", KEYID.ROTUNDA));
+            D.Add(2007011, CovInfo("[HarvestValley] Heirs of the Sun 1st rank reward", KEYID.ROTUNDA));
+            D.Add(2007012, CovInfo("[HarvestValley] Heirs of the Sun 2nd rank reward", KEYID.ROTUNDA));
+            D.Add(2007013, CovInfo("[HarvestValley] Heirs of the Sun 3rd rank reward", KEYID.ROTUNDA));
             D.Add(10175020, WChestInfo("[HarvestValley] Wooden chest inside the small cave where you meet Gavlan", KEYID.ROTUNDA));
             D.Add(10175021, WChestNGPlusInfo("[HarvestValley] Wooden chest inside the small cave where you meet Gavlan in NG+", KEYID.ROTUNDA));
             D.Add(10175030, MChestInfo("[HarvestValley] Metal chest next to ladders leading down into the poison filled tunnel", KEYID.ROTUNDA));

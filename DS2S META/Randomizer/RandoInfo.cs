@@ -95,6 +95,7 @@ namespace DS2S_META.Randomizer
         UNRESOLVED,
         SHOP,
         CROWS,
+        LINKEDSLAVE, // Rules are defined by some other drop that was defined and linked
     }
 
     internal class RandoInfo
@@ -120,6 +121,10 @@ namespace DS2S_META.Randomizer
         internal bool HasType(List<PICKUPTYPE> checklist)
         {
             return Types.Any(checklist.Contains);
+        }
+        internal bool AvoidsType(PICKUPTYPE bantype)
+        {
+            return !HasType(bantype);
         }
         internal bool AvoidsTypes(List<PICKUPTYPE> bannedtypes)
         {

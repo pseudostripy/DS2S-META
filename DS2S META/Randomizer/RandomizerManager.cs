@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using DS2S_META.Utils;
+using System.CodeDom;
+using System.Threading;
+using SoulsFormats;
+using static SoulsFormats.MSBD;
+using System.Transactions;
 
 namespace DS2S_META.Randomizer
 {
@@ -16,8 +21,9 @@ namespace DS2S_META.Randomizer
     {
         // Fields:
         DS2SHook? Hook;
-        List<Randomization> Data = new List<Randomization>(); // Combined info list
-        internal static Random RNG = new Random();
+        List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
+        List<Randomization> AllPTR = new(); // Places to Randomize
+        internal static Random RNG = new();
         private List<ItemLot> VanillaLots = new();
         private List<ShopRow> VanillaShops = new();
         internal List<ShopRow> ShopsToFillByCopying = new();
@@ -72,7 +78,8 @@ namespace DS2S_META.Randomizer
                     return 0;
             }
         }
-
+        //
+        
         // Enums:
         internal enum SetType : byte { Keys, Reqs, Gens }
 
@@ -89,16 +96,18 @@ namespace DS2S_META.Randomizer
             Hook = hook; // Required for reading game params in memory
 
             // Param collecting:
-            GetVanillaShops();
-            GetVanillaLots();
-            VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             Logic = new CasualItemSet();
-            FixShopEvents1(); // Update PTF with shop places
-            AddShopLogic();
+            GetVanillaLots();
+            GetVanillaShops();
+            VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
+            
+            SetupAllPTF();
+            GetLootToRandomize(); // set LTR_Flatlist field
 
-            // Add descriptions
-            foreach (var ilot in VanillaLots)
-                ilot.ParamDesc = Logic.GetDesc(ilot.ID);
+            // TODO After?
+            //FixShopEvents1(); // Update PTF with shop places
+
+
             IsInitialized = true;
         }
         internal void GetVanillaLots()
@@ -107,6 +116,11 @@ namespace DS2S_META.Randomizer
                 throw new NullReferenceException("Shouldn't get here");
 
             VanillaLots = Hook.ItemLotOtherParam.Rows.Select(row => new ItemLot(row)).ToList();
+            
+            // Add descriptions
+            foreach (var ilot in VanillaLots)
+                ilot.ParamDesc = Logic.GetDesc(ilot.ID);
+
             return;
         }
         internal void GetVanillaShops()
@@ -115,6 +129,8 @@ namespace DS2S_META.Randomizer
             if (vanshops == null)
                 throw new NullReferenceException("Shouldn't get here");
             VanillaShops = vanshops;
+
+            AddShopsToLogic();
             return;
         }
 
@@ -125,21 +141,24 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
-            ShopsToFillByCopying = new(); // reset this list
-            FixShopEvents1(); // Update PTF with shop places
-            RandomizeStartingClasses();
-            
-            GetLootToRandomize(); // set Data field
-            KeysPlacedSoFar = new List<int>(); // nice bug :)
-            Unfilled = Enumerable.Range(0, Data.Count).ToList();
-            DefineKRG();        // Split items into Keys, Required, Generics
-
+            ResetForRerandomization();
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
             PlaceSet(ldreqs, SetType.Reqs);
             PlaceSet(ldgens, SetType.Gens);
             FillLeftovers();
+
+            // Miscellaneous things to handle:
+            HandleTrivialities();   // Simply mark done
+            FixShopEvents();        // All additional shop processing & edge cases.
+            FixLotCopies();         // Aka Pursuer
+            RandomizeStartingClasses();
+
+            // Ensure all handled:
+            var unhandled = AllP.Where(rdz => rdz.IsHandled == false);
+            if (unhandled.Any())
+                throw new Exception("Unhandled things remain.");
 
             // Printout the current shuffled lots:
             PrintKeysNeat();
@@ -148,12 +167,9 @@ namespace DS2S_META.Randomizer
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
             await Task.Run(() => WriteShuffledShops());
-            FixFinalShopEvents();
+            
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
-
-            // maybe enable all the 1s too and see if they get removed on event
-
         }
         internal void Unrandomize()
         {
@@ -336,155 +352,356 @@ namespace DS2S_META.Randomizer
         }
         internal void GetLootToRandomize()
         {
-            Data = new List<Randomization>(); // Reset
+            // Start with AllP
+            // Remove Shops that aren't NormalType --> add to loot
+            // Remove Lots of specified types: Crammed/Crows/etc --> add to loot
+            // Collapse all loot into flatlist for randomization
 
-            // For each vanilla lot, make a new randomization object
-            IEnumerable<Randomization> ltr = VanillaLots.Select(lot => new LotRdz(lot))
-                            .Where(ldz => ldz.VanillaLot?.NumDrops != 0)
-                            .Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanFromLoot))
-                            .Where(ldz => !Logic.CrowDuplicates.Contains(ldz.ParamID));
-            List<Randomization> listltr = ltr.ToList();
+            List<List<DropInfo>> droplists = new();
+
+            // Completely remove these from consideration
+            var stage1 = AllPTR.Where(rdz => Logic.D[rdz.ParamID].AvoidsTypes(Logic.BanFromLoot)); 
+
+            // Only keep loot of shops that I'll be replacing (others are duplicates)
+            var okShops = stage1.OfType<ShopRdz>()
+                                .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD 
+                                        || srdz.Status == RDZ_STATUS.MAKEFREE
+                                        || srdz.Status == RDZ_STATUS.UNLOCKTRADE);
+            foreach (var shop in okShops)
+                droplists.Add(shop.Flatlist);
+
+            // Normal Lots:
+            var stage1_lots = stage1.OfType<LotRdz>();
+            var normal_lots = stage1_lots.Where(lrdz => Logic.D[lrdz.ParamID].AvoidsType(PICKUPTYPE.NGPLUS));
+            foreach (var lot in normal_lots)
+                droplists.Add(lot.Flatlist);
 
 
-            // Get shop loot
-            IEnumerable<Randomization> shoploot = FixedVanillaShops.Select(kvp => new ShopRdz(kvp));
-
+            // Special Lots (NGplus things):
+            var ngplus_lots = stage1_lots.Where(lrdz => Logic.D[lrdz.ParamID].HasType(PICKUPTYPE.NGPLUS));
+            List<int>? manualNGplusIDs = Logic.LinkedNGs.Select(lng => lng.ngplusID).ToList();
+            int linkedorigID;
             
-            // List of Places to fill:
-            var lotptf = listltr.Where(ldz => Logic.AvoidsTypes(ldz, Logic.BanGeneralTypes));
-            Data.AddRange(lotptf);
-            Data.AddRange(shoploot);  // Add shop loot to be filled
+            foreach (var lrdz in ngplus_lots)
+            {
+                if (!manualNGplusIDs.Contains(lrdz.ParamID))
+                {
+                    // Type 1 (99% of cases)
+                    linkedorigID = lrdz.ParamID / 10 * 10; // Round down to nearest 10
+                } else
+                {
+                    // Type 2 (currently only applies to Fume Knight)
+                    var link = Logic.LinkedNGs.FirstOrDefault(lng => lng.ngplusID == lrdz.ParamID);
+                    if (link == null)
+                        throw new Exception("Shouldn't get here");
+                    linkedorigID = link.origID;
+                }
 
-            // Define what loot can be distributed:
-            listltr.AddRange(shoploot);         // Add shop loot for distribution
-            LTR_flatlist = listltr.SelectMany(selector: rz => rz.Flatlist).ToList();
+                // Get items of "non-ngplus":
+                var linkedLRDZ = stage1_lots.FirstOrDefault(lrdz => lrdz.ParamID == linkedorigID);
+                if (linkedLRDZ == null)
+                    throw new Exception("I don't think we can have NGPlus without an associated default to find.");
+
+                // Add unique items:
+                var ufl = lrdz.GetUniqueFlatlist(linkedLRDZ.Flatlist);
+                droplists.Add(ufl);
+            }
+
+
+            // Collapse all droplists into one droplist:
+            LTR_flatlist = droplists.SelectMany(di => di).ToList();
+
+            // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
         }
-        private void FixFinalShopEvents()
+        
+        private void ResetForRerandomization()
         {
-            FixMaughlinEvent();
-            FixOrnifexEvent();
-            FixGilliganEvent();
+            // Reset required arrays for the randomizer to work:
+            
+            // Empty the shuffled places in preparation:
+            foreach (var rdz in AllP)
+                rdz.ResetShuffled();
+            
+            KeysPlacedSoFar = new List<int>();
+            Unfilled = Enumerable.Range(0, AllPTR.Count).ToList();
+            
+            // Remake (copies of) list of Keys, Required, Generics for placement
+            DefineKRG();
         }
-        internal void FixShopEvents1()
+        private void HandleTrivialities()
         {
-            // This function stops shops from re-randomizing
-            // when npcs move or update their shops
+            foreach (var rdz in AllP.Where(rdz => rdz.Status == RDZ_STATUS.EXCLUDED))
+                rdz.MarkHandled();
 
-            // Go through and clone the "normal" shops:
-            var PTF = new List<ShopRow>();
-            var LEvents = ShopRules.GetLinkedEvents();
+            // TODO!
+            foreach (var rdz in AllP.Where(rdz => rdz.Status == RDZ_STATUS.CROWS))
+                rdz.MarkHandled();
+        }
 
-            // Get list of all undisabled:
-            var tokeep = LEvents.Select(le => le.KeepID);
-            var tolose = LEvents.SelectMany(le => le.RemoveIDs);
+        private void FixShopEvents()
+        {
+            FixShopCopies();
+            FixNormalTrade();
+            FixShopTradeCopies();
+            FixFreeTrade(); // needs to be after FixShopTradeCopies()
+            FixShopsToRemove();
+        }
 
-            // Clone vanilla shops, edit and then remove bad rows:
-            foreach(var SR in VanillaShops)
-                PTF.Add(SR.Clone()); 
+        internal Randomization GetRdzWithID(IEnumerable<Randomization> rdzlist, int id)
+        {
+            var res = rdzlist.FirstOrDefault(rdz => rdz.ParamID == id);
+            if (res == null)
+                throw new Exception($"Cannot find Randomization object with id {id}");
+            return res;
+        }
+        internal void SetupAllPTF()
+        {
+            // "Places To Fill"
+            var lotptfs = SetLotPTFTypes();
+            var shopptfs = SetShopPTFTypes();
+
+            // All items to handle:
+            AllP = lotptfs.ToList().Concat(shopptfs).ToList();
+
+            // Places to fill with "Ordinary Randomization"
+            AllPTR = AllP.Where(rdz => rdz.Status == RDZ_STATUS.STANDARD ||
+                                       rdz.Status == RDZ_STATUS.MAKEFREE ||
+                                       rdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
+        }
+        internal IEnumerable<Randomization> SetLotPTFTypes()
+        {
+            // Get copy of all VanillaLots
+            IEnumerable<LotRdz> all_lots = VanillaLots.Select(lot => new LotRdz(lot)).ToList(); // LotsToFill
+
+            // Define exclusions (not placed)
+            var excl = all_lots.Where(ldz => ldz.IsEmpty ||
+                                        Logic.HasTypes(ldz, Logic.BanFromBeingRandomized) ||
+                                        Logic.CrowDuplicates.Contains(ldz.ParamID));
+            foreach (var ldz in excl)
+                ldz.Status = RDZ_STATUS.EXCLUDED;
+
+            // Special Cases: Crows
+            var crows = all_lots.Where(ldz => Logic.HasType(ldz, PICKUPTYPE.CROWS));
+            foreach (var ldz in crows)
+                ldz.Status = RDZ_STATUS.CROWS;
+
+
+            // Special Cases: LinkedLots
+            foreach (var kvp in Logic.WhereHasType(PICKUPTYPE.LINKEDSLAVE))
+            {
+                var slavelot = all_lots.FirstOrDefault(ldz => ldz.ParamID == kvp.Key);
+                if (slavelot == null)
+                    throw new Exception("LinkedSlave Lot not found in Vanilla table definition");
+                slavelot.Status = RDZ_STATUS.FILL_BY_COPY;
+            }
+
+            // All the other shops should be good for "Ordinary Randomization"
+            var normal_lots = all_lots.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
+            foreach (var rdz in normal_lots)
+                rdz.Status = RDZ_STATUS.STANDARD;
+
+            // Output
+            return all_lots.Cast<Randomization>();
+        }
+        internal IEnumerable<Randomization> SetShopPTFTypes()
+        {
+            // Function to assign how to handle each of the defined
+            // shop params later into the randomizer process
+
+            // Setup all shops as randomization:
+            var shoprdzs = VanillaShops.Select(SR => new ShopRdz(SR)).ToList(); // ToList IS required
 
             // Remove exclusions from list
-            foreach(var excl in ShopRules.Exclusions)
-            {
-                var torem = PTF.FirstOrDefault(SR => SR.ID == excl);
-                if (torem == null) continue;
-                PTF.Remove(torem);
-            }
+            foreach (var exclid in ShopRules.Exclusions)
+                GetRdzWithID(shoprdzs, exclid).Status = RDZ_STATUS.EXCLUDED;
 
-            // Sort out linked events:
-            foreach (var LE in LEvents)
-            {
-                // Sort out tokeep
-                var shopkeep = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
-                if (shopkeep == null) throw new Exception("Error in finding linked shop ID");
-                
-                // Different situations to handle for trades/normal npc move events:
-                if (LE.IsTrade)
-                {
-                    // All Ornifex trades (the ones with a "1" seem to be foricbly enabled after the free trade)
-                    var shopft = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
-                    if (shopft == null) throw new Exception("Error finding trade ID");
-                    shopft.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
-                    shopft.DisableFlag = -1;
-                    shopft.WriteRow(); // save to memory
+            // Define shops that need handling:
+            var LEvents = ShopRules.GetLinkedEvents();
 
-                    // Remove these from list of what is to be populated
-                    if (LE.CopyID != 0)
-                        PTF.Remove(shopft); // copy still happens in final function
-                } 
-                
-                else if (LE.IsCopy)
-                {
-                    foreach (var torem in LE.RemoveIDs)
-                    {
-                        var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
-                        if (shoprem == null) continue;
-                        shoprem.ClearShop(); // Memory write!
-                        shoprem.CopyShopFromParamID = LE.CopyID;
-                        ShopsToFillByCopying.Add(shoprem); // add it to the "deal with later" list
-                        PTF.Remove(shoprem); // remove from "deal with now" list
-                    }
-                }
-                
-                // Sort out to remove:
-                foreach (var torem in LE.RemoveIDs)
-                {
-                    var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
-                    if (shoprem == null) continue;
-                    shoprem.ClearShop(); // Memory write!
-                    PTF.Remove(shoprem);
-                }
-            }
-            FixedVanillaShops = PTF;
+            // -------------------------------------------- //
+            // "Find shops with IDs that match (the ID of) non-trade,copy LEvents; return the shops"
+            var LE_normal_copies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
+            var shopnormcopies = shoprdzs.Join(inner: LE_normal_copies,
+                                               outerKeySelector: srdz => srdz.ParamID,
+                                               innerKeySelector: LEc => LEc.FillByCopy,
+                                               resultSelector: (srdz,lec) => srdz);
+            foreach (var srdz in shopnormcopies)
+                srdz.Status = RDZ_STATUS.FILL_BY_COPY;
+
+            // -------------------------------------------- //
+            // Deal with things that need removing:
+            var remIDs = LEvents.SelectMany(selector: LE => LE.RemoveIDs ?? new List<int>());
+            var shopsrem = shoprdzs.Join(inner: remIDs,
+                                    outerKeySelector: srdz => srdz.ParamID,
+                                    innerKeySelector: remid => remid,
+                                    resultSelector: (srdz, remid) => srdz);
+            foreach (var srdz in shopsrem)
+                srdz.Status = RDZ_STATUS.SHOPREMOVE;
+
+            // -------------------------------------------- //
+            // Trade shops:
+
+            // "Ordinary TradeShop" has nothing special to handle (aka Straid)
+            var normtrades = LEvents.Where(lev => lev.IsTrade && !lev.IsCopy);
+            var shopsnt = shoprdzs.Join(inner: normtrades,
+                                         outerKeySelector: srdz => srdz.ParamID,
+                                         innerKeySelector: lev => lev.KeepID,
+                                         resultSelector: (srdz, lev) => srdz);
+            foreach (var srdz in shopsnt)
+                srdz.Status = RDZ_STATUS.UNLOCKTRADE;
+
+            // Ornifex FreeTrades need a flag setting to zeroise pricerate after creation
+            // Note, these IDs still go through the "usual" randomization process first!
+            var ft = LEvents.Where(lev => lev.FreeTrade);
+            var shopsft = shoprdzs.Join(inner: ft,
+                                         outerKeySelector: srdz => srdz.ParamID,
+                                         innerKeySelector: lev => lev.KeepID,
+                                         resultSelector: (srdz, lev) => srdz);
+            foreach (var srdz in shopsft)
+                srdz.Status = RDZ_STATUS.MAKEFREE;
+
+            // The TradeShopCopy ones DO NOT go through "ordinary randomization"
+            // they instead, just copy the above ones, and then change price
+            var tsc = LEvents.Where(lev => lev.IsTrade && lev.IsCopy);
+            var shopstsc = shoprdzs.Join(inner: tsc,
+                                         outerKeySelector: srdz => srdz.ParamID,
+                                         innerKeySelector: lev => lev.FillByCopy,
+                                         resultSelector: (srdz, lev) => srdz);
+
+            foreach (var srdz in shopstsc)
+                srdz.Status = RDZ_STATUS.TRADE_SHOP_COPY;
+
+            // All the other shops should be good for "Ordinary Randomization"
+            var normal_shops = shoprdzs.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
+            foreach (var rdz in normal_shops)
+                rdz.Status = RDZ_STATUS.STANDARD;
+
+            // Output
+            return shoprdzs.Cast<Randomization>();
         }
+
+        //internal void FixShopEvents1()
+        //{
+        //    // This function stops shops from re-randomizing
+        //    // when npcs move or update their shops
+
+        //    // Go through and clone the "normal" shops:
+        //    var PTF = new List<ShopRow>();
+        //    var LEvents = ShopRules.GetLinkedEvents();
+
+        //    // Get list of all undisabled:
+        //    var tokeep = LEvents.Select(le => le.KeepID);
+        //    var tolose = LEvents.SelectMany(le => le.RemoveIDs);
+
+        //    // Clone vanilla shops, edit and then remove bad rows:
+        //    foreach(var SR in VanillaShops)
+        //        PTF.Add(SR.Clone()); 
+
+        //    // Remove exclusions from list
+        //    foreach(var excl in ShopRules.Exclusions)
+        //    {
+        //        var torem = PTF.FirstOrDefault(SR => SR.ID == excl);
+        //        if (torem == null) continue;
+        //        PTF.Remove(torem);
+        //    }
+
+        //    // Sort out linked events:
+        //    foreach (var LE in LEvents)
+        //    {
+        //        // Sort out tokeep
+        //        var shopkeep = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
+        //        if (shopkeep == null) throw new Exception("Error in finding linked shop ID");
+                
+        //        // Different situations to handle for trades/normal npc move events:
+        //        if (LE.IsTrade)
+        //        {
+        //            // All Ornifex trades (the ones with a "1" seem to be foricbly enabled after the free trade)
+        //            var shopft = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
+        //            if (shopft == null) throw new Exception("Error finding trade ID");
+        //            shopft.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+        //            shopft.DisableFlag = -1;
+        //            shopft.WriteRow(); // save to memory
+
+        //            // Remove these from list of what is to be populated
+        //            if (LE.CopyID != 0)
+        //                PTF.Remove(shopft); // copy still happens in final function
+        //        } 
+                
+        //        else if (LE.IsCopy)
+        //        {
+        //            foreach (var torem in LE.RemoveIDs)
+        //            {
+        //                var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
+        //                if (shoprem == null) continue;
+        //                shoprem.ClearShop(); // Memory write!
+        //                shoprem.CopyShopFromParamID = LE.CopyID;
+        //                ShopsToFillByCopying.Add(shoprem); // add it to the "deal with later" list
+        //                PTF.Remove(shoprem); // remove from "deal with now" list
+        //            }
+        //        }
+                
+        //        // Sort out to remove:
+        //        foreach (var torem in LE.RemoveIDs)
+        //        {
+        //            var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
+        //            if (shoprem == null) continue;
+        //            shoprem.ClearShop(); // Memory write!
+        //            PTF.Remove(shoprem);
+        //        }
+        //    }
+        //    FixedVanillaShops = PTF;
+        //}
         
-        internal void AddShopLogic()
+        internal void AddShopsToLogic()
         {
-            foreach (var si in FixedVanillaShops)
+            foreach (var sr in VanillaShops)
             {
                 // Append:
-                RandoInfo RI = new RandoInfo(si.ParamDesc, PICKUPTYPE.SHOP);
-                Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(si.ID, RI));
+                RandoInfo RI = new(sr.ParamDesc, PICKUPTYPE.SHOP);
+                Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(sr.ID, RI));
             }
         }
         internal void DefineKRG()
         {
-            // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
-            ldkeys = LTR_flatlist.Where(DI => DI.IsKeyType).ToList();                   // Keys
-            ldreqs = LTR_flatlist.Where(DI => ItemSetBase.RequiredItems.Contains(DI.ItemID)).ToList(); // Reqs
-            ldgens = LTR_flatlist.Except(ldkeys).Except(ldreqs).ToList();               // Generics
+            // Take a copy of the FlatList so we don't need to regenerate everytime:
+            var flatlist_copy = LTR_flatlist.Select(di => di.Clone()).ToList();
 
-            // Fixes:
-            ldkeys = RemoveDuplicateKeys(ldkeys); // avoid double ashen mist etc.
+            // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
+            ldkeys = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                   // Keys
+            ldreqs = flatlist_copy.Where(DI => ItemSetBase.RequiredItems.Contains(DI.ItemID)).ToList(); // Reqs
+            ldgens = flatlist_copy.Except(ldkeys).Except(ldreqs).ToList();               // Generics
 
             // Ensure no meme double placements:
-            if (ldkeys.Any(di => ldreqs.Contains(di)))
-                throw new Exception("Add a query to remove duplicates here!");
+            //if (ldkeys.Any(di => ldreqs.Contains(di)))
+            //    throw new Exception("Add a query to remove duplicates here!");
         }
-        private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
-        {
-            // First select things which are allowed to be dupes:
-            var okdupes = new List<KEYID>()
-            {   KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH,
-                KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE, KEYID.FLAMEBUTTERFLY,
-                KEYID.NADALIAFRAGMENT,
-            };
-            var okdupesint = okdupes.Cast<int>();
 
-            var dupekeys = allkeys.Where(di => okdupesint.Contains(di.ItemID)).ToList();
-            var alluniquekeys = allkeys.Where(di => !okdupesint.Contains(di.ItemID));
+        // Still required??
+        //private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
+        //{
+        //    // First select things which are allowed to be dupes:
+        //    var okdupes = new List<KEYID>()
+        //    {   KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH,
+        //        KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE, KEYID.FLAMEBUTTERFLY,
+        //        KEYID.NADALIAFRAGMENT,
+        //    };
+        //    var okdupesint = okdupes.Cast<int>();
 
-            // Probably a better way of doing this by overloading isEqual but has other considerations
-            List<DropInfo> uniquekeys = new List<DropInfo>();
-            for (int i = 0; i < alluniquekeys.Count(); i++)
-            {
-                var currdrop = alluniquekeys.ElementAt(i);
-                if (uniquekeys.Any(di => di.ItemID == currdrop.ItemID))
-                    continue;
-                uniquekeys.Add(currdrop);
-            }
-            return dupekeys.Concat(uniquekeys).ToList();
-        }
+        //    var dupekeys = allkeys.Where(di => okdupesint.Contains(di.ItemID)).ToList();
+        //    var alluniquekeys = allkeys.Where(di => !okdupesint.Contains(di.ItemID));
+
+        //    // Probably a better way of doing this by overloading isEqual but has other considerations
+        //    List<DropInfo> uniquekeys = new List<DropInfo>();
+        //    for (int i = 0; i < alluniquekeys.Count(); i++)
+        //    {
+        //        var currdrop = alluniquekeys.ElementAt(i);
+        //        if (uniquekeys.Any(di => di.ItemID == currdrop.ItemID))
+        //            continue;
+        //        uniquekeys.Add(currdrop);
+        //    }
+        //    return dupekeys.Concat(uniquekeys).ToList();
+        //}
         internal void FixFlatList()
         {
             // Ensure 5 SoaGs (game defines these weirdly)
@@ -492,11 +709,15 @@ namespace DS2S_META.Randomizer
             LTR_flatlist.Add(soag);
             LTR_flatlist.Add(soag);
 
-            // Remove Lord soul duplicates:
-            RemoveFirstIfPresent(64140000); // Rotten
-            RemoveFirstIfPresent(64060000); // Sinner
-            RemoveFirstIfPresent(64170000); // Freja
-            RemoveFirstIfPresent(64120000); // Old Iron King
+            // Fixes:
+            //ldkeys = RemoveDuplicateKeys(ldkeys); // avoid double ashen mist etc.
+            RemoveFirstIfPresent(0x0308D330); // Ashen Mist duplicate
+
+            //// Remove Lord soul duplicates:
+
+            //RemoveFirstIfPresent(64060000); // Sinner
+            //RemoveFirstIfPresent(64170000); // Freja
+            //RemoveFirstIfPresent(64120000); // Old Iron King
         }
         private void RemoveFirstIfPresent(int itemid)
         {
@@ -505,6 +726,7 @@ namespace DS2S_META.Randomizer
                 return;
             LTR_flatlist.Remove(di); 
         }
+        
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
         {
             // ld: list of DropInfos
@@ -515,7 +737,8 @@ namespace DS2S_META.Randomizer
 
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
-                PlaceItem(di.Clone(), flag);
+                //PlaceItem(di.Clone(), flag);
+                PlaceItem(di, flag);
                 ld.RemoveAt(keyindex);
             }
 
@@ -531,7 +754,7 @@ namespace DS2S_META.Randomizer
                 // Choose random rdz for item:
                 int pindex = RNG.Next(localunfilled.Count);
                 int elnum = localunfilled[pindex];
-                var rdz = Data.ElementAt(elnum);
+                var rdz = AllPTR.ElementAt(elnum);
 
                 // Check pickup type conditions:
                 if (Logic.IsBannedType(rdz, stype))
@@ -562,8 +785,10 @@ namespace DS2S_META.Randomizer
 
                 rdz.AddShuffledItem(di);
                 if (rdz.IsSaturated())
+                {
+                    rdz.MarkHandled();
                     Unfilled.Remove(elnum); // now filled!
-                
+                }
                 return;
             }
             throw new Exception("True Softlock, please investigate");
@@ -572,7 +797,7 @@ namespace DS2S_META.Randomizer
         {
             // ld: list of DropInfos
             int Nfc = ItemSetBase.FillerItems.Count; // fill count
-            foreach (var rdz in Data)
+            foreach (var rdz in AllPTR)
             {
                 while (!rdz.IsSaturated())
                 {
@@ -580,8 +805,10 @@ namespace DS2S_META.Randomizer
                     DropInfo item = ItemSetBase.FillerItems[ind]; // get filler item
                     rdz.AddShuffledItem(item);
                 }
+                rdz.MarkHandled();
             }
         }
+        
         private void FixInfusion(DropInfo di)
         {
             var item = ParamMan.GetItemFromID(di.ItemID);
@@ -637,7 +864,7 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
 
-            var shuffledlots = Data.OfType<LotRdz>()
+            var shuffledlots = AllP.OfType<LotRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllLots(shuffledlots);
@@ -647,7 +874,7 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
 
-            var shuffledshops = Data.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
+            var shuffledshops = AllP.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             WriteAllShops(shuffledshops, true);
         }
         
@@ -674,7 +901,7 @@ namespace DS2S_META.Randomizer
         internal void PrintKeysNeat()
         {
             // Prep:
-            List<string> lines = new List<string>();
+            List<string> lines = new();
 
             // Intro line
             lines.Add($"Printing key locations for seed {CurrSeed}");
@@ -686,7 +913,7 @@ namespace DS2S_META.Randomizer
                 if (!TryGetItemName(keyid, out string itemname))
                     continue;
 
-                var rdzsWithKey = Data.Where(rdz => rdz.HasShuffledItemID(keyid)).ToList();
+                var rdzsWithKey = AllPTR.Where(rdz => rdz.HasShuffledItemID(keyid)).ToList();
                 foreach (var rdz in rdzsWithKey)
                 {
                     StringBuilder sb = new StringBuilder(itemname);
@@ -714,110 +941,225 @@ namespace DS2S_META.Randomizer
 
             // World placements:
             lines.Add("World placement:");
-            foreach (var ldz in Data.OfType<LotRdz>())
+            foreach (var ldz in AllPTR.OfType<LotRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
             // Shops:
             lines.Add("");
             lines.Add("Shops:");
-            foreach (var rdz in Data.OfType<ShopRdz>())
+            foreach (var rdz in AllPTR.OfType<ShopRdz>())
                 lines.Add(rdz.GetNeatDescription());
 
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
-        internal void FixMaughlinEvent()
+        //internal void FixMaughlinEvent()
+        //{
+        //    // His update event seems to be unique in that it clears previous stuff?
+
+        //    var maughlin_events = new List<LinkedShopEvent>()
+        //    {
+        //        new LinkedShopEvent(76100211, 76100219), // Maughlin royal sodlier helm
+        //        new LinkedShopEvent(76100212, 76100220), // Maughlin royal sodlier armour
+        //        new LinkedShopEvent(76100213, 76100221), // Maughlin royal sodlier gauntlets
+        //        new LinkedShopEvent(76100214, 76100222), // Maughlin royal sodlier leggings
+        //        new LinkedShopEvent(76100215, 76100223), // Maughlin elite knight helm
+        //        new LinkedShopEvent(76100216, 76100224), // Maughlin elite knight armour
+        //        new LinkedShopEvent(76100217, 76100225), // Maughlin elite knight gauntlets
+        //        new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
+        //    };
+
+        //    var cloneshops = new List<ShopRow>();
+        //    foreach (LinkedShopEvent LE in maughlin_events)
+        //    {
+        //        var goodshop = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
+        //        if (goodshop.ShuffledShop == null)
+        //            throw new NullReferenceException("Shouldn't get here");
+
+        //        // this still isn't a perfect solution because of quantities
+        //        var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
+        //        vanshop.ItemID = goodshop.ShuffledShop.ItemID;
+        //        vanshop.Quantity = goodshop.ShuffledShop.Quantity;
+        //        vanshop.PriceRate = goodshop.ShuffledShop.PriceRate;
+        //        cloneshops.Add(vanshop);
+        //    }
+
+        //    if (Hook == null)
+        //        return;
+        //    WriteSomeShops(cloneshops, true);
+        //}
+        //internal void FixOrnifexEvent()
+        //{
+        //    // Need to make her stuff copies of the freetrades for continuity
+        //    var ornifex_copies = ShopRules.GetLinkedEvents()
+        //                                  .Where(LE => LE.IsTrade && LE.CopyID != 0);
+
+        //    var updateshops = new List<ShopRow>();
+        //    foreach (LinkedShopEvent LE in ornifex_copies)
+        //    {
+        //        var shop_to_copy = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.CopyID).First();
+        //        if (shop_to_copy.ShuffledShop == null)
+        //            throw new NullReferenceException("Shouldn't get here");
+
+        //        var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
+        //        if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
+        //        //var shop_to_edit = Data.OfType<ShopRdz>().FirstOrDefault(rdz => rdz.ParamID == LE.KeepID);
+
+        //        // Note the event enable/disable are already handled way earlier.
+        //        shop_to_edit.ItemID = shop_to_copy.ShuffledShop.ItemID;
+        //        shop_to_edit.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
+        //        shop_to_edit.Quantity = shop_to_copy.ShuffledShop.Quantity;
+        //        shop_to_edit.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
+
+        //        // Finally, fix the original shops to be free:
+        //        shop_to_copy.ShuffledShop.PriceRate = 0;
+        //        updateshops.Add(shop_to_copy.ShuffledShop);
+        //        updateshops.Add(shop_to_edit);
+        //    }
+
+        //    if (Hook == null) return;
+        //    WriteSomeShops(updateshops, true);
+        //}
+        //internal void FixGilliganEvent()
+        //{
+        //    // And Gilligan Events
+        //    var updateshops = new List<ShopRow>();
+
+        //    foreach (var shp in ShopsToFillByCopying)
+        //    {
+        //        var shop_to_copy = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == shp.CopyShopFromParamID).First();
+        //        if (shop_to_copy.ShuffledShop == null)
+        //            throw new NullReferenceException("Shouldn't get here");
+
+        //        // Note the event enable/disable are already handled way earlier.
+        //        shp.ItemID = shop_to_copy.ShuffledShop.ItemID;
+        //        shp.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
+        //        shp.Quantity = shop_to_copy.ShuffledShop.Quantity;
+        //        shp.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
+
+        //        // Add to list to commit to memory
+        //        updateshops.Add(shp);
+        //    }
+
+        //    if (Hook == null) return;
+        //    WriteSomeShops(updateshops, true);
+        //}
+
+        // Miscellaneous post-processing
+        internal void FixShopCopies()
         {
-            // His update event seems to be unique in that it clears previous stuff?
+            // Maughlin / Gilligan / Gavlan
+            var fillbycopy = AllP.OfType<ShopRdz>()
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.FILL_BY_COPY);
+            var filled_shops = AllPTR.OfType<ShopRdz>();
 
-            var maughlin_events = new List<LinkedShopEvent>()
+            // Define shops that need handling:
+            var LEvents = ShopRules.GetLinkedEvents();
+            var shopcopies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
+
+            foreach (var shp in fillbycopy)
             {
-                new LinkedShopEvent(76100211, 76100219), // Maughlin royal sodlier helm
-                new LinkedShopEvent(76100212, 76100220), // Maughlin royal sodlier armour
-                new LinkedShopEvent(76100213, 76100221), // Maughlin royal sodlier gauntlets
-                new LinkedShopEvent(76100214, 76100222), // Maughlin royal sodlier leggings
-                new LinkedShopEvent(76100215, 76100223), // Maughlin elite knight helm
-                new LinkedShopEvent(76100216, 76100224), // Maughlin elite knight armour
-                new LinkedShopEvent(76100217, 76100225), // Maughlin elite knight gauntlets
-                new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
-            };
+                var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.ParamID);
+                if (LE == null)
+                    throw new Exception("Cannot find linked event");
 
-            var cloneshops = new List<ShopRow>();
-            foreach (LinkedShopEvent LE in maughlin_events)
-            {
-                var goodshop = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
-                if (goodshop.ShuffledShop == null)
-                    throw new NullReferenceException("Shouldn't get here");
+                var shop_to_copy = filled_shops.Where(srdz => srdz.ParamID == LE.CopyID).FirstOrDefault();
+                if (shop_to_copy == null)
+                    throw new Exception("Cannot find shop to copy from");
 
-                // this still isn't a perfect solution because of quantities
-                var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
-                vanshop.ItemID = goodshop.ShuffledShop.ItemID;
-                vanshop.Quantity = goodshop.ShuffledShop.Quantity;
-                vanshop.PriceRate = goodshop.ShuffledShop.PriceRate;
-                cloneshops.Add(vanshop);
+                // Fill by copy:
+                shp.ShuffledShop = shop_to_copy.ShuffledShop.Clone();
+                shp.MarkHandled();
             }
-
-            if (Hook == null)
-                return;
-            WriteSomeShops(cloneshops, true);
         }
-        internal void FixOrnifexEvent()
+        internal void FixNormalTrade()
         {
-            // Need to make her stuff copies of the freetrades for continuity
-            var ornifex_copies = ShopRules.GetLinkedEvents()
-                                          .Where(LE => LE.IsTrade && LE.CopyID != 0);
-
-            var updateshops = new List<ShopRow>();
-            foreach (LinkedShopEvent LE in ornifex_copies)
+            // Ornifex First Trade (ensure free)
+            var normal_trades = AllPTR.OfType<ShopRdz>()
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.UNLOCKTRADE);
+            foreach (var shp in normal_trades)
             {
-                var shop_to_copy = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.CopyID).First();
-                if (shop_to_copy.ShuffledShop == null)
-                    throw new NullReferenceException("Shouldn't get here");
-
-                var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
-                if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
-                //var shop_to_edit = Data.OfType<ShopRdz>().FirstOrDefault(rdz => rdz.ParamID == LE.KeepID);
-
-                // Note the event enable/disable are already handled way earlier.
-                shop_to_edit.ItemID = shop_to_copy.ShuffledShop.ItemID;
-                shop_to_edit.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
-                shop_to_edit.Quantity = shop_to_copy.ShuffledShop.Quantity;
-                shop_to_edit.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
-
-                // Finally, fix the original shops to be free:
-                shop_to_copy.ShuffledShop.PriceRate = 0;
-                updateshops.Add(shop_to_copy.ShuffledShop);
-                updateshops.Add(shop_to_edit);
+                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.MarkHandled();
             }
-
-            if (Hook == null) return;
-            WriteSomeShops(updateshops, true);
         }
-        internal void FixGilliganEvent()
+        internal void FixShopTradeCopies()
         {
-            // And Gavlan Events
-
-            // Need to make her stuff copies of the freetrades for continuity
+            // Ornifex (non-free)
             var updateshops = new List<ShopRow>();
 
-            foreach (var shp in ShopsToFillByCopying)
+            var fillbycopy = AllP.OfType<ShopRdz>()
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.TRADE_SHOP_COPY);
+            var filled_shops = AllPTR.OfType<ShopRdz>();
+
+            // Define shops that need handling:
+            var LEvents = ShopRules.GetLinkedEvents();
+            var tradecopies = LEvents.Where(lev => lev.IsCopy && lev.IsTrade);
+
+            foreach (var shp in fillbycopy)
             {
-                var shop_to_copy = Data.OfType<ShopRdz>().Where(rdz => rdz.ParamID == shp.CopyShopFromParamID).First();
-                if (shop_to_copy.ShuffledShop == null)
-                    throw new NullReferenceException("Shouldn't get here");
+                var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.ParamID);
+                if (LE == null)
+                    throw new Exception("Cannot find linked event");
 
-                // Note the event enable/disable are already handled way earlier.
-                shp.ItemID = shop_to_copy.ShuffledShop.ItemID;
-                shp.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
-                shp.Quantity = shop_to_copy.ShuffledShop.Quantity;
-                shp.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
+                var shop_to_copy = filled_shops.Where(srdz => srdz.ParamID == LE.CopyID).FirstOrDefault();
+                if (shop_to_copy == null)
+                    throw new Exception("Cannot find shop to copy from");
 
-                // Add to list to commit to memory
-                updateshops.Add(shp);
+                // Fill by copy:
+                shp.ShuffledShop = shop_to_copy.ShuffledShop.Clone();
+
+                // They still won't show till after the event so this should work
+                shp.ShuffledShop.EnableFlag = -1;
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.MarkHandled();
             }
+        }
+        internal void FixFreeTrade()
+        {
+            // This is just a Normal Trade Fix but where we additionally 0 the price
+            // Ornifex First Trade (ensure free)
+            var shops_makefree = AllPTR.OfType<ShopRdz>()
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.MAKEFREE);
+            foreach (var shp in shops_makefree)
+            {
+                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.ShuffledShop.PriceRate = 0;
+                shp.MarkHandled();
+            }
+        }
+        internal void FixShopsToRemove()
+        {
+            // Ornifex First Trade (ensure free)
+            var shops_toremove = AllP.OfType<ShopRdz>()
+                                       .Where(rdz => rdz.Status == RDZ_STATUS.SHOPREMOVE);
+            foreach (var shp in shops_toremove)
+            {
+                shp.ZeroiseShuffledShop();
+                shp.MarkHandled();
+            }
+        }
+        internal void FixLotCopies()
+        {
+            // Maughlin / Gilligan / Gavlan
+            var fillbycopy = AllP.OfType<LotRdz>()
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.FILL_BY_COPY);
+            foreach (var lot in fillbycopy)
+            {
+                var LD = Logic.LinkedDrops.FirstOrDefault(ld => ld.SlaveIDs.Contains(lot.ParamID));
+                if (LD == null) 
+                    throw new Exception("Cannot find LinkedDrop as expected");
 
-            if (Hook == null) return;
-            WriteSomeShops(updateshops, true);
+                // Get Randomized ItemLot to copy from:
+                var lot_to_copy = AllPTR.OfType<LotRdz>().Where(ldz => ldz.ParamID == LD.MasterID).First();
+
+                // Clone/Update:
+                lot.ShuffledLot = lot.VanillaLot.CloneBlank();              // keep param reference for this ID
+                lot.ShuffledLot.CloneValuesFrom(lot_to_copy.ShuffledLot);   // set to new values
+                lot.MarkHandled();
+            }
         }
 
         // RNG related:
