@@ -140,7 +140,23 @@ namespace DS2S_META.Randomizer
             // Assume no infusion or reinforcement, to consider later.
             return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
-        
+        internal void CopyValuesFrom(ShopRow tocopy)
+        {
+            // Apply the data of tocopy to this Row, but don't change the row pointer or ParamID fields
+            CopyCoreValuesFrom(tocopy); // Item/Material/Price/Quantity
+            
+            EnableFlag = tocopy.EnableFlag;
+            DisableFlag = tocopy.DisableFlag;
+            DuplicateItemID = tocopy.DuplicateItemID;
+        }
+        internal void CopyCoreValuesFrom(ShopRow tocopy)
+        {
+            // Apply the data of tocopy to this Row, but don't change the row pointer or ParamID fields
+            ItemID = tocopy.ItemID;
+            MaterialID = tocopy.MaterialID;
+            PriceRate = tocopy.PriceRate;
+            Quantity = tocopy.Quantity;
+        }
         public void ClearShop()
         {
             ItemID = 0;

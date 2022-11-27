@@ -1050,7 +1050,7 @@ namespace DS2S_META.Randomizer
         {
             // Maughlin / Gilligan / Gavlan
             var fillbycopy = AllP.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Status == RDZ_STATUS.FILL_BY_COPY);
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.FILL_BY_COPY).ToList();
             var filled_shops = AllPTR.OfType<ShopRdz>();
 
             // Define shops that need handling:
@@ -1068,7 +1068,7 @@ namespace DS2S_META.Randomizer
                     throw new Exception("Cannot find shop to copy from");
 
                 // Fill by copy:
-                shp.ShuffledShop = shop_to_copy.ShuffledShop.Clone();
+                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
                 shp.MarkHandled();
             }
         }
@@ -1076,7 +1076,7 @@ namespace DS2S_META.Randomizer
         {
             // Ornifex First Trade (ensure free)
             var normal_trades = AllPTR.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Status == RDZ_STATUS.UNLOCKTRADE);
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
             foreach (var shp in normal_trades)
             {
                 shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
@@ -1090,7 +1090,7 @@ namespace DS2S_META.Randomizer
             var updateshops = new List<ShopRow>();
 
             var fillbycopy = AllP.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Status == RDZ_STATUS.TRADE_SHOP_COPY);
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.TRADE_SHOP_COPY).ToList();
             var filled_shops = AllPTR.OfType<ShopRdz>();
 
             // Define shops that need handling:
@@ -1108,7 +1108,7 @@ namespace DS2S_META.Randomizer
                     throw new Exception("Cannot find shop to copy from");
 
                 // Fill by copy:
-                shp.ShuffledShop = shop_to_copy.ShuffledShop.Clone();
+                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
 
                 // They still won't show till after the event so this should work
                 shp.ShuffledShop.EnableFlag = -1;
