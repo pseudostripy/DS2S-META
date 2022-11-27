@@ -179,7 +179,7 @@ namespace DS2S_META
             foreach (int id in ammo_items)
                 Hook.GiveItemSilently(id, 950, 0, 0);
 
-            // one-upgrade stuff:
+            // unupgraded stuff:
             var estusid = 60155000;
             var binoid = 6100000;
             var bucklerid = 11000000;
@@ -224,7 +224,7 @@ namespace DS2S_META
             foreach (int id in upgr_weapons)
                 Hook.GiveItemSilently(id, 1, 10, 0);
 
-            // Misc others:
+            // Misc other weapons:
             Hook.GiveItemSilently(rapierid, 1, 0, 0);   // basic rapier
             Hook.GiveItemSilently(rapierid, 1, 10, 3);  // lightning rapier
             Hook.GiveItemSilently(rapierid, 1, 10, 4);  // dark rapier
@@ -233,6 +233,43 @@ namespace DS2S_META
             var dbgsid = 1990000;
             Hook.GiveItemSilently(dbgsid, 1, 5, 0);
             var decapitateid = 63017000; // :D
+
+            // Keys:
+            List<int> keylist = new();
+            keylist.Add(0x03041840); // Soldier Key
+            keylist.Add(0x03043F50); // Key to King's Passage
+            keylist.Add(0x0304B480); // Weapon Smithbox
+            keylist.Add(0x0304DB90); // Armor Smithbox
+            keylist.Add(0x03072580); // Bastille Key
+            keylist.Add(0x03074C90); // Iron Key
+            keylist.Add(0x030773A0); // Forgotten Key
+            keylist.Add(0x03079AB0); // Brightstone Key
+            keylist.Add(0x0307C1C0); // Antiquated Key
+            keylist.Add(0x0307E8D0); // Fang Key
+            keylist.Add(0x03080FE0); // House Key
+            keylist.Add(0x030836F0); // Lenigrast's Key
+            keylist.Add(0x03085E00); // Smooth & Silky Stone
+            keylist.Add(0x03087188); // Small Smooth & Silky Stone
+            keylist.Add(0x03088510); // Rotunda Lockstone
+            keylist.Add(0x0308AC20); // Giant's Kinship
+            keylist.Add(0x0308D330); // Ashen Mist Heart
+            keylist.Add(0x0308FA40); // Soul of a Giant
+            keylist.Add(0x03092150); // Tseldora Den Key
+            keylist.Add(0x0309BD90); // Undead Lockaway Key
+            keylist.Add(0x030A0BB0); // Dull Ember
+            keylist.Add(0x030A32C0); // Crushed Eye Orb
+            keylist.Add(0x030AA7F0); // Aldia Key
+            keylist.Add(0x03197500); // Dragon Talon
+            keylist.Add(0x031AFBA0); // Heavy Iron Key
+            keylist.Add(0x031C8240); // Frozen Flower
+            keylist.Add(0x031E08E0); // Eternal Sanctum Key
+            keylist.Add(0x031F8F80); // Tower Key
+            keylist.Add(0x03211620); // Garrison Ward Key
+            keylist.Add(0x03236010); // Dragon Stone
+            foreach (int id in keylist)
+                Hook.GiveItemSilently(id, 1, 0, 0);
+
+            // Gestures:
             Hook.GiveItem_wrapper(decapitateid, 1, 0, 0);        // show visibly
             
 
@@ -240,6 +277,7 @@ namespace DS2S_META
             // Used to create a character with commonly useful things
             RestoreHumanity_Click(sender, e);   // human char
             Max_Click(sender, e);               // max levels
+            Hook.GiveSouls(9999999);            // give souls
             Hook.UnlockBonfires();              // unlock all bonfire
 
 
