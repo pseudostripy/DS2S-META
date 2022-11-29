@@ -79,7 +79,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.COVENANTHARD,
         };
 
-        internal List<int> CrowDuplicates = new List<int>()
+        internal List<int> CrowDuplicates = new()
         {
             // Prism: keep C loot:
             50000300, // B loot from prism
@@ -101,7 +101,7 @@ namespace DS2S_META.Randomizer
             50000201, // A loot from petrified
             50000203, // C loot from petrified
         };
-        internal static List<int> RequiredItems = new List<int>()
+        internal static List<int> RequiredItems = new()
         {
             // Add here / refactor as required.
             60155000,   // Estus Flask
@@ -109,8 +109,10 @@ namespace DS2S_META.Randomizer
             5400000,    // Pyromancy Flame
             5410000,    // Dark Pyromancy Flame 
             60355000,   // Aged Feather
+            0x027322E0, // Flynn's Ring
+            0x01EB7C50, // Homeward
         };
-        internal static List<DropInfo> FillerItems = new List<DropInfo>()
+        internal static List<DropInfo> FillerItems = new()
         {
             new DropInfo(0x0393AE10, 3), // Lifegem
             new DropInfo(0x0393D520), // Radiant Lifegem
@@ -212,7 +214,7 @@ namespace DS2S_META.Randomizer
             new DropInfo(0x03A51330), // Old Mundane Stone
             new DropInfo(0x03A53A40), // Palestone
         };
-        internal static Dictionary<int, int> SoulPriceList = new Dictionary<int, int>()
+        internal static Dictionary<int, int> SoulPriceList = new()
         {
             { 60625000, 50 },       // Fading soul
             { 60630000, 200 },      // Soul of a Lost Undead 
@@ -274,7 +276,7 @@ namespace DS2S_META.Randomizer
         };
 
         // Purely for printing:
-        internal static List<KEYID> KeyOutputOrder = new List<KEYID>()
+        internal static List<KEYID> KeyOutputOrder = new()
         {
             // Actual Key Item IDs:
             KEYID.BLACKSMITH,
