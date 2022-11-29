@@ -581,78 +581,6 @@ namespace DS2S_META.Randomizer
             return shoprdzs.Cast<Randomization>();
         }
 
-        //internal void FixShopEvents1()
-        //{
-        //    // This function stops shops from re-randomizing
-        //    // when npcs move or update their shops
-
-        //    // Go through and clone the "normal" shops:
-        //    var PTF = new List<ShopRow>();
-        //    var LEvents = ShopRules.GetLinkedEvents();
-
-        //    // Get list of all undisabled:
-        //    var tokeep = LEvents.Select(le => le.KeepID);
-        //    var tolose = LEvents.SelectMany(le => le.RemoveIDs);
-
-        //    // Clone vanilla shops, edit and then remove bad rows:
-        //    foreach(var SR in VanillaShops)
-        //        PTF.Add(SR.Clone()); 
-
-        //    // Remove exclusions from list
-        //    foreach(var excl in ShopRules.Exclusions)
-        //    {
-        //        var torem = PTF.FirstOrDefault(SR => SR.ID == excl);
-        //        if (torem == null) continue;
-        //        PTF.Remove(torem);
-        //    }
-
-        //    // Sort out linked events:
-        //    foreach (var LE in LEvents)
-        //    {
-        //        // Sort out tokeep
-        //        var shopkeep = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
-        //        if (shopkeep == null) throw new Exception("Error in finding linked shop ID");
-                
-        //        // Different situations to handle for trades/normal npc move events:
-        //        if (LE.IsTrade)
-        //        {
-        //            // All Ornifex trades (the ones with a "1" seem to be foricbly enabled after the free trade)
-        //            var shopft = PTF.FirstOrDefault(SR => SR.ID == LE.KeepID);
-        //            if (shopft == null) throw new Exception("Error finding trade ID");
-        //            shopft.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
-        //            shopft.DisableFlag = -1;
-        //            shopft.WriteRow(); // save to memory
-
-        //            // Remove these from list of what is to be populated
-        //            if (LE.CopyID != 0)
-        //                PTF.Remove(shopft); // copy still happens in final function
-        //        } 
-                
-        //        else if (LE.IsCopy)
-        //        {
-        //            foreach (var torem in LE.RemoveIDs)
-        //            {
-        //                var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
-        //                if (shoprem == null) continue;
-        //                shoprem.ClearShop(); // Memory write!
-        //                shoprem.CopyShopFromParamID = LE.CopyID;
-        //                ShopsToFillByCopying.Add(shoprem); // add it to the "deal with later" list
-        //                PTF.Remove(shoprem); // remove from "deal with now" list
-        //            }
-        //        }
-                
-        //        // Sort out to remove:
-        //        foreach (var torem in LE.RemoveIDs)
-        //        {
-        //            var shoprem = PTF.FirstOrDefault(SR => SR.ID == torem);
-        //            if (shoprem == null) continue;
-        //            shoprem.ClearShop(); // Memory write!
-        //            PTF.Remove(shoprem);
-        //        }
-        //    }
-        //    FixedVanillaShops = PTF;
-        //}
-        
         internal void AddShopsToLogic()
         {
             foreach (var sr in VanillaShops)
@@ -676,32 +604,6 @@ namespace DS2S_META.Randomizer
             //if (ldkeys.Any(di => ldreqs.Contains(di)))
             //    throw new Exception("Add a query to remove duplicates here!");
         }
-
-        // Still required??
-        //private List<DropInfo> RemoveDuplicateKeys(List<DropInfo> allkeys)
-        //{
-        //    // First select things which are allowed to be dupes:
-        //    var okdupes = new List<KEYID>()
-        //    {   KEYID.TORCH, KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH,
-        //        KEYID.SOULOFAGIANT, KEYID.SMELTERWEDGE, KEYID.FLAMEBUTTERFLY,
-        //        KEYID.NADALIAFRAGMENT,
-        //    };
-        //    var okdupesint = okdupes.Cast<int>();
-
-        //    var dupekeys = allkeys.Where(di => okdupesint.Contains(di.ItemID)).ToList();
-        //    var alluniquekeys = allkeys.Where(di => !okdupesint.Contains(di.ItemID));
-
-        //    // Probably a better way of doing this by overloading isEqual but has other considerations
-        //    List<DropInfo> uniquekeys = new List<DropInfo>();
-        //    for (int i = 0; i < alluniquekeys.Count(); i++)
-        //    {
-        //        var currdrop = alluniquekeys.ElementAt(i);
-        //        if (uniquekeys.Any(di => di.ItemID == currdrop.ItemID))
-        //            continue;
-        //        uniquekeys.Add(currdrop);
-        //    }
-        //    return dupekeys.Concat(uniquekeys).ToList();
-        //}
         internal void FixFlatList()
         {
             // Ensure 5 SoaGs (game defines these weirdly)
@@ -879,7 +781,7 @@ namespace DS2S_META.Randomizer
         }
         
         // Utility:
-        internal Dictionary<int, string> ReadShopNames()
+        internal static Dictionary<int, string> ReadShopNames()
         {
             Dictionary<int, string> shopnames = new Dictionary<int, string>();
 
@@ -953,98 +855,7 @@ namespace DS2S_META.Randomizer
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
-        //internal void FixMaughlinEvent()
-        //{
-        //    // His update event seems to be unique in that it clears previous stuff?
-
-        //    var maughlin_events = new List<LinkedShopEvent>()
-        //    {
-        //        new LinkedShopEvent(76100211, 76100219), // Maughlin royal sodlier helm
-        //        new LinkedShopEvent(76100212, 76100220), // Maughlin royal sodlier armour
-        //        new LinkedShopEvent(76100213, 76100221), // Maughlin royal sodlier gauntlets
-        //        new LinkedShopEvent(76100214, 76100222), // Maughlin royal sodlier leggings
-        //        new LinkedShopEvent(76100215, 76100223), // Maughlin elite knight helm
-        //        new LinkedShopEvent(76100216, 76100224), // Maughlin elite knight armour
-        //        new LinkedShopEvent(76100217, 76100225), // Maughlin elite knight gauntlets
-        //        new LinkedShopEvent(76100218, 76100226), // Maughlin elite knight leggings
-        //    };
-
-        //    var cloneshops = new List<ShopRow>();
-        //    foreach (LinkedShopEvent LE in maughlin_events)
-        //    {
-        //        var goodshop = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.KeepID).First();
-        //        if (goodshop.ShuffledShop == null)
-        //            throw new NullReferenceException("Shouldn't get here");
-
-        //        // this still isn't a perfect solution because of quantities
-        //        var vanshop = VanillaShops.Where(si => si.ID == LE.RemoveIDs.First()).First();
-        //        vanshop.ItemID = goodshop.ShuffledShop.ItemID;
-        //        vanshop.Quantity = goodshop.ShuffledShop.Quantity;
-        //        vanshop.PriceRate = goodshop.ShuffledShop.PriceRate;
-        //        cloneshops.Add(vanshop);
-        //    }
-
-        //    if (Hook == null)
-        //        return;
-        //    WriteSomeShops(cloneshops, true);
-        //}
-        //internal void FixOrnifexEvent()
-        //{
-        //    // Need to make her stuff copies of the freetrades for continuity
-        //    var ornifex_copies = ShopRules.GetLinkedEvents()
-        //                                  .Where(LE => LE.IsTrade && LE.CopyID != 0);
-
-        //    var updateshops = new List<ShopRow>();
-        //    foreach (LinkedShopEvent LE in ornifex_copies)
-        //    {
-        //        var shop_to_copy = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == LE.CopyID).First();
-        //        if (shop_to_copy.ShuffledShop == null)
-        //            throw new NullReferenceException("Shouldn't get here");
-
-        //        var shop_to_edit = VanillaShops.FirstOrDefault(shp => shp.ID == LE.KeepID);
-        //        if (shop_to_edit == null) throw new Exception("Cannot find Ornifex trade shop to edit with copy");
-        //        //var shop_to_edit = Data.OfType<ShopRdz>().FirstOrDefault(rdz => rdz.ParamID == LE.KeepID);
-
-        //        // Note the event enable/disable are already handled way earlier.
-        //        shop_to_edit.ItemID = shop_to_copy.ShuffledShop.ItemID;
-        //        shop_to_edit.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
-        //        shop_to_edit.Quantity = shop_to_copy.ShuffledShop.Quantity;
-        //        shop_to_edit.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
-
-        //        // Finally, fix the original shops to be free:
-        //        shop_to_copy.ShuffledShop.PriceRate = 0;
-        //        updateshops.Add(shop_to_copy.ShuffledShop);
-        //        updateshops.Add(shop_to_edit);
-        //    }
-
-        //    if (Hook == null) return;
-        //    WriteSomeShops(updateshops, true);
-        //}
-        //internal void FixGilliganEvent()
-        //{
-        //    // And Gilligan Events
-        //    var updateshops = new List<ShopRow>();
-
-        //    foreach (var shp in ShopsToFillByCopying)
-        //    {
-        //        var shop_to_copy = AllPTR.OfType<ShopRdz>().Where(rdz => rdz.ParamID == shp.CopyShopFromParamID).First();
-        //        if (shop_to_copy.ShuffledShop == null)
-        //            throw new NullReferenceException("Shouldn't get here");
-
-        //        // Note the event enable/disable are already handled way earlier.
-        //        shp.ItemID = shop_to_copy.ShuffledShop.ItemID;
-        //        shp.MaterialID = shop_to_copy.ShuffledShop.MaterialID;
-        //        shp.Quantity = shop_to_copy.ShuffledShop.Quantity;
-        //        shp.PriceRate = shop_to_copy.ShuffledShop.PriceRate;
-
-        //        // Add to list to commit to memory
-        //        updateshops.Add(shp);
-        //    }
-
-        //    if (Hook == null) return;
-        //    WriteSomeShops(updateshops, true);
-        //}
-
+        
         // Miscellaneous post-processing
         internal void FixShopCopies()
         {
