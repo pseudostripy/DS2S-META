@@ -167,7 +167,8 @@ namespace DS2S_META.Randomizer
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
             await Task.Run(() => WriteShuffledShops());
-            
+            ParamMan.ItemParam?.WriteModifiedParam(); // can speed this up if we have to
+
             Hook.WarpLast();    // Force an area reload. TODO add warning:
             IsRandomized = true;
         }

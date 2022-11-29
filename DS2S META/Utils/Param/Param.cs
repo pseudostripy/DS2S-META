@@ -121,9 +121,8 @@ namespace DS2S_META
             if (Bytes == null)
                 throw new Exception("Param Bytes are not set, cannot be modified");
 
-            // Initial copy
-            if (NewBytes == null)
-                NewBytes = (byte[])Bytes.Clone();
+            // New copy (first call only)
+            NewBytes ??= (byte[])Bytes.Clone();
 
             if (row.RowBytes.Length != RowLength)
                 throw new ArrayTypeMismatchException("Row bytes size does not match expected length for param row size");
@@ -289,6 +288,11 @@ namespace DS2S_META
                 // Note: this function isn't generalised properly yet
                 int fieldoffset = Param.Fields[fieldindex].FieldOffset;
                 Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
+            }
+            public void StoreRow()
+            {
+                // Convenience wrapper
+                Param.StoreRowBytes(this);
             }
 
         }

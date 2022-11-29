@@ -163,10 +163,5 @@ namespace DS2S_META.Randomizer
             Quantity = 0;
             StoreRow();
         }
-        public void StoreRow()
-        {
-            // Convenience wrapper
-            Param.StoreRowBytes(this);
-        }
     }
 }

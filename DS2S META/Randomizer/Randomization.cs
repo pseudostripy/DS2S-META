@@ -283,12 +283,12 @@ namespace DS2S_META.Randomizer
             if (baseprice <= 1)
             {
                 item.BaseBuyPrice = 12000;
-                baseprice = 12000;
-                item.WriteRow(); // memory write change
+                item.StoreRow();
             }
+                
 
             int pricenew = GetTypeRandomPrice(di.ItemID);
-            float pricerate = (float)pricenew / baseprice;
+            float pricerate = (float)pricenew / item.BaseBuyPrice;
 
             // Update:
             ShuffledShop.SetValues(di, VanillaShop, pricerate);
