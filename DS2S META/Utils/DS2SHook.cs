@@ -18,6 +18,7 @@ using DS2S_META.Utils;
 using System.Windows.Automation;
 using System.Runtime.Serialization;
 using Octokit;
+using System.Reflection;
 
 namespace DS2S_META
 {
@@ -138,16 +139,25 @@ namespace DS2S_META
         }
 
         // DS2 & BBJ Process Info Data
-        private const int V102sz = 0x20B6000;
-        private const int V103sz = 0x1D76000;
         private const byte NOBBJBYTE = 0xF3;
         private const byte NEWBBJBYTE = 0x49;
-        public enum DS2VER { V102_VULNPATCH, V103_ONLINEPATCH }
+        public enum DS2VER 
+        { 
+            VANILLA_V111, 
+            VANILLA_V102, 
+            SOTFS_V102, 
+            SOTFS_V103, 
+            UNSUPPORTED 
+        }
         public enum BBJTYPE {NOBBJ, OLDBBJ, NEWBBJ }
-        public bool isCP => DS2Ver == DS2VER.V103_ONLINEPATCH;
+        public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
+        public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
 
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
+            DS2Ver = GetDS2Ver();
+            
+            // Eventually to remove:
             if (!Is64Bit)
             {
                 Version = "Vanilla (Wrong)";
@@ -156,7 +166,7 @@ namespace DS2S_META
 
             // Initial Setup & Version Checks:
             BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
-            DS2Ver = GetDS2Ver();
+            Offsets = GetOffsets();
             BBJType = GetBBJType(isOldBbj);
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
@@ -224,22 +234,41 @@ namespace DS2S_META
             RescanAOB();
             BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
         }
+        internal DS2SOffsets GetOffsets()
+        {
+            return DS2Ver switch
+            {
+                DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
+                DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
+                _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
+            };
+        }
         internal DS2VER GetDS2Ver()
         {
+            // Size of running DS2 application
             var moduleSz = Process?.MainModule?.ModuleMemorySize;
-            switch (moduleSz)
+
+            if (Is64Bit)
+                return GetSotfsVer(moduleSz);
+
+            return GetVanillaVer(moduleSz);
+        }
+        private static DS2VER GetVanillaVer(int? modulesz)
+        {
+            return modulesz switch
             {
-                case V102sz:
-                    Offsets = new DS2SOffsetsV102();
-                    return DS2VER.V102_VULNPATCH;
-
-                case V103sz:
-                    Offsets = new DS2SOffsetsV103();
-                    return DS2VER.V103_ONLINEPATCH;
-
-                default:
-                    throw new Exception("Unexpected Sotfs Module Size, likely not supported.");
-            }
+                DS2ModuleInfo.ModuleSizes.VanillaV111 => DS2VER.VANILLA_V111,
+                _ => DS2VER.UNSUPPORTED,
+            };
+        }
+        private static DS2VER GetSotfsVer(int? modulesz)
+        {
+            return modulesz switch
+            {
+                DS2ModuleInfo.ModuleSizes.SotfsV102 => DS2VER.SOTFS_V102,
+                DS2ModuleInfo.ModuleSizes.SotfsV103 => DS2VER.SOTFS_V103,
+                _ => DS2VER.UNSUPPORTED,
+            };
         }
         internal BBJTYPE GetBBJType(bool isOldBbj)
         {
@@ -250,7 +279,7 @@ namespace DS2S_META
             // check for new bbj
             int jumpfcn_offset_V102 = 0x037B4BC;
             int jumpfcn_offset_V103 = 0x0381E1C;
-            var jmpfcn_offset = isCP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
+            var jmpfcn_offset = IsSOTFS_CP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
 
             var module_addr = Process?.MainModule?.BaseAddress;
             if (module_addr == null)
@@ -272,7 +301,7 @@ namespace DS2S_META
         }
         private string GetStringVersion()
         {
-            string verstr = isCP ? "V1.03" : "V1.02";
+            string verstr = IsSOTFS_CP ? "V1.03" : "V1.02";
             switch (BBJType)
             {
                 case BBJTYPE.NOBBJ:
