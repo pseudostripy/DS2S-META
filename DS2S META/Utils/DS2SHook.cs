@@ -143,13 +143,21 @@ namespace DS2S_META
         private const byte NEWBBJBYTE = 0x49;
         public enum DS2VER 
         { 
+            VANILLA_V112,
             VANILLA_V111, 
             VANILLA_V102, 
             SOTFS_V102, 
             SOTFS_V103, 
             UNSUPPORTED 
         }
-        public enum BBJTYPE {NOBBJ, OLDBBJ, NEWBBJ }
+        public enum BBJTYPE
+        {
+            NOBBJ, 
+            OLDBBJ_VANILLA,
+            NEWBBJ_VANILLA,
+            OLDBBJ_SOTFS, 
+            NEWBBJ_SOTFS 
+        }
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
         public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
 
@@ -257,7 +265,9 @@ namespace DS2S_META
         {
             return modulesz switch
             {
+                DS2ModuleInfo.ModuleSizes.VanillaV112 => DS2VER.VANILLA_V112,
                 DS2ModuleInfo.ModuleSizes.VanillaV111 => DS2VER.VANILLA_V111,
+                DS2ModuleInfo.ModuleSizes.VanillaV102 => DS2VER.VANILLA_V102,
                 _ => DS2VER.UNSUPPORTED,
             };
         }
@@ -273,7 +283,7 @@ namespace DS2S_META
         internal BBJTYPE GetBBJType(bool isOldBbj)
         {
             if (isOldBbj)
-                return BBJTYPE.OLDBBJ;
+                return BBJTYPE.OLDBBJ_SOTFS;
             
 
             // check for new bbj
@@ -294,7 +304,7 @@ namespace DS2S_META
                 case NOBBJBYTE:
                     return BBJTYPE.NOBBJ;
                 case NEWBBJBYTE:
-                    return BBJTYPE.NEWBBJ;
+                    return BBJTYPE.NEWBBJ_SOTFS;
                 default:
                     throw new Exception("Probably an issue with setting up the pointers/addresses");
             }
@@ -307,10 +317,10 @@ namespace DS2S_META
                 case BBJTYPE.NOBBJ:
                     return $"{verstr} (unmodded)";
 
-                case BBJTYPE.OLDBBJ:
+                case BBJTYPE.OLDBBJ_SOTFS:
                     return $"{verstr} (old bbj mod)";
 
-                case BBJTYPE.NEWBBJ:
+                case BBJTYPE.NEWBBJ_SOTFS:
                     return $"{verstr} (bbj mod)";
 
                 default:
