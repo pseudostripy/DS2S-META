@@ -60,11 +60,8 @@ namespace DS2S_META.Utils
         public static string[] GetListResource(string filePath)
         {
             //Get local directory + file path, read file, return string contents of file
-
-            //Path.Combine(Environment.CurrentDirectory, filePath);
-            string test = $@"{ExeDir}/{filePath}";
             if (!File.Exists($@"{ExeDir}/{filePath}"))
-                return new string[] { };
+                return Array.Empty<string>();
 
             string[] stringArray = File.ReadAllLines($@"{ExeDir}/{filePath}");
 

@@ -23,8 +23,9 @@ namespace DS2S_META
         public PHPointer? Pointer { get; private set; }
         public int[]? Offsets { get; private set; }
         public PARAMDEF ParamDef { get; private set; }
-        public string Name { get; private set; }
-        public string Type { get; private set; }
+        public string Name { get; private set; } // Unique Name
+        public string Type { get; private set; } // ParamDef Name
+        public string StringsFileName { get; set; } // Param Strings file
         public int? OffsetsTableLength { get; private set; }
         public int? TotalTableLength { get; private set; }
         public byte[]? Bytes { get; private set; }
@@ -78,8 +79,7 @@ namespace DS2S_META
         private void BuildNameDictionary()
         {
             // Why don't they just use the same names :/
-            string names_filename = Name.Replace("_", string.Empty);
-            string[] result = Util.GetListResource(@$"{paramfol}Names/{names_filename}.txt");
+            string[] result = Util.GetListResource(@$"{paramfol}Names/{StringsFileName}.txt");
             if (result.Length == 0)
                 return;
 
@@ -372,7 +372,15 @@ namespace DS2S_META
                 // Convenience wrapper
                 Param.StoreRowBytes(this);
             }
-
+            public int GetFieldIndex(string fieldname)
+            {
+                for (int i = 0; i < Param.ParamDef.Fields.Count; i++)
+                {
+                    if (Param.ParamDef.Fields[i].DisplayName == fieldname)
+                        return i;
+                }
+                throw new Exception($"Cannot find field with name: {fieldname} in ParamType {Param.Type}");
+            }
         }
 
 

@@ -28,30 +28,95 @@ namespace DS2S_META.Utils
         public static readonly string ExeDir = Environment.CurrentDirectory;
         public static List<Param> RawParamsList { get; set; } = new();
         public static Dictionary<string, Param> AllParams { get; set; } = new();
-        
+        public static List<Param> GeneratorParams { get; set; } = new();
+        public static List<Param> GeneratorRegistParams { get; set; } = new();
+
         public static class PAliases
         {
             // Names matching underlying DEF
-            public const string SHOP_LINEUP             = "SHOP_LINEUP_PARAM";
-            public const string WEAPON                  = "WEAPON_PARAM";
-            public const string WEAPON_REINFORCE        = "WEAPON_REINFORCE_PARAM";
-            public const string ITEM                    = "ITEM_PARAM";
-            public const string WEAPON_TYPE             = "WEAPON_TYPE_PARAM";
-            public const string CUSTOM_ATTR_SPEC        = "CUSTOM_ATTR_SPEC_PARAM";
-            public const string WEAPON_STATS_AFFECT     = "WEAPON_STATS_AFFECT_PARAM";
-            public const string PLAYER_STATUS           = "PLAYER_STATUS_PARAM";
-            public const string ITEM_USAGE              = "ITEM_USAGE_PARAM";
-            public const string ARROW                   = "ARROW_PARAM";
+            public const string SHOP_LINEUP = "SHOP_LINEUP_PARAM";
+            public const string WEAPON = "WEAPON_PARAM";
+            public const string WEAPON_REINFORCE = "WEAPON_REINFORCE_PARAM";
+            public const string ITEM = "ITEM_PARAM";
+            public const string WEAPON_TYPE = "WEAPON_TYPE_PARAM";
+            public const string CUSTOM_ATTR_SPEC = "CUSTOM_ATTR_SPEC_PARAM";
+            public const string WEAPON_STATS_AFFECT = "WEAPON_STATS_AFFECT_PARAM";
+            public const string PLAYER_STATUS = "PLAYER_STATUS_PARAM";
+            public const string ITEM_USAGE = "ITEM_USAGE_PARAM";
+            public const string ARROW = "ARROW_PARAM";
 
             // Names different from underlying DEF
-            public const string ITEM_LOT_OTHER          = "ITEM_LOT_OTHER";
-        }
+            public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
+            public const string ITEM_LOT_CHR = "ITEM_LOT_CHR";
+            public const string ENEMY_PARAM = "ENEMY_PARAM";
+
+            public static List<string> GENERATOR_PARAM { get; set; } = new()
+            {
+                "generatorparam_m10_02_00_00",
+                "generatorparam_m10_04_00_00",
+                "generatorparam_m10_10_00_00",
+                "generatorparam_m10_14_00_00",
+                "generatorparam_m10_15_00_00",
+                "generatorparam_m10_16_00_00",
+                "generatorparam_m10_17_00_00",
+                "generatorparam_m10_18_00_00",
+                "generatorparam_m10_19_00_00",
+                "generatorparam_m10_23_00_00",
+                "generatorparam_m10_25_00_00",
+                "generatorparam_m10_27_00_00",
+                "generatorparam_m10_30_00_00",
+                "generatorparam_m10_31_00_00",
+                "generatorparam_m10_32_00_00",
+                "generatorparam_m10_33_00_00",
+                "generatorparam_m10_34_00_00",
+                "generatorparam_m20_10_00_00",
+                "generatorparam_m20_11_00_00",
+                "generatorparam_m20_21_00_00",
+                "generatorparam_m20_24_00_00",
+                "generatorparam_m20_26_00_00",
+                "generatorparam_m40_03_00_00",
+                "generatorparam_m50_35_00_00",
+                "generatorparam_m50_36_00_00",
+                "generatorparam_m50_37_00_00",
+                "generatorparam_m50_38_00_00",
+            };
+            public static List<string> GENERATOR_REGIST { get; set; } = new()
+            {
+                "generatorregistparam_m10_02_00_00",
+                "generatorregistparam_m10_04_00_00",
+                "generatorregistparam_m10_10_00_00",
+                "generatorregistparam_m10_14_00_00",
+                "generatorregistparam_m10_15_00_00",
+                "generatorregistparam_m10_16_00_00",
+                "generatorregistparam_m10_17_00_00",
+                "generatorregistparam_m10_18_00_00",
+                "generatorregistparam_m10_19_00_00",
+                "generatorregistparam_m10_23_00_00",
+                "generatorregistparam_m10_25_00_00",
+                "generatorregistparam_m10_27_00_00",
+                "generatorregistparam_m10_30_00_00",
+                "generatorregistparam_m10_31_00_00",
+                "generatorregistparam_m10_32_00_00",
+                "generatorregistparam_m10_33_00_00",
+                "generatorregistparam_m10_34_00_00",
+                "generatorregistparam_m20_10_00_00",
+                "generatorregistparam_m20_11_00_00",
+                "generatorregistparam_m20_21_00_00",
+                "generatorregistparam_m20_24_00_00",
+                "generatorregistparam_m20_26_00_00",
+                "generatorregistparam_m40_03_00_00",
+                "generatorregistparam_m50_35_00_00",
+                "generatorregistparam_m50_36_00_00",
+                "generatorregistparam_m50_37_00_00",
+                "generatorregistparam_m50_38_00_00",
+            };
+        };
 
 
-        
         // Params Shorthand:
         public static Param? ShopLineupParam => AllParams[PAliases.SHOP_LINEUP];
         public static Param? ItemLotOtherParam => AllParams[PAliases.ITEM_LOT_OTHER];
+        public static Param? ItemLotChrParam => AllParams[PAliases.ITEM_LOT_CHR];
         public static Param? WeaponParam => AllParams[PAliases.WEAPON];
         public static Param? ItemParam => AllParams[PAliases.ITEM];
         public static Param? WeaponReinforceParam => AllParams[PAliases.WEAPON_REINFORCE];
@@ -61,6 +126,8 @@ namespace DS2S_META.Utils
         public static Param? PlayerStatusClassParam => AllParams[PAliases.PLAYER_STATUS];
         public static Param? ItemUsageParam => AllParams[PAliases.ITEM_USAGE];
         public static Param? ArrowParam => AllParams[PAliases.ARROW];
+        public static Param? EnemyParam => AllParams[PAliases.ENEMY_PARAM];
+        //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
         public static void Initialise(DS2SHook hook)
         {
@@ -89,14 +156,18 @@ namespace DS2S_META.Utils
             string[] pointers = File.ReadAllLines(paramPointers);
             AddMemoryParams(paramList, paramPath, paramPointers, pointers);
 
-            // Add file-based:
-            string filepath = $"{resourcePath}/ParamFiles/generatorparam_m10_10_00_00.param";
-            string name = "GENERATOR_PARAM";
-            string defPath = $"{paramPath}/Defs/{name}.xml";
-            PARAMDEF paramDef = XmlDeserialize(defPath);
-            Param param = new(filepath, paramDef, name);
-            RowOverloadHandler(param);
-            paramList.Add(param);
+            AddFileParams(paramList);
+
+            //// Add file-based:
+            //string name = PAliases.GENFOREST;
+            //string filepath = $"{resourcePath}/ParamFiles/{name}.param";
+            //string defName = "GENERATOR_PARAM";
+            //string defPath = $"{paramPath}/Defs/{defName}.xml";
+            //PARAMDEF paramDef = XmlDeserialize(defPath);
+            //Param param = new(filepath, paramDef, name);
+            //param.StringsFileName = "generatorparam_m10_10_00_00";
+            //RowOverloadHandler(param);
+            //paramList.Add(param);
 
             RawParamsList = paramList;
             BuildParamDictionary(); // Populate "AllParams"
@@ -122,6 +193,10 @@ namespace DS2S_META.Utils
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new(pointer, offsets, paramDef, name);
 
+                // Currently this works for the names we've used. In general we need a dictionary:
+                param.StringsFileName = param.Name.Replace("_", string.Empty);
+
+                // Main Type Switch
                 RowOverloadHandler(param);
                 
                 // Save param
@@ -129,10 +204,42 @@ namespace DS2S_META.Utils
             }
             paramList.Sort();
         }
+        private static void AddFileParams(List<Param> paramList)
+        {
+            // Add file-based:
+            string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022";
+            string paramFilesPath = $"{ExeDir}/Resources/ParamFiles";
+            var pfiles = Directory.GetFiles(paramFilesPath);
+            string defName;
+
+            foreach (var pfile in pfiles)
+            {
+                string name = Path.GetFileNameWithoutExtension(pfile);
+                if (pfile.Contains("regist"))
+                    defName = "GENERATOR_REGIST_PARAM";
+                else
+                    defName = "GENERATOR_PARAM";
+
+                string defPath = $"{paramPath}/Defs/{defName}.xml";
+                PARAMDEF paramDef = XmlDeserialize(defPath);
+                Param param = new(pfile, paramDef, name);
+                param.StringsFileName = $"{name}";
+                RowOverloadHandler(param);
+                paramList.Add(param);
+            }
+        }
         private static void BuildParamDictionary()
         {
             foreach(var param in RawParamsList)
                 AllParams.Add(param.Name, param);
+
+            // add the generators to an easier dictionary
+            for (int i = 0; i < PAliases.GENERATOR_PARAM.Count; i++)
+                GeneratorParams.Add(AllParams[PAliases.GENERATOR_PARAM[i]]);
+
+            for (int i = 0; i < PAliases.GENERATOR_REGIST.Count; i++)
+                GeneratorRegistParams.Add(AllParams[PAliases.GENERATOR_PARAM[i]]);
+
         }
         private static int hex2int(string hexbyte)
         {
@@ -141,7 +248,6 @@ namespace DS2S_META.Utils
         private static void RowOverloadHandler(Param param)
         {
             // couldn't find a way to do this dynamically :(
-            //PNAME pname = ParamsFromStrings[param.Name];
             switch (param.Type)
             {
                 // Just save the ones we care about
@@ -187,6 +293,18 @@ namespace DS2S_META.Utils
 
                 case "ARROW_PARAM":
                     param.initialise<ArrowRow>();
+                    break;
+
+                case "CHR_PARAM":
+                    param.initialise<ChrRow>();
+                    break;
+
+                case "GENERATOR_PARAM":
+                    param.initialise<GeneratorParamRow>();
+                    break;
+
+                case "GENERATOR_REGIST_PARAM":
+                    param.initialise<GeneratorRegistRow>();
                     break;
 
                 default:

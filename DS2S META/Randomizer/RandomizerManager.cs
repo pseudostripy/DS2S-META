@@ -25,6 +25,7 @@ namespace DS2S_META.Randomizer
         List<Randomization> AllPTR = new(); // Places to Randomize
         internal static Random RNG = new();
         private List<ItemLotRow> VanillaLots = new();
+        private List<ItemLotRow> VanillaDrops = new();
         private List<ShopRow> VanillaShops = new();
         internal List<ShopRow> ShopsToFillByCopying = new();
         private List<ShopRow> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
@@ -98,6 +99,7 @@ namespace DS2S_META.Randomizer
             // Param collecting:
             Logic = new CasualItemSet();
             GetVanillaLots();
+            GetVanillaDrops();
             GetVanillaShops();
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             
@@ -107,8 +109,38 @@ namespace DS2S_META.Randomizer
             // TODO After?
             //FixShopEvents1(); // Update PTF with shop places
 
-
             IsInitialized = true;
+        }
+        internal void TestDropStuff()
+        {
+            //// Current assumption: GeneratorParam->ItemLotID overrides GeneratorRegistParam->ItemLotID
+            //var nonzero_gen = ParamMan.GenForestParam?.Rows.OfType<GeneratorParamRow>()
+            //            .Where(row => row.ItemLotID != 0) // TODO generatorregist
+            //            .GroupBy(row => row.ItemLot) // Only care about independent ItemLots
+            //            .Select(grp => grp.First()); // Just select the first of each "same" group
+
+            List<GeneratorParamRow> genplist = new();
+            foreach (var genparam in ParamMan.GeneratorParams)
+            {
+                var test = genparam.Rows.OfType<GeneratorParamRow>()
+                        .Where(row => row.ItemLotID != 0).ToList();
+                genplist.AddRange(test);
+            }
+
+            var uniques = genplist.GroupBy(row => row.ItemLot)
+                                    .Select(grp => grp.First()).ToList();
+
+            // Add in the ones done via generatorregist:
+
+            //var test = ParamMan.EnemyParam?.Rows.OfType<ChrRow>()
+            //                .Where(row => row.ItemLotID != 0).ToList();
+            var temp = 1;
+        }
+        internal void GetVanillaDrops()
+        {
+            var vanlotschr = ParamMan.ItemLotChrParam?.Rows.OfType<ItemLotRow>().ToList();
+            if (vanlotschr == null) throw new NullReferenceException("Shouldn't get here");
+            VanillaDrops = vanlotschr;
         }
         internal void GetVanillaLots()
         {
@@ -119,18 +151,6 @@ namespace DS2S_META.Randomizer
             // Add descriptions
             foreach (var ilot in VanillaLots)
                 ilot.ParamDesc = Logic.GetDesc(ilot.ID);
-
-
-            //if (Hook?.ItemLotOtherParam == null)
-            //    throw new NullReferenceException("Shouldn't get here");
-
-            //VanillaLots = Hook.ItemLotOtherParam.Rows.Select(row => new ItemLotRow(row)).ToList();
-            
-            //// Add descriptions
-            //foreach (var ilot in VanillaLots)
-            //    ilot.ParamDesc = Logic.GetDesc(ilot.ID);
-
-            //return;
         }
         internal void GetVanillaShops()
         {
@@ -147,6 +167,9 @@ namespace DS2S_META.Randomizer
         {
             if (Hook == null)
                 return;
+
+            // Testing Drop stuff:
+            TestDropStuff();
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
@@ -193,7 +216,7 @@ namespace DS2S_META.Randomizer
             ParamMan.PlayerStatusClassParam?.RestoreParam();
 
             // Force an area reload.
-            Hook.WarpLast();
+            Hook?.WarpLast();
             IsRandomized = false;
         }
         internal static int GetRandom()
