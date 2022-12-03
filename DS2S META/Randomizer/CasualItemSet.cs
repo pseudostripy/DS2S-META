@@ -182,7 +182,7 @@ namespace DS2S_META.Randomizer
             D.Add(10106090, SafeInfo("[FOFG] Above the door leading to Pursuer arena"));
             D.Add(10106100, SafeInfo("[FOFG] On the huge sword"));
             D.Add(10106120, SafeInfo("[FOFG] In the small stone house near Soldier's Rest bonfire", KEYID.SOLDIER));
-            D.Add(60002000, SafeInfo("[FOFG] Vanilla Seed of a Tree of Giants: on the tree near Solider's Rest bonfire", KEYID.SOLDIER));
+            D.Add(60002000, VolInfo("[FOFG] Vanilla Seed of a Tree of Giants: on the tree near Solider's Rest bonfire", KEYID.SOLDIER));
             D.Add(10106130, SafeInfo("[FOFG] Next to ruined house by water near Soldier's Rest"));
             D.Add(10106140, SafeInfo("[FOFG] Behind the soldier that stands on tree root and throws fire bombs just before Cardinal Tower"));
             D.Add(10106150, SafeInfo("[FOFG] Just before Cale on boulder path"));
@@ -782,7 +782,7 @@ namespace DS2S_META.Randomizer
             D.Add(10146420, SafeInfo("[Tseldora] A corpse in the spiky mining field", KEYID.BRANCH));
             D.Add(10146480, SafeInfo("[Tseldora] In urn next to Congregation foggate", KEYID.BRANCH));
             D.Add(10146490, SafeInfo("[Tseldora] In urn on right side when leaving Congregation fight", KEYID.BRANCH));
-            D.Add(10146500, SafeInfo("[Tseldora] Guide a pig from the campsite to lower tseldora and let it eat mushrooms", KEYID.BRANCH));
+            D.Add(10146500, VolInfo("[Tseldora] Vanilla Pickaxe: Guide a pig from the campsite to Lower Tseldora and let it eat mushrooms", KEYID.BRANCH));
             D.Add(10146510, SafeInfo("[Tseldora] In urn in the 2nd floor of a house just before the spiky mining field", KEYID.BRANCH));
             D.Add(10146520, SafeInfo("[Tseldora] In urn in the pickaxe room", KEYID.BRANCH));
             D.Add(60005000, SafeInfo("[Tseldora] From the Ancient dragon corpse in the memory after Freja", KSO(KEYID.BRANCH, KEYID.ASHENMIST)));
@@ -954,7 +954,7 @@ namespace DS2S_META.Randomizer
             D.Add(10156190, SafeInfo("[AldiasKeep] In the left side of the front door, before Aslatiel", KEYID.ALDIASKEEP));
             D.Add(10156200, SafeInfo("[AldiasKeep] Stuck in a mirror in the mirror room", KEYID.ALDIASKEEP));
             D.Add(10156150, SafeInfo("[AldiasKeep] Just before the elevator to the dragon aerie", KEYID.ALDIASKEEP));
-            D.Add(60050000, SafeInfo("[AldiasKeep] Drop from the skeleton Dragon after defeating four invaders", KSO(KEYID.ALDIASKEEP, KEYID.TORCH)));
+            D.Add(60050000, VolInfo("[AldiasKeep] Drop from the skeleton Dragon after defeating four Forlorns", KSO(KEYID.ALDIASKEEP, KEYID.TORCH)));
 
             // Dragon Aerie:
             D.Add(1701000, NpcInfo("[Aerie] Gift from the Emerald Herald", KEYID.ALDIASKEEP));

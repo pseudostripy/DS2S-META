@@ -34,7 +34,6 @@ namespace DS2S_META
         // Eventually most of this should go into a MainWindowViewModel like in ERDebugTool
 
         // Fields/Properties
-        private string MetaVersion = "Version_Undefined";
         private MetaVersionInfo MVI = new();
         private Properties.Settings Settings;
         DS2SHook Hook => ViewModel.Hook;
