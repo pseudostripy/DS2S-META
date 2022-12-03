@@ -35,6 +35,7 @@ namespace DS2S_META
 
         // Fields/Properties
         private string MetaVersion = "Version_Undefined";
+        private MetaVersionInfo MVI = new();
         private Properties.Settings Settings;
         DS2SHook Hook => ViewModel.Hook;
         bool FormLoaded
@@ -58,7 +59,7 @@ namespace DS2S_META
             PortableSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Settings = Properties.Settings.Default;
             InitializeComponent();
-            GetVersion();
+            GetMetaVersion();
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
             Hook.OnHooked += Hook_OnHooked;
@@ -78,11 +79,10 @@ namespace DS2S_META
             }));
         }
 
-        public void GetVersion()
+        public void GetMetaVersion()
         {
             Assembly assembly = Assembly.GetExecutingAssembly();
-            var assemblyver = assembly.GetName().Version;
-            MetaVersion = assemblyver == null ? "version undefined" : assemblyver.ToString();
+            MVI.ExeVersion = assembly.GetName().Version;
         }
         private void LoadSettingsAfterUpgrade()
         {
@@ -151,41 +151,52 @@ namespace DS2S_META
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            var assemblyver = assembly.GetName().Version;
-            MetaVersion = assemblyver == null ? "version undefined" : assemblyver.ToString();
-            
-            lblWindowName.Content = $"DS2 Scholar META {MetaVersion}";
             EnableTabs(false);
             InitAllTabs();
 
             VersionUpdateCheck("Nordgaren");
             VersionUpdateCheck("Pseudostripy"); // Randomizer updates
+            lblWindowName.Content = $"DS2 Scholar META {MVI.MetaVersionStr}";
 
             UpdateTimer.Interval = 16;
             UpdateTimer.Elapsed += UpdateTimer_Elapsed;
             UpdateTimer.Enabled = true;
         }
 
+        public class MetaVersionInfo
+        {
+            public Version? GitVersion { get; set; }
+            public Version? ExeVersion { get; set; }
+            public Release? LatestRelease { get; set; }
+            public Uri? LatestReleaseURI { get; set; }
+            public string MetaVersionStr => ExeVersion == null ? "Version Undefined" : ExeVersion.ToString();
+            public string GitVersionStr => GitVersion == null ? string.Empty : GitVersion.ToString();
+        }
+
         private async void VersionUpdateCheck(string repo_owner)
         {
             try
             {
-                GitHubClient gitHubClient = new GitHubClient(new ProductHeaderValue("DS2S-META"));
+                // Get Repo Version:
+                GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
                 Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
-                Version gitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-                Version exeVersion = Version.Parse(MetaVersion);
-                if (gitVersion > exeVersion) //Compare latest version to current version
+                MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
+                
+                if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
                 {
+                    // Store info:
+                    MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
+                    MVI.LatestRelease = release;
+
                     link.NavigateUri = new Uri(release.HtmlUrl);
                     lblNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
 
                     // Only show msg again when newer version released
-                    if (Properties.Settings.Default.AcknowledgeUpdateVersion != gitVersion.ToString())
-                        ShowMetaUpdateWindow(link.NavigateUri, gitVersion.ToString());
+                    if (Properties.Settings.Default.AcknowledgeUpdateVersion != MVI.GitVersionStr)
+                        ShowMetaUpdateWindow(link.NavigateUri, MVI.GitVersionStr);
                 }
-                else if (gitVersion == exeVersion)
+                else if (MVI.GitVersion == MVI.ExeVersion)
                     labelCheckVersion.Content = "App up to date";
                 else
                     labelCheckVersion.Content = "In-development version.";
@@ -330,7 +341,8 @@ namespace DS2S_META
 
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo { FileName = e.Uri.ToString(), UseShellExecute = true });
+            if (MVI.LatestReleaseURI == null) return;
+            ShowMetaUpdateWindow(MVI.LatestReleaseURI, MVI.GitVersionStr);
         }
         private void SaveAllTabs()
         {
