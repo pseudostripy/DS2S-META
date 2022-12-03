@@ -154,7 +154,7 @@ namespace DS2S_META
             EnableTabs(false);
             InitAllTabs();
 
-            VersionUpdateCheck("Nordgaren");
+            //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
             VersionUpdateCheck("Pseudostripy"); // Randomizer updates
             lblWindowName.Content = $"DS2 Scholar META {MVI.MetaVersionStr}";
 
