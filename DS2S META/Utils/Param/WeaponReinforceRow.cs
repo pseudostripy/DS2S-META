@@ -27,8 +27,8 @@ namespace DS2S_META.Utils
         public int WeaponStatsAffectID;
         public int CustomSpecAttrID;
 
-        public WeaponStatsAffectRow? WeaponStatsAffectRow => ParamMan.GetLink<WeaponStatsAffectRow>(ParamMan.PNAME.WEAPON_STATS_AFFECT_PARAM, WeaponStatsAffectID);
-        public CustomAttrSpecRow? CustomAttrSpec => ParamMan.GetLink<CustomAttrSpecRow>(ParamMan.PNAME.CUSTOM_ATTR_SPEC_PARAM, CustomSpecAttrID);
+        public WeaponStatsAffectRow? WeaponStatsAffectRow => ParamMan.GetLink<WeaponStatsAffectRow>(ParamMan.WeaponStatsAffect, WeaponStatsAffectID);
+        public CustomAttrSpecRow? CustomAttrSpec => ParamMan.GetLink<CustomAttrSpecRow>(ParamMan.CustomAttrSpecParam, CustomSpecAttrID);
 
 
         // Constructor:

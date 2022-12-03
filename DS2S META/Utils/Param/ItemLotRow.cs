@@ -8,11 +8,11 @@ using Xceed.Wpf.AvalonDock.Layout;
 
 namespace DS2S_META.Randomizer
 {
-    internal class ItemLot
+    public class ItemLotRow : Param.Row
     {
         // Fields:
-        internal Param.Row ParamRow; // Raw DS2 memory
-        internal int ID => ParamRow.ID; // shorthand
+        //internal Param.Row ParamRow; // Raw DS2 memory
+        //internal int ID => ParamRow.ID; // shorthand
 
         // Fields:
         internal string? ParamDesc { get; set; }
@@ -40,11 +40,12 @@ namespace DS2S_META.Randomizer
         private enum MINILOTS { ITEMID = 44, QUANT = 4, REINFORCEMENT = 14, INFUSION = 24}
 
         // Constructors:
-        internal ItemLot() { }
-        internal ItemLot(Param.Row itemlotrow)
+        //internal ItemLotRow() { }
+        //internal ItemLotRow(Param.Row itemlotrow)
+        public ItemLotRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
             // Unpack data:
-            ParamRow = itemlotrow;
+            //ParamRow = itemlotrow;
 
             Items = ReadListAt((int)MINILOTS.ITEMID).Select(obj => BitConverter.ToInt32(obj)).ToList();
             Quantities = ReadListAt((int)MINILOTS.QUANT).SelectMany(b => b).ToList();
@@ -61,11 +62,13 @@ namespace DS2S_META.Randomizer
         {
             // Get 10 at once for this specific param:
             List<byte[]> objout = new();
-            var F = ParamRow.Param.Fields[fieldindex];
+            //var F = ParamRow.Param.Fields[fieldindex];
+            var F = Param.Fields[fieldindex];
             for (int i = 0; i < 10; i++)
             {
                 var outbytes = new byte[F.FieldLength];
-                Array.Copy(ParamRow.RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
+                //Array.Copy(ParamRow.RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
+                Array.Copy(RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
                 objout.Add(outbytes);
             }
             return objout;
@@ -92,10 +95,10 @@ namespace DS2S_META.Randomizer
             }
             return flatlist;
         }
-        internal ItemLot CloneBlank()
+        internal ItemLotRow CloneBlank()
         {
             // Performs a deep clone on the Lot object
-            var ilclone = new ItemLot(ParamRow);
+            var ilclone = new ItemLotRow(Param, Name, ID, DataOffset); // make this clonable from Param.Row?
             ilclone.Items = new List<int>( new int[10] );
             ilclone.Quantities = new List<byte>(new byte[10]);
             ilclone.Reinforcements = new List<byte>(new byte[10]);
@@ -103,7 +106,7 @@ namespace DS2S_META.Randomizer
 
             return ilclone;
         }
-        internal void CloneValuesFrom(ItemLot tocopy)
+        internal void CloneValuesFrom(ItemLotRow tocopy)
         {
             // be a little careful if you haven't blanked it properly before!
             for (int i = 0; i < 10; i++)
@@ -155,27 +158,30 @@ namespace DS2S_META.Randomizer
         private Param.Field GetField(MINILOTS fieldindex)
         {
             // Trivial wrapper for convenience
-            return ParamRow.Param.Fields[(int)fieldindex];
+            //return ParamRow.Param.Fields[(int)fieldindex];
+            return Param.Fields[(int)fieldindex];
         }
         private void StoreDataWrapper(MINILOTS fenum, int subindex, int value)
         {
             var F = GetField(fenum);
             int ind = F.FieldOffset + subindex * F.FieldLength;
             byte[] bytes = BitConverter.GetBytes(value);
-            Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+            //Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+            Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
         }
         private void StoreDataWrapper(MINILOTS fenum, int subindex, byte value)
         {
             var F = GetField(fenum);
             int ind = F.FieldOffset + subindex * F.FieldLength;
             byte[] bytes = BitConverter.GetBytes(value);
-            Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+            //Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
+            Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
         }
-        public void StoreRow()
-        {
-            // Convenience wrapper
-            ParamRow.Param.StoreRowBytes(ParamRow);
-        }
+        //public void StoreRow()
+        //{
+        //    // Convenience wrapper
+        //    ParamRow.Param.StoreRowBytes(ParamRow);
+        //}
 
         // Query Utility
         internal bool HasItem(int itemid) => Items.Contains(itemid);

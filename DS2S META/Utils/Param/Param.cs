@@ -12,18 +12,21 @@ using System.Security.Cryptography;
 using System.Printing.IndexedProperties;
 using System.Linq;
 using System.Reflection;
+using System.IO;
 
 namespace DS2S_META
 {
+    public enum RESOURCETYPE { MEMORY, FILE }
     public class Param : IComparable<Param>
     {
-        public PHPointer Pointer { get; private set; }
-        public int[] Offsets { get; private set; }
+        public string? FilePath { get; private set; }
+        public PHPointer? Pointer { get; private set; }
+        public int[]? Offsets { get; private set; }
         public PARAMDEF ParamDef { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
-        public int OffsetsTableLength { get; private set; }
-        public int TotalTableLength { get; private set; }
+        public int? OffsetsTableLength { get; private set; }
+        public int? TotalTableLength { get; private set; }
         public byte[]? Bytes { get; private set; }
         public byte[]? NewBytes { get; set; } // after modifications
         public List<Row> Rows { get; private set; } = new();
@@ -32,11 +35,22 @@ namespace DS2S_META
         public Dictionary<int, string> NameDictionary { get; private set; } = new();
         public Dictionary<int, int> OffsetDict { get; private set; } = new();
         public int RowLength { get; private set; }
+        public readonly RESOURCETYPE ResourceType;
+
+        public static class ParamInfo 
+        {
+            public const int param = 0x40;
+            public const int paramID = 0x0;
+            public const int paramoffset = 0x8;
+            public const int nextParam = 0x18;
+        }
 
         private const string paramfol = "Resources/Paramdex_DS2S_09272022/";
 
+        // Constructors:
         public Param(PHPointer pointer, int[] offsets, PARAMDEF Paramdef, string name)
         {
+            ResourceType = RESOURCETYPE.MEMORY;
             Pointer = pointer;
             Offsets = offsets;
             ParamDef = Paramdef;
@@ -44,8 +58,19 @@ namespace DS2S_META
             Type = Paramdef.ParamType;
             RowLength = ParamDef.GetRowSize();
         }
+        public Param(string filepath, PARAMDEF Paramdef, string name)
+        {
+            ResourceType = RESOURCETYPE.FILE;
+            FilePath = filepath;
+            ParamDef = Paramdef;
+            Name = name;
+            Type = Paramdef.ParamType;
+            RowLength = ParamDef.GetRowSize();
+        }
+
         public void initialise<T>() where T : Row
         {
+            ReadParamBytes(); // Get "Bytes"
             BuildNameDictionary();
             BuildCells();
             BuildOffsetDictionary<T>();
@@ -72,26 +97,78 @@ namespace DS2S_META
                 NameDictionary.Add(id, name);
             };
         }
-        private void BuildOffsetDictionary<T>() where T : Row
+        private void ReadParamBytes()
         {
-            string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
+            if (ResourceType == RESOURCETYPE.MEMORY)
+                ReadParamBytesPtr();
+            else
+                ReadParamBytesFile();
+        }
+        private void ReadParamBytesPtr()
+        {
+            string? paramType = Pointer?.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
             if (paramType != Type)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
 
-            OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            OffsetsTableLength = Pointer?.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
 
-            int param = 0x40; // param header?
-            int paramID = 0x0;
-            int paramoffset = 0x8;
-            int nextParam = 0x18;
+            //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
+            var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
 
-            var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
-            var nparams = (OffsetsTableLength - param) / nextParam;
-
-            if ((OffsetsTableLength - param) % nextParam != 0)
+            if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
                 throw new Exception("Potential mismatch in param total bytes");
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
-            Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
+            if (TotalTableLength == null)
+                throw new Exception("Error reading table byte size");
+            Bytes = Pointer?.ReadBytes(0x0, (uint)TotalTableLength);
+        }
+        private void ReadParamBytesFile()
+        {
+            if (FilePath == null) throw new Exception("Null file path");
+            var filebytes = File.ReadAllBytes(FilePath);
+            if (filebytes == null) throw new Exception("Error returning file bytes");
+
+            string paramType = Encoding.UTF8.GetString(filebytes, (int)DS2SOffsets.Param.ParamName, 0x20).TrimEnd('\0');
+
+            //string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
+            if (paramType != Type)
+                throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
+
+            OffsetsTableLength = BitConverter.ToInt32(filebytes, (int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            //OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+
+            //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
+            var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
+
+            if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
+                throw new Exception("Potential mismatch in param total bytes");
+            TotalTableLength = OffsetsTableLength + nparams * RowLength;
+
+            Bytes = filebytes.Take((int)TotalTableLength).ToArray();
+            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
+            var test = 1;
+        }
+        private void BuildOffsetDictionary<T>() where T : Row
+        {
+            //string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
+            //if (paramType != Type)
+            //    throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
+
+            //OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+
+            ////int param = 0x40; // param header?
+            ////int paramID = 0x0;
+            ////int paramoffset = 0x8;
+            ////int nextParam = 0x18;
+            
+
+            ////var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
+            //var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
+
+            //if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
+            //    throw new Exception("Potential mismatch in param total bytes");
+            //TotalTableLength = OffsetsTableLength + nparams * RowLength;
+            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
 
             // Setup constructor for new row data
             Type[] argtypes = new Type[] { typeof(Param), typeof(string), typeof(int), typeof(int) };
@@ -99,10 +176,11 @@ namespace DS2S_META
             if (ctor == null)
                 throw new NullReferenceException("Cannot find appropriate row constructor");
 
-            while (param < OffsetsTableLength)
+            int currparam = ParamInfo.param; // 0x40
+            while (currparam < OffsetsTableLength)
             {
-                int itemID = BitConverter.ToInt32(Bytes, param + paramID);
-                int itemParamOffset = BitConverter.ToInt32(Bytes, param + paramoffset);
+                int itemID = BitConverter.ToInt32(Bytes, currparam + ParamInfo.paramID);
+                int itemParamOffset = BitConverter.ToInt32(Bytes, currparam + ParamInfo.paramoffset);
                 string name = $"{itemID} - ";
                 if (NameDictionary.ContainsKey(itemID))
                     name += $"{NameDictionary[itemID]}";
@@ -113,7 +191,7 @@ namespace DS2S_META
                 // Create the new object of type Row (or class "T" inheriting from Row)
                 T row = (T)ctor.Invoke(new object[] { this, name, itemID, itemParamOffset });
                 Rows.Add(row);
-                param += nextParam;
+                currparam += ParamInfo.nextParam;
             }
         }
         public void StoreRowBytes(Row row)

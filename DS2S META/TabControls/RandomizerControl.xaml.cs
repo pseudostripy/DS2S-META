@@ -144,7 +144,7 @@ namespace DS2S_META
         }
         private void PopulateNewSeed()
         {
-            int seed = RM.GetRandom();
+            int seed = RandomizerManager.GetRandom();
             txtSeed.Text = ZeroPadString(seed); // 10 is max value of digits of int32 in decimal
         }
         private bool ensureHooked()

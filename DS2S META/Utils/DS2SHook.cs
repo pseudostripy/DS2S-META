@@ -52,7 +52,7 @@ namespace DS2S_META
 
         public static bool Reading { get; set; }
 
-        public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
+        //public Param? ItemLotOtherParam; // World pickups, boss kills, covenant rewards etc.
         
         public List<ItemRow> Items = new();
         
@@ -87,7 +87,7 @@ namespace DS2S_META
         private PHPointer? ArmorReinforceParam;
         
         private PHPointer ItemUseageParam;
-        private PHPointer ItemLotDropsParam; // Enemy drop tables
+        //private PHPointer ItemLotDropsParam; // Enemy drop tables
 
         private PHPointer BaseASetup;
         private PHPointer BaseBSetup;
@@ -199,8 +199,8 @@ namespace DS2S_META
             LevelUpSoulsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.LevelUpSoulsParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
             ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
-            ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
-            
+            //ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
+
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
             Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
 
@@ -213,10 +213,12 @@ namespace DS2S_META
             SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
 
             GetLevelRequirements();
+            
+            // TO DEPRECATE 
             ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
             ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
                         
-            GetParams();
+            
             
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
@@ -1176,88 +1178,6 @@ namespace DS2S_META
         #endregion
 
         #region Params
-        private List<Param> GetParams()
-        {
-            List<Param> paramList = new List<Param>();
-            string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022/";
-
-            string pointerPath = $"{paramPath}/Pointers/";
-            string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
-            foreach (string path in paramPointers)
-            {
-                string[] pointers = File.ReadAllLines(path);
-                AddParam(paramList, paramPath, path, pointers);
-            }
-
-            return paramList;
-        }
-        public void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
-        {
-            foreach (string entry in pointers)
-            {
-                if (!Util.IsValidTxtResource(entry))
-                    continue;
-
-                string[] info = entry.TrimComment().Split(':');
-                string name = info[1];
-                string defName = info.Length > 2 ? info[2] : name;
-
-                string defPath = $"{paramPath}/Defs/{defName}.xml";
-                if (!File.Exists(defPath))
-                    throw new($"The PARAMDEF {defName} does not exist for {entry}.");
-
-                // Make param
-                int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
-                PHPointer pointer = GetParamPointer(offsets);
-                PARAMDEF paramDef = XmlDeserialize(defPath);
-                Param param = new Param(pointer, offsets, paramDef, name);
-
-                // Testing some reflection:
-                if (param.Name == "SHOP_LINEUP_PARAM")
-                    param.initialise<ShopRow>();
-
-                param.initialise<Param.Row>();
-
-                // Save param
-                StoreLocalParam(param);
-                paramList.Add(param);
-            }
-            paramList.Sort();
-        }
-        private int hex2int(string hexbyte)
-        {
-            return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
-        }
-        private void StoreLocalParam(Param param)
-        {
-            switch (param.Name)
-            {
-                // Just save the ones we care about
-                case "ITEM_LOT_PARAM2":
-                    ItemLotOtherParam = param;
-                    break;
-
-                //case "ITEM_PARAM":
-                //    ItemParam = param;
-                //    break;
-
-                //case "WEAPON_PARAM":
-                //    WeaponParam = param;
-                //    break;
-
-                //case "WEAPON_REINFORCE_PARAM":
-                //    WeaponReinforceParam = param;
-                //    break;
-
-                default:
-                    break;
-            }
-        }
-        internal PHPointer GetParamPointer(int[] offsets)
-        {
-            return CreateChildPointer(BaseA, offsets);
-        }
-        
         private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
         private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
         

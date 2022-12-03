@@ -53,11 +53,11 @@ namespace DS2S_META.Randomizer
         internal abstract void ResetShuffled();
         
         // Common Methods:
-        protected int RoundUpNearestMultiple(int val, int m)
+        protected static int RoundUpNearestMultiple(int val, int m)
         {
             return (int)Math.Ceiling((double)val / m) * m;
         }
-        protected int GetTypeRandomPrice(int itemid)
+        protected static int GetTypeRandomPrice(int itemid)
         {
             if (!RandomizerManager.TryGetItem(itemid, out var item) || item == null)
                 return RandomizerManager.RandomGammaInt(3000, 50); // generic guess
@@ -70,7 +70,7 @@ namespace DS2S_META.Randomizer
                 _ => RandomizerManager.RandomGammaInt(3000, 50),
             };
         }
-        protected int GetConsumableRandomPrice(int itemid)
+        protected static int GetConsumableRandomPrice(int itemid)
         {
             // Add more rules here as appropriate:
             if (ItemSetBase.SoulPriceList.ContainsKey(itemid))
@@ -106,12 +106,11 @@ namespace DS2S_META.Randomizer
     internal class LotRdz : Randomization
     {
         // Subclass fields:
-        internal ItemLot VanillaLot = new();
-        internal ItemLot ShuffledLot = new();
+        internal ItemLotRow VanillaLot;
+        internal ItemLotRow ShuffledLot;
 
         // Constructors:
-        internal LotRdz(int paramid) : base(paramid) { }
-        internal LotRdz(ItemLot vanlot) : base(vanlot.ID)
+        internal LotRdz(ItemLotRow vanlot) : base(vanlot.ID)
         {
             VanillaLot = vanlot;
             ShuffledLot = VanillaLot.CloneBlank();

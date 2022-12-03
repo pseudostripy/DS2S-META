@@ -24,7 +24,7 @@ namespace DS2S_META.Randomizer
         List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
         List<Randomization> AllPTR = new(); // Places to Randomize
         internal static Random RNG = new();
-        private List<ItemLot> VanillaLots = new();
+        private List<ItemLotRow> VanillaLots = new();
         private List<ShopRow> VanillaShops = new();
         internal List<ShopRow> ShopsToFillByCopying = new();
         private List<ShopRow> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
@@ -112,16 +112,25 @@ namespace DS2S_META.Randomizer
         }
         internal void GetVanillaLots()
         {
-            if (Hook?.ItemLotOtherParam == null)
-                throw new NullReferenceException("Shouldn't get here");
+            var vanlotsother = ParamMan.ItemLotOtherParam?.Rows.OfType<ItemLotRow>().ToList();
+            if (vanlotsother == null) throw new NullReferenceException("Shouldn't get here");
+            VanillaLots = vanlotsother;
 
-            VanillaLots = Hook.ItemLotOtherParam.Rows.Select(row => new ItemLot(row)).ToList();
-            
             // Add descriptions
             foreach (var ilot in VanillaLots)
                 ilot.ParamDesc = Logic.GetDesc(ilot.ID);
 
-            return;
+
+            //if (Hook?.ItemLotOtherParam == null)
+            //    throw new NullReferenceException("Shouldn't get here");
+
+            //VanillaLots = Hook.ItemLotOtherParam.Rows.Select(row => new ItemLotRow(row)).ToList();
+            
+            //// Add descriptions
+            //foreach (var ilot in VanillaLots)
+            //    ilot.ParamDesc = Logic.GetDesc(ilot.ID);
+
+            //return;
         }
         internal void GetVanillaShops()
         {
@@ -174,12 +183,12 @@ namespace DS2S_META.Randomizer
         }
         internal void Unrandomize()
         {
-            if (ParamMan.ShopLineupParam == null || Hook?.ItemLotOtherParam == null || ParamMan.ItemParam == null)
+            if (ParamMan.ShopLineupParam == null || ParamMan.ItemLotOtherParam == null || ParamMan.ItemParam == null)
                 throw new Exception("Param tables are null");
 
             // Restore all the param tables we changed:
             ParamMan.ShopLineupParam?.RestoreParam();
-            Hook.ItemLotOtherParam?.RestoreParam();
+            ParamMan.ItemLotOtherParam?.RestoreParam();
             ParamMan.ItemParam?.RestoreParam();
             ParamMan.PlayerStatusClassParam?.RestoreParam();
 
@@ -187,7 +196,7 @@ namespace DS2S_META.Randomizer
             Hook.WarpLast();
             IsRandomized = false;
         }
-        internal int GetRandom()
+        internal static int GetRandom()
         {
             return RNG.Next();
         }
@@ -742,15 +751,15 @@ namespace DS2S_META.Randomizer
         }
 
         // Memory modification:
-        internal void WriteAllLots(List<ItemLot> lots)
+        internal void WriteAllLots(List<ItemLotRow> lots)
         {
             lots.ForEach(lot => lot.StoreRow());
-            Hook?.ItemLotOtherParam?.WriteModifiedParam();
+            ParamMan.ItemLotOtherParam?.WriteModifiedParam();
         }
-        internal void WriteSomeLots(List<ItemLot> somelots)
+        internal void WriteSomeLots(List<ItemLotRow> somelots)
         {
             // Method used for just writing a few rows out of the Param
-            somelots.ForEach(lot => lot.ParamRow.WriteRow());
+            somelots.ForEach(lot => lot.WriteRow());
         }
         internal void WriteSomeShops(List<ShopRow> shops, bool isshuf)
         {

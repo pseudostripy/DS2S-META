@@ -145,9 +145,9 @@ namespace DS2S_META.Utils
             }
         }
 
-        internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.PNAME.WEAPON_PARAM, WeaponID);
-        internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.PNAME.ITEM_USAGE_PARAM, ItemUsageID);
-        internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.PNAME.ARROW_PARAM, AmmunitionID);
+        internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);
+        internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
+        internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
 
         public enum Offsets
         {

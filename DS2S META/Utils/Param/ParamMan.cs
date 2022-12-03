@@ -10,6 +10,8 @@ using static DS2S_META.DS2SOffsets;
 using static SoulsFormats.PARAMDEF;
 using SoulsFormats;
 using DS2S_META.Randomizer;
+using static DS2S_META.Utils.ItemRow;
+using System.Reflection;
 
 namespace DS2S_META.Utils
 {
@@ -22,30 +24,48 @@ namespace DS2S_META.Utils
             get => _loaded;
             private set => _loaded = value;
         }
-        public static DS2SHook Hook;
+        public static DS2SHook? Hook { get; set; }
         public static readonly string ExeDir = Environment.CurrentDirectory;
-        public static List<Param> RawParamsList = new();
-        public static Dictionary<PNAME, Param> AllParams = new();
-        public static Dictionary<PNAME, string> ParamStringNames = new();
-        public static Dictionary<string, PNAME> ParamsFromStrings = new(); // inverse of above
+        public static List<Param> RawParamsList { get; set; } = new();
+        public static Dictionary<string, Param> AllParams { get; set; } = new();
         
-        // Params:
-        public static Param? ShopLineupParam => AllParams[PNAME.SHOP_LINEUP_PARAM];
-        public static Param? WeaponParam => AllParams[PNAME.WEAPON_PARAM];
-        public static Param? ItemParam => AllParams[PNAME.ITEM_PARAM];
-        public static Param? WeaponReinforceParam => AllParams[PNAME.WEAPON_REINFORCE_PARAM];
-        public static Param? WeaponTypeParam => AllParams[PNAME.WEAPON_TYPE_PARAM];
-        public static Param? CustomAttrSpecParam => AllParams[PNAME.CUSTOM_ATTR_SPEC_PARAM];
-        public static Param? PlayerStatusClassParam => AllParams[PNAME.PLAYER_STATUS_CLASS_PARAM];
-        public static Param? ItemUsageParam => AllParams[PNAME.ITEM_USAGE_PARAM];
-        public static Param? ArrowParam => AllParams[PNAME.ARROW_PARAM];
+        public static class PAliases
+        {
+            // Names matching underlying DEF
+            public const string SHOP_LINEUP             = "SHOP_LINEUP_PARAM";
+            public const string WEAPON                  = "WEAPON_PARAM";
+            public const string WEAPON_REINFORCE        = "WEAPON_REINFORCE_PARAM";
+            public const string ITEM                    = "ITEM_PARAM";
+            public const string WEAPON_TYPE             = "WEAPON_TYPE_PARAM";
+            public const string CUSTOM_ATTR_SPEC        = "CUSTOM_ATTR_SPEC_PARAM";
+            public const string WEAPON_STATS_AFFECT     = "WEAPON_STATS_AFFECT_PARAM";
+            public const string PLAYER_STATUS           = "PLAYER_STATUS_PARAM";
+            public const string ITEM_USAGE              = "ITEM_USAGE_PARAM";
+            public const string ARROW                   = "ARROW_PARAM";
+
+            // Names different from underlying DEF
+            public const string ITEM_LOT_OTHER          = "ITEM_LOT_OTHER";
+        }
+
+
+        
+        // Params Shorthand:
+        public static Param? ShopLineupParam => AllParams[PAliases.SHOP_LINEUP];
+        public static Param? ItemLotOtherParam => AllParams[PAliases.ITEM_LOT_OTHER];
+        public static Param? WeaponParam => AllParams[PAliases.WEAPON];
+        public static Param? ItemParam => AllParams[PAliases.ITEM];
+        public static Param? WeaponReinforceParam => AllParams[PAliases.WEAPON_REINFORCE];
+        public static Param? WeaponTypeParam => AllParams[PAliases.WEAPON_TYPE];
+        public static Param? WeaponStatsAffect => AllParams[PAliases.WEAPON_STATS_AFFECT];
+        public static Param? CustomAttrSpecParam => AllParams[PAliases.CUSTOM_ATTR_SPEC];
+        public static Param? PlayerStatusClassParam => AllParams[PAliases.PLAYER_STATUS];
+        public static Param? ItemUsageParam => AllParams[PAliases.ITEM_USAGE];
+        public static Param? ArrowParam => AllParams[PAliases.ARROW];
 
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
-            SetupParamStringNames();
-            GetRawParams();
-            BuildParamDictionary();
+            GetParams();
             IsLoaded = true;
         }
         public static void Uninitialise()
@@ -53,46 +73,35 @@ namespace DS2S_META.Utils
             // OnUnhooked
             RawParamsList = new();
             AllParams = new();
-            ParamStringNames = new();
-            ParamsFromStrings = new();
             _loaded = false;
-    }
-
-        // Core setup:
-        private static void SetupParamStringNames()
-        {
-            var d = new Dictionary<PNAME, string>();
-
-            d.Add(PNAME.SHOP_LINEUP_PARAM, "SHOP_LINEUP_PARAM");
-            d.Add(PNAME.WEAPON_PARAM, "WEAPON_PARAM");
-            d.Add(PNAME.WEAPON_REINFORCE_PARAM, "WEAPON_REINFORCE_PARAM");
-            d.Add(PNAME.ITEM_PARAM, "ITEM_PARAM");
-            d.Add(PNAME.ITEM_LOT_PARAM2, "ITEM_LOT_PARAM2");
-            d.Add(PNAME.WEAPON_TYPE_PARAM, "WEAPON_TYPE_PARAM");
-            d.Add(PNAME.CUSTOM_ATTR_SPEC_PARAM, "CUSTOM_ATTR_SPEC_PARAM");
-            d.Add(PNAME.WEAPON_STATS_AFFECT_PARAM, "WEAPON_STATS_AFFECT_PARAM");
-            d.Add(PNAME.PLAYER_STATUS_CLASS_PARAM, "PLAYER_STATUS_PARAM");
-            d.Add(PNAME.ITEM_USAGE_PARAM, "ITEM_USAGE_PARAM");
-            d.Add(PNAME.ARROW_PARAM, "ARROW_PARAM");
-
-            ParamStringNames = d;
-            ParamsFromStrings = d.ToDictionary(kvp => kvp.Value, kvp => kvp.Key); // reverse them
         }
-        private static void GetRawParams()
+
+        private static void GetParams()
         {
             List<Param> paramList = new List<Param>();
-            string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022/";
+            string resourcePath = $"{ExeDir}/Resources";
+            string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022";
 
-            string pointerPath = $"{paramPath}/Pointers/";
-            string[] paramPointers = Directory.GetFiles(pointerPath, "*.txt");
-            foreach (string path in paramPointers)
-            {
-                string[] pointers = File.ReadAllLines(path);
-                AddParam(paramList, paramPath, path, pointers);
-            }
+            string pointerPath = $"{paramPath}/Pointers";
+            
+            // Add all [Memory-Pointer-Offset] based params:
+            string paramPointers = $"{pointerPath}/ParamOffsets.txt";
+            string[] pointers = File.ReadAllLines(paramPointers);
+            AddMemoryParams(paramList, paramPath, paramPointers, pointers);
+
+            // Add file-based:
+            string filepath = $"{resourcePath}/ParamFiles/generatorparam_m10_10_00_00.param";
+            string name = "GENERATOR_PARAM";
+            string defPath = $"{paramPath}/Defs/{name}.xml";
+            PARAMDEF paramDef = XmlDeserialize(defPath);
+            Param param = new(filepath, paramDef, name);
+            RowOverloadHandler(param);
+            paramList.Add(param);
+
             RawParamsList = paramList;
+            BuildParamDictionary(); // Populate "AllParams"
         }
-        private static void AddParam(List<Param> paramList, string paramPath, string path, string[] pointers)
+        private static void AddMemoryParams(List<Param> paramList, string paramPath, string path, string[] pointers)
         {
             foreach (string entry in pointers)
             {
@@ -111,7 +120,7 @@ namespace DS2S_META.Utils
                 int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
-                Param param = new Param(pointer, offsets, paramDef, name);
+                Param param = new(pointer, offsets, paramDef, name);
 
                 RowOverloadHandler(param);
                 
@@ -123,7 +132,7 @@ namespace DS2S_META.Utils
         private static void BuildParamDictionary()
         {
             foreach(var param in RawParamsList)
-                AllParams.Add(ParamsFromStrings[param.Name], param);
+                AllParams.Add(param.Name, param);
         }
         private static int hex2int(string hexbyte)
         {
@@ -132,47 +141,51 @@ namespace DS2S_META.Utils
         private static void RowOverloadHandler(Param param)
         {
             // couldn't find a way to do this dynamically :(
-            PNAME pname = ParamsFromStrings[param.Name];
-            switch (pname)
+            //PNAME pname = ParamsFromStrings[param.Name];
+            switch (param.Type)
             {
                 // Just save the ones we care about
-                case PNAME.SHOP_LINEUP_PARAM:
+                case "SHOP_LINEUP_PARAM":
                     param.initialise<ShopRow>();
                     break;
 
-                case PNAME.WEAPON_PARAM:
+                case "ITEM_LOT_PARAM2":
+                    param.initialise<ItemLotRow>();
+                    break;
+
+                case "WEAPON_PARAM":
                     param.initialise<WeaponRow>();
                     break;
 
-                case PNAME.WEAPON_REINFORCE_PARAM:
+                case "WEAPON_REINFORCE_PARAM":
                     param.initialise<WeaponReinforceRow>();
                     break;
 
-                case PNAME.WEAPON_TYPE_PARAM:
+                case "WEAPON_TYPE_PARAM":
                     param.initialise<WeaponTypeRow>();
                     break;
 
-                case PNAME.ITEM_PARAM:
+                case "ITEM_PARAM":
                     param.initialise<ItemRow>();
                     break;
 
-                case PNAME.CUSTOM_ATTR_SPEC_PARAM:
+                case "CUSTOM_ATTR_SPEC_PARAM":
                     param.initialise<CustomAttrSpecRow>();
                     break;
 
-                case PNAME.WEAPON_STATS_AFFECT_PARAM:
+                case "WEAPON_STATS_AFFECT_PARAM":
                     param.initialise<WeaponStatsAffectRow>();
                     break;
 
-                case PNAME.PLAYER_STATUS_CLASS_PARAM:
+                case "PLAYER_STATUS_PARAM":
                     param.initialise<PlayerStatusClassRow>();
                     break;
 
-                case PNAME.ITEM_USAGE_PARAM:
+                case "ITEM_USAGE_PARAM":
                     param.initialise<ItemUsageRow>();
                     break;
 
-                case PNAME.ARROW_PARAM:
+                case "ARROW_PARAM":
                     param.initialise<ArrowRow>();
                     break;
 
@@ -188,9 +201,12 @@ namespace DS2S_META.Utils
         }
         
         // Core Functionality:
-        public static T? GetLink<T>(PNAME pname, int linkID)
+        public static T? GetLink<T>(Param? linkParam, int linkID)
         {
-            var lookup = AllParams[pname].Rows
+            if (linkParam == null)
+                return default;
+
+            var lookup = linkParam.Rows
                             .Where(row => row.ID == linkID).OfType<T>();
             if (lookup.Count() == 0)
                 return default;
@@ -214,23 +230,6 @@ namespace DS2S_META.Utils
 
             return WeaponParam.Rows.FirstOrDefault(row => row.ID == id) as WeaponRow;
         }
-
-        // This is an extra indirection to avoid typo bugs
-        public enum PNAME
-        {
-            SHOP_LINEUP_PARAM,
-            WEAPON_PARAM,
-            WEAPON_REINFORCE_PARAM,
-            ITEM_PARAM,
-            ITEM_LOT_PARAM2,
-            WEAPON_TYPE_PARAM,
-            CUSTOM_ATTR_SPEC_PARAM,
-            WEAPON_STATS_AFFECT_PARAM,
-            PLAYER_STATUS_CLASS_PARAM,
-            ITEM_USAGE_PARAM,
-            ARROW_PARAM,
-        }
-
 
     }
 }

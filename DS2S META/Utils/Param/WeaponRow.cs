@@ -47,8 +47,8 @@ namespace DS2S_META.Utils
         public short CounterDmg;
 
         // Linked param:
-        internal WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.PNAME.WEAPON_REINFORCE_PARAM, ReinforceID);
-        internal WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.PNAME.WEAPON_TYPE_PARAM, WeaponTypeID);
+        internal WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.WeaponReinforceParam, ReinforceID);
+        internal WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.WeaponTypeParam, WeaponTypeID);
 
         // Wrappers
         internal int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
