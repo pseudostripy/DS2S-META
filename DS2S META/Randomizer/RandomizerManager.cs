@@ -122,11 +122,38 @@ namespace DS2S_META.Randomizer
                 var direct_lots = prows_nonzero.Select(prow => prow.ItemLot).ToList();
                 
                 // Store info:
-                var indirect_nil = prows_zero.Select(row => new NamedItemLot(row.Name, row.GeneratorRegist?.Enemy?.ItemLot));
-                var direct_nil = prows_nonzero.Select(row => new NamedItemLot(row.Name, row.ItemLot));
+                var indirect_nil = prows_zero.Select(row => 
+                                new NamedItemLot(row.Name, 
+                                                 row.GeneratorRegist?.Enemy?.ItemLot,
+                                                 row.GeneratorRegist?.Enemy?.ItemLotID));
+                var direct_nil = prows_nonzero.Select(row => new NamedItemLot(row.Name, row.ItemLot, row.ItemLotID));
                 genplist.AddRange(indirect_nil);
                 genplist.AddRange(direct_nil);
             }
+
+            // Add associated NG plus tables as they might not be linked directly:
+            List<NamedItemLot?>ngpList = new();
+            foreach(var nil in genplist)
+            {
+                int? ilotID = nil?.RawID;
+                if (ilotID == null) throw new Exception("Shouldn't be possible");
+
+                // Look for ng1,2 variants:
+                for (int j = 1; j < 3; j++)
+                {
+                    int ngplusxID = (int)ilotID + j;
+                    var tryng = ParamMan.ItemLotChrParam?.Rows.FirstOrDefault(row => row.ID == ngplusxID);
+                    if (tryng == null)
+                        break; // no associated ngplus tables
+                    ItemLotRow? ngxItemLot = ParamMan.GetLink<ItemLotRow>(ParamMan.ItemLotChrParam, ngplusxID);
+                    string ngname = $"{nil?.Name} in NG+{j}";
+
+                    // add table to list of interest:
+                    var ngnil = new NamedItemLot(ngname, ngxItemLot, ngplusxID);
+                    ngpList.Add(ngnil);
+                }
+            }
+            genplist.AddRange(ngpList);
 
             // Get unique & interesting droptables
             var uniques = genplist.GroupBy(nil => nil?.Lot?.ID).Select(grp => grp.First()).ToList();
@@ -135,13 +162,15 @@ namespace DS2S_META.Randomizer
 
         internal class NamedItemLot
         {
+            internal int? RawID; // for awkward situations with ngplus drops but no NG drops
             internal int ID => Lot?.ID ?? -1;
             internal string Name;
             internal ItemLotRow? Lot;
-            internal NamedItemLot(string name, ItemLotRow? lot)
+            internal NamedItemLot(string name, ItemLotRow? lot, int? rawid)
             {
                 Name = name;
                 Lot = lot;
+                RawID = rawid;
             }
         }
 
@@ -978,16 +1007,17 @@ namespace DS2S_META.Randomizer
             foreach (var ldz in AllPTR.OfType<LotRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
-            // Enemy drops:
-            lines.Add("Enemy Drops:");
-            foreach (var ldz in AllPTR.OfType<DropRdz>())
-                lines.Add(ldz.GetNeatDescription());
-
             // Shops:
             lines.Add("");
             lines.Add("Shops:");
             foreach (var rdz in AllPTR.OfType<ShopRdz>())
                 lines.Add(rdz.GetNeatDescription());
+
+            // Enemy drops:
+            lines.Add("");
+            lines.Add("Enemy Drops:");
+            foreach (var ldz in AllPTR.OfType<DropRdz>())
+                lines.Add(ldz.GetNeatDescription());
 
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
