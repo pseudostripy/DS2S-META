@@ -11,6 +11,7 @@ using System.Threading;
 using SoulsFormats;
 using static SoulsFormats.MSBD;
 using System.Transactions;
+using System.Windows.Controls;
 
 namespace DS2S_META.Randomizer
 {
@@ -28,7 +29,6 @@ namespace DS2S_META.Randomizer
         private List<ItemLotRow> VanillaDrops = new();
         private List<ShopRow> VanillaShops = new();
         internal List<ShopRow> ShopsToFillByCopying = new();
-        private List<ShopRow> FixedVanillaShops = new(); // Can probably tidy up by removing from vanshops
         internal ItemSetBase Logic = new CasualItemSet();
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
@@ -184,6 +184,8 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
+
+            //var test = AllPTR.OfType<DropRdz>().ToList();
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
@@ -489,7 +491,6 @@ namespace DS2S_META.Randomizer
             foreach (var rdz in AllP.Where(rdz => rdz.Status == RDZ_STATUS.CROWS))
                 rdz.MarkHandled();
         }
-
         private void FixShopEvents()
         {
             FixShopCopies();
@@ -521,7 +522,9 @@ namespace DS2S_META.Randomizer
             AllP = lotptfs.ToList()
                     .Concat(shopptfs).ToList()
                     .Concat(dropptfs).ToList();
-            
+
+
+            //var test = AllP.OfType<DropRdz>().ToList();
 
             // Places to fill with "Ordinary Randomization"
             AllPTR = AllP.Where(rdz => rdz.Status == RDZ_STATUS.STANDARD ||
@@ -581,16 +584,16 @@ namespace DS2S_META.Randomizer
             var ADTIDs = ADT.Select(nil => nil?.Lot?.ID).ToList();
 
             // Define exclusions (not placed)
-            var excl = all_drops.Where(ldz => !ADTIDs.Contains(ldz.UniqueParamID));
+            var excl = all_drops.Where(ldz => !ADTIDs.Contains(ldz.ParamID)).ToList();
             foreach (var ldz in excl)
                 ldz.Status = RDZ_STATUS.EXCLUDED;
 
             // For everything else, add a string description and set as ready:
-            var normal_lots = all_drops.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
+            var normal_lots = all_drops.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING).ToList();
             foreach (var ldz in normal_lots)
             {
                 // get associated NIL:
-                var assoc_nil = ADT.FirstOrDefault(nil => nil?.ID == ldz.UniqueParamID);
+                var assoc_nil = ADT.FirstOrDefault(nil => nil?.ID == ldz.ParamID);
                 if (assoc_nil == null) throw new Exception("Pretty sure we shouldn't get here");
                 ldz.RandoDesc = assoc_nil.Name;
                 ldz.Status = RDZ_STATUS.STANDARD;
@@ -860,6 +863,11 @@ namespace DS2S_META.Randomizer
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotOtherParam?.WriteModifiedParam();
         }
+        internal void WriteAllDrops(List<ItemLotRow> lots)
+        {
+            lots.ForEach(lot => lot.StoreRow());
+            ParamMan.ItemLotChrParam?.WriteModifiedParam();
+        }
         internal void WriteSomeLots(List<ItemLotRow> somelots)
         {
             // Method used for just writing a few rows out of the Param
@@ -893,7 +901,7 @@ namespace DS2S_META.Randomizer
             var shuffleddrops = AllP.OfType<DropRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
-            WriteAllLots(shuffleddrops);
+            WriteAllDrops(shuffleddrops);
         }
         internal void WriteShuffledShops()
         {
@@ -907,7 +915,7 @@ namespace DS2S_META.Randomizer
         // Utility:
         internal static Dictionary<int, string> ReadShopNames()
         {
-            Dictionary<int, string> shopnames = new Dictionary<int, string>();
+            Dictionary<int, string> shopnames = new();
 
             // Read all:
             var lines = File.ReadAllLines("./Resources/Paramdex_DS2S_09272022/ShopLineupParam.txt");

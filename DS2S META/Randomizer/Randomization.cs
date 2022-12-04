@@ -30,7 +30,7 @@ namespace DS2S_META.Randomizer
     internal abstract class Randomization
     {
         // Fields
-        protected int ParamID;
+        internal int ParamID;
         internal abstract List<DropInfo> Flatlist { get; }
         internal RDZ_STATUS Status = RDZ_STATUS.INITIALIZING;
         internal bool IsHandled = false;
