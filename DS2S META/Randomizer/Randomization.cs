@@ -30,14 +30,18 @@ namespace DS2S_META.Randomizer
     internal abstract class Randomization
     {
         // Fields
-        internal int ParamID;
+        protected int ParamID;
         internal abstract List<DropInfo> Flatlist { get; }
         internal RDZ_STATUS Status = RDZ_STATUS.INITIALIZING;
         internal bool IsHandled = false;
+        internal string RandoDesc = string.Empty;
+        internal string GUID;
+        internal RandoInfo? RandoInfo;
 
         // Constructors:
         internal Randomization(int pid)
         {
+            GUID = Guid.NewGuid().ToString();
             ParamID = pid;
         }
 
@@ -51,8 +55,22 @@ namespace DS2S_META.Randomizer
         internal abstract string GetNeatDescription();
         internal abstract void AdjustQuantity(DropInfo di);
         internal abstract void ResetShuffled();
+        internal abstract int UniqueParamID { get; }
         
         // Common Methods:
+
+        // Wrappers to RandoInfo
+        internal bool HasType(List<PICKUPTYPE> bannedtypes)
+        {
+            //if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set"); // TODO?
+            if (RandoInfo == null) return false; // TODO?
+            return RandoInfo.HasType(bannedtypes);
+        }
+        internal bool IsSoftlockPlacement(List<int> placedSoFar)
+        {
+            if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set");
+            return RandoInfo.IsSoftlockPlacement(placedSoFar);
+        }
         protected static int RoundUpNearestMultiple(int val, int m)
         {
             return (int)Math.Ceiling((double)val / m) * m;
@@ -108,6 +126,7 @@ namespace DS2S_META.Randomizer
         // Subclass fields:
         internal ItemLotRow VanillaLot;
         internal ItemLotRow ShuffledLot;
+        internal bool IsDropTable = false; // by default
 
         // Constructors:
         internal LotRdz(ItemLotRow vanlot) : base(vanlot.ID)
@@ -216,6 +235,8 @@ namespace DS2S_META.Randomizer
             ShuffledLot = VanillaLot.CloneBlank();
             IsHandled = false;
         }
+        internal override int UniqueParamID => IsDropTable ? ParamID + 80000000 : ParamID;
+
 
         internal List<DropInfo> GetUniqueFlatlist(List<DropInfo> avoid_these)
         {
@@ -233,6 +254,14 @@ namespace DS2S_META.Randomizer
 
         // Extra Utility:
         internal bool IsEmpty => VanillaLot.IsEmpty; // Vanilla Lot has 0 drops
+    }
+    internal class DropRdz : LotRdz
+    {
+        // Constructors:
+        internal DropRdz(ItemLotRow vanlot) : base(vanlot)
+        {
+            IsDropTable = true;
+        }
     }
 
 
@@ -360,5 +389,6 @@ namespace DS2S_META.Randomizer
             ShuffledShop.ItemID = 0;
             ShuffledShop.Quantity = 0;
         }
+        internal override int UniqueParamID => ParamID;
     }
 }

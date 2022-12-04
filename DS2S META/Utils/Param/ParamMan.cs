@@ -155,19 +155,7 @@ namespace DS2S_META.Utils
             string paramPointers = $"{pointerPath}/ParamOffsets.txt";
             string[] pointers = File.ReadAllLines(paramPointers);
             AddMemoryParams(paramList, paramPath, paramPointers, pointers);
-
             AddFileParams(paramList);
-
-            //// Add file-based:
-            //string name = PAliases.GENFOREST;
-            //string filepath = $"{resourcePath}/ParamFiles/{name}.param";
-            //string defName = "GENERATOR_PARAM";
-            //string defPath = $"{paramPath}/Defs/{defName}.xml";
-            //PARAMDEF paramDef = XmlDeserialize(defPath);
-            //Param param = new(filepath, paramDef, name);
-            //param.StringsFileName = "generatorparam_m10_10_00_00";
-            //RowOverloadHandler(param);
-            //paramList.Add(param);
 
             RawParamsList = paramList;
             BuildParamDictionary(); // Populate "AllParams"
@@ -238,7 +226,7 @@ namespace DS2S_META.Utils
                 GeneratorParams.Add(AllParams[PAliases.GENERATOR_PARAM[i]]);
 
             for (int i = 0; i < PAliases.GENERATOR_REGIST.Count; i++)
-                GeneratorRegistParams.Add(AllParams[PAliases.GENERATOR_PARAM[i]]);
+                GeneratorRegistParams.Add(AllParams[PAliases.GENERATOR_REGIST[i]]);
 
         }
         private static int hex2int(string hexbyte)
@@ -323,6 +311,18 @@ namespace DS2S_META.Utils
         {
             if (linkParam == null)
                 return default;
+
+            var lookup = linkParam.Rows
+                            .Where(row => row.ID == linkID).OfType<T>();
+            if (lookup.Count() == 0)
+                return default;
+            return lookup.First();
+        }
+        public static T? GetGenRegistLink<T>(int linkID, string startname)
+        {
+            // Get "equivalent" GenRegist Param
+            var id = PAliases.GENERATOR_PARAM.IndexOf(startname);
+            var linkParam = GeneratorRegistParams[id];
 
             var lookup = linkParam.Rows
                             .Where(row => row.ID == linkID).OfType<T>();

@@ -14,7 +14,9 @@ namespace DS2S_META.Utils
     {
         // Behind-fields:
         private int indReinforce { get; set; }
+        private int indGenRegist { get; set; }
         public int _itemlotID;
+        private int _genRegistID;
         
         // Properties:
         public int ItemLotID
@@ -26,9 +28,19 @@ namespace DS2S_META.Utils
                 WriteAt(indReinforce, BitConverter.GetBytes(value));
             }
         }
-
+        public int GeneratorRegistID
+        {
+            get => _genRegistID;
+            set
+            {
+                _genRegistID = value;
+                WriteAt(indGenRegist, BitConverter.GetBytes(value));
+            }
+        }
+        
         // Linked param:
         internal ItemLotRow? ItemLot => ParamMan.GetLink<ItemLotRow>(ParamMan.ItemLotChrParam, ItemLotID);
+        internal GeneratorRegistRow? GeneratorRegist => ParamMan.GetGenRegistLink<GeneratorRegistRow>(GeneratorRegistID, Param.Name);
 
         // Constructor:
         public GeneratorParamRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
@@ -37,9 +49,11 @@ namespace DS2S_META.Utils
             
             // Initialise Values:
             ItemLotID = (int)ReadAt(indReinforce);
+            GeneratorRegistID = (int)ReadAt(indGenRegist);
         }
         private void SetupIndices()
         {
+            indGenRegist = GetFieldIndex("GeneratorRegistParam");
             indReinforce = GetFieldIndex("ItemLotID1");
         }
     }

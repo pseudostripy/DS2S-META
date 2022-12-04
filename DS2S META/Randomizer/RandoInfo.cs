@@ -80,6 +80,7 @@ namespace DS2S_META.Randomizer
 
     internal enum PICKUPTYPE : int
     {
+        ENEMYDROP,
         COVENANTEASY,
         COVENANTHARD,
         NPC,
@@ -133,6 +134,17 @@ namespace DS2S_META.Randomizer
         internal bool HasType(PICKUPTYPE checktype)
         {
             return Types.Any(pt => pt == checktype);
+        }
+
+        internal bool IsSoftlockPlacement(List<int> placedSoFar)
+        {
+            // Try each different option for key requirements
+            foreach (var keyset in KeySet)
+            {
+                if (keyset.Keys.All(kid => ItemSetBase.IsPlaced(kid, placedSoFar)))
+                    return false; // NOT SOFT LOCKED all required keys are placed for at least one Keyset
+            }
+            return true; // No keyset has all keys placed yet, so this is dangerous; try somewhere else
         }
     };
 

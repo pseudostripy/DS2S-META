@@ -11,22 +11,20 @@ namespace DS2S_META.Randomizer
     public class ItemLotRow : Param.Row
     {
         // Fields:
-        //internal Param.Row ParamRow; // Raw DS2 memory
-        //internal int ID => ParamRow.ID; // shorthand
-
-        // Fields:
         internal string? ParamDesc { get; set; }
-        //internal List<DropInfo> Lot = new();
-        
+                
         // Properties:
         internal List<int> Items = new();
         internal List<byte> Quantities = new();
         internal List<byte> Reinforcements = new();
         internal List<byte> Infusions = new();
+        internal List<float> Chances = new(); // only for reading
 
         internal int NumDrops => Quantities.Where(q => q != 0).Count();
         internal List<DropInfo> Flatlist => GetFlatlist();
         internal bool IsEmpty => NumDrops == 0;
+
+        internal bool IsDropTable = false;
 
         public override string ToString()
         {
@@ -37,20 +35,17 @@ namespace DS2S_META.Randomizer
             }
             return sb.ToString().TrimEnd('\n');
         }
-        private enum MINILOTS { ITEMID = 44, QUANT = 4, REINFORCEMENT = 14, INFUSION = 24}
+        private enum MINILOTS { ITEMID = 44, QUANT = 4, REINFORCEMENT = 14, INFUSION = 24, CHANCES = 54 }
 
         // Constructors:
-        //internal ItemLotRow() { }
-        //internal ItemLotRow(Param.Row itemlotrow)
         public ItemLotRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
             // Unpack data:
-            //ParamRow = itemlotrow;
-
             Items = ReadListAt((int)MINILOTS.ITEMID).Select(obj => BitConverter.ToInt32(obj)).ToList();
             Quantities = ReadListAt((int)MINILOTS.QUANT).SelectMany(b => b).ToList();
             Reinforcements = ReadListAt((int)MINILOTS.REINFORCEMENT).SelectMany(b => b).ToList();
             Infusions = ReadListAt((int)MINILOTS.INFUSION).SelectMany(b => b).ToList();
+            Chances = ReadListAt((int)MINILOTS.CHANCES).Select(obj => BitConverter.ToSingle(obj)).ToList();
 
             bool MalformedOrder = NumDrops != 0 && Quantities[NumDrops - 1] == 0; // see e.g. Ancient Dragon drop
             if (MalformedOrder)
@@ -83,6 +78,10 @@ namespace DS2S_META.Randomizer
             {
                 // See ancient dragon etc.
                 if (Quantities[i] == 0)
+                    continue;
+                
+                // Drops Only:
+                if (IsDropTable && Chances[i] == 0)
                     continue;
 
                 DropInfo di = new(Items[i], Quantities[i], Reinforcements[i], Infusions[i]);
@@ -174,15 +173,9 @@ namespace DS2S_META.Randomizer
             var F = GetField(fenum);
             int ind = F.FieldOffset + subindex * F.FieldLength;
             byte[] bytes = BitConverter.GetBytes(value);
-            //Array.Copy(bytes, 0, ParamRow.RowBytes, ind, bytes.Length);
             Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
         }
-        //public void StoreRow()
-        //{
-        //    // Convenience wrapper
-        //    ParamRow.Param.StoreRowBytes(ParamRow);
-        //}
-
+        
         // Query Utility
         internal bool HasItem(int itemid) => Items.Contains(itemid);
         internal int GetLotIndex(int itemid)

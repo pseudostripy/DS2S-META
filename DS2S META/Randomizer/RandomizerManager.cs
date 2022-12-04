@@ -104,43 +104,56 @@ namespace DS2S_META.Randomizer
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
             
             SetupAllPTF();
+            FixLogicDictionary();
             GetLootToRandomize(); // set LTR_Flatlist field
-
-            // TODO After?
-            //FixShopEvents1(); // Update PTF with shop places
-
             IsInitialized = true;
         }
-        internal void TestDropStuff()
+        internal List<NamedItemLot?> GetActiveDropTables()
         {
-            //// Current assumption: GeneratorParam->ItemLotID overrides GeneratorRegistParam->ItemLotID
-            //var nonzero_gen = ParamMan.GenForestParam?.Rows.OfType<GeneratorParamRow>()
-            //            .Where(row => row.ItemLotID != 0) // TODO generatorregist
-            //            .GroupBy(row => row.ItemLot) // Only care about independent ItemLots
-            //            .Select(grp => grp.First()); // Just select the first of each "same" group
-
-            List<GeneratorParamRow> genplist = new();
+            // Distinct enemies with non-zero drops used in the maps
+            List<NamedItemLot?> genplist = new();
             foreach (var genparam in ParamMan.GeneratorParams)
             {
-                var test = genparam.Rows.OfType<GeneratorParamRow>()
-                        .Where(row => row.ItemLotID != 0).ToList();
-                genplist.AddRange(test);
+                var prows = genparam.Rows.OfType<GeneratorParamRow>();
+                var prows_zero = prows.Where(row => row.ItemLotID == 0).ToList();
+                var indirect_lots = prows_zero.Select(prow => prow.GeneratorRegist?.Enemy?.ItemLot).ToList();
+
+                var prows_nonzero = prows.Where(row => row.ItemLotID != 0).ToList();
+                var direct_lots = prows_nonzero.Select(prow => prow.ItemLot).ToList();
+                
+                // Store info:
+                var indirect_nil = prows_zero.Select(row => new NamedItemLot(row.Name, row.GeneratorRegist?.Enemy?.ItemLot));
+                var direct_nil = prows_nonzero.Select(row => new NamedItemLot(row.Name, row.ItemLot));
+                genplist.AddRange(indirect_nil);
+                genplist.AddRange(direct_nil);
             }
 
-            var uniques = genplist.GroupBy(row => row.ItemLot)
-                                    .Select(grp => grp.First()).ToList();
-
-            // Add in the ones done via generatorregist:
-
-            //var test = ParamMan.EnemyParam?.Rows.OfType<ChrRow>()
-            //                .Where(row => row.ItemLotID != 0).ToList();
-            var temp = 1;
+            // Get unique & interesting droptables
+            var uniques = genplist.GroupBy(nil => nil?.Lot?.ID).Select(grp => grp.First()).ToList();
+            return uniques.Where(nil => nil?.Lot?.IsEmpty != null && nil.Lot?.IsEmpty != true).ToList();
         }
+
+        internal class NamedItemLot
+        {
+            internal int ID => Lot?.ID ?? -1;
+            internal string Name;
+            internal ItemLotRow? Lot;
+            internal NamedItemLot(string name, ItemLotRow? lot)
+            {
+                Name = name;
+                Lot = lot;
+            }
+        }
+
         internal void GetVanillaDrops()
         {
             var vanlotschr = ParamMan.ItemLotChrParam?.Rows.OfType<ItemLotRow>().ToList();
-            if (vanlotschr == null) throw new NullReferenceException("Shouldn't get here");
+            if (vanlotschr == null) throw new Exception("Null table");
+            foreach (var droprow in vanlotschr) droprow.IsDropTable = true;
             VanillaDrops = vanlotschr;
+
+            AddDropsToLogic(); // gotta do it somewhere
+            return;
         }
         internal void GetVanillaLots()
         {
@@ -167,9 +180,6 @@ namespace DS2S_META.Randomizer
         {
             if (Hook == null)
                 return;
-
-            // Testing Drop stuff:
-            TestDropStuff();
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
@@ -198,6 +208,7 @@ namespace DS2S_META.Randomizer
 
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
+            await Task.Run(() => WriteShuffledDrops());
             await Task.Run(() => WriteShuffledShops());
             ParamMan.ItemParam?.WriteModifiedParam(); // can speed this up if we have to
 
@@ -214,6 +225,7 @@ namespace DS2S_META.Randomizer
             ParamMan.ItemLotOtherParam?.RestoreParam();
             ParamMan.ItemParam?.RestoreParam();
             ParamMan.PlayerStatusClassParam?.RestoreParam();
+            ParamMan.ItemLotChrParam?.RestoreParam();
 
             // Force an area reload.
             Hook?.WarpLast();
@@ -392,8 +404,14 @@ namespace DS2S_META.Randomizer
 
             List<List<DropInfo>> droplists = new();
 
-            // Completely remove these from consideration
-            var stage1 = AllPTR.Where(rdz => Logic.D[rdz.ParamID].AvoidsTypes(Logic.BanFromLoot)); 
+            // Only keep ones of interest
+            var stage1 = AllPTR.Where(rdz => !rdz.HasType(Logic.BanFromLoot));
+
+            // Keep all drops that are added to AllPTR
+            var okDrops = stage1.OfType<DropRdz>();
+            foreach (var drop in okDrops)
+                droplists.Add(drop.Flatlist);
+
 
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
@@ -405,33 +423,33 @@ namespace DS2S_META.Randomizer
 
             // Normal Lots:
             var stage1_lots = stage1.OfType<LotRdz>();
-            var normal_lots = stage1_lots.Where(lrdz => Logic.D[lrdz.ParamID].AvoidsType(PICKUPTYPE.NGPLUS));
+            var normal_lots = stage1_lots.Where(lrdz => !lrdz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.NGPLUS }));
             foreach (var lot in normal_lots)
                 droplists.Add(lot.Flatlist);
 
 
             // Special Lots (NGplus things):
-            var ngplus_lots = stage1_lots.Where(lrdz => Logic.D[lrdz.ParamID].HasType(PICKUPTYPE.NGPLUS));
+            var ngplus_lots = stage1_lots.Where(lrdz => lrdz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.NGPLUS }));
             List<int>? manualNGplusIDs = Logic.LinkedNGs.Select(lng => lng.ngplusID).ToList();
             int linkedorigID;
             
             foreach (var lrdz in ngplus_lots)
             {
-                if (!manualNGplusIDs.Contains(lrdz.ParamID))
+                if (!manualNGplusIDs.Contains(lrdz.UniqueParamID))
                 {
                     // Type 1 (99% of cases)
-                    linkedorigID = lrdz.ParamID / 10 * 10; // Round down to nearest 10
+                    linkedorigID = lrdz.UniqueParamID / 10 * 10; // Round down to nearest 10
                 } else
                 {
                     // Type 2 (currently only applies to Fume Knight)
-                    var link = Logic.LinkedNGs.FirstOrDefault(lng => lng.ngplusID == lrdz.ParamID);
+                    var link = Logic.LinkedNGs.FirstOrDefault(lng => lng.ngplusID == lrdz.UniqueParamID);
                     if (link == null)
                         throw new Exception("Shouldn't get here");
                     linkedorigID = link.origID;
                 }
 
                 // Get items of "non-ngplus":
-                var linkedLRDZ = stage1_lots.FirstOrDefault(lrdz => lrdz.ParamID == linkedorigID);
+                var linkedLRDZ = stage1_lots.FirstOrDefault(lrdz => lrdz.UniqueParamID == linkedorigID);
                 if (linkedLRDZ == null)
                     throw new Exception("I don't think we can have NGPlus without an associated default to find.");
 
@@ -483,19 +501,27 @@ namespace DS2S_META.Randomizer
 
         internal Randomization GetRdzWithID(IEnumerable<Randomization> rdzlist, int id)
         {
-            var res = rdzlist.FirstOrDefault(rdz => rdz.ParamID == id);
+            var res = rdzlist.FirstOrDefault(rdz => rdz.UniqueParamID == id);
             if (res == null)
                 throw new Exception($"Cannot find Randomization object with id {id}");
             return res;
+        }
+        internal void FixLogicDictionary()
+        {
+            AddDropsToLogic(); // gotta do it somewhere
         }
         internal void SetupAllPTF()
         {
             // "Places To Fill"
             var lotptfs = SetLotPTFTypes();
             var shopptfs = SetShopPTFTypes();
+            var dropptfs = SetDropPTFTypes();
 
             // All items to handle:
-            AllP = lotptfs.ToList().Concat(shopptfs).ToList();
+            AllP = lotptfs.ToList()
+                    .Concat(shopptfs).ToList()
+                    .Concat(dropptfs).ToList();
+            
 
             // Places to fill with "Ordinary Randomization"
             AllPTR = AllP.Where(rdz => rdz.Status == RDZ_STATUS.STANDARD ||
@@ -506,28 +532,36 @@ namespace DS2S_META.Randomizer
         {
             // Get copy of all VanillaLots
             IEnumerable<LotRdz> all_lots = VanillaLots.Select(lot => new LotRdz(lot)).ToList(); // LotsToFill
+            Logic.TransformToUID(all_lots.Cast<Randomization>().ToList());     // FixLogic: PT1, Transform lots
 
             // Define exclusions (not placed)
+            //var excl = all_lots.Where(ldz => ldz.IsEmpty ||
+            //                            Logic.HasTypes(ldz, Logic.BanFromBeingRandomized) ||
+            //                            Logic.CrowDuplicates.Contains(ldz.UniqueParamID));
             var excl = all_lots.Where(ldz => ldz.IsEmpty ||
-                                        Logic.HasTypes(ldz, Logic.BanFromBeingRandomized) ||
-                                        Logic.CrowDuplicates.Contains(ldz.ParamID));
+                                        ldz.HasType(Logic.BanFromBeingRandomized) ||
+                                        Logic.CrowDuplicates.Contains(ldz.UniqueParamID));
+
             foreach (var ldz in excl)
                 ldz.Status = RDZ_STATUS.EXCLUDED;
 
             // Special Cases: Crows
-            var crows = all_lots.Where(ldz => Logic.HasType(ldz, PICKUPTYPE.CROWS));
+            var crows = all_lots.Where(ldz => ldz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.CROWS })).ToList();
             foreach (var ldz in crows)
                 ldz.Status = RDZ_STATUS.CROWS;
 
 
             // Special Cases: LinkedLots
-            foreach (var kvp in Logic.WhereHasType(PICKUPTYPE.LINKEDSLAVE))
-            {
-                var slavelot = all_lots.FirstOrDefault(ldz => ldz.ParamID == kvp.Key);
-                if (slavelot == null)
-                    throw new Exception("LinkedSlave Lot not found in Vanilla table definition");
-                slavelot.Status = RDZ_STATUS.FILL_BY_COPY;
-            }
+            var slavelots = all_lots.Where(ldz => ldz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.LINKEDSLAVE })).ToList();
+            foreach (var ldz in slavelots)
+                ldz.Status = RDZ_STATUS.FILL_BY_COPY;
+            
+            //foreach (var kvp in Logic.WhereHasType(PICKUPTYPE.LINKEDSLAVE))
+            //{
+            //    var slavelot = all_lots.FirstOrDefault(ldz => ldz.UniqueParamID == kvp.Key);
+            //    if (slavelot == null) throw new Exception("LinkedSlave Lot not found in Vanilla table definition");
+            //    slavelot.Status = RDZ_STATUS.FILL_BY_COPY;
+            //}
 
             // All the other shops should be good for "Ordinary Randomization"
             var normal_lots = all_lots.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
@@ -537,6 +571,34 @@ namespace DS2S_META.Randomizer
             // Output
             return all_lots.Cast<Randomization>();
         }
+        internal IEnumerable<Randomization> SetDropPTFTypes()
+        {
+            // Get copy of all VanillaLots
+            IEnumerable<LotRdz> all_drops = VanillaDrops.Select(lot => new DropRdz(lot)).ToList(); // DropsToFill
+
+            // Get only interesting drops:
+            var ADT = GetActiveDropTables();
+            var ADTIDs = ADT.Select(nil => nil?.Lot?.ID).ToList();
+
+            // Define exclusions (not placed)
+            var excl = all_drops.Where(ldz => !ADTIDs.Contains(ldz.UniqueParamID));
+            foreach (var ldz in excl)
+                ldz.Status = RDZ_STATUS.EXCLUDED;
+
+            // For everything else, add a string description and set as ready:
+            var normal_lots = all_drops.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
+            foreach (var ldz in normal_lots)
+            {
+                // get associated NIL:
+                var assoc_nil = ADT.FirstOrDefault(nil => nil?.ID == ldz.UniqueParamID);
+                if (assoc_nil == null) throw new Exception("Pretty sure we shouldn't get here");
+                ldz.RandoDesc = assoc_nil.Name;
+                ldz.Status = RDZ_STATUS.STANDARD;
+            }
+            
+            // Output
+            return all_drops.Cast<Randomization>();
+        }
         internal IEnumerable<Randomization> SetShopPTFTypes()
         {
             // Function to assign how to handle each of the defined
@@ -544,6 +606,7 @@ namespace DS2S_META.Randomizer
 
             // Setup all shops as randomization:
             var shoprdzs = VanillaShops.Select(SR => new ShopRdz(SR)).ToList(); // ToList IS required
+            Logic.TransformToUID(shoprdzs.Cast<Randomization>().ToList());      // FixLogic PT2: Transform shops
 
             // Remove exclusions from list
             foreach (var exclid in ShopRules.Exclusions)
@@ -556,7 +619,7 @@ namespace DS2S_META.Randomizer
             // "Find shops with IDs that match (the ID of) non-trade,copy LEvents; return the shops"
             var LE_normal_copies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
             var shopnormcopies = shoprdzs.Join(inner: LE_normal_copies,
-                                               outerKeySelector: srdz => srdz.ParamID,
+                                               outerKeySelector: srdz => srdz.UniqueParamID,
                                                innerKeySelector: LEc => LEc.FillByCopy,
                                                resultSelector: (srdz,lec) => srdz);
             foreach (var srdz in shopnormcopies)
@@ -566,7 +629,7 @@ namespace DS2S_META.Randomizer
             // Deal with things that need removing:
             var remIDs = LEvents.SelectMany(selector: LE => LE.RemoveIDs ?? new List<int>());
             var shopsrem = shoprdzs.Join(inner: remIDs,
-                                    outerKeySelector: srdz => srdz.ParamID,
+                                    outerKeySelector: srdz => srdz.UniqueParamID,
                                     innerKeySelector: remid => remid,
                                     resultSelector: (srdz, remid) => srdz);
             foreach (var srdz in shopsrem)
@@ -578,7 +641,7 @@ namespace DS2S_META.Randomizer
             // "Ordinary TradeShop" has nothing special to handle (aka Straid)
             var normtrades = LEvents.Where(lev => lev.IsTrade && !lev.IsCopy);
             var shopsnt = shoprdzs.Join(inner: normtrades,
-                                         outerKeySelector: srdz => srdz.ParamID,
+                                         outerKeySelector: srdz => srdz.UniqueParamID,
                                          innerKeySelector: lev => lev.KeepID,
                                          resultSelector: (srdz, lev) => srdz);
             foreach (var srdz in shopsnt)
@@ -588,7 +651,7 @@ namespace DS2S_META.Randomizer
             // Note, these IDs still go through the "usual" randomization process first!
             var ft = LEvents.Where(lev => lev.FreeTrade);
             var shopsft = shoprdzs.Join(inner: ft,
-                                         outerKeySelector: srdz => srdz.ParamID,
+                                         outerKeySelector: srdz => srdz.UniqueParamID,
                                          innerKeySelector: lev => lev.KeepID,
                                          resultSelector: (srdz, lev) => srdz);
             foreach (var srdz in shopsft)
@@ -598,7 +661,7 @@ namespace DS2S_META.Randomizer
             // they instead, just copy the above ones, and then change price
             var tsc = LEvents.Where(lev => lev.IsTrade && lev.IsCopy);
             var shopstsc = shoprdzs.Join(inner: tsc,
-                                         outerKeySelector: srdz => srdz.ParamID,
+                                         outerKeySelector: srdz => srdz.UniqueParamID,
                                          innerKeySelector: lev => lev.FillByCopy,
                                          resultSelector: (srdz, lev) => srdz);
 
@@ -621,6 +684,17 @@ namespace DS2S_META.Randomizer
                 // Append:
                 RandoInfo RI = new(sr.ParamDesc, PICKUPTYPE.SHOP);
                 Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(sr.ID, RI));
+            }
+        }
+        internal void AddDropsToLogic()
+        {
+            var active_drops = AllP.OfType<DropRdz>();
+            foreach (var droprdz in active_drops)
+            {
+                // Append:
+                RandoInfo RI = new(droprdz.RandoDesc, PICKUPTYPE.ENEMYDROP);
+                Logic.D[droprdz.GUID] = RI; // Add to dictionary
+                droprdz.RandoInfo = RI;     // save to randomization
             }
         }
         internal void DefineKRG()
@@ -672,7 +746,6 @@ namespace DS2S_META.Randomizer
 
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
-                //PlaceItem(di.Clone(), flag);
                 PlaceItem(di, flag);
                 ld.RemoveAt(keyindex);
             }
@@ -681,6 +754,14 @@ namespace DS2S_META.Randomizer
             if (ld.Count > 0 && flag != SetType.Gens) 
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
+
+        internal static Dictionary<SetType, List<PICKUPTYPE>> BannedTypeList = new()
+        {
+            {SetType.Keys, ItemSetBase.BanKeyTypes},
+            {SetType.Reqs, ItemSetBase.BanKeyTypes},
+            {SetType.Gens, ItemSetBase.BanGeneralTypes}
+        };
+        
         private void PlaceItem(DropInfo di, SetType stype)
         {
             var localunfilled = new List<int>(Unfilled); // local clone of spots available for placement
@@ -692,14 +773,14 @@ namespace DS2S_META.Randomizer
                 var rdz = AllPTR.ElementAt(elnum);
 
                 // Check pickup type conditions:
-                if (Logic.IsBannedType(rdz, stype))
+                if (rdz.HasType(BannedTypeList[stype]))
                 {
                     localunfilled.RemoveAt(pindex);
                     continue;
                 }
 
                 // Check key-softlock conditions:
-                if (stype == SetType.Keys && Logic.IsSoftlockPlacement(rdz, KeysPlacedSoFar))
+                if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
                 {
                     localunfilled.RemoveAt(pindex);
                     continue;
@@ -804,6 +885,16 @@ namespace DS2S_META.Randomizer
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllLots(shuffledlots);
         }
+        internal void WriteShuffledDrops()
+        {
+            if (Hook == null)
+                return;
+
+            var shuffleddrops = AllP.OfType<DropRdz>()
+                                    .Where(ldz => ldz.ShuffledLot is not null)
+                                    .Select(ldz => ldz.ShuffledLot).ToList();
+            WriteAllLots(shuffleddrops);
+        }
         internal void WriteShuffledShops()
         {
             if (Hook == null)
@@ -855,8 +946,8 @@ namespace DS2S_META.Randomizer
                     int quant = rdz.GetShuffledItemQuant(keyid);
                     if (quant != 1)
                         sb.Append($" x{quant}");
-                    
-                    string? desc = Logic.D[rdz.ParamID].Description;
+
+                    string? desc = rdz.RandoInfo?.Description;
                     sb.Append($": {desc}");
                     lines.Add(sb.ToString());
                 }
@@ -903,11 +994,11 @@ namespace DS2S_META.Randomizer
 
             foreach (var shp in fillbycopy)
             {
-                var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.ParamID);
+                var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID);
                 if (LE == null)
                     throw new Exception("Cannot find linked event");
 
-                var shop_to_copy = filled_shops.Where(srdz => srdz.ParamID == LE.CopyID).FirstOrDefault();
+                var shop_to_copy = filled_shops.Where(srdz => srdz.UniqueParamID == LE.CopyID).FirstOrDefault();
                 if (shop_to_copy == null)
                     throw new Exception("Cannot find shop to copy from");
 
@@ -943,11 +1034,11 @@ namespace DS2S_META.Randomizer
 
             foreach (var shp in fillbycopy)
             {
-                var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.ParamID);
+                var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID);
                 if (LE == null)
                     throw new Exception("Cannot find linked event");
 
-                var shop_to_copy = filled_shops.Where(srdz => srdz.ParamID == LE.CopyID).FirstOrDefault();
+                var shop_to_copy = filled_shops.Where(srdz => srdz.UniqueParamID == LE.CopyID).FirstOrDefault();
                 if (shop_to_copy == null)
                     throw new Exception("Cannot find shop to copy from");
 
@@ -992,12 +1083,12 @@ namespace DS2S_META.Randomizer
                                  .Where(rdz => rdz.Status == RDZ_STATUS.FILL_BY_COPY);
             foreach (var lot in fillbycopy)
             {
-                var LD = Logic.LinkedDrops.FirstOrDefault(ld => ld.SlaveIDs.Contains(lot.ParamID));
+                var LD = Logic.LinkedDrops.FirstOrDefault(ld => ld.SlaveIDs.Contains(lot.UniqueParamID));
                 if (LD == null) 
                     throw new Exception("Cannot find LinkedDrop as expected");
 
                 // Get Randomized ItemLot to copy from:
-                var lot_to_copy = AllPTR.OfType<LotRdz>().Where(ldz => ldz.ParamID == LD.MasterID).First();
+                var lot_to_copy = AllPTR.OfType<LotRdz>().Where(ldz => ldz.UniqueParamID == LD.MasterID).First();
 
                 // Clone/Update:
                 lot.ShuffledLot = lot.VanillaLot.CloneBlank();              // keep param reference for this ID

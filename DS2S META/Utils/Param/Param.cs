@@ -145,31 +145,9 @@ namespace DS2S_META
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
 
             Bytes = filebytes.Take((int)TotalTableLength).ToArray();
-            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
-            var test = 1;
         }
         private void BuildOffsetDictionary<T>() where T : Row
         {
-            //string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
-            //if (paramType != Type)
-            //    throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
-
-            //OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
-
-            ////int param = 0x40; // param header?
-            ////int paramID = 0x0;
-            ////int paramoffset = 0x8;
-            ////int nextParam = 0x18;
-            
-
-            ////var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
-            //var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
-
-            //if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
-            //    throw new Exception("Potential mismatch in param total bytes");
-            //TotalTableLength = OffsetsTableLength + nparams * RowLength;
-            //Bytes = Pointer.ReadBytes(0x0, (uint)TotalTableLength);
-
             // Setup constructor for new row data
             Type[] argtypes = new Type[] { typeof(Param), typeof(string), typeof(int), typeof(int) };
             ConstructorInfo? ctor = typeof(T).GetConstructor(argtypes);
