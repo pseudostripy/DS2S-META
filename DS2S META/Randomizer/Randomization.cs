@@ -121,7 +121,7 @@ namespace DS2S_META.Randomizer
     }
 
     // GeneralizedLot
-    internal class GLotRdz : Randomization
+    internal abstract class GLotRdz : Randomization
     {
         // Subclass fields:
         internal ItemLotRow VanillaLot;

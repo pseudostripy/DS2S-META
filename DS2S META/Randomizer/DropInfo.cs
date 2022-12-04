@@ -44,6 +44,7 @@ namespace DS2S_META.Randomizer
             Reinforcement = (byte)reinforce;
             Infusion = (byte)infusion;
         }
+
         internal DropInfo Clone()
         {
             return (DropInfo)MemberwiseClone();

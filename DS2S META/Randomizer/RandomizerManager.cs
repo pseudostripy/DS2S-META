@@ -181,6 +181,8 @@ namespace DS2S_META.Randomizer
             foreach (var droprow in vanlotschr) droprow.IsDropTable = true;
             VanillaDrops = vanlotschr;
 
+            var test = vanlotschr.Where(il => il.ID == 75100000).ToList();
+
             AddDropsToLogic(); // gotta do it somewhere
             return;
         }

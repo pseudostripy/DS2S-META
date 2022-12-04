@@ -244,7 +244,10 @@ namespace DS2S_META.Utils
                     break;
 
                 case "ITEM_LOT_PARAM2":
-                    param.initialise<ItemLotRow>();
+                    if (param.Name == "ITEM_LOT_OTHER")
+                        param.initialise<ItemWLotRow>();
+                    else
+                        param.initialise<ItemDropRow>();
                     break;
 
                 case "WEAPON_PARAM":
