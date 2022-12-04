@@ -120,8 +120,8 @@ namespace DS2S_META.Randomizer
         }
     }
 
-
-    internal class LotRdz : Randomization
+    // GeneralizedLot
+    internal class GLotRdz : Randomization
     {
         // Subclass fields:
         internal ItemLotRow VanillaLot;
@@ -129,7 +129,7 @@ namespace DS2S_META.Randomizer
         internal bool IsDropTable = false; // by default
 
         // Constructors:
-        internal LotRdz(ItemLotRow vanlot) : base(vanlot.ID)
+        internal GLotRdz(ItemLotRow vanlot) : base(vanlot.ID)
         {
             VanillaLot = vanlot;
             ShuffledLot = VanillaLot.CloneBlank();
@@ -255,7 +255,15 @@ namespace DS2S_META.Randomizer
         // Extra Utility:
         internal bool IsEmpty => VanillaLot.IsEmpty; // Vanilla Lot has 0 drops
     }
-    internal class DropRdz : LotRdz
+    internal class LotRdz : GLotRdz
+    {
+        // Constructors:
+        internal LotRdz(ItemLotRow vanlot) : base(vanlot)
+        {
+            IsDropTable = false;
+        }
+    }
+    internal class DropRdz : GLotRdz
     {
         // Constructors:
         internal DropRdz(ItemLotRow vanlot) : base(vanlot)

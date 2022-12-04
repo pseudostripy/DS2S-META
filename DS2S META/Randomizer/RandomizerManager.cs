@@ -414,7 +414,7 @@ namespace DS2S_META.Randomizer
             foreach (var drop in okDrops)
                 droplists.Add(drop.Flatlist);
 
-
+            
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD 
@@ -429,7 +429,7 @@ namespace DS2S_META.Randomizer
             foreach (var lot in normal_lots)
                 droplists.Add(lot.Flatlist);
 
-
+            
             // Special Lots (NGplus things):
             var ngplus_lots = stage1_lots.Where(lrdz => lrdz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.NGPLUS }));
             List<int>? manualNGplusIDs = Logic.LinkedNGs.Select(lng => lng.ngplusID).ToList();
@@ -460,7 +460,7 @@ namespace DS2S_META.Randomizer
                 droplists.Add(ufl);
             }
 
-
+            
             // Collapse all droplists into one droplist:
             LTR_flatlist = droplists.SelectMany(di => di).ToList();
 
@@ -534,7 +534,7 @@ namespace DS2S_META.Randomizer
         internal IEnumerable<Randomization> SetLotPTFTypes()
         {
             // Get copy of all VanillaLots
-            IEnumerable<LotRdz> all_lots = VanillaLots.Select(lot => new LotRdz(lot)).ToList(); // LotsToFill
+            IEnumerable<GLotRdz> all_lots = VanillaLots.Select(lot => new LotRdz(lot)).ToList(); // LotsToFill
             Logic.TransformToUID(all_lots.Cast<Randomization>().ToList());     // FixLogic: PT1, Transform lots
 
             // Define exclusions (not placed)
@@ -577,7 +577,7 @@ namespace DS2S_META.Randomizer
         internal IEnumerable<Randomization> SetDropPTFTypes()
         {
             // Get copy of all VanillaLots
-            IEnumerable<LotRdz> all_drops = VanillaDrops.Select(lot => new DropRdz(lot)).ToList(); // DropsToFill
+            IEnumerable<GLotRdz> all_drops = VanillaDrops.Select(lot => new DropRdz(lot)).ToList(); // DropsToFill
 
             // Get only interesting drops:
             var ADT = GetActiveDropTables();
@@ -976,6 +976,11 @@ namespace DS2S_META.Randomizer
             // World placements:
             lines.Add("World placement:");
             foreach (var ldz in AllPTR.OfType<LotRdz>())
+                lines.Add(ldz.GetNeatDescription());
+
+            // Enemy drops:
+            lines.Add("Enemy Drops:");
+            foreach (var ldz in AllPTR.OfType<DropRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
             // Shops:
