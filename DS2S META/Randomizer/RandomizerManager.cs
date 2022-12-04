@@ -41,7 +41,6 @@ namespace DS2S_META.Randomizer
         private List<int> Unfilled = new();
         private List<int> KeysPlacedSoFar = new(); // to tidy
         internal int CurrSeed;
-        private const int FREETRADEEVENT = 100100;
         //
         internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -155,11 +154,13 @@ namespace DS2S_META.Randomizer
             }
             genplist.AddRange(ngpList);
 
+            // Querying:
+            //var test = genplist.Where(nil => nil?.Lot != null && nil.Lot.HasItem(0x001312D0)).ToList();
+
             // Get unique & interesting droptables
             var uniques = genplist.GroupBy(nil => nil?.Lot?.ID).Select(grp => grp.First()).ToList();
             return uniques.Where(nil => nil?.Lot?.IsEmpty != null && nil.Lot?.IsEmpty != true).ToList();
         }
-
         internal class NamedItemLot
         {
             internal int? RawID; // for awkward situations with ngplus drops but no NG drops
@@ -180,8 +181,6 @@ namespace DS2S_META.Randomizer
             if (vanlotschr == null) throw new Exception("Null table");
             foreach (var droprow in vanlotschr) droprow.IsDropTable = true;
             VanillaDrops = vanlotschr;
-
-            var test = vanlotschr.Where(il => il.ID == 75100000).ToList();
 
             AddDropsToLogic(); // gotta do it somewhere
             return;
@@ -436,6 +435,7 @@ namespace DS2S_META.Randomizer
             // Collapse all loot into flatlist for randomization
 
             List<List<DropInfo>> droplists = new();
+            List<List<DropInfo>> shoplotlists = new();
 
             // Only keep ones of interest
             var stage1 = AllPTR.Where(rdz => !rdz.HasType(Logic.BanFromLoot));
@@ -445,20 +445,48 @@ namespace DS2S_META.Randomizer
             foreach (var drop in okDrops)
                 droplists.Add(drop.Flatlist);
 
+            // Collapse droplists and sort out uniqueness balacing:
+            var LTR_flatlist_dropsonly = droplists.SelectMany(di => di).ToList();
+            List<DropInfo> drop_flatlist_balanced = new();
+            foreach(var di in LTR_flatlist_dropsonly)
+            {
+                if (!TryGetItem(di.ItemID, out var item))
+                    continue;
+                if (item == null) continue;
+
+                // Keep consumables/armour as fine:
+                if (!item.IsWeaponOrSpells)
+                {
+                    drop_flatlist_balanced.Add(di);
+                    continue;
+                }
+
+                // Otherwise, only add weapon if it isn't in there already:
+                bool isAlreadyDone = drop_flatlist_balanced.FirstOrDefault(di2 => di2.ItemID == di.ItemID) != null;
+                if (!isAlreadyDone)
+                    drop_flatlist_balanced.Add(di);
+            }
             
+
+
+            // testing
+            //var LTR_flatlist_test0 = droplists.SelectMany(di => di).ToList();
+            //var test1 = LTR_flatlist_test0.Where(di => di.ItemID == 0x001312D0).ToList();
+            //var test = 1;
+
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD 
                                         || srdz.Status == RDZ_STATUS.MAKEFREE
                                         || srdz.Status == RDZ_STATUS.UNLOCKTRADE);
             foreach (var shop in okShops)
-                droplists.Add(shop.Flatlist);
+                shoplotlists.Add(shop.Flatlist);
 
             // Normal Lots:
             var stage1_lots = stage1.OfType<LotRdz>();
             var normal_lots = stage1_lots.Where(lrdz => !lrdz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.NGPLUS }));
             foreach (var lot in normal_lots)
-                droplists.Add(lot.Flatlist);
+                shoplotlists.Add(lot.Flatlist);
 
             
             // Special Lots (NGplus things):
@@ -488,12 +516,15 @@ namespace DS2S_META.Randomizer
 
                 // Add unique items:
                 var ufl = lrdz.GetUniqueFlatlist(linkedLRDZ.Flatlist);
-                droplists.Add(ufl);
+                shoplotlists.Add(ufl);
             }
 
             
             // Collapse all droplists into one droplist:
-            LTR_flatlist = droplists.SelectMany(di => di).ToList();
+            var LTR_flatlist_lotshops = shoplotlists.SelectMany(di => di).ToList();
+            LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
+
+            var test = LTR_flatlist.Where(di => di.ItemID == 0x001312D0).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
@@ -553,9 +584,6 @@ namespace DS2S_META.Randomizer
             AllP = lotptfs.ToList()
                     .Concat(shopptfs).ToList()
                     .Concat(dropptfs).ToList();
-
-
-            //var test = AllP.OfType<DropRdz>().ToList();
 
             // Places to fill with "Ordinary Randomization"
             AllPTR = AllP.Where(rdz => rdz.Status == RDZ_STATUS.STANDARD ||
@@ -755,12 +783,6 @@ namespace DS2S_META.Randomizer
             // Fixes:
             //ldkeys = RemoveDuplicateKeys(ldkeys); // avoid double ashen mist etc.
             RemoveFirstIfPresent(0x0308D330); // Ashen Mist duplicate
-
-            //// Remove Lord soul duplicates:
-
-            //RemoveFirstIfPresent(64060000); // Sinner
-            //RemoveFirstIfPresent(64170000); // Freja
-            //RemoveFirstIfPresent(64120000); // Old Iron King
         }
         private void RemoveFirstIfPresent(int itemid)
         {
@@ -770,6 +792,13 @@ namespace DS2S_META.Randomizer
             LTR_flatlist.Remove(di); 
         }
         
+        // Placement code:
+        internal static Dictionary<SetType, List<PICKUPTYPE>> BannedTypeList = new()
+        {
+            {SetType.Keys, ItemSetBase.BanKeyTypes},
+            {SetType.Reqs, ItemSetBase.BanKeyTypes},
+            {SetType.Gens, ItemSetBase.BanGeneralTypes}
+        };
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
         {
             // ld: list of DropInfos
@@ -788,14 +817,6 @@ namespace DS2S_META.Randomizer
             if (ld.Count > 0 && flag != SetType.Gens) 
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
-
-        internal static Dictionary<SetType, List<PICKUPTYPE>> BannedTypeList = new()
-        {
-            {SetType.Keys, ItemSetBase.BanKeyTypes},
-            {SetType.Reqs, ItemSetBase.BanKeyTypes},
-            {SetType.Gens, ItemSetBase.BanGeneralTypes}
-        };
-        
         private void PlaceItem(DropInfo di, SetType stype)
         {
             var localunfilled = new List<int>(Unfilled); // local clone of spots available for placement

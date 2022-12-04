@@ -149,6 +149,10 @@ namespace DS2S_META.Utils
         internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
         internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
 
+        // Useful properties:
+        private List<eItemType> WepOrSpells = new() { eItemType.WEAPON1, eItemType.WEAPON2, eItemType.SPELLS };
+        internal bool IsWeaponOrSpells => WepOrSpells.Contains(ItemType);
+
         public enum Offsets
         {
             ItemUsageID  = 0x44,
