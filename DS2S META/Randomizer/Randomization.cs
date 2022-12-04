@@ -181,7 +181,7 @@ namespace DS2S_META.Randomizer
         }
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new StringBuilder($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
+            StringBuilder sb = new($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
             
             // Display empty lots
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
@@ -269,6 +269,26 @@ namespace DS2S_META.Randomizer
         internal DropRdz(ItemLotRow vanlot) : base(vanlot)
         {
             IsDropTable = true;
+        }
+
+        internal override string GetNeatDescription()
+        {
+            StringBuilder sb = new($"{ParamID}: {RandoDesc}{Environment.NewLine}");
+
+            // Display empty lots
+            if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
+                return sb.Append("\tEMPTY").ToString();
+
+            for (int i = 0; i < ShuffledLot.NumDrops; i++)
+            {
+                sb.Append($"\t{GetItemName(ShuffledLot.Items[i])}");
+                sb.Append($" x{ShuffledLot.Quantities[i]}");
+                sb.Append($" ({ShuffledLot.Chances[i]}%)");
+                sb.Append(Environment.NewLine);
+            }
+
+            // Remove final newline:
+            return sb.ToString().TrimEnd('\r', '\n');
         }
     }
 
