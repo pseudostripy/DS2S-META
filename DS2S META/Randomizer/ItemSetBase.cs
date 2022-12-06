@@ -80,6 +80,8 @@ namespace DS2S_META.Randomizer
         {
             // Add here / refactor as required.
             { 60155000, FullySafe },    // Estus Flask
+            { 0x039B89C8, FullySafe },  // Estus Flask Shard
+            { 0x039B8DB0, FullySafe },  // Sublime Bone Dust
             { 05400000, FullySafe },    // Pyromancy Flame
             { 05410000, FullySafe },    // Dark Pyromancy Flame 
             { 60355000, FullySafe },    // Aged Feather
