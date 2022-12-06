@@ -12,6 +12,7 @@ using SoulsFormats;
 using static SoulsFormats.MSBD;
 using System.Transactions;
 using System.Windows.Controls;
+using Octokit;
 
 namespace DS2S_META.Randomizer
 {
@@ -756,7 +757,12 @@ namespace DS2S_META.Randomizer
             foreach (var droprdz in active_drops)
             {
                 // Append:
-                RandoInfo RI = new(droprdz.RandoDesc, PICKUPTYPE.ENEMYDROP);
+                RandoInfo RI;
+                if (droprdz.IsGuaranteedDrop)
+                    RI = new(droprdz.RandoDesc, PICKUPTYPE.GUARANTEEDENEMYDROP);
+                else
+                    RI = new(droprdz.RandoDesc, PICKUPTYPE.ENEMYDROP);
+
                 Logic.D[droprdz.GUID] = RI; // Add to dictionary
                 droprdz.RandoInfo = RI;     // save to randomization
             }
@@ -768,7 +774,7 @@ namespace DS2S_META.Randomizer
 
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             ldkeys = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                   // Keys
-            ldreqs = flatlist_copy.Where(DI => ItemSetBase.RequiredItems.Contains(DI.ItemID)).ToList(); // Reqs
+            ldreqs = flatlist_copy.Where(DI => DI.IsReqType).ToList();                   // Reqs
             ldgens = flatlist_copy.Except(ldkeys).Except(ldreqs).ToList();               // Generics
 
             // Ensure no meme double placements:
@@ -832,11 +838,49 @@ namespace DS2S_META.Randomizer
                 var rdz = AllPTR.ElementAt(elnum);
 
                 // Check pickup type conditions:
-                if (rdz.HasType(BannedTypeList[stype]))
+                switch (stype)
                 {
-                    localunfilled.RemoveAt(pindex);
-                    continue;
+                    case SetType.Keys:
+                    case SetType.Gens:
+                        if (rdz.HasType(BannedTypeList[stype]))
+                        {
+                            localunfilled.RemoveAt(pindex);
+                            continue;
+                        }
+                        break;
+                    case SetType.Reqs:
+                        // Now extra rules for specific stuff:
+
+                        // (handled separately, below)
+                        if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
+                            break; 
+
+
+                        // Get allowable placements by item type:
+                        var item = ParamMan.GetItemFromID(di.ItemID);
+                        if (item == null)
+                        {
+                            localunfilled.RemoveAt(pindex);
+                            continue;
+                        }
+                        if (!rdz.ContainsOnlyTypes(ItemSetBase.ItemAllowTypes[item.ItemType]))
+                        {
+                            localunfilled.RemoveAt(pindex);
+                            continue;
+                        }
+                        break;
                 }
+
+                // Now extra rules for specific stuff:
+                if (ItemSetBase.ManuallyRequiredItemsTypeRules.TryGetValue(di.ItemID, out var mantypes))
+                {
+                    if (!rdz.ContainsOnlyTypes(mantypes))
+                    {
+                        localunfilled.RemoveAt(pindex);
+                        continue;
+                    }
+                }
+                
 
                 // Check key-softlock conditions:
                 if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
@@ -844,10 +888,6 @@ namespace DS2S_META.Randomizer
                     localunfilled.RemoveAt(pindex);
                     continue;
                 }
-
-                //
-                // Add a Logic.RulesCheck condition // TODO
-                //
 
 
                 // Accept solution:

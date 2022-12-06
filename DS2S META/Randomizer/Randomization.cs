@@ -66,6 +66,11 @@ namespace DS2S_META.Randomizer
             if (RandoInfo == null) return false; // TODO?
             return RandoInfo.HasType(bannedtypes);
         }
+        internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytpes)
+        {
+            if (RandoInfo == null) return false; // TODO?
+            return RandoInfo.ContainsOnlyTypes(onlytpes);
+        }
         internal bool IsSoftlockPlacement(List<int> placedSoFar)
         {
             if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set");
@@ -289,6 +294,20 @@ namespace DS2S_META.Randomizer
 
             // Remove final newline:
             return sb.ToString().TrimEnd('\r', '\n');
+        }
+        internal bool IsGuaranteedDrop 
+        { 
+            get
+            {
+                if (VanillaLot == null)
+                    return false;
+                for (int i = 0; i < VanillaLot.NumDrops; i++)
+                {
+                    if (VanillaLot.Chances[i] != 100F)
+                        return false;
+                }
+                return true;
+            } 
         }
     }
 

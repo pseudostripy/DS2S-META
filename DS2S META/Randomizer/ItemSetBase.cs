@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -50,8 +51,42 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.WOODCHEST,
             PICKUPTYPE.SHOP,        // For now
             PICKUPTYPE.ENEMYDROP,   // For now
+            PICKUPTYPE.GUARANTEEDENEMYDROP,   // For now
             PICKUPTYPE.CROWS,
         };
+
+        internal static List<PICKUPTYPE> FullySafe = new()
+        {
+           PICKUPTYPE.NONVOLATILE,
+           PICKUPTYPE.BOSS,
+           PICKUPTYPE.METALCHEST,
+         };
+        internal static List<PICKUPTYPE> HalfSafe = new()
+        {
+           PICKUPTYPE.NONVOLATILE,
+           PICKUPTYPE.BOSS,
+           PICKUPTYPE.GUARANTEEDENEMYDROP,
+           PICKUPTYPE.WOODCHEST,
+           PICKUPTYPE.METALCHEST,
+         };
+
+        internal static Dictionary<eItemType, List<PICKUPTYPE>> ItemAllowTypes = new()
+        {
+            { eItemType.RING, HalfSafe },
+            { eItemType.SPELLS, HalfSafe },
+        };
+
+        internal static Dictionary<int, List<PICKUPTYPE>> ManuallyRequiredItemsTypeRules = new()
+        {
+            // Add here / refactor as required.
+            { 60155000, FullySafe },    // Estus Flask
+            { 05400000, FullySafe },    // Pyromancy Flame
+            { 05410000, FullySafe },    // Dark Pyromancy Flame 
+            { 60355000, FullySafe },    // Aged Feather
+            { 40420000, FullySafe },    // Silvercat Ring
+        };
+
+
         internal static List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
         {
             PICKUPTYPE.EXOTIC,
@@ -61,7 +96,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.CROWS, // handled separately
         };
-        internal List<PICKUPTYPE> BanFromLoot = new List<PICKUPTYPE>()
+        internal List<PICKUPTYPE> BanFromLoot = new()
         {
             // List of places where loot cannot come from:
             PICKUPTYPE.CRAMMED,
@@ -69,7 +104,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.REMOVED,
             PICKUPTYPE.LINKEDSLAVE,
         };
-        internal List<PICKUPTYPE> BanFromBeingRandomized = new List<PICKUPTYPE>()
+        internal List<PICKUPTYPE> BanFromBeingRandomized = new()
         {
             // List of places where loot cannot come from:
             PICKUPTYPE.EXOTIC,
@@ -102,17 +137,7 @@ namespace DS2S_META.Randomizer
             50000201, // A loot from petrified
             50000203, // C loot from petrified
         };
-        internal static List<int> RequiredItems = new()
-        {
-            // Add here / refactor as required.
-            60155000,   // Estus Flask
-            40420000,   // Silvercat Ring
-            5400000,    // Pyromancy Flame
-            5410000,    // Dark Pyromancy Flame 
-            60355000,   // Aged Feather
-            0x027322E0, // Flynn's Ring
-            0x01EB7C50, // Homeward
-        };
+        
         internal static List<DropInfo> FillerItems = new()
         {
             new DropInfo(0x0393AE10, 3), // Lifegem

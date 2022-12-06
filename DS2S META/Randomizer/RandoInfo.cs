@@ -81,6 +81,7 @@ namespace DS2S_META.Randomizer
     internal enum PICKUPTYPE : int
     {
         ENEMYDROP,
+        GUARANTEEDENEMYDROP,
         COVENANTEASY,
         COVENANTHARD,
         NPC,
@@ -134,6 +135,10 @@ namespace DS2S_META.Randomizer
         internal bool HasType(PICKUPTYPE checktype)
         {
             return Types.Any(pt => pt == checktype);
+        }
+        internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytypes)
+        {
+            return Types.All(onlytypes.Contains);
         }
 
         internal bool IsSoftlockPlacement(List<int> placedSoFar)
