@@ -1004,19 +1004,19 @@ namespace DS2S_META.Randomizer
             Dold.Add(20106120, SafeInfo("[MemoryJeigh] Up the second set of stairs in the Giant Lord memory", KEYID.MEMORYJEIGH));
 
             // Memory of Orro
-            Dold.Add(1743000, NpcInfo("[MemoryOrro] Gift from Benhart if he has survived at least three summons", KSO(KEYID.DRANGLEIC, KEYID.ASHENMIST)));
-            Dold.Add(20105020, WChestInfo("[MemoryOrro] Trapped wooden chest behind a Pharros' contraption on the second floor", KSO(KEYID.ASHENMIST, KEYID.PHARROS)));
-            Dold.Add(20105030, MChestInfo("[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KSO(KEYID.ASHENMIST, KEYID.PHARROS)));
-            Dold.Add(20105040, MChestInfo("[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KSO(KEYID.ASHENMIST, KEYID.PHARROS)));
-            Dold.Add(20105050, MChestInfo("[MemoryOrro] Metal chest in the room where you need to drop the crane", KEYID.ASHENMIST));
-            Dold.Add(20105060, MChestInfo("[MemoryOrro] Metal chest in the room where you need to drop the crane", KEYID.ASHENMIST));
-            Dold.Add(20106050, SafeInfo("[MemoryOrro] In the corner of the second floor room of the entrace stairs", KEYID.ASHENMIST));
-            Dold.Add(20106070, SafeInfo("[MemoryOrro] On the bridge above courtyard", KEYID.ASHENMIST));
-            Dold.Add(20106080, SafeInfo("[MemoryOrro] In the corner of the courtyard", KEYID.ASHENMIST));
-            Dold.Add(20106090, SafeInfo("[MemoryOrro] At the side of the center of the courtyard", KEYID.ASHENMIST));
-            Dold.Add(20106130, SafeInfo("[MemoryOrro] On the roof looking onto courtyard after climbing ladder", KEYID.ASHENMIST));
-            Dold.Add(20106140, SafeInfo("[MemoryOrro] On scaffolding after climbing a ladder from the courtyard", KEYID.ASHENMIST));
-            Dold.Add(20106141, NGPlusInfo("[MemoryOrro] On scaffolding after climbing a ladder from the courtyard in NG+", KEYID.ASHENMIST));
+            Dold.Add(1743000, NpcInfo("[MemoryOrro] Gift from Benhart if he has survived at least three summons", KSO(KEYID.MEMORYORRO, KEYID.DRANGLEIC)));
+            Dold.Add(20105020, WChestInfo("[MemoryOrro] Trapped wooden chest behind a Pharros' contraption on the second floor", KSO(KEYID.MEMORYORRO, KEYID.PHARROS)));
+            Dold.Add(20105030, MChestInfo("[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KSO(KEYID.MEMORYORRO, KEYID.PHARROS)));
+            Dold.Add(20105040, MChestInfo("[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KSO(KEYID.MEMORYORRO, KEYID.PHARROS)));
+            Dold.Add(20105050, MChestInfo("[MemoryOrro] Metal chest in the room where you need to drop the crane", KEYID.MEMORYORRO));
+            Dold.Add(20105060, MChestInfo("[MemoryOrro] Metal chest in the room where you need to drop the crane", KEYID.MEMORYORRO));
+            Dold.Add(20106050, SafeInfo("[MemoryOrro] In the corner of the second floor room of the entrace stairs", KEYID.MEMORYORRO));
+            Dold.Add(20106070, SafeInfo("[MemoryOrro] On the bridge above courtyard", KEYID.MEMORYORRO));
+            Dold.Add(20106080, SafeInfo("[MemoryOrro] In the corner of the courtyard", KEYID.MEMORYORRO));
+            Dold.Add(20106090, SafeInfo("[MemoryOrro] At the side of the center of the courtyard", KEYID.MEMORYORRO));
+            Dold.Add(20106130, SafeInfo("[MemoryOrro] On the roof looking onto courtyard after climbing ladder", KEYID.MEMORYORRO));
+            Dold.Add(20106140, SafeInfo("[MemoryOrro] On scaffolding after climbing a ladder from the courtyard", KEYID.MEMORYORRO));
+            Dold.Add(20106141, NGPlusInfo("[MemoryOrro] On scaffolding after climbing a ladder from the courtyard in NG+", KEYID.MEMORYORRO));
 
             // Memory of Vammar
             Dold.Add(1724000, NpcInfo("[MemoryVammar] Gift from Captain Drummond after defeating Giant lord", KEYID.MEMORYJEIGH));

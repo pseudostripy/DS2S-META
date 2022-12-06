@@ -29,6 +29,7 @@ namespace DS2S_META.Randomizer
         BELFRYSOL       = 0xBC0,    // Shorthand: Rotunda && BigPharros
         DARKLURKER      = 0xBC1,    // Shorthand: Forgotten && Drangleic && Torch && Butterfly x3
         DLC2            = 0xBC2,    // Shorthand: DLC2 key + Rotunda
+        MEMORYORRO      = 0xBC3,    // Shorthand: Soldier Key & Ashen Mist
 
         BRANCH          = 0xAA0,    // Shorthand: Require at least 3 branches
         PHARROS         = 0xAA1,    // Shorthand: Enough Pharros Lockstones available

@@ -697,6 +697,10 @@ namespace DS2S_META.Randomizer
                     // Rotunda Lockstone && DLC2 key
                     return condDLC2();
 
+                case KEYID.MEMORYORRO:
+                    // Soldier Key && Ashen Mist
+                    return condOrro();
+
                 default:
                     return condKey(kid); // Simple Key check
             }
@@ -734,6 +738,7 @@ namespace DS2S_META.Randomizer
             bool condSol() => condRotunda() && condBigPharros();
             bool condButterflies() => placedSoFar.Where(i => i == (int)KEYID.FLAMEBUTTERFLY).Count() >= 3;
             bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
+            bool condOrro() => condAshen() && condKey(KEYID.SOLDIER);
         }
 
         internal void TransformToUID(List<Randomization> rdzs)
