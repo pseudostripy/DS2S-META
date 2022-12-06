@@ -25,11 +25,10 @@ namespace DS2S_META.Randomizer
     {
         // All others are simply the NGplus paramID rounded to nearest 10
         internal List<LinkNGDrop> LinkedNGs = new() { new LinkNGDrop(675000, 675010) };
-
         internal List<LinkedDrop> LinkedDrops = new()
         {
             StraightCopy(318000, 60008000), // Pursuer Fight/Platform
-        };
+        }; // LinkedLots..
 
         internal static LinkedDrop StraightCopy(int id1, int id2)
         {

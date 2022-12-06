@@ -773,7 +773,8 @@ namespace DS2S_META.Randomizer
             var flatlist_copy = LTR_flatlist.Select(di => di.Clone()).ToList();
 
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
-            ldkeys = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
+            var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
+            ldkeys = RemoveExtraTorches(too_many_torches);
 
             var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
             ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType).ToList();                // Reqs
@@ -799,7 +800,26 @@ namespace DS2S_META.Randomizer
             RemoveFirstIfPresent(0x0308D330); // Ashen Mist
             RemoveFirstIfPresent(0x03B39220); // Token of Fidelity
             RemoveFirstIfPresent(0x03B3B930); // Token of Spite
-
+            LimitNumberOfItem(0x0399EFA0, 15); // 15xX Torch pickups in game
+            LimitNumberOfItem(0x0395D4D8, 30); // 30 Effigy pickups in game
+        }
+        private List<DropInfo> RemoveExtraTorches(List<DropInfo> too_many_torches)
+        {
+            int min_torches = 6;
+            int torch_keys_placed = 0;
+            List<DropInfo> ldkeys_out = new();
+            for (int i = 0; i < too_many_torches.Count; i++)
+            {
+                var di = too_many_torches[i];
+                if (di.ItemID == 0x0399EFA0)
+                {
+                    if (torch_keys_placed >= min_torches)
+                        continue;
+                    torch_keys_placed += di.Quantity;
+                }
+                ldkeys_out.Add(di); // ok to keep as key
+            }
+            return ldkeys_out;
         }
         private void RemoveFirstIfPresent(int itemid)
         {
@@ -808,12 +828,29 @@ namespace DS2S_META.Randomizer
                 return;
             LTR_flatlist.Remove(di); 
         }
-        
+        private void LimitNumberOfItem(int itemid, int maxlim)
+        {
+            List<DropInfo> torem = new();
+            int remain_cnt = LTR_flatlist.Where(DI => DI.HasItem(itemid)).Count();
+            for (int i = 0; i < LTR_flatlist.Count; i++)
+            {
+                var di = LTR_flatlist[i];
+                if (di.HasItem(itemid))
+                {
+                    torem.Add(di);
+                    remain_cnt--;
+                }
+
+                if (remain_cnt == maxlim)
+                    break;
+            }
+            LTR_flatlist.RemoveAll(torem.Contains);
+        }
+
         // Placement code:
         internal static Dictionary<SetType, List<PICKUPTYPE>> BannedTypeList = new()
         {
             {SetType.Keys, ItemSetBase.BanKeyTypes},
-            //{SetType.Reqs, ItemSetBase.BanKeyTypes},
             {SetType.Gens, ItemSetBase.BanGeneralTypes}
         };
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
