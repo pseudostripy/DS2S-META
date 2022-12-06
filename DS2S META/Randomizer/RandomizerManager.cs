@@ -455,7 +455,7 @@ namespace DS2S_META.Randomizer
                 if (item == null) continue;
 
                 // Keep consumables/armour as fine:
-                if (!item.IsWeaponOrSpells)
+                if (!item.NeedsMadeUnique)
                 {
                     drop_flatlist_balanced.Add(di);
                     continue;
@@ -524,7 +524,9 @@ namespace DS2S_META.Randomizer
             var LTR_flatlist_lotshops = shoplotlists.SelectMany(di => di).ToList();
             LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
 
-            var test = LTR_flatlist.Where(di => di.ItemID == 0x001312D0).ToList();
+            // query testing
+            //var test = LTR_flatlist.Where(di => di.ItemID == 0x03B3E040).ToList();
+            //var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(0x03B3E040)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
