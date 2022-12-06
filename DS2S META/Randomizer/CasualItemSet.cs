@@ -799,7 +799,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(1725000, CovFineInfo("[Drangleic] Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KSO(KEYID.FORGOTTEN, KEYID.DRANGLEIC, KEYID.TORCH)));
             Dold.Add(1721000, NpcSafeInfo("[Drangleic] Gift from Chancellor Wellager after defeating the Giant Lord", KSO(KEYID.DRANGLEIC, KEYID.ASHENMIST)));
             Dold.Add(1760200, NpcInfo("[Drangleic] Gift when releasing Milfanito from highest tower up the Drangleic elevator", KSO(KEYID.DRANGLEIC, KEYID.EMBEDDED)));
-            Dold.Add(20215000, MChestInfo("[Drangleic] Metal chest one level down from the Forgotten Chamber” bonfire", KEYID.DRANGLEIC));
+            Dold.Add(20215000, MChestInfo("[Drangleic] Metal chest one level down from the Forgotten Chamber bonfire", KEYID.DRANGLEIC));
             Dold.Add(20215010, WChestInfo("[Drangleic] Wooden chest in acid pool", KEYID.DRANGLEIC));
             Dold.Add(20215011, WChestNGPlusInfo("[Drangleic] Wooden chest in acid pool in NG+", KEYID.DRANGLEIC));
             Dold.Add(20215020, WChestInfo("[Drangleic] Vanilla dark arrows: wooden chest right after the multi-door Sentinel room", KEYID.DRANGLEIC));
@@ -857,7 +857,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(20115090, MChestInfo("[Amana] Vanilla Helix Halberd: metal chest behind a Pharros contraption near the Crumbled Ruins bonfire", KSO(KEYID.AMANA, KEYID.PHARROS)));
             Dold.Add(20115070, MChestInfo("[Amana] Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KEYID.VENDRICK));
             Dold.Add(20115500, SafeInfo("[Amana] Vanilla Soul of the King: on a throne behind a door that opens after defeating Vendrick", KEYID.VENDRICK));
-            Dold.Add(20116000, SafeInfo("[Amana] On narrow walkway just after Rhoy's Resting Place” bonfire", KEYID.AMANA));
+            Dold.Add(20116000, SafeInfo("[Amana] On narrow walkway just after Rhoy's Resting Place bonfire", KEYID.AMANA));
             Dold.Add(20116010, SafeInfo("[Amana] Under the circular staircase in the beginning of the area", KEYID.AMANA));
             Dold.Add(20116011, NGPlusInfo("[Amana] Under the circular staircase in the beginning of the area in NG+", KEYID.AMANA));
             Dold.Add(20116030, SafeInfo("[Amana] In the end of the narrow underwater walkway", KEYID.AMANA));

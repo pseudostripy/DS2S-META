@@ -780,8 +780,10 @@ namespace DS2S_META.Randomizer
             LTR_flatlist.Add(soag);
             LTR_flatlist.Add(soag);
 
-            // Fixes:
-            //ldkeys = RemoveDuplicateKeys(ldkeys); // avoid double ashen mist etc.
+            // Duplicate Fixes:
+            RemoveFirstIfPresent(0x03088510); // Rotunda Lockstone
+            RemoveFirstIfPresent(0x0398F1B8); // Feather
+            RemoveFirstIfPresent(0x03096F70); // Ladder Miniature
             RemoveFirstIfPresent(0x0308D330); // Ashen Mist duplicate
         }
         private void RemoveFirstIfPresent(int itemid)
