@@ -516,85 +516,11 @@ namespace DS2S_META.Randomizer
             return new KeySet(keys);
         }
         
-        //internal Dictionary<int, RandoInfo> RemoveBannedTypes(List<PICKUPTYPE> bantypes)
-        //{
-        //    return D.Where(kvp => IsValidKeyPickup(kvp, bantypes))
-        //                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        //}
-        
-        //private bool IsValidKeyPickup(KeyValuePair<int, RandoInfo> kvp_pickup, List<PICKUPTYPE> bannedtypes)
-        //{
-        //    PICKUPTYPE[] PTs = kvp_pickup.Value.Types;
-        //    return !PTs.Any(bannedtypes.Contains);
-        //}
         internal void AppendKvp(KeyValuePair<int, RandoInfo> kvp) 
         {
             Dold.Add(kvp.Key, kvp.Value);
         }
-        //internal bool IsAllowedType(Randomization rdz, RandomizerManager.SetType parentset)
-        //{
-        //    // Get Logic-Info for this attempted placement:
-        //    var LI = Dold[rdz.UniqueParamID];
-
-        //    switch (parentset)
-        //    {
-        //        case RandomizerManager.SetType.Keys:
-        //            return LI.AvoidsTypes(BanKeyTypes);
-
-        //        case RandomizerManager.SetType.Reqs:
-        //            return LI.AvoidsTypes(BanKeyTypes); // todo
-
-        //        case RandomizerManager.SetType.Gens:
-        //            return LI.AvoidsTypes(BanGeneralTypes);
-
-        //        default:
-        //            throw new Exception("Unexpected value in argument set type");
-        //    }
-        //}
-        //internal bool AvoidsTypes(Randomization rdz, List<PICKUPTYPE> bantypes) 
-        //{
-        //    var LI = D[rdz.UniqueParamID];
-        //    return LI.AvoidsTypes(bantypes);
-        //}
-        //internal bool HasTypes(Randomization rdz, List<PICKUPTYPE> hastypes)
-        //{
-        //    var LI = D[rdz.UniqueParamID];
-        //    return LI.HasType(hastypes);
-        //}
-        //internal bool HasType(Randomization rdz, PICKUPTYPE typ)
-        //{
-        //    if (Dold.TryGetValue(rdz.UniqueParamID, out var LI))
-        //        return LI.HasType(typ);
-        //    return false;
-        //}
-        //internal bool IsBannedType(Randomization rdz, RandomizerManager.SetType parentset)
-        //{
-        //    return !IsAllowedType(rdz, parentset);
-        //}
-        //internal bool IsSoftlockPlacement(Randomization rdz, List<int> placedSoFar)
-        //{
-        //    // Get the KeySet logic for this attempted placement
-        //    var LI = Dold[rdz.UniqueParamID];
-            
-        //    // Try each different option for key requirements
-        //    foreach (var keyset in LI.KeySet)
-        //    {
-        //        if (keyset.Keys.All(kid => IsPlaced(kid, placedSoFar)))
-        //            return false; // NOT SOFT LOCKED all required keys are placed for at least one Keyset
-        //    }
-        //    return true; // No keyset has all keys placed yet, so this is dangerous; try somewhere else
-        //}
         
-        //internal IEnumerable<KeyValuePair<int, RandoInfo>> WhereHasType(PICKUPTYPE pickuptype)
-        //{
-        //    return D.Where(kvp => kvp.Value.HasType(pickuptype));
-        //}
-        //internal IEnumerable<KeyValuePair<int, RandoInfo>> WhereHasType(List<PICKUPTYPE> oktypes)
-        //{
-        //    // returns true if param contains ANY type in oktypes
-        //    return D.Where(kvp => kvp.Value.HasType(oktypes));
-        //}
-
         // Softlock logic:
         internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
@@ -740,7 +666,6 @@ namespace DS2S_META.Randomizer
             bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
             bool condOrro() => condAshen() && condKey(KEYID.SOLDIER);
         }
-
         internal void TransformToUID(List<Randomization> rdzs)
         {
             foreach (var rdz in rdzs)

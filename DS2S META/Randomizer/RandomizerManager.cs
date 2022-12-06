@@ -773,9 +773,13 @@ namespace DS2S_META.Randomizer
             var flatlist_copy = LTR_flatlist.Select(di => di.Clone()).ToList();
 
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
-            ldkeys = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                   // Keys
-            ldreqs = flatlist_copy.Where(DI => DI.IsReqType).ToList();                   // Reqs
-            ldgens = flatlist_copy.Except(ldkeys).Except(ldreqs).ToList();               // Generics
+            ldkeys = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
+
+            var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
+            ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType).ToList();                // Reqs
+
+            var flatlist_noreqs = flatlist_nokeys.Where(DI => !DI.IsReqType).ToList();  // (reqs handled above)
+            ldgens = flatlist_noreqs.Except(ldkeys).Except(ldreqs).ToList();            // Generics
 
             // Ensure no meme double placements:
             //if (ldkeys.Any(di => ldreqs.Contains(di)))
@@ -806,7 +810,7 @@ namespace DS2S_META.Randomizer
         internal static Dictionary<SetType, List<PICKUPTYPE>> BannedTypeList = new()
         {
             {SetType.Keys, ItemSetBase.BanKeyTypes},
-            {SetType.Reqs, ItemSetBase.BanKeyTypes},
+            //{SetType.Reqs, ItemSetBase.BanKeyTypes},
             {SetType.Gens, ItemSetBase.BanGeneralTypes}
         };
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
