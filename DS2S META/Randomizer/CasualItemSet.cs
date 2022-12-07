@@ -821,7 +821,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(20216020, SafeInfo("[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room", KEYID.DRANGLEIC));
             Dold.Add(20216021, NGPlusInfo("[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room in NG+", KEYID.DRANGLEIC));
             Dold.Add(20216030, SafeInfo("[Drangleic] Vanilla elizabeth mushroom: in acid pool", KEYID.DRANGLEIC));
-            Dold.Add(20216050, SafeInfo("[Drangleic] Next to Forgotten Chamber” bonfire", KEYID.DRANGLEIC));
+            Dold.Add(20216050, SafeInfo("[Drangleic] Next to Forgotten Chamber bonfire", KEYID.DRANGLEIC));
             Dold.Add(20216090, SafeInfo("[Drangleic] Vanilla holy water urns: behind a rock on the path towards Drangleic castle", KEYID.DRANGLEIC));
             Dold.Add(20216100, SafeInfo("[Drangleic] Corpse in the desert sorceress room", KEYID.DRANGLEIC));
             Dold.Add(20216110, SafeInfo("[Drangleic] Vanilla DLC3 key: in front of the stairs right after the multi-door Sentinel room", KEYID.DRANGLEIC));
