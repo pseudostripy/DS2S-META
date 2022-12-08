@@ -989,10 +989,10 @@ namespace DS2S_META.Randomizer
             Dold.Add(10276140, SafeInfo("[DragonShrine] On a corpse hanging off the ledge in the watchtower", KEYID.ALDIASKEEP));
             Dold.Add(10275030, MChestInfo("[DragonShrine] Metal chest on a ledge that you jump to from the watchtower", KEYID.ALDIASKEEP));
             Dold.Add(10275040, MChestInfo("[DragonShrine] Vanilla Third Dragon Ring: metal chest just past petrified egg door", KEYID.ALDIASKEEP));
-            Dold.Add(10275050, MChestInfo("[DragonShrine] Metal chest on outer ledge next to the petrified egg"));
+            Dold.Add(10275050, MChestInfo("[DragonShrine] Metal chest on outer ledge next to the petrified egg", KEYID.ALDIASKEEP));
             Dold.Add(10275070, MChestInfo("[DragonShrine] Metal chest next to the petrified egg", KEYID.ALDIASKEEP));
             Dold.Add(10276150, SafeInfo("[DragonShrine] On a corpse in the corner before petrified egg door", KEYID.ALDIASKEEP));
-            Dold.Add(60003000, SafeInfo("[DragonShrine] Vanilla Petrified Egg: Near the invader in Dragon Shrine")); // Petrified Egg pickup
+            Dold.Add(60003000, SafeInfo("[DragonShrine] Vanilla Petrified Egg: Near the invader in Dragon Shrine", KEYID.ALDIASKEEP)); // Petrified Egg pickup
 
             // Memories of Jeigh (Giant Lord):
             Dold.Add(309700, BossInfo("[MemoryJeigh] Giant Lord drop", KEYID.MEMORYJEIGH));
