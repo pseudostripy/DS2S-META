@@ -326,7 +326,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods:
-        internal override bool IsSaturated() => ShuffledShop != null;
+        internal override bool IsSaturated() => ShuffledShop != null && ShuffledShop.ItemID != 0;
         internal override string printdata()
         {
             if (VanillaShop == null)
