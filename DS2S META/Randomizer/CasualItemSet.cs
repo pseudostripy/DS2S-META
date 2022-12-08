@@ -207,7 +207,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(10106400, SafeInfo("[FOFG] In front of the pile of garbage that blocks the big gate to the fire area"));
             Dold.Add(10106410, SafeInfo("[FOFG] Next to upper level of the elevator"));
             Dold.Add(10106420, SafeInfo("[FOFG] On scaffolding near the Place Unbeknownst bonfire", KSO(KEYID.SOLDIER, KEYID.KINGSRING)));
-            Dold.Add(10106430, SafeInfo("[FOFG] Next to portcullis near Soldier's rest” bonfire", KEYID.SOLDIER));
+            Dold.Add(10106430, SafeInfo("[FOFG] Next to portcullis near Soldier's rest bonfire", KEYID.SOLDIER));
             Dold.Add(10106440, SafeInfo("[FOFG] In the middle of the ballista trap area"));
             Dold.Add(10106450, SafeInfo("[FOFG] In the middle of the ballista trap area"));
             Dold.Add(10106460, SafeInfo("[FOFG] First corpse in the upper fire area"));
@@ -821,7 +821,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(20216020, SafeInfo("[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room", KEYID.DRANGLEIC));
             Dold.Add(20216021, NGPlusInfo("[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room in NG+", KEYID.DRANGLEIC));
             Dold.Add(20216030, SafeInfo("[Drangleic] Vanilla elizabeth mushroom: in acid pool", KEYID.DRANGLEIC));
-            Dold.Add(20216050, SafeInfo("[Drangleic] Next to Forgotten Chamber” bonfire", KEYID.DRANGLEIC));
+            Dold.Add(20216050, SafeInfo("[Drangleic] Next to Forgotten Chamber bonfire", KEYID.DRANGLEIC));
             Dold.Add(20216090, SafeInfo("[Drangleic] Vanilla holy water urns: behind a rock on the path towards Drangleic castle", KEYID.DRANGLEIC));
             Dold.Add(20216100, SafeInfo("[Drangleic] Corpse in the desert sorceress room", KEYID.DRANGLEIC));
             Dold.Add(20216110, SafeInfo("[Drangleic] Vanilla DLC3 key: in front of the stairs right after the multi-door Sentinel room", KEYID.DRANGLEIC));
@@ -862,9 +862,9 @@ namespace DS2S_META.Randomizer
             Dold.Add(20116011, NGPlusInfo("[Amana] Under the circular staircase in the beginning of the area in NG+", KEYID.AMANA));
             Dold.Add(20116030, SafeInfo("[Amana] In the end of the narrow underwater walkway", KEYID.AMANA));
             Dold.Add(20116040, SafeInfo("[Amana] Near the half circle of pillars", KEYID.AMANA));
-            Dold.Add(20116060, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place” bonfire", KEYID.AMANA));
-            Dold.Add(20116070, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place” bonfire", KEYID.AMANA));
-            Dold.Add(20116080, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place” bonfire", KEYID.AMANA));
+            Dold.Add(20116060, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KEYID.AMANA));
+            Dold.Add(20116070, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KEYID.AMANA));
+            Dold.Add(20116080, SafeInfo("[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KEYID.AMANA));
             Dold.Add(20116090, SafeInfo("[Amana] Behind a fallen pilar next to the circle of pillars after the Rhoy's Resting place bonfire", KEYID.AMANA));
             Dold.Add(20116100, SafeInfo("[Amana] Next to torch before the demon of song", KEYID.AMANA));
             Dold.Add(20116130, SafeInfo("[Amana] Corpse hanging from branch in the beginning of the area", KEYID.AMANA));
@@ -984,7 +984,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(10275000, MChestInfo("[DragonShrine] Metal chest in a side room right after the bonfire", KEYID.ALDIASKEEP));
             Dold.Add(10275060, MChestInfo("[DragonShrine] Metal chest behind the Pharros contraption under the staircase", KEYID.ALDIASKEEP));
             Dold.Add(10275010, WChestInfo("[DragonShrine] Wooden chest on right side of the stairs, towards petrified egg door", KEYID.ALDIASKEEP));
-            Dold.Add(10275020, WChestInfo("[DragonShrine] Wooden chest on roof  on the path to the left of the second Drakekeeper", KEYID.ALDIASKEEP));
+            Dold.Add(10275020, WChestInfo("[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper", KEYID.ALDIASKEEP));
             Dold.Add(10275021, WChestNGPlusInfo("[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper in NG+", KEYID.ALDIASKEEP));
             Dold.Add(10276140, SafeInfo("[DragonShrine] On a corpse hanging off the ledge in the watchtower", KEYID.ALDIASKEEP));
             Dold.Add(10275030, MChestInfo("[DragonShrine] Metal chest on a ledge that you jump to from the watchtower", KEYID.ALDIASKEEP));
