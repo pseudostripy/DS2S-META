@@ -122,6 +122,13 @@ namespace DS2S_META.Randomizer
         {
             return (ShopRow)MemberwiseClone();
         }
+        internal ShopRow CloneBlank()
+        {
+            var cl = Clone();
+            cl.ItemID = 0;
+            cl.Quantity = 0;
+            return cl;
+        }
         internal void SetValues(DropInfo DI, ShopRow VanShop, float pricerate)
         {
             // Used to construct things from various information sources:

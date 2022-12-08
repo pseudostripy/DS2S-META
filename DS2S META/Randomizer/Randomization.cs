@@ -322,7 +322,7 @@ namespace DS2S_META.Randomizer
         internal ShopRdz(ShopRow vanshop) : base(vanshop.ID)
         {
             VanillaShop = vanshop;
-            ShuffledShop = VanillaShop.Clone();
+            ShuffledShop = VanillaShop.CloneBlank();
         }
 
         // Methods:
@@ -427,7 +427,7 @@ namespace DS2S_META.Randomizer
         }
         internal override void ResetShuffled()
         {
-            ShuffledShop = VanillaShop.Clone();
+            ShuffledShop = VanillaShop.CloneBlank();
             IsHandled = false;
         }
         internal void ZeroiseShuffledShop()
