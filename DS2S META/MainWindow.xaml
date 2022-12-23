@@ -263,6 +263,11 @@
                         <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
+                <TabItem Header="Cheats" >
+                    <Grid Background="LightGray">
+                        <local:CheatsControl x:Name="metaCheats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </TabItem>
                 <TabItem Header="Dmg Calc PLACEHOLDER" >
                     <Grid Background="LightGray">
                         <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>

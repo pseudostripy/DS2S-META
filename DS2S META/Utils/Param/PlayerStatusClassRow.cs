@@ -213,6 +213,33 @@ namespace DS2S_META.Utils
             SoulLevel = (short)((short)sumlevel - SL_OFFSET);
         }
 
+        public List<byte[]> ReadListAt(int fieldindex)
+        {
+            // Get 10 at once for this specific param:
+            List<byte[]> objout = new();
+            var F = Param.Fields[fieldindex];
+            for (int i = 0; i < 10; i++)
+            {
+                var outbytes = new byte[F.FieldLength];
+                Array.Copy(RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
+                objout.Add(outbytes);
+            }
+            return objout;
+        }
+        
+        internal int CountItems()
+        {
+            var indItem1 = GetFieldIndex("Item 1 ID");
+            var items = ReadListAt(indItem1).Select(obj => BitConverter.ToInt32(obj)).ToList();
+
+            int count = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                if (items[i] != -1)
+                    count++;
+            }
+            return count;
+        }
 
         private Param.Field GetField(int indexst)
         {

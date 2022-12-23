@@ -408,37 +408,37 @@ namespace DS2S_META.Randomizer
             Dold.Add(10346080, SafeInfo("[GraveOfSaints] 1st floor left side"));
 
             // The Gutter:
-            Dold.Add(10255010, WChestInfo("[Gutter] Wooden chest on top of small structure in the end of the first long bridge"));
-            Dold.Add(10255030, WChestInfo("[Gutter] Wooden chest on ledge in multiple ladders area"));
-            Dold.Add(10255040, MChestInfo("[Gutter] Metal chest near where melinda the butcher invades"));
-            Dold.Add(10255100, MChestInfo("[Gutter] Metal chest in the cave with corrosive bugs"));
-            Dold.Add(10255110, MChestInfo("[Gutter] Metal chest in the base of the tower where the zip-line starts"));
-            Dold.Add(10256000, SafeInfo("[Gutter] Urn behind the forgotten door"));
-            Dold.Add(10256030, SafeInfo("[Gutter] Urn inside a small structure on top of the tower where the zip-line starts"));
-            Dold.Add(10256060, SafeInfo("[Gutter] Urn in top level near the three torches side by side"));
-            Dold.Add(10256090, SafeInfo("[Gutter] Urn in lower level of the structure where second long bridge ends"));
-            Dold.Add(10256130, SafeInfo("[Gutter] Second urn at the bottom of the multiple ladders area"));
-            Dold.Add(10256160, SafeInfo("[Gutter] Before the entrance to the Black Gulch"));
-            Dold.Add(10256170, SafeInfo("[Gutter] First urn behind the ant queen"));
             Dold.Add(10256220, SafeInfo("[Gutter] Urn next to upper gutter bonfire"));
-            Dold.Add(10256230, SafeInfo("[Gutter] Urn in area with tar pits"));
-            Dold.Add(10256240, SafeInfo("[Gutter] Urn next to upper gutter bonfire on a little bit higher ledge"));
             Dold.Add(10256250, SafeInfo("[Gutter] Urn in lower level near the ring of torches"));
-            Dold.Add(10256260, SafeInfo("[Gutter] Urn in the 2nd floor of the tower where the zip-line starts"));
-            Dold.Add(10256270, SafeInfo("[Gutter] Urn next to hanging poison statue in the base of the tower where the zip-line starts"));
-            Dold.Add(10256280, SafeInfo("[Gutter] Urn on top of the tower where the zip-line starts"));
-            Dold.Add(10256290, SafeInfo("[Gutter] Urn in tight corner on middle level of the tower where the zip-line starts"));
-            Dold.Add(10256300, SafeInfo("[Gutter] Second urn behind the ant queen"));
-            Dold.Add(10256310, SafeInfo("[Gutter] Urn in between the fog gate and the ant queen"));
-            Dold.Add(10256320, SafeInfo("[Gutter] Urn in the area with multiple ladders"));
-            Dold.Add(10256330, SafeInfo("[Gutter] Urn in wooden floor in multiple ladders area"));
-            Dold.Add(10256340, SafeInfo("[Gutter] First urn at the bottom of the multiple ladders area"));
-            Dold.Add(10256400, SafeInfo("[Gutter] Corpse on top of the tower where the zip-line starts"));
+            Dold.Add(10256000, SafeInfo("[Gutter] Urn behind the forgotten door"));
             Dold.Add(10256410, SafeInfo("[Gutter] First corpse in top level; near Jeff jump"));
             Dold.Add(10256420, SafeInfo("[Gutter] Second corpse in top level; near Jeff jump"));
             Dold.Add(10256430, SafeInfo("[Gutter] Third corpse in top level; near Jeff jump"));
             Dold.Add(10256440, SafeInfo("[Gutter] Fourth corpse in top level; near Jeff jump"));
             Dold.Add(10256450, SafeInfo("[Gutter] Fifth corpse in top level; near Jeff jump"));
+            Dold.Add(10255010, WChestInfo("[Gutter] Wooden chest on top of small structure in the end of the first long bridge"));
+            Dold.Add(10255110, MChestInfo("[Gutter] Metal chest in the base of the tower where the zip-line starts"));
+            Dold.Add(10256030, SafeInfo("[Gutter] Urn inside a small structure on top of the tower where the zip-line starts"));
+            Dold.Add(10256060, SafeInfo("[Gutter] Urn in top level near the three torches side by side"));
+            Dold.Add(10256090, SafeInfo("[Gutter] Urn in lower level of the structure where second long bridge ends"));
+            Dold.Add(10255040, MChestInfo("[Gutter] Metal chest near where Melinda the Butcher invades"));
+            Dold.Add(10256230, SafeInfo("[Gutter] Urn in area with tar pits"));
+            Dold.Add(10256240, SafeInfo("[Gutter] Urn next to upper gutter bonfire on a little bit higher ledge"));
+            Dold.Add(10256260, SafeInfo("[Gutter] Urn in the 2nd floor of the tower where the zip-line starts"));
+            Dold.Add(10256270, SafeInfo("[Gutter] Urn next to hanging poison statue in the base of the tower where the zip-line starts"));
+            Dold.Add(10256280, SafeInfo("[Gutter] Urn on top of the tower where the zip-line starts"));
+            Dold.Add(10256290, SafeInfo("[Gutter] Urn in tight corner on middle level of the tower where the zip-line starts"));
+            Dold.Add(10256330, SafeInfo("[Gutter] Urn in wooden floor in multiple ladders area"));
+            Dold.Add(10256400, SafeInfo("[Gutter] Corpse on top of the tower where the zip-line starts"));
+            Dold.Add(10255100, MChestInfo("[Gutter] Metal chest in the cave with corrosive bugs"));
+            Dold.Add(10256310, SafeInfo("[Gutter] Urn in between the fog gate and the ant queen"));
+            Dold.Add(10256170, SafeInfo("[Gutter] First urn behind the ant queen"));
+            Dold.Add(10256300, SafeInfo("[Gutter] Second urn behind the ant queen"));
+            Dold.Add(10256320, SafeInfo("[Gutter] Urn in the area with multiple ladders"));
+            Dold.Add(10255030, WChestInfo("[Gutter] Wooden chest on ledge in multiple ladders area"));
+            Dold.Add(10256340, SafeInfo("[Gutter] First urn at the bottom of the multiple ladders area"));
+            Dold.Add(10256130, SafeInfo("[Gutter] Second urn at the bottom of the multiple ladders area"));
+            Dold.Add(10256160, SafeInfo("[Gutter] Before the entrance to the Black Gulch"));
             
             // Black Gulch
             Dold.Add(10255130, MChestInfo("[Gulch] Vanilla shotel: metal chest in the side tunnel before the worms"));
@@ -448,7 +448,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(10255050, WChestInfo("[Gulch] Wooden chest in the side tunnel after the worms"));
             Dold.Add(10255090, MChestInfo("[Gulch] Metal chest in side room next to Gulch Giants"));
             Dold.Add(10256350, SafeInfo("[Gulch] Urn at the bottom of the elevator near Gulch Giants"));
-            Dold.Add(60001000, BossInfo("[Gulch] Drop from Gulch giants")); // ?
+            Dold.Add(60001000, SafeInfo("[Gulch] Drop from Gulch giants"));
             Dold.Add(10256360, SafeInfo("[Gulch] Urn next to the second bonfire", KEYID.TENBRANCHLOCK));
             Dold.Add(326000, BossInfo("[Gulch] The Rotten drop"));
             Dold.Add(326001, BossNGPlusInfo("[Gulch] The Rotten drop in NG+"));

@@ -9,7 +9,7 @@
              d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
     <Grid>
         <StackPanel Margin="25">
-            <Label Content="Randomizer!" FontSize="20" HorizontalAlignment="Center"/>
+            <Label Content="Randomizer" FontSize="20" HorizontalAlignment="Center"/>
             <Border BorderBrush="Gray" BorderThickness="1" />
             <Grid>
                 <Grid.ColumnDefinitions>

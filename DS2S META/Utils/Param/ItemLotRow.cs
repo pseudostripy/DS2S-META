@@ -172,11 +172,6 @@ namespace DS2S_META.Randomizer
         {
             // Unpack data:
             updateLists();
-
-            //bool MalformedOrder = NumDrops != 0 && Quantities[NumDrops - 1] == 0; // see e.g. Ancient Dragon drop
-            //if (MalformedOrder)
-            //    FixNonsense();
-
         }
                 
         public List<byte[]> ReadListAt(int fieldindex)
@@ -253,8 +248,27 @@ namespace DS2S_META.Randomizer
             // This is the main way to adjust the fields in this class,
             // and handles the backend setting of the ParamRow bytes
             int id = NumDrops;
-            if (id > 10)
+            if (id >= 10)
                 throw new Exception("Trying to add too many DropInfos to this lot.");
+
+            // Write to the fields:
+            Items[id] = DI.ItemID;
+            Quantities[id] = DI.Quantity;
+            Reinforcements[id] = DI.Reinforcement;
+            Infusions[id] = DI.Infusion;
+
+            // Add to backend too (this is like an element-wise array property setter method)
+            StoreDataWrapper(MINILOTS.ITEMID, id, Items[id]);
+            StoreDataWrapper(MINILOTS.QUANT, id, Quantities[id]);
+            StoreDataWrapper(MINILOTS.REINFORCEMENT, id, Reinforcements[id]);
+            StoreDataWrapper(MINILOTS.INFUSION, id, Infusions[id]);
+        }
+        internal void SetDrop(DropInfo DI, int id)
+        {
+            // This is the main way to adjust the fields in this class,
+            // and handles the backend setting of the ParamRow bytes
+            if (id >= 10)
+                throw new Exception("Index 'id' must be between 0 and 9");
 
             // Write to the fields:
             Items[id] = DI.ItemID;
