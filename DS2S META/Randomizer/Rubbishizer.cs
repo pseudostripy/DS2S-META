@@ -92,12 +92,10 @@ namespace DS2S_META.Randomizer
             DoDrops();
             DoShops();
             DoCharCreation();
+            DoStartingGear();
 
             // Rubbishize Game!
-            WriteAllLots();
-            WriteAllDrops();
-            WriteAllShops();
-            WriteCharacters();
+            WriteParams();
             IsRubbishized = true;
         }
         //internal async Task Rubbishize()
@@ -123,6 +121,7 @@ namespace DS2S_META.Randomizer
             ParamMan.ItemLotOtherParam?.RestoreParam();
             ParamMan.ItemLotChrParam?.RestoreParam();
             ParamMan.PlayerStatusClassParam?.RestoreParam();
+            ParamMan.PlayerStatusItemParam?.RestoreParam();
             IsRubbishized = false;
         }
 
@@ -164,7 +163,7 @@ namespace DS2S_META.Randomizer
             var classrows = ParamMan.PlayerStatusClassParam?.Rows.Where(row => classids.Contains(row.ID))
                                                             .OfType<PlayerStatusClassRow>().ToList();
             if (classrows == null) throw new Exception("Failed to find classes in param");
-            var classitemnums = new List<int>() { 1, 1, 1, 1, 1, 1, 7, 0 };
+            var classitemnums = new List<int>() { 1, 1, 1, 1, 1, 7, 1, 0 };
             
             // Main randomizing loop for each class
             for (var iclass = 0; iclass < classids.Count; iclass++)
@@ -214,10 +213,28 @@ namespace DS2S_META.Randomizer
 
 
         }
+        private void DoStartingGear()
+        {
+            var statusitemrows = ParamMan.PlayerStatusItemParam?.Rows
+                .OfType<PlayerStatusItemRow>()  
+                .ToList();
+            if (statusitemrows == null) throw new Exception("Didn't load the param table correctly");
+
+            foreach (var sirow in statusitemrows)
+                sirow.Wipe();
+        }
 
 
 
         // Memory modification:
+        internal void WriteParams()
+        {
+            WriteAllLots();
+            WriteAllDrops();
+            WriteAllShops();
+            WriteCharacters();
+            WriteStartingGear();
+        }
         internal void WriteAllLots()
         {
             VanillaLots.ForEach(lot => lot.StoreRow());
@@ -237,6 +254,9 @@ namespace DS2S_META.Randomizer
         {
             ParamMan.PlayerStatusClassParam?.WriteModifiedParam();
         }
-
+        internal void WriteStartingGear()
+        {
+            ParamMan.PlayerStatusItemParam?.WriteModifiedParam();
+        }
     }
 }

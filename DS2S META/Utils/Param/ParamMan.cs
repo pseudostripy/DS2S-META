@@ -44,6 +44,7 @@ namespace DS2S_META.Utils
             public const string PLAYER_STATUS = "PLAYER_STATUS_PARAM";
             public const string ITEM_USAGE = "ITEM_USAGE_PARAM";
             public const string ARROW = "ARROW_PARAM";
+            public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
 
             // Names different from underlying DEF
             public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
@@ -124,6 +125,7 @@ namespace DS2S_META.Utils
         public static Param? WeaponStatsAffect => AllParams[PAliases.WEAPON_STATS_AFFECT];
         public static Param? CustomAttrSpecParam => AllParams[PAliases.CUSTOM_ATTR_SPEC];
         public static Param? PlayerStatusClassParam => AllParams[PAliases.PLAYER_STATUS];
+        public static Param? PlayerStatusItemParam => AllParams[PAliases.PLAYER_STATUS_ITEM];
         public static Param? ItemUsageParam => AllParams[PAliases.ITEM_USAGE];
         public static Param? ArrowParam => AllParams[PAliases.ARROW];
         public static Param? EnemyParam => AllParams[PAliases.ENEMY_PARAM];
@@ -276,6 +278,10 @@ namespace DS2S_META.Utils
 
                 case "PLAYER_STATUS_PARAM":
                     param.initialise<PlayerStatusClassRow>();
+                    break;
+
+                case "PLAYER_STATUS_ITEM_PARAM":
+                    param.initialise<PlayerStatusItemRow>();
                     break;
 
                 case "ITEM_USAGE_PARAM":
