@@ -479,7 +479,7 @@ namespace DS2S_META.Randomizer
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD 
                                         || srdz.Status == RDZ_STATUS.MAKEFREE
-                                        || srdz.Status == RDZ_STATUS.UNLOCKTRADE);
+                                        || srdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
             foreach (var shop in okShops)
                 shoplotlists.Add(shop.Flatlist);
 
@@ -526,8 +526,8 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
 
             // query testing
-            //var test = LTR_flatlist.Where(di => di.ItemID == 0x03B3E040).ToList();
-            //var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(0x03B3E040)).ToList();
+            var test = LTR_flatlist.Where(di => di.ItemID == 40310000).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(40310000)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
@@ -998,27 +998,27 @@ namespace DS2S_META.Randomizer
         }
 
         // Memory modification:
-        internal void WriteAllLots(List<ItemLotRow> lots)
+        internal static void WriteAllLots(List<ItemLotRow> lots)
         {
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotOtherParam?.WriteModifiedParam();
         }
-        internal void WriteAllDrops(List<ItemLotRow> lots)
+        internal static void WriteAllDrops(List<ItemLotRow> lots)
         {
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotChrParam?.WriteModifiedParam();
         }
-        internal void WriteSomeLots(List<ItemLotRow> somelots)
+        internal static void WriteSomeLots(List<ItemLotRow> somelots)
         {
             // Method used for just writing a few rows out of the Param
             somelots.ForEach(lot => lot.WriteRow());
         }
-        internal void WriteSomeShops(List<ShopRow> shops, bool isshuf)
+        internal static void WriteSomeShops(List<ShopRow> shops)
         {
             // Method used for just writing a few rows out of the Param
             shops.ForEach(SR => SR.WriteRow());
         }
-        internal void WriteAllShops(List<ShopRow> all_shops, bool isshuf)
+        internal static void WriteAllShops(List<ShopRow> all_shops)
         {
             all_shops.ForEach(SR => SR.StoreRow());
             ParamMan.ShopLineupParam?.WriteModifiedParam();
@@ -1049,7 +1049,7 @@ namespace DS2S_META.Randomizer
                 return;
 
             var shuffledshops = AllP.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
-            WriteAllShops(shuffledshops, true);
+            WriteAllShops(shuffledshops);
         }
         
         // Utility:
@@ -1061,7 +1061,7 @@ namespace DS2S_META.Randomizer
             var lines = File.ReadAllLines("./Resources/Paramdex_DS2S_09272022/ShopLineupParam.txt");
 
             // Setup parser:
-            Regex re = new Regex(@"(?<paramid>\d+) (?<desc>.*)");
+            Regex re = new(@"(?<paramid>\d+) (?<desc>.*)");
             foreach (var line in lines)
             {
                 var match = re.Match(line);
@@ -1090,7 +1090,7 @@ namespace DS2S_META.Randomizer
                 var rdzsWithKey = AllPTR.Where(rdz => rdz.HasShuffledItemID(keyid)).ToList();
                 foreach (var rdz in rdzsWithKey)
                 {
-                    StringBuilder sb = new StringBuilder(itemname);
+                    StringBuilder sb = new(itemname);
                     int quant = rdz.GetShuffledItemQuant(keyid);
                     if (quant != 1)
                         sb.Append($" x{quant}");
@@ -1252,8 +1252,8 @@ namespace DS2S_META.Randomizer
         }
 
         // RNG related:
-        private const double priceMeanGaussian = 3000;  // For Gaussian distribution
-        private const double priceSDGaussian = 500;     // For Gaussian distribution
+        //private const double priceMeanGaussian = 3000;  // For Gaussian distribution
+        //private const double priceSDGaussian = 500;     // For Gaussian distribution
         internal const double priceShapeK = 3.0;        // For Gamma distribution
         internal const double priceScaleTh = 2.0;       // For Gamma distribution
         internal void SetSeed(int seed)
@@ -1294,8 +1294,8 @@ namespace DS2S_META.Randomizer
 
             double scaleB = 1 / scaleTh; // Align notation
             int Na = (int)Math.Floor(shapeA);
-            List<double> RVu = new List<double>(); // RandomVariables Uniform(0,1] distribution
-            List<double> RVe = new List<double>(); // RandomVariables Exponential(1) distribution
+            List<double> RVu = new(); // RandomVariables Uniform(0,1] distribution
+            List<double> RVe = new(); // RandomVariables Exponential(1) distribution
             for (int i = 0; i < Na; i++)
             {
                 double ui = RNG.NextDouble();

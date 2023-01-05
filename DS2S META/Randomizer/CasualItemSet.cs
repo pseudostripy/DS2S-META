@@ -811,7 +811,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(20215080, MChestInfo("[Drangleic] Metal chest on the right side of the Drangleic gate", KEYID.DRANGLEIC));
             Dold.Add(20215090, MChestInfo("[Drangleic] Metal chest in the upper level of the Drangleic Executioner Chariot room", KEYID.DRANGLEIC));
             Dold.Add(20215060, MChestInfo("[Drangleic] Metal chest in the embedded room", KEYID.DRANGLEIC));
-            Dold.Add(20215100, MChestInfo("[Drangleic] Metal chest in the embedded room", KEYID.DRANGLEIC));
+            Dold.Add(20215100, MChestInfo("[Drangleic] Metal chest (left) in the embedded room", KEYID.DRANGLEIC));
             Dold.Add(20215110, MChestInfo("[Drangleic] Metal chest in the embedded room", KEYID.DRANGLEIC));
             Dold.Add(20215120, MChestInfo("[Drangleic] Metal chest in room after the soul-catching golem", KEYID.DRANGLEIC));
             Dold.Add(20215140, MChestInfo("[Drangleic] Metal chest in room after the soul-catching golem", KEYID.DRANGLEIC));

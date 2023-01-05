@@ -82,7 +82,7 @@ namespace DS2S_META.Randomizer
         }
 
 
-        internal void Rubbishize()
+        internal async void Rubbishize()
         {
             if (!IsInitialized)
                 Initalize();
@@ -95,7 +95,7 @@ namespace DS2S_META.Randomizer
             DoStartingGear();
 
             // Rubbishize Game!
-            WriteParams();
+            await Task.Run(() => WriteParams());
             IsRubbishized = true;
         }
         //internal async Task Rubbishize()
@@ -130,9 +130,18 @@ namespace DS2S_META.Randomizer
             // Make every item rubbish:
             foreach (var lotrow in VanillaLots)
             {
+                // Special cases to leave:
                 if (lotrow.ID == 10256160) // Gulch Fragrant Branch
                     continue;
                 if (lotrow.ID == 1787000) // Ancient Dragon Gift
+                    continue;
+                if (lotrow.ID == 10256450) // Jeff Jump Fragrant Branch
+                    continue;
+                if (lotrow.ID == 20215100) // Key to King's Passage
+                    continue;
+                if (lotrow.ID == 20246500) // King's Ring
+                    continue;
+                if (lotrow.ID == 10146220) // 1x Torch
                     continue;
 
                 // Make everything  else rubbish!
@@ -227,13 +236,13 @@ namespace DS2S_META.Randomizer
 
 
         // Memory modification:
-        internal void WriteParams()
+        internal async Task WriteParams()
         {
-            WriteAllLots();
-            WriteAllDrops();
-            WriteAllShops();
-            WriteCharacters();
-            WriteStartingGear();
+            await Task.Run(() => WriteAllLots());
+            await Task.Run(() => WriteAllDrops());
+            await Task.Run(() => WriteAllShops());
+            await Task.Run(() => WriteCharacters());
+            await Task.Run(() => WriteStartingGear());
         }
         internal void WriteAllLots()
         {
