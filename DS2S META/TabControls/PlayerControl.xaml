@@ -109,9 +109,9 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBox x:Name="txtAngX" Text="{Binding ElementName=PlayerCon, Path=Hook.AngX, Mode=OneWay, StringFormat={}{0,5:0.00}}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngY" Text="{Binding ElementName=PlayerCon, Path=Hook.AngY, Mode=OneWay, StringFormat={}{0,5:0.00}}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngZ" Text="{Binding ElementName=PlayerCon, Path=Hook.AngZ, Mode=OneWay, StringFormat={}{0,5:0.00}}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngX" Text="{Binding ElementName=PlayerCon, Path=Hook.AngX, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngY" Text="{Binding ElementName=PlayerCon, Path=Hook.AngY, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngZ" Text="{Binding ElementName=PlayerCon, Path=Hook.AngZ, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                         </Grid>
                         <Grid Grid.Row="4" Grid.Column="2">
                             <Grid.RowDefinitions>
