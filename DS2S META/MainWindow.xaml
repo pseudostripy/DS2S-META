@@ -143,121 +143,6 @@
                         <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tabSettings" Header="Settings">
-                    <Grid Background="LightGray">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="253*"/>
-                            <ColumnDefinition Width="172*"/>
-                        </Grid.ColumnDefinitions>
-                        <TabControl Background="LightGray" Margin="0,10,0,0" Grid.ColumnSpan="2">
-                            <TabItem Header="General">
-                                <Grid >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel>
-                                        <StackPanel Grid.Column="0" >
-                                            <Separator Visibility="Hidden" Height="10"/>
-                                            <Label Content="General"/>
-                                            <Border BorderBrush="Gray" BorderThickness="1" >
-                                                <StackPanel Margin="0,5,0,5">
-                                                    <CheckBox Margin="10,5,0,0" Content="Show Warning on Startup" IsChecked="{Binding ShowWarning, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}"/>
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="0" >
-                                            <Separator Visibility="Hidden" Height="10"/>
-                                            <Label Content="Stats Tab"/>
-                                            <Border BorderBrush="Gray" BorderThickness="1" >
-                                                <StackPanel Margin="0,5,0,5">
-                                                    <CheckBox Margin="10,5,0,0" Content="Unlock Stat Editing" IsChecked="{Binding EditStats, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}" Checked="EnableStatEditing_Checked" Unchecked="EnableStatEditing_Checked"/>
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="0" >
-                                            <Separator Visibility="Hidden" Height="10"/>
-                                            <Label Content="Item Tab"/>
-                                            <Border BorderBrush="Gray" BorderThickness="1" >
-                                                <StackPanel Margin="0,5,0,5">
-                                                    <CheckBox Margin="10,5,0,0" Content="Give Items Silently" IsChecked="{Binding SilentItemGive, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}"/>
-                                                    <CheckBox Margin="10,5,0,0" Content="Spawn Undroppable Items" IsChecked="{Binding SpawnUndroppable, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}" Checked="SpawnUndroppable_Checked" Unchecked="SpawnUndroppable_Checked"/>
-                                                    <CheckBox Margin="10,5,0,0" Content="Live Update Max Quantity" IsChecked="{Binding UpdateMaxLive, 
-                Mode=TwoWay, 
-                Source={x:Static p:Settings.Default}, 
-                UpdateSourceTrigger=PropertyChanged}"/>
-                                                </StackPanel>
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                </Grid>
-
-                            </TabItem>
-                            <TabItem x:Name="tabHotkeys" Header="Hotkeys">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Row="1" Margin="0,10,0,0">
-                                        <Separator Visibility="Hidden"/>
-                                        <CheckBox Content="Enable Hotkeys" x:Name="cbxEnableHotkeys"/>
-                                        <Separator Visibility="Hidden"/>
-                                        <CheckBox Content="Handle Hotkeys" x:Name="cbxHandleHotkeys"/>
-                                        <Separator Visibility="Hidden"/>
-                                        <Separator Margin="0,10,0,10"/>
-                                        <Label Content="Player Tab"/>
-                                        <Border BorderBrush="Gray" BorderThickness="1" >
-                                            <StackPanel Margin="5,0,5,5" >
-                                                <local:HotkeyControl x:Name="hkeyStorePosition" HotkeyName="Store Position" Margin="0,5,0,0" />
-                                                <local:HotkeyControl x:Name="hkeyRestorePosition" HotkeyName="Restore Position" Margin="0,5,0,0" />
-                                                <local:HotkeyControl x:Name="hkeyGravity" HotkeyName="Toggle Gravity" Margin="0,5,0,0"/>
-                                                <local:HotkeyControl x:Name="hkeyCollision" HotkeyName="Toggle Collision" Margin="0,5,0,0"/>
-                                                <local:HotkeyControl x:Name="hkeyUp" HotkeyName="Move Up" Margin="0,5,0,0"/>
-                                                <local:HotkeyControl x:Name="hkeyDown" HotkeyName="Move Down" Margin="0,5,0,0"/>
-                                                <local:HotkeyControl x:Name="hkeySpeed" HotkeyName="Modify Speed" Margin="0,5,0,0"/>
-                                                <local:HotkeyControl x:Name="hkeyWarp" HotkeyName="Warp" Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Label Content="Item Tab"/>
-                                        <Border BorderBrush="Gray" BorderThickness="1" >
-                                            <StackPanel Margin="5,0,5,5" >
-                                                <local:HotkeyControl x:Name="hkeyCreateItem" HotkeyName="Create Item" Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Label Content="Internal Tab"/>
-                                        <Border BorderBrush="Gray" BorderThickness="1" >
-                                            <StackPanel Margin="5,0,5,5" >
-                                                <local:HotkeyControl x:Name="hkeySpeedFactor" HotkeyName="Speed Factors" Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Label Content="Misc"/>
-                                        <Border BorderBrush="Gray" BorderThickness="1" >
-                                            <StackPanel Margin="5,0,5,5" >
-                                                <local:HotkeyControl x:Name="hkeyFastQuit" HotkeyName="Fast Quit" Margin="0,5,0,0"/>
-                                            </StackPanel>
-                                        </Border>
-
-
-                                    </StackPanel>
-                                </Grid>
-                            </TabItem>
-                        </TabControl>
-                    </Grid>
-                </TabItem>
                 <TabItem Header="Randomizer" >
                     <Grid Background="LightGray">
                         <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
@@ -266,6 +151,11 @@
                 <TabItem Header="Cheats" >
                     <Grid Background="LightGray">
                         <local:CheatsControl x:Name="metaCheats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Settings" >
+                    <Grid Background="LightGray">
+                        <local:SettingsControl x:Name="metaSettings" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Dmg Calc PLACEHOLDER" >

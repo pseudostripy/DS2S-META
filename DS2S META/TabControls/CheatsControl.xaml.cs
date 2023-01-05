@@ -36,9 +36,8 @@ namespace DS2S_META
             Unrubbishize();
         }
 
-        private async void Rubbishize()
+        private void Rubbishize()
         {
-            //await RubMan.Rubbishize();
             RubMan.Rubbishize();
         }
         private void Unrubbishize()

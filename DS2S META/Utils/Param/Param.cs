@@ -199,11 +199,11 @@ namespace DS2S_META
         }
         public void RestoreParam()
         {
-            Pointer.WriteBytes(0, Bytes);
+            Pointer?.WriteBytes(0, Bytes);
         }
         public void WriteModifiedParam()
         {
-            Pointer.WriteBytes(0, NewBytes);
+            Pointer?.WriteBytes(0, NewBytes);
         }
         private void BuildCells()
         {

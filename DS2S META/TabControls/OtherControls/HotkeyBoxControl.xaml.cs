@@ -18,19 +18,20 @@ namespace DS2S_META
     /// <summary>
     /// Interaction logic for metaHotkey.xaml
     /// </summary>
-    public partial class HotkeyControl : UserControl
+    public partial class HotkeyBoxControl : UserControl
     {
         public string HotkeyName
         {
             get { return (string)GetValue(HotkeyNameProperty); }
             set { SetValue(HotkeyNameProperty, value); }
         }
+        public string? SettingsName { get; set; }
 
         // Using a DependencyProperty as the backing store for HotkeyName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HotkeyNameProperty =
-            DependencyProperty.Register("HotkeyName", typeof(string), typeof(HotkeyControl), new PropertyMetadata(default));
+            DependencyProperty.Register("HotkeyName", typeof(string), typeof(HotkeyBoxControl), new PropertyMetadata(default));
 
-        public HotkeyControl()
+        public HotkeyBoxControl()
         {
             InitializeComponent();
         }

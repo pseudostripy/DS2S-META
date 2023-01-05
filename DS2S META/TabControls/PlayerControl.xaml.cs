@@ -252,9 +252,18 @@ namespace DS2S_META
                 lblSearch.Visibility = Visibility.Hidden;
         }
         
+        // <ViewModel_todo>:
         public void ToggleGravity()
         {
             cbxGravity.IsChecked = !cbxGravity.IsChecked;
+        }
+        public void ToggleCollision()
+        {
+            cbxCollision.IsChecked = !cbxCollision.IsChecked;
+        }
+        public void ToggleSpeed()
+        {
+            cbxSpeed.IsChecked = !cbxSpeed.IsChecked;
         }
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
@@ -276,18 +285,26 @@ namespace DS2S_META
             Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
             rapierrow.WriteRow();
         }
+        public void DeltaHeight(float delta)
+        {
+            Hook.PosZ += delta;
+        }
+        public void FastQuit()
+        {
+            if (!Hook.Hooked) 
+                return;
+            Hook.FastQuit = 6;
+        }
 
 
         private void btnStore_Click(object sender, RoutedEventArgs e)
         {
             StorePosition();
         }
-
         private void btnRestore_Click(object sender, RoutedEventArgs e)
         {
             RestorePosition();
         }
-
         private void cbxSpeed_Checked(object sender, RoutedEventArgs e)
         {
             nudSpeed.IsEnabled = cbxSpeed.IsChecked == true;

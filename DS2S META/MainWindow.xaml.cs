@@ -36,6 +36,7 @@ namespace DS2S_META
         // Fields/Properties
         private MetaVersionInfo MVI = new();
         private Properties.Settings Settings;
+        public HotkeyManager HKM;
         DS2SHook Hook => ViewModel.Hook;
         bool FormLoaded
         {
@@ -57,6 +58,7 @@ namespace DS2S_META
             PortableSettingsProvider.SettingsFileName = "DS2S Meta.config";
             PortableSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Settings = Properties.Settings.Default;
+            HKM = new(this);
             InitializeComponent();
             GetMetaVersion();
             LoadSettingsAfterUpgrade();
@@ -287,7 +289,7 @@ namespace DS2S_META
         {
             Hook.UpdateMainProperties();
             ViewModel.UpdateMainProperties();
-            CheckFocused();
+            //CheckFocused();
         }
 
         private void InitAllTabs()
@@ -295,7 +297,7 @@ namespace DS2S_META
             metaItems.InitTab();
             metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
-            InitHotkeys();
+            metaSettings.InitTab(HKM);
             ViewModel.DmgCalcViewModel.InitViewModel(Hook);
         }
         private void UpdateProperties()
@@ -338,6 +340,8 @@ namespace DS2S_META
             metaItems.UpdateCtrl();
         }
 
+        
+
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             if (MVI.LatestReleaseURI == null) return;
@@ -345,7 +349,8 @@ namespace DS2S_META
         }
         private void SaveAllTabs()
         {
-            SaveHotkeys();
+            HKM.SaveHotkeys();
+            HKM.UnregisterHotkeys();
         }
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)
         {
@@ -355,10 +360,6 @@ namespace DS2S_META
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
-        }
-        private void SpawnUndroppable_Checked(object sender, RoutedEventArgs e)
-        {
-            metaItems.UpdateCreateEnabled();
         }
         private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
         {

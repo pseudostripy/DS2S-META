@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="DS2S_META.HotkeyControl"
+﻿<UserControl x:Class="DS2S_META.HotkeyBoxControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              x:Name="ContHotkey"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -12,7 +12,7 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBlock TextAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Text="{Binding ElementName=ContHotkey, Path=HotkeyName}"/>
+        <TextBlock TextAlignment="Left" Margin="8,0,0,0" VerticalAlignment="Center" Text="{Binding ElementName=ContHotkey, Path=HotkeyName}"/>
         <TextBox x:Name="tbxHotkey" Width="75" Grid.Column="1" TextAlignment="Center" HorizontalAlignment="Right"/>
     </Grid>
 </UserControl>
