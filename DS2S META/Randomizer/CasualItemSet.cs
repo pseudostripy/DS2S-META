@@ -483,7 +483,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(10236150, SafeInfo("[Copse] Vanilla Token of Fidelity: on the pillar under the Chariot bridge", KEYID.ROTUNDA));
             Dold.Add(10236160, SafeInfo("[Copse] Where Merciless Roenna invades", KEYID.ROTUNDA));
             Dold.Add(10236170, SafeInfo("[Copse] On a small ledge where you drop from the area where Merciless Roenna invades", KEYID.ROTUNDA));
-            Dold.Add(10236230, SafeInfo("[Copse] Round hut on the way to Skeleton Lords"));
+            Dold.Add(10236230, SafeInfo("[Copse] Round hut on the way to Skeleton Lords", KEYID.ROTUNDA));
             Dold.Add(10236240, SafeInfo("[Copse] On the side ledge just before Executioner's Chariot boss", KEYID.ROTUNDA));
             Dold.Add(10236250, SafeInfo("[Copse] On lower end of the elevator from the cave with the giant basilisk", KEYID.ROTUNDA));
             Dold.Add(10236260, SafeInfo("[Copse] On a stone bridge in the cave with the giant basilisk", KEYID.ROTUNDA));
