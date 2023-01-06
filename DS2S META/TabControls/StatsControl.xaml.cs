@@ -287,5 +287,6 @@ namespace DS2S_META
             Hook.LastBonfireAreaID = majula.AreaID;
             Hook.Warp(majula.ID);
         }
+
     }
 }

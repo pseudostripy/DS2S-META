@@ -45,7 +45,7 @@ namespace DS2S_META
                 "Warp" => (hotkey) => MW.metaPlayer.Warp(),
                 "Create Item" => (hotkey) => MW.metaItems.CreateItem(),
                 "Fast Quit" => (hotkey) => MW.metaPlayer.FastQuit(),
-                //{ "17k", (hotkey) => continue },
+                "Give 17k" => (hotkey) => MW.metaCheats.Give17kReward(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };
         }

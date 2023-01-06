@@ -1118,9 +1118,71 @@ namespace DS2S_META
             else
                 GiveItem(item, amount, upgrade, infusion);
         }
+        public void GiveItems(int[] itemids, short[] amounts)
+        {
+            // Fix wrapping for optionals
+            var len = itemids.Length;
+            var upgrades_list = new List<byte>(len);
+            var infusions_list = new List<byte>(len);
+            for (int i = 0; i< len; i++)
+            {
+                upgrades_list.Add(0);
+                infusions_list.Add(0);
+            }
+
+            byte[] upgrades = upgrades_list.ToArray();
+            byte[] infusions = infusions_list.ToArray();
+
+            // Call function
+            GiveItems(itemids, amounts, upgrades, infusions);
+        }
+        public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions)
+        {
+            int numitems = itemids.Length;
+            if (numitems > 8)
+                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
+            
+            // Create item structure to pass to DS2
+            var itemStruct = Allocate(0x8A); // should this be d128?
+            for (int i = 0; i< itemids.Length; i++)
+            {
+                var offi = i * 16; // length of one itemStruct
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
+            }
+
+            // Fix assembly
+            var asm = (byte[])DS2SAssembly.GetItem.Clone();
+
+            var bytes = BitConverter.GetBytes(numitems);
+            Array.Copy(bytes, 0, asm, 0x9, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0xF, 8);
+            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x1C, 8);
+            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x29, 8);
+            bytes = BitConverter.GetBytes(numitems);
+            Array.Copy(bytes, 0, asm, 0x36, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0x3C, 8);
+            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x54, 8);
+            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x66, 8);
+            bytes = BitConverter.GetBytes(DisplayItem.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x70, 8);
+
+            Execute(asm);
+            Free(itemStruct);
+        }
+
         private void GiveItem(int item, short amount, byte upgrade, byte infusion)
         {
-            var itemStruct = Allocate(0x8A);
+            var itemStruct = Allocate(0x8A); // should this be d128?
 
             Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
             Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));

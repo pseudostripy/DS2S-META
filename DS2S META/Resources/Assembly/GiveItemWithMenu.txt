@@ -1,5 +1,5 @@
 ﻿0:  48 81 ec e8 01 00 00    sub    rsp,0x1e8
-7:  41 b8 08 00 00 00       mov    r8d,0x8 ;item amount
+7:  41 b8 08 00 00 00       mov    r8d,0x8 ;Number of items
 d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
 14: ff ff ff
 17: 49 8d 17                lea    rdx,[r15]
@@ -9,7 +9,7 @@ d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
 27: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 ;Call add item function DarkSoulsII.exe+1A8C67
 2e: ff ff ff
 31: 41 ff d6                call   r14
-34: 41 b8 08 00 00 00       mov    r8d,0x8 ;item amount
+34: 41 b8 08 00 00 00       mov    r8d,0x8 ;Number of items
 3a: 49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
 41: ff ff ff
 44: 49 8d 17                lea    rdx,[r15]

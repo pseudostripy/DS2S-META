@@ -47,6 +47,7 @@ namespace DS2S_META
             HKM.LinkHotkeyControl(hkeyWarp);
             HKM.LinkHotkeyControl(hkeyCreateItem);
             HKM.LinkHotkeyControl(hkeyFastQuit);
+            HKM.LinkHotkeyControl(hkey17k);
 
             // Enable hotkeys
             HKM.RegisterHotkeys();

@@ -109,12 +109,10 @@ namespace DS2S_META
         {
             HotkeyTextBox.Background = DefaultColor;
         }
-
         private void HotkeyTextBox_MouseEnter(object sender, MouseEventArgs e)
         {
             HotkeyTextBox.Background = Brushes.LightGreen;
         }
-
         public void Save()
         {
             Properties.Settings.Default[SettingsName] = KeyInterop.VirtualKeyFromKey(Key);
