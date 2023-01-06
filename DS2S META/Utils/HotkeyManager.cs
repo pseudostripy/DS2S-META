@@ -15,6 +15,8 @@ using System.Security.Cryptography;
 using mrousavy;
 using System.Windows.Input;
 using PropertyHook;
+using System.Diagnostics;
+using DesktopWPFAppLowLevelKeyboardHook;
 
 namespace DS2S_META
 {
@@ -25,72 +27,99 @@ namespace DS2S_META
     {
         internal MainWindow MW;
         internal List<METAHotkey> Hotkeys = new();
+        internal List<METAHotkey> UsedHotkeys = new();
+        internal List<METAHotkey> ActiveHotkeys = new(); // excludes those bound to Esc
+        internal List<Key> KeysInUse = new();
+        internal Dictionary<Key, Action> KeyActions = new();
         public bool HotKeysRegistered;
+        public const Key CLEARKEY = Key.Escape;
 
         internal HotkeyManager(MainWindow mw)
         {
             MW = mw;
+
+            // Declare the event listener
+            _listener = new LowLevelKeyboardListener();
+            _listener.OnKeyPressed += Listener_OnKeyPressed;
         }
 
-        internal Action<HotKey> GetHotkeyMethod(string hkname)
+        internal Action GetHotkeyMethod(string hkname)
         {
             return hkname switch
             {
-                "Store Position" => (hotkey) => MW.metaPlayer.StorePosition(),
-                "Restore Position" => (hotkey) => MW.metaPlayer.RestorePosition(),
-                "Toggle Gravity" => (hotkey) => MW.metaPlayer.ToggleGravity(),
-                "Toggle Collision" => (hotkey) => MW.metaPlayer.ToggleCollision(),
-                "Move Up" => (hotkey) => MW.metaPlayer.DeltaHeight(+5),
-                "Move Down" => (hotkey) => MW.metaPlayer.DeltaHeight(-5),
-                "Toggle Speedup" => (hotkey) => MW.metaPlayer.ToggleSpeed(),
-                "Warp" => (hotkey) => MW.metaPlayer.Warp(),
-                "Create Item" => (hotkey) => MW.metaItems.CreateItem(),
-                "Fast Quit" => (hotkey) => MW.metaPlayer.FastQuit(),
-                "Give 17k" => (hotkey) => MW.metaCheats.Give17kReward(),
+                "Store Position" => () => MW.metaPlayer.StorePosition(),
+                "Restore Position" => () => MW.metaPlayer.RestorePosition(),
+                "Toggle Gravity" => () => MW.metaPlayer.ToggleGravity(),
+                "Toggle Collision" => () => MW.metaPlayer.ToggleCollision(),
+                "Move Up" => () => MW.metaPlayer.DeltaHeight(+5),
+                "Move Down" => () => MW.metaPlayer.DeltaHeight(-5),
+                "Toggle Speedup" => () => MW.metaPlayer.ToggleSpeed(),
+                "Warp" => () => MW.metaPlayer.Warp(),
+                "Create Item" => () => MW.metaItems.CreateItem(),
+                "Fast Quit" => () => MW.metaPlayer.FastQuit(),
+                "Give 17k" => () => MW.metaCheats.Give17kReward(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };
         }
 
-        // Links the definitions in UI to their functions
-        internal void LinkHotkeyControl(HotkeyBoxControl hkbc)
+        // LowLevelHook_Code
+        private LowLevelKeyboardListener _listener;
+        void Listener_OnKeyPressed(object? sender, KeyPressedArgs e)
         {
-            var mhk = new METAHotkey(hkbc, GetHotkeyMethod(hkbc.HotkeyName), MW, this);
-            Hotkeys.Add(mhk);
+            // Only hook the keys set explicitly in Meta
+            if (!KeysInUse.Contains(e.KeyPressed))
+                return;
+
+            var action = KeyActions[e.KeyPressed];
+            action(); // do it
+        }
+        public void HookKeyboard()
+        {
+            _listener.HookKeyboard();
+        }
+        public void UnhookKeyboard()
+        {
+            _listener.UnHookKeyboard();
         }
 
-        // Utility:
-        internal bool IsKeyUsed(METAHotkey mhk, Key currkey, out METAHotkey? existingkey)
+        // Only keyboard hook when DS2 is actively focussed
+        public bool KbHookRegistered => _listener.IsHooked;
+        public void CheckFocusEvent(bool ds2focussed)
         {
-            existingkey = Hotkeys.Find(hk => hk.Key == currkey
-                                             && hk.SettingsName != mhk.SettingsName
-                                             && hk.Key != Key.Escape);
-            return existingkey != null;
+            // Previously called CheckFocussed
+            if (ds2focussed && !KbHookRegistered)
+                HookKeyboard();
+
+            if (!ds2focussed && KbHookRegistered)
+                UnhookKeyboard();
         }
-        public void RegisterHotkeys()
+        internal void LinkHotkeyControl(HotkeyBoxControl hkbc)
         {
-            foreach (var hotkey in Hotkeys)
-                hotkey.RegisterHotkey();
-            HotKeysRegistered = true;
+            var mhk = new METAHotkey(hkbc, GetHotkeyMethod(hkbc.HotkeyName), this);
+            UsedHotkeys.Add(mhk);
         }
-        public void UnregisterHotkeys()
+        internal void ClearMatchingKeyBinds(Key keytomatch)
         {
-            foreach (var hotkey in Hotkeys)
-                hotkey.UnregisterHotkey();
-            HotKeysRegistered = false;
+            var existingkeys = UsedHotkeys.Where(hk => hk.Key == keytomatch).ToList();
+            if (existingkeys.Count == 0) return;
+            existingkeys.ForEach(hk => hk.Key = CLEARKEY);
+            existingkeys.ForEach(hk => hk.UpdateText());
+        }
+        internal void RefreshKeyList()
+        {
+            // Called after messing around with registering/unregistering hotkeys
+
+            // latency improvement
+            ActiveHotkeys = UsedHotkeys.Where(_hk => _hk.Key != CLEARKEY).ToList();
+            KeysInUse = ActiveHotkeys.Select(mhk => mhk.Key).ToList();
+
+            // meta macros on hotkey
+            KeyActions = ActiveHotkeys.ToDictionary(mhk => mhk.Key, mhk => mhk.HotkeyAction);     
         }
         public void SaveHotkeys()
         {
-            foreach (METAHotkey hotkey in Hotkeys)
+            foreach (METAHotkey hotkey in UsedHotkeys)
                 hotkey.Save();
-        }
-        public void UpdateHotkeyRegistration(bool ds2focussed)
-        {
-            // Previously called CheckFocussed
-            if (ds2focussed && !HotKeysRegistered)
-                RegisterHotkeys();
-
-            if (!ds2focussed && HotKeysRegistered)
-                UnregisterHotkeys();
         }
     }
 }

@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Collections.ObjectModel;
 using DS2S_META.ViewModels;
+using DesktopWPFAppLowLevelKeyboardHook;
 
 namespace DS2S_META
 {
@@ -164,6 +165,9 @@ namespace DS2S_META
             UpdateTimer.Enabled = true;
         }
 
+        
+
+        
         public class MetaVersionInfo
         {
             public Version? GitVersion { get; set; }
@@ -237,7 +241,8 @@ namespace DS2S_META
                 };
                 randoexit.ShowDialog();
             }
-            
+
+            HKM.UnhookKeyboard();
             Settings.Save();
         }
 
@@ -289,7 +294,8 @@ namespace DS2S_META
         {
             Hook.UpdateMainProperties();
             ViewModel.UpdateMainProperties();
-            HKM.UpdateHotkeyRegistration(Hook.Focused);
+            //HKM.UpdateHotkeyRegistration(Hook.Focused);
+            HKM.CheckFocusEvent(Hook.Focused);
         }
 
         private void InitAllTabs()
@@ -350,7 +356,7 @@ namespace DS2S_META
         private void SaveAllTabs()
         {
             HKM.SaveHotkeys();
-            HKM.UnregisterHotkeys();
+            //HKM.UnregisterHotkeys();
         }
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)
         {
