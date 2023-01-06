@@ -14,6 +14,7 @@ using Octokit;
 using System.Security.Cryptography;
 using mrousavy;
 using System.Windows.Input;
+using PropertyHook;
 
 namespace DS2S_META
 {
@@ -82,6 +83,14 @@ namespace DS2S_META
             foreach (METAHotkey hotkey in Hotkeys)
                 hotkey.Save();
         }
-        
+        public void UpdateHotkeyRegistration(bool ds2focussed)
+        {
+            // Previously called CheckFocussed
+            if (ds2focussed && !HotKeysRegistered)
+                RegisterHotkeys();
+
+            if (!ds2focussed && HotKeysRegistered)
+                UnregisterHotkeys();
+        }
     }
 }

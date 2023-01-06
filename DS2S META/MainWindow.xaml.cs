@@ -289,7 +289,7 @@ namespace DS2S_META
         {
             Hook.UpdateMainProperties();
             ViewModel.UpdateMainProperties();
-            //CheckFocused();
+            HKM.UpdateHotkeyRegistration(Hook.Focused);
         }
 
         private void InitAllTabs()
