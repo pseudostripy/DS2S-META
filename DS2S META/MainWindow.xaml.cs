@@ -242,7 +242,7 @@ namespace DS2S_META
                 randoexit.ShowDialog();
             }
 
-            HKM.UnhookKeyboard();
+            HKM.ClearHooks();
             Settings.Save();
         }
 
@@ -355,7 +355,7 @@ namespace DS2S_META
         }
         private void SaveAllTabs()
         {
-            HKM.SaveHotkeys();
+            //HKM.SaveHotkeys();
             //HKM.UnregisterHotkeys();
         }
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)

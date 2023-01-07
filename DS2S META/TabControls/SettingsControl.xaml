@@ -10,13 +10,13 @@
              d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
     <Grid>
         <StackPanel Margin="25">
-            <Label Content="Settings" FontSize="20" HorizontalAlignment="Center"/>
+            <Label x:Name="lblSettingsTitle" Content="Settings" FontSize="20" HorizontalAlignment="Center"/>
             <Border BorderBrush="Gray" BorderThickness="1" />
-            <CheckBox Content="Enable Hotkeys" x:Name="cbxEnableHotkeys" 
-                      IsChecked="{Binding EnableHotkeys, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="15,15,0,0"/>
+            <CheckBox Content="Enable Windowed Hotkeys (stable)" x:Name="cbxEnableHotkeys" 
+                      IsChecked="{Binding EnableHotkeys, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="15,15,0,0" Checked="cbxEnableHotkeys_Checked" Unchecked="cbxEnableHotkeys_Unchecked"/>
             <Separator Visibility="Hidden"/>
-            <CheckBox Content="Handle Hotkeys" x:Name="cbxHandleHotkeys" 
-                      IsChecked="{Binding HandleHotkeys, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="15,0,0,0"/>
+            <CheckBox Content="Enable Windowed/Fullscreen Hotkeys (beta)" x:Name="cbxFullscreenHotkeys" 
+                      IsChecked="{Binding HandleHotkeys, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="15,0,0,0" Checked="cbxFullscreenHotkeys_Checked" Unchecked="cbxFullscreenHotkeys_Unchecked"/>
             <Separator Margin="0,10,0,10"/>
             <Grid>
                 <Grid.RowDefinitions>

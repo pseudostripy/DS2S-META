@@ -26,6 +26,7 @@ namespace DS2S_META
             set { SetValue(HotkeyNameProperty, value); }
         }
         public string? SettingsName { get; set; }
+        private readonly Brush DefaultColor;
 
         // Using a DependencyProperty as the backing store for HotkeyName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HotkeyNameProperty =
@@ -34,6 +35,18 @@ namespace DS2S_META
         public HotkeyBoxControl()
         {
             InitializeComponent();
+            DefaultColor = tbxHotkey.Background;
+            tbxHotkey.MouseEnter += HotkeyTextBox_MouseEnter;
+            tbxHotkey.MouseLeave += HotkeyTextBox_MouseLeave;
+        }
+
+        private void HotkeyTextBox_MouseLeave(object sender, MouseEventArgs e)
+        {
+            tbxHotkey.Background = DefaultColor;
+        }
+        private void HotkeyTextBox_MouseEnter(object sender, MouseEventArgs e)
+        {
+            tbxHotkey.Background = Brushes.LightGreen;
         }
     }
 }

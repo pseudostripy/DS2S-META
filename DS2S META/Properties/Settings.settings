@@ -9,7 +9,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="HandleHotkeys" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="RestorePosition" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">27</Value>
@@ -66,7 +66,7 @@
       <Value Profile="(Default)">27</Value>
     </Setting>
     <Setting Name="SpawnUndroppable" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="UpdateMaxLive" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
