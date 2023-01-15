@@ -28,6 +28,8 @@ namespace DS2S_META
         public List<Param> Params = new();
 
 
+        public MainWindow MW { get; set; }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
@@ -344,6 +346,7 @@ namespace DS2S_META
             Version = "Not Hooked";
             Setup = false;
             ParamMan.Uninitialise();
+            MW.HKM.ClearHooks();
         }
 
         public void UpdateName()

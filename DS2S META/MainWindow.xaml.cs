@@ -65,6 +65,7 @@ namespace DS2S_META
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
             Hook.OnHooked += Hook_OnHooked;
+            Hook.MW = this;
 
             // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
             //DmgCalcViewModel = new DmgCalcViewModel();
