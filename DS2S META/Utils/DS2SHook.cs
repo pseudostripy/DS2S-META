@@ -345,6 +345,7 @@ namespace DS2S_META
         {
             Version = "Not Hooked";
             Setup = false;
+            ClearSpeedhackInject();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
         }
@@ -834,6 +835,10 @@ namespace DS2S_META
             else
                 DisableSpeedhack();
         }
+        internal void ClearSpeedhackInject()
+        {
+            SpeedhackDllPtr = IntPtr.Zero;
+        }
         public void DisableSpeedhack()
         {
             IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
@@ -849,7 +854,7 @@ namespace DS2S_META
 
             IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
             thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
-            Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             SetSpeed((float)Properties.Settings.Default.SpeedValue);
         }
         public void SetSpeed(float value)
