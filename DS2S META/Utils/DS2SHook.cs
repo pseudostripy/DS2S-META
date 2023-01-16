@@ -88,12 +88,7 @@ namespace DS2S_META
         private PHPointer BonfireLevels;
         private PHPointer NetSvrBloodstainManager;
 
-        private PHPointer? LevelUpSoulsParam;
-        private PHPointer? ArmorReinforceParam;
         
-        private PHPointer ItemUseageParam;
-        //private PHPointer ItemLotDropsParam; // Enemy drop tables
-
         private PHPointer BaseASetup;
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
@@ -1228,16 +1223,23 @@ namespace DS2S_META
         
         internal int GetMaxUpgrade(ItemRow item)
         {
+            if (!ParamMan.IsLoaded)
+                return 0;
+
+            int? upgr;
             switch (item.ItemType)
             {
                 case eItemType.WEAPON1:
                 case eItemType.WEAPON2:
-                    var upgr = item.WeaponRow?.MaxUpgrade;
+                    upgr = item.WeaponRow?.MaxUpgrade;
                     return upgr ?? 0;
 
-                // TODO
-                //case DS2SItem.ItemType.Armor:
-                //    return GetArmorMaxUpgrade(item.ID);
+                case eItemType.HEADARMOUR:
+                case eItemType.LEGARMOUR:
+                case eItemType.CHESTARMOUR:
+                case eItemType.GAUNTLETS:
+                    upgr = item.ArmorRow?.ArmorReinforceRow?.MaxReinforceLevel;
+                    return upgr ?? 0;
                 default:
                     return 0;
             }

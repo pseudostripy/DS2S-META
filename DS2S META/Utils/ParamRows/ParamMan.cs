@@ -47,7 +47,7 @@ namespace DS2S_META.Utils
             public const string ARROW = "ARROW_PARAM";
             public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
             public const string ARMOR_REINFORCE = "ARMOR_REINFORCE_PARAM";
-            public const string ARMOR = "ARMOR_ROW";
+            public const string ARMOR = "ARMOR_PARAM";
             
             // Names different from underlying DEF
             public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
