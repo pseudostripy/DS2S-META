@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META
+namespace DS2S_META.Utils.Offsets
 {
     internal class DS2SOffsetsV102 : DS2SOffsets
     {

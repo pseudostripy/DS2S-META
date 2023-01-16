@@ -19,6 +19,7 @@ using System.Windows.Automation;
 using System.Runtime.Serialization;
 using Octokit;
 using System.Reflection;
+using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META
 {
@@ -50,7 +51,8 @@ namespace DS2S_META
         }
         public DS2VER DS2Ver;
         public BBJTYPE BBJType;
-        internal DS2SOffsets Offsets;
+        //internal DS2SOffsets Offsets;
+        internal DS2HookOffsets Offsets;
 
         public static bool Reading { get; set; }
 
@@ -182,35 +184,35 @@ namespace DS2S_META
             RescanAOB();
             
             // Further pointer setup... todo?
-            PlayerName = CreateChildPointer(BaseA, (int)DS2SOffsets.PlayerNameOffset);
-            AvailableItemBag = CreateChildPointer(PlayerName, (int)DS2SOffsets.AvailableItemBagOffset, (int)DS2SOffsets.AvailableItemBagOffset);
-            ItemGiveWindow = CreateChildPointer(BaseA, (int)DS2SOffsets.ItemGiveWindowPointer);
-            PlayerBaseMisc = CreateChildPointer(PlayerName, (int)DS2SOffsets.PlayerBaseMiscOffset);
-            PlayerCtrl = CreateChildPointer(BaseA, (int)DS2SOffsets.PlayerCtrlOffset);
-            PlayerPosition = CreateChildPointer(PlayerCtrl, (int)DS2SOffsets.PlayerPositionOffset1, (int)DS2SOffsets.PlayerPositionOffset2);
-            PlayerGravity = CreateChildPointer(PlayerCtrl, (int)DS2SOffsets.PlayerMapDataOffset1);
-            PlayerParam = CreateChildPointer(PlayerCtrl, (int)DS2SOffsets.PlayerParamOffset);
-            PlayerType = CreateChildPointer(PlayerCtrl, (int)DS2SOffsets.PlayerTypeOffset);
-            SpEffectCtrl = CreateChildPointer(PlayerCtrl, (int)DS2SOffsets.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(PlayerGravity, (int)DS2SOffsets.PlayerMapDataOffset2, (int)DS2SOffsets.PlayerMapDataOffset3);
-            EventManager = CreateChildPointer(BaseA, (int)DS2SOffsets.EventManagerOffset);
-            BonfireLevels = CreateChildPointer(EventManager, (int)DS2SOffsets.BonfireLevelsOffset1, (int)DS2SOffsets.BonfireLevelsOffset2);
-            WarpManager = CreateChildPointer(EventManager, (int)DS2SOffsets.WarpManagerOffset);
-            NetSvrBloodstainManager = CreateChildPointer(BaseA, (int)DS2SOffsets.NetSvrBloodstainManagerOffset1, (int)DS2SOffsets.NetSvrBloodstainManagerOffset2, (int)DS2SOffsets.NetSvrBloodstainManagerOffset3);
+            PlayerName = CreateChildPointer(BaseA, Offsets.PlayerNameOffset);
+            AvailableItemBag = CreateChildPointer(PlayerName, Offsets.AvailableItemBagOffset, Offsets.AvailableItemBagOffset);
+            ItemGiveWindow = CreateChildPointer(BaseA, Offsets.ItemGiveWindowPointer);
+            PlayerBaseMisc = CreateChildPointer(PlayerName, Offsets.PlayerBaseMiscOffset);
+            PlayerCtrl = CreateChildPointer(BaseA, Offsets.PlayerCtrlOffset);
+            PlayerPosition = CreateChildPointer(PlayerCtrl, Offsets.PlayerPositionOffset1, Offsets.PlayerPositionOffset2);
+            PlayerGravity = CreateChildPointer(PlayerCtrl, Offsets.PlayerMapDataOffset1);
+            PlayerParam = CreateChildPointer(PlayerCtrl, Offsets.PlayerParamOffset);
+            PlayerType = CreateChildPointer(PlayerCtrl, Offsets.PlayerTypeOffset);
+            SpEffectCtrl = CreateChildPointer(PlayerCtrl, Offsets.SpEffectCtrlOffset);
+            PlayerMapData = CreateChildPointer(PlayerGravity, Offsets.PlayerMapDataOffset2, Offsets.PlayerMapDataOffset3);
+            EventManager = CreateChildPointer(BaseA, Offsets.EventManagerOffset);
+            BonfireLevels = CreateChildPointer(EventManager, Offsets.BonfireLevelsOffset1, Offsets.BonfireLevelsOffset2);
+            WarpManager = CreateChildPointer(EventManager, Offsets.WarpManagerOffset);
+            NetSvrBloodstainManager = CreateChildPointer(BaseA, Offsets.NetSvrBloodstainManagerOffset1, Offsets.NetSvrBloodstainManagerOffset2, Offsets.NetSvrBloodstainManagerOffset3);
 
-            LevelUpSoulsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.LevelUpSoulsParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            ArmorReinforceParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset1, (int)DS2SOffsets.ArmorReinforceParamOffset, (int)DS2SOffsets.ParamDataOffset2);
-            ItemUseageParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ItemUsageParamOffset1, (int)DS2SOffsets.ItemUsageParamOffset2);
-            //ItemLotDropsParam = CreateChildPointer(BaseA, (int)DS2SOffsets.ParamDataOffset3, (int)DS2SOffsets.ParamDataOffset4, (int)DS2SOffsets.ParamDataOffset2);
+            LevelUpSoulsParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset1, Offsets.LevelUpSoulsParamOffset, Offsets.ParamDataOffset2);
+            ArmorReinforceParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset1, Offsets.ArmorReinforceParamOffset, Offsets.ParamDataOffset2);
+            ItemUseageParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset3, Offsets.ItemUsageParamOffset1, Offsets.ItemUsageParamOffset2);
+            //ItemLotDropsParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset3, Offsets.ParamDataOffset4, Offsets.ParamDataOffset2);
 
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
-            Connection = CreateChildPointer(BaseB, (int)DS2SOffsets.ConnectionOffset);
+            Connection = CreateChildPointer(BaseB, Offsets.ConnectionOffset);
 
-            Camera = CreateBasePointer(Handle + 0x160B8D0, (int)DS2SOffsets.CameraOffset1);
-            Camera2 = CreateChildPointer(Camera, (int)DS2SOffsets.CameraOffset2);
-            Camera3 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2, (int)DS2SOffsets.CameraOffset2);
-            Camera4 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2, (int)DS2SOffsets.CameraOffset3);
-            Camera5 = CreateChildPointer(BaseA, (int)DS2SOffsets.CameraOffset2);
+            Camera = CreateBasePointer(Handle + 0x160B8D0, Offsets.CameraOffset1);
+            Camera2 = CreateChildPointer(Camera, Offsets.CameraOffset2);
+            Camera3 = CreateChildPointer(BaseA, Offsets.CameraOffset2, Offsets.CameraOffset2);
+            Camera4 = CreateChildPointer(BaseA, Offsets.CameraOffset2, Offsets.CameraOffset3);
+            Camera5 = CreateChildPointer(BaseA, Offsets.CameraOffset2);
 
             SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
 
@@ -533,147 +535,147 @@ namespace DS2S_META
         {
             set
             {
-                BaseA.WriteByte((int)DS2SOffsets.ForceQuit.Quit, value);
+                BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
             }
         }
 
         #region Player
         public int Health
         {
-            get => Loaded ? PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerCtrl.HP) : 0;
+            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
             set 
             {
                 if (Reading || !Loaded) return;
-                PlayerCtrl.WriteInt32((int)DS2SOffsets.PlayerCtrl.HP, value);
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
         public int HealthMax
         {
-            get => Loaded ? PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerCtrl.HPMax) : 0;
-            set => PlayerCtrl.WriteInt32((int)DS2SOffsets.PlayerCtrl.HPMax, value);
+            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
+            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
         }
         public int HealthCap
         {
             get 
             {
                 if (!Loaded) return 0;
-                var cap = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerCtrl.HPCap);
+                var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
                 return cap < HealthMax ? cap : HealthMax;
             }
-            set => PlayerCtrl.WriteInt32((int)DS2SOffsets.PlayerCtrl.HPCap, value);
+            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
         }
         public float Stamina
         {
-            get => Loaded ? PlayerCtrl.ReadSingle((int)DS2SOffsets.PlayerCtrl.SP) : 0;
+            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
             set 
             { 
                 if (Reading || !Loaded) return;
-                PlayerCtrl.WriteSingle((int)DS2SOffsets.PlayerCtrl.SP, value);
+                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
             }
         }
         public float MaxStamina
         {
-            get => Loaded ? PlayerCtrl.ReadSingle((int)DS2SOffsets.PlayerCtrl.SPMax) : 0;
-            set => PlayerCtrl.WriteSingle((int)DS2SOffsets.PlayerCtrl.SPMax, value);
+            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
+            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
         }
         public byte NetworkPhantomID
         {
-            get => Loaded ? PlayerType.ReadByte((int)DS2SOffsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
-            set => PlayerType.WriteByte((int)DS2SOffsets.PlayerType.ChrNetworkPhantomId, value);
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
+            set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
         }
         public byte TeamType
         {
-            get => Loaded ? PlayerType.ReadByte((int)DS2SOffsets.PlayerType.TeamType) : (byte)0;
-            //set => PlayerType.WriteByte((int)DS2SOffsets.PlayerType.TeamType, value);
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
+            //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
         }
         public byte CharType
         {
-            get => Loaded ? PlayerType.ReadByte((int)DS2SOffsets.PlayerType.CharType) : (byte)0;
-            //set => PlayerType.WriteByte((int)DS2SOffsets.PlayerType.CharType, value);
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
+            //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
         }
         public float PosX
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.PosX) : 0;
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.PosX, value);
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
             }
         }
         public float PosY
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.PosY) : 0;
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.PosY, value);
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
             }
         }
         public float PosZ
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.PosZ) : 0;
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.PosZ, value);
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
             }
         }
         public float AngX
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.AngX) : 0;
-            set => PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.AngX, value);
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
         }
         public float AngY
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.AngY) : 0;
-            set => PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.AngY, value);
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
         }
         public float AngZ
         {
-            get => Loaded ? PlayerPosition.ReadSingle((int)DS2SOffsets.PlayerPosition.AngZ) : 0;
-            set => PlayerPosition.WriteSingle((int)DS2SOffsets.PlayerPosition.AngZ, value);
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
         }
         public float StableX
         {
-            get => Loaded ? PlayerMapData.ReadSingle((int)DS2SOffsets.PlayerMapData.WarpX1) : 0;
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
             set
             {
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpX1, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpX2, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpX3, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
             }
         }
         public float StableY
         {
-            get => Loaded ? PlayerMapData.ReadSingle((int)DS2SOffsets.PlayerMapData.WarpY1) : 0;
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
             set
             {
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpY1, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpY2, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpY3, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
             }
         }
         public float StableZ
         {
-            get => Loaded ? PlayerMapData.ReadSingle((int)DS2SOffsets.PlayerMapData.WarpZ1) : 0;
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
             set
             {
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpZ1, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpZ2, value);
-                PlayerMapData.WriteSingle((int)DS2SOffsets.PlayerMapData.WarpZ3, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
             }
         }
         public float BloodstainX
         {
-            get => NetSvrBloodstainManager.ReadSingle((int)DS2SOffsets.NetSvrBloodstainManager.BloodstainX);
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainX);
         }
         public float BloodstainY
         {
-            get => NetSvrBloodstainManager.ReadSingle((int)DS2SOffsets.NetSvrBloodstainManager.BloodstainY);
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainY);
         }
         public float BloodstainZ
         {
-            get => NetSvrBloodstainManager.ReadSingle((int)DS2SOffsets.NetSvrBloodstainManager.BloodstainZ);
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainZ);
         }
         public byte[] CameraData
         {
@@ -682,36 +684,36 @@ namespace DS2S_META
         }
         public byte[] CameraData2
         {
-            get => Camera4.ReadBytes((int)DS2SOffsets.Camera.CamStart3, 512);
-            set => Camera4.WriteBytes((int)DS2SOffsets.Camera.CamStart3, value);
+            get => Camera4.ReadBytes(Offsets.Camera.CamStart3, 512);
+            set => Camera4.WriteBytes(Offsets.Camera.CamStart3, value);
         }
         public float CamX
         {
-            get => Camera2.ReadSingle((int)DS2SOffsets.Camera.CamX);
-            set => Camera2.WriteSingle((int)DS2SOffsets.Camera.CamX, value);
+            get => Camera2.ReadSingle(Offsets.Camera.CamX);
+            set => Camera2.WriteSingle(Offsets.Camera.CamX, value);
         }
         public float CamY
         {
-            get => Camera2.ReadSingle((int)DS2SOffsets.Camera.CamY);
-            set => Camera2.WriteSingle((int)DS2SOffsets.Camera.CamY, value);
+            get => Camera2.ReadSingle(Offsets.Camera.CamY);
+            set => Camera2.WriteSingle(Offsets.Camera.CamY, value);
         }
         public float CamZ
         {
-            get => Camera2.ReadSingle((int)DS2SOffsets.Camera.CamZ);
-            set => Camera2.WriteSingle((int)DS2SOffsets.Camera.CamZ, value);
+            get => Camera2.ReadSingle(Offsets.Camera.CamZ);
+            set => Camera2.WriteSingle(Offsets.Camera.CamZ, value);
         }
         public float Speed
         {
             set 
             {
                 if (!Loaded) return;
-                PlayerCtrl.WriteSingle((int)DS2SOffsets.PlayerCtrl.SpeedModifier, value); 
+                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value); 
             }
         }
         public bool Gravity
         {
-            get => Loaded ? !PlayerGravity.ReadBoolean((int)DS2SOffsets.Gravity.Gravity) : true;
-            set => PlayerGravity.WriteBoolean((int)DS2SOffsets.Gravity.Gravity, !value);
+            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.Gravity) : true;
+            set => PlayerGravity.WriteBoolean(Offsets.Gravity.Gravity, !value);
         }
         public bool Collision
         {
@@ -727,13 +729,13 @@ namespace DS2S_META
         }
         public ushort LastBonfireID
         {
-            get => Loaded ? EventManager.ReadUInt16((int)DS2SOffsets.Bonfire.LastSetBonfire) : (ushort)0;
-            set => EventManager.WriteUInt16((int)DS2SOffsets.Bonfire.LastSetBonfire, value);
+            get => Loaded ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
+            set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
         }
         public int LastBonfireAreaID
         {
-            get => Loaded ? EventManager.ReadInt32((int)DS2SOffsets.Bonfire.LastSetBonfireAreaID) : 0;
-            set => EventManager.WriteInt32((int)DS2SOffsets.Bonfire.LastSetBonfireAreaID, value);
+            get => Loaded ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
+            set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
         }
         public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
         public bool Online => Loaded ? ConnectionType > 0 : true;
@@ -742,7 +744,7 @@ namespace DS2S_META
             get
             {
                 var test = Hooked;
-                return Hooked && Connection != null ? Connection.ReadInt32((int)DS2SOffsets.Connection.Online) : 0;
+                return Hooked && Connection != null ? Connection.ReadInt32(Offsets.Connection.Online) : 0;
             }
         }
         
@@ -882,147 +884,147 @@ namespace DS2S_META
         #region Stats
         public string Name
         {
-            get => Loaded ? PlayerName.ReadString((int)DS2SOffsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
+            get => Loaded ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
             set
             {
                 if (Reading || !Loaded) return;
                 if (Name == value) return;
-                PlayerName.WriteString((int)DS2SOffsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
+                PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
                 OnPropertyChanged(nameof(Name));
             }
         }
 
         public byte Class
         {
-            get => Loaded ? PlayerBaseMisc.ReadByte((int)DS2SOffsets.PlayerBaseMisc.Class) : (byte)255;
+            get => Loaded ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerBaseMisc.WriteByte((int)DS2SOffsets.PlayerBaseMisc.Class, value);
+                PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
             }
         }
         public int SoulLevel
         {
-            get => Loaded ? PlayerParam.ReadInt32((int)DS2SOffsets.Attributes.SoulLevel) : 0;
-            set => PlayerParam.WriteInt32((int)DS2SOffsets.Attributes.SoulLevel, value);
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
+            set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
         }
         public int SoulMemory
         {
-            get => Loaded ? PlayerParam.ReadInt32((int)DS2SOffsets.PlayerParam.SoulMemory) : 0;
-            set => PlayerParam.WriteInt32((int)DS2SOffsets.PlayerParam.SoulMemory, value);
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
+            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
         }
         public int SoulMemory2
         {
-            get => Loaded ? PlayerParam.ReadInt32((int)DS2SOffsets.PlayerParam.SoulMemory2) : 0;
-            set => PlayerParam.WriteInt32((int)DS2SOffsets.PlayerParam.SoulMemory2, value);
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
+            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
         }
         public byte SinnerLevel
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.PlayerParam.SinnerLevel) : (byte)0;
-            set => PlayerParam.WriteByte((int)DS2SOffsets.PlayerParam.SinnerLevel, value);
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
         }
         public byte SinnerPoints
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.PlayerParam.SinnerPoints) : (byte)0;
-            set => PlayerParam.WriteByte((int)DS2SOffsets.PlayerParam.SinnerPoints, value);
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
         }
         public byte HollowLevel
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.PlayerParam.HollowLevel) : (byte)0;
-            set => PlayerParam.WriteByte((int)DS2SOffsets.PlayerParam.HollowLevel, value);
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
         }
         public int Souls
         {
-            get => Loaded ? PlayerParam.ReadInt32((int)DS2SOffsets.PlayerParam.Souls) : 0;
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
         }
 
         public short Vigor
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.VGR) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.VGR, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
                 UpdateSoulLevel();
             }
         }
         public short Endurance
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.END) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
             set 
             { 
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.END, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.END, value);
                 UpdateSoulLevel();
             }
         }
         public short Vitality
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.VIT) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.VIT, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
                 UpdateSoulLevel();
             }
         }
         public short Attunement
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.ATN) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.ATN, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
                 UpdateSoulLevel();
             }
         }
         public short Strength
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.STR) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.STR, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
                 UpdateSoulLevel();
             }
         }
         public short Dexterity
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.DEX) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.DEX, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
                 UpdateSoulLevel();
             }
         }
         public short Adaptability
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.ADP) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.ADP, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
                 UpdateSoulLevel();
             }
         }
         public short Intelligence
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.INT) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.INT, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
                 UpdateSoulLevel();
             }
         }
         public short Faith
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Attributes.FTH) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Attributes.FTH, value);
+                PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
                 UpdateSoulLevel();
             }
         }
@@ -1099,7 +1101,7 @@ namespace DS2S_META
             if (paramName != "CHR_LEVEL_UP_SOULS_PARAM")
                 throw new InvalidOperationException("Incorrect Param Pointer: LEVEL_UP_SOULS_PARAM");
 
-            var tableLength = LevelUpSoulsParam.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            var tableLength = LevelUpSoulsParam.ReadInt32(Offsets.Param.OffsetsOnlyTableLength);
             var paramID = 0x40;
             var paramOffset = 0x48;
             var nextParam = 0x18;
@@ -1255,11 +1257,11 @@ namespace DS2S_META
         private Dictionary<int, int> BuildOffsetDictionary(PHPointer pointer, string expectedParamName)
         {
             var dictionary = new Dictionary<int, int>();
-            var paramName = pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x18);
+            var paramName = pointer.ReadString(Offsets.Param.ParamName, Encoding.UTF8, 0x18);
             if (paramName != expectedParamName)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {expectedParamName}");
 
-            var tableLength = pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            var tableLength = pointer.ReadInt32(Offsets.Param.OffsetsOnlyTableLength);
             var paramStartOffset = 0x40;
             var paramLength = 0x18;
 
@@ -1369,8 +1371,8 @@ namespace DS2S_META
         internal int GetArmorMaxUpgrade(int id)
         {
             if  (!Setup || ArmorReinforceParam == null) return 0;
-            return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
-            //return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id] + (int)DS2SOffsets.ArmorReinforceParam.MaxUpgrade);
+            return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + Offsets.ArmorReinforceParam.MaxUpgrade);
+            //return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id] + Offsets.ArmorReinforceParam.MaxUpgrade);
         }
         
         internal void GetVanillaItems()
@@ -1401,7 +1403,7 @@ namespace DS2S_META
                 throw new Exception("Cannot find item for GetIsDroppable");
 
             var itemUsageID = item.ItemUsageID;
-            byte bitField = ItemUseageParam.ReadByte(ItemUsageParamOffsetDict[itemUsageID] + (int)DS2SOffsets.ItemUasgeParam.Bitfield);
+            byte bitField = ItemUseageParam.ReadByte(ItemUsageParamOffsetDict[itemUsageID] + Offsets.ItemUasgeParam.Bitfield);
 
             if (bitField == 0)
                 return false;
@@ -1420,7 +1422,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.FireKeepersDwelling);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.FireKeepersDwelling);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1431,7 +1433,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.FireKeepersDwelling, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.FireKeepersDwelling, level);
             }
         }
 
@@ -1443,7 +1445,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheFarFire);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheFarFire);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1454,7 +1456,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheFarFire, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheFarFire, level);
             }
         }
         public byte TheCrestfallensRetreat
@@ -1465,7 +1467,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CrestfallensRetreat);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CrestfallensRetreat);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1476,7 +1478,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CrestfallensRetreat, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CrestfallensRetreat, level);
             }
         }
         public byte CardinalTower
@@ -1487,7 +1489,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CardinalTower);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CardinalTower);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1498,7 +1500,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CardinalTower, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CardinalTower, level);
             }
         }
         public byte SoldiersRest
@@ -1509,7 +1511,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.SoldiersRest);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.SoldiersRest);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1520,7 +1522,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.SoldiersRest, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.SoldiersRest, level);
             }
         }
         public byte ThePlaceUnbeknownst
@@ -1531,7 +1533,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ThePlaceUnbeknownst);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ThePlaceUnbeknownst);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1542,7 +1544,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ThePlaceUnbeknownst, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ThePlaceUnbeknownst, level);
             }
         }
         public byte HeidesRuin
@@ -1553,7 +1555,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.HeidesRuin);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.HeidesRuin);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1564,7 +1566,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.HeidesRuin, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.HeidesRuin, level);
             }
         }
         public byte TowerofFlame
@@ -1575,7 +1577,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TowerofFlame);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TowerofFlame);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1586,7 +1588,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TowerofFlame, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TowerofFlame, level);
             }
         }
         public byte TheBlueCathedral
@@ -1597,7 +1599,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheBlueCathedral);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheBlueCathedral);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1608,7 +1610,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheBlueCathedral, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheBlueCathedral, level);
             }
         }
         public byte UnseenPathtoHeide
@@ -1619,7 +1621,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UnseenPathtoHeide);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UnseenPathtoHeide);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1630,7 +1632,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UnseenPathtoHeide, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UnseenPathtoHeide, level);
             }
         }
         public byte ExileHoldingCells
@@ -1641,7 +1643,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ExileHoldingCells);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ExileHoldingCells);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1652,7 +1654,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ExileHoldingCells, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ExileHoldingCells, level);
             }
         }
         public byte McDuffsWorkshop
@@ -1663,7 +1665,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.McDuffsWorkshop);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.McDuffsWorkshop);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1674,7 +1676,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.McDuffsWorkshop, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.McDuffsWorkshop, level);
             }
         }
         public byte ServantsQuarters
@@ -1685,7 +1687,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ServantsQuarters);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ServantsQuarters);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1696,7 +1698,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ServantsQuarters, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ServantsQuarters, level);
             }
         }
         public byte StraidsCell
@@ -1707,7 +1709,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.StraidsCell);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.StraidsCell);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1718,7 +1720,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.StraidsCell, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.StraidsCell, level);
             }
         }
         public byte TheTowerApart
@@ -1729,7 +1731,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheTowerApart);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheTowerApart);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1740,7 +1742,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheTowerApart, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheTowerApart, level);
             }
         }
         public byte TheSaltfort
@@ -1751,7 +1753,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheSaltfort);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheSaltfort);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1762,7 +1764,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheSaltfort, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheSaltfort, level);
             }
         }
         public byte UpperRamparts
@@ -1773,7 +1775,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UpperRamparts);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UpperRamparts);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1784,7 +1786,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UpperRamparts, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UpperRamparts, level);
             }
         }
         public byte UndeadRefuge
@@ -1795,7 +1797,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UndeadRefuge);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UndeadRefuge);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1806,7 +1808,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UndeadRefuge, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UndeadRefuge, level);
             }
         }
         public byte BridgeApproach
@@ -1817,7 +1819,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.BridgeApproach);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.BridgeApproach);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1828,7 +1830,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.BridgeApproach, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.BridgeApproach, level);
             }
         }
         public byte UndeadLockaway
@@ -1839,7 +1841,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UndeadLockaway);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UndeadLockaway);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1850,7 +1852,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UndeadLockaway, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UndeadLockaway, level);
             }
         }
         public byte UndeadPurgatory
@@ -1861,7 +1863,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UndeadPurgatory);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UndeadPurgatory);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1872,7 +1874,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UndeadPurgatory, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UndeadPurgatory, level);
             }
         }
         public byte PoisonPool
@@ -1883,7 +1885,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.PoisonPool);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.PoisonPool);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1894,7 +1896,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.PoisonPool, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.PoisonPool, level);
             }
         }
         public byte TheMines
@@ -1905,7 +1907,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheMines);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheMines);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1916,7 +1918,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheMines, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheMines, level);
             }
         }
         public byte LowerEarthenPeak
@@ -1927,7 +1929,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.LowerEarthenPeak);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.LowerEarthenPeak);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1938,7 +1940,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.LowerEarthenPeak, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.LowerEarthenPeak, level);
             }
         }
         public byte CentralEarthenPeak
@@ -1949,7 +1951,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CentralEarthenPeak);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CentralEarthenPeak);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1960,7 +1962,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CentralEarthenPeak, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CentralEarthenPeak, level);
             }
         }
         public byte UpperEarthenPeak
@@ -1971,7 +1973,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UpperEarthenPeak);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UpperEarthenPeak);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -1982,7 +1984,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UpperEarthenPeak, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UpperEarthenPeak, level);
             }
         }
         public byte ThresholdBridge
@@ -1993,7 +1995,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ThresholdBridge);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ThresholdBridge);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2004,7 +2006,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ThresholdBridge, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ThresholdBridge, level);
             }
         }
         public byte IronhearthHall
@@ -2015,7 +2017,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.IronhearthHall);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.IronhearthHall);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2026,7 +2028,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.IronhearthHall, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.IronhearthHall, level);
             }
         }
         public byte EygilsIdol
@@ -2037,7 +2039,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.EygilsIdol);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.EygilsIdol);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2048,7 +2050,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.EygilsIdol, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.EygilsIdol, level);
             }
         }
         public byte BelfrySolApproach
@@ -2059,7 +2061,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.BelfrySolApproach);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.BelfrySolApproach);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2070,7 +2072,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.BelfrySolApproach, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.BelfrySolApproach, level);
             }
         }
         public byte OldAkelarre
@@ -2081,7 +2083,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.OldAkelarre);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.OldAkelarre);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2092,7 +2094,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.OldAkelarre, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.OldAkelarre, level);
             }
         }
         public byte RuinedForkRoad
@@ -2103,7 +2105,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.RuinedForkRoad);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.RuinedForkRoad);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2114,7 +2116,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.RuinedForkRoad, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.RuinedForkRoad, level);
             }
         }
         public byte ShadedRuins
@@ -2125,7 +2127,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ShadedRuins);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ShadedRuins);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2136,7 +2138,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ShadedRuins, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ShadedRuins, level);
             }
         }
         public byte GyrmsRespite
@@ -2147,7 +2149,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.GyrmsRespite);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.GyrmsRespite);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2158,7 +2160,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.GyrmsRespite, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.GyrmsRespite, level);
             }
         }
         public byte OrdealsEnd
@@ -2169,7 +2171,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.OrdealsEnd);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.OrdealsEnd);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2180,7 +2182,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.OrdealsEnd, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.OrdealsEnd, level);
             }
         }
         public byte RoyalArmyCampsite
@@ -2191,7 +2193,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.RoyalArmyCampsite);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.RoyalArmyCampsite);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2202,7 +2204,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.RoyalArmyCampsite, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.RoyalArmyCampsite, level);
             }
         }
         public byte ChapelThreshold
@@ -2213,7 +2215,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ChapelThreshold);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ChapelThreshold);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2224,7 +2226,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ChapelThreshold, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ChapelThreshold, level);
             }
         }
         public byte LowerBrightstoneCove
@@ -2235,7 +2237,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.LowerBrightstoneCove);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.LowerBrightstoneCove);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2246,7 +2248,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.LowerBrightstoneCove, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.LowerBrightstoneCove, level);
             }
         }
         public byte HarvalsRestingPlace
@@ -2257,7 +2259,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.HarvalsRestingPlace);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.HarvalsRestingPlace);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2268,7 +2270,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.HarvalsRestingPlace, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.HarvalsRestingPlace, level);
             }
         }
         public byte GraveEntrance
@@ -2279,7 +2281,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.GraveEntrance);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.GraveEntrance);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2290,7 +2292,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.GraveEntrance, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.GraveEntrance, level);
             }
         }
         public byte UpperGutter
@@ -2301,7 +2303,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UpperGutter);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UpperGutter);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2312,7 +2314,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UpperGutter, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UpperGutter, level);
             }
         }
         public byte CentralGutter
@@ -2323,7 +2325,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CentralGutter);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CentralGutter);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2334,7 +2336,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CentralGutter, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CentralGutter, level);
             }
         }
         public byte HiddenChamber
@@ -2345,7 +2347,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.HiddenChamber);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.HiddenChamber);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2356,7 +2358,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.HiddenChamber, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.HiddenChamber, level);
             }
         }
         public byte BlackGulchMouth
@@ -2367,7 +2369,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.BlackGulchMouth);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.BlackGulchMouth);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2378,7 +2380,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.BlackGulchMouth, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.BlackGulchMouth, level);
             }
         }
         public byte KingsGate
@@ -2389,7 +2391,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.KingsGate);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.KingsGate);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2400,7 +2402,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.KingsGate, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.KingsGate, level);
             }
         }
         public byte UnderCastleDrangleic
@@ -2411,7 +2413,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UnderCastleDrangleic);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UnderCastleDrangleic);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2422,7 +2424,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UnderCastleDrangleic, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UnderCastleDrangleic, level);
             }
         }
         public byte ForgottenChamber
@@ -2433,7 +2435,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ForgottenChamber);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ForgottenChamber);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2444,7 +2446,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ForgottenChamber, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ForgottenChamber, level);
             }
         }
         public byte CentralCastleDrangleic
@@ -2455,7 +2457,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CentralCastleDrangleic);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CentralCastleDrangleic);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2466,7 +2468,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CentralCastleDrangleic, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CentralCastleDrangleic, level);
             }
         }
         public byte TowerofPrayer
@@ -2477,7 +2479,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TowerofPrayer);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TowerofPrayer);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2488,7 +2490,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TowerofPrayer, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TowerofPrayer, level);
             }
         }
         public byte CrumbledRuins
@@ -2499,7 +2501,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.CrumbledRuins);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.CrumbledRuins);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2510,7 +2512,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.CrumbledRuins, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.CrumbledRuins, level);
             }
         }
         public byte RhoysRestingPlace
@@ -2521,7 +2523,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.RhoysRestingPlace);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.RhoysRestingPlace);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2532,7 +2534,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.RhoysRestingPlace, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.RhoysRestingPlace, level);
             }
         }
         public byte RiseoftheDead
@@ -2543,7 +2545,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.RiseoftheDead);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.RiseoftheDead);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2554,7 +2556,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.RiseoftheDead, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.RiseoftheDead, level);
             }
         }
         public byte UndeadCryptEntrance
@@ -2565,7 +2567,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UndeadCryptEntrance);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UndeadCryptEntrance);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2576,7 +2578,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UndeadCryptEntrance, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UndeadCryptEntrance, level);
             }
         }
         public byte UndeadDitch
@@ -2587,7 +2589,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UndeadDitch);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UndeadDitch);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2598,7 +2600,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UndeadDitch, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UndeadDitch, level);
             }
         }
         public byte Foregarden
@@ -2609,7 +2611,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.Foregarden);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.Foregarden);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2620,7 +2622,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.Foregarden, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.Foregarden, level);
             }
         }
         public byte RitualSite
@@ -2631,7 +2633,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.RitualSite);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.RitualSite);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2642,7 +2644,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.RitualSite, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.RitualSite, level);
             }
         }
         public byte DragonAerie
@@ -2653,7 +2655,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.DragonAerie);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.DragonAerie);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2664,7 +2666,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.DragonAerie, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.DragonAerie, level);
             }
         }
         public byte ShrineEntrance
@@ -2675,7 +2677,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ShrineEntrance);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ShrineEntrance);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2686,7 +2688,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ShrineEntrance, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ShrineEntrance, level);
             }
         }
         public byte SanctumWalk
@@ -2697,7 +2699,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.SanctumWalk);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.SanctumWalk);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2708,7 +2710,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.SanctumWalk, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.SanctumWalk, level);
             }
         }
         public byte PriestessChamber
@@ -2719,7 +2721,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.PriestessChamber);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.PriestessChamber);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2730,7 +2732,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.PriestessChamber, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.PriestessChamber, level);
             }
         }
         public byte HiddenSanctumChamber
@@ -2741,7 +2743,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.HiddenSanctumChamber);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.HiddenSanctumChamber);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2752,7 +2754,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.HiddenSanctumChamber, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.HiddenSanctumChamber, level);
             }
         }
         public byte LairoftheImperfect
@@ -2763,7 +2765,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.LairoftheImperfect);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.LairoftheImperfect);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2774,7 +2776,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.LairoftheImperfect, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.LairoftheImperfect, level);
             }
         }
         public byte SanctumInterior
@@ -2785,7 +2787,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.SanctumInterior);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.SanctumInterior);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2796,7 +2798,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.SanctumInterior, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.SanctumInterior, level);
             }
         }
         public byte TowerofPrayerDLC
@@ -2807,7 +2809,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TowerofPrayerDLC);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TowerofPrayerDLC);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2818,7 +2820,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TowerofPrayerDLC, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TowerofPrayerDLC, level);
             }
         }
         public byte SanctumNadir
@@ -2829,7 +2831,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.SanctumNadir);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.SanctumNadir);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2840,7 +2842,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.SanctumNadir, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.SanctumNadir, level);
             }
         }
         public byte ThroneFloor
@@ -2851,7 +2853,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ThroneFloor);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ThroneFloor);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2862,7 +2864,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ThroneFloor, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ThroneFloor, level);
             }
         }
         public byte UpperFloor
@@ -2873,7 +2875,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.UpperFloor);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.UpperFloor);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2884,7 +2886,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.UpperFloor, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.UpperFloor, level);
             }
         }
         public byte Foyer
@@ -2895,7 +2897,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.Foyer);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.Foyer);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2906,7 +2908,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.Foyer, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.Foyer, level);
             }
         }
         public byte LowermostFloor
@@ -2917,7 +2919,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.LowermostFloor);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.LowermostFloor);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2928,7 +2930,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.LowermostFloor, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.LowermostFloor, level);
             }
         }
         public byte TheSmelterThrone
@@ -2939,7 +2941,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.TheSmelterThrone);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.TheSmelterThrone);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2950,7 +2952,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.TheSmelterThrone, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.TheSmelterThrone, level);
             }
         }
         public byte IronHallwayEntrance
@@ -2961,7 +2963,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.IronHallwayEntrance);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.IronHallwayEntrance);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2972,7 +2974,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.IronHallwayEntrance, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.IronHallwayEntrance, level);
             }
         }
         public byte OuterWall
@@ -2983,7 +2985,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.OuterWall);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.OuterWall);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -2994,7 +2996,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.OuterWall, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.OuterWall, level);
             }
         }
         public byte AbandonedDwelling
@@ -3005,7 +3007,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.AbandonedDwelling);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.AbandonedDwelling);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -3016,7 +3018,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.AbandonedDwelling, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.AbandonedDwelling, level);
             }
         }
         public byte ExpulsionChamber
@@ -3027,7 +3029,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.ExpulsionChamber);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.ExpulsionChamber);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -3038,7 +3040,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.ExpulsionChamber, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.ExpulsionChamber, level);
             }
         }
         public byte InnerWall
@@ -3049,7 +3051,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.InnerWall);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.InnerWall);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -3060,7 +3062,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.InnerWall, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.InnerWall, level);
             }
         }
         public byte LowerGarrison
@@ -3071,7 +3073,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.LowerGarrison);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.LowerGarrison);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -3082,7 +3084,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.LowerGarrison, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.LowerGarrison, level);
             }
         }
         public byte GrandCathedral
@@ -3093,7 +3095,7 @@ namespace DS2S_META
 
                 if (Loaded)
                 {
-                    level = BonfireLevels.ReadByte((int)DS2SOffsets.BonfireLevels.GrandCathedral);
+                    level = BonfireLevels.ReadByte(Offsets.BonfireLevels.GrandCathedral);
                     level = (byte)((level + 1) / 2);
                 }
 
@@ -3104,7 +3106,7 @@ namespace DS2S_META
                 byte level = 0;
                 if (value > 0)
                     level = (byte)(value * 2 - 1);
-                BonfireLevels.WriteByte((int)DS2SOffsets.BonfireLevels.GrandCathedral, level);
+                BonfireLevels.WriteByte(Offsets.BonfireLevels.GrandCathedral, level);
             }
         }
 
@@ -3131,7 +3133,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.Head);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.Head);
 
                 if (DS2SItem.Items.ContainsKey(itemID + 10000000))
                     return DS2SItem.Items[itemID + 10000000];
@@ -3144,7 +3146,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.Chest);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.Chest);
 
                 if (DS2SItem.Items.ContainsKey(itemID + 10000000))
                     return DS2SItem.Items[itemID + 10000000];
@@ -3157,7 +3159,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.Arms);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.Arms);
 
                 if (DS2SItem.Items.ContainsKey(itemID + 10000000))
                     return DS2SItem.Items[itemID + 10000000];
@@ -3170,7 +3172,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.Legs);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.Legs);
 
                 if (DS2SItem.Items.ContainsKey(itemID + 10000000))
                     return DS2SItem.Items[itemID + 10000000];
@@ -3183,7 +3185,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.RightHand1);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.RightHand1);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3196,7 +3198,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.RightHand2);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.RightHand2);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3209,7 +3211,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.RightHand3);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.RightHand3);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3222,7 +3224,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.LeftHand1);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.LeftHand1);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3235,7 +3237,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.LeftHand2);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.LeftHand2);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3248,7 +3250,7 @@ namespace DS2S_META
             get
             {
                 if (!Loaded) return "";
-                var itemID = PlayerCtrl.ReadInt32((int)DS2SOffsets.PlayerEquipment.LeftHand3);
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.LeftHand3);
 
                 if (DS2SItem.Items.ContainsKey(itemID))
                     return DS2SItem.Items[itemID];
@@ -3426,11 +3428,11 @@ namespace DS2S_META
 
         public byte CurrentCovenant
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.CurrentCovenant) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.CurrentCovenant, value);
+                PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
             }
         }
         public string? CurrentCovenantName
@@ -3439,245 +3441,245 @@ namespace DS2S_META
         }
         public bool HeirsOfTheSunDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.HeirsOfTheSunDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.HeirsOfTheSunDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered, value);
             }
         }
         public byte HeirsOfTheSunRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.HeirsOfTheSunOfTheSunRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.HeirsOfTheSunOfTheSunRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.HeirsOfTheSunOfTheSunRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.HeirsOfTheSunOfTheSunRank, value);
             }
         }
         public short HeirsOfTheSunProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.HeirsOfTheSunProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.HeirsOfTheSunProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.HeirsOfTheSunProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.HeirsOfTheSunProgress, value);
             }
         }
         public bool BlueSentinelsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.BlueSentinelsDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BlueSentinelsDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.BlueSentinelsDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.BlueSentinelsDiscovered, value);
             }
         }
         public byte BlueSentinelsRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.BlueSentinelsRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BlueSentinelsRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.BlueSentinelsRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.BlueSentinelsRank, value);
             }
         }
         public short BlueSentinelsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.BlueSentinelsProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BlueSentinelsProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.BlueSentinelsProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.BlueSentinelsProgress, value);
             }
         }
         public bool BrotherhoodOfBloodDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.BrotherhoodOfBloodDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BrotherhoodOfBloodDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.BrotherhoodOfBloodDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.BrotherhoodOfBloodDiscovered, value);
             }
         }
         public byte BrotherhoodOfBloodRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.BrotherhoodOfBloodRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BrotherhoodOfBloodRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.BrotherhoodOfBloodRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.BrotherhoodOfBloodRank, value);
             }
         }
         public short BrotherhoodOfBloodProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.BrotherhoodOfBloodProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BrotherhoodOfBloodProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.BrotherhoodOfBloodProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.BrotherhoodOfBloodProgress, value);
             }
         }
         public bool WayOfTheBlueDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.WayOfTheBlueDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.WayOfTheBlueDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.WayOfTheBlueDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.WayOfTheBlueDiscovered, value);
             }
         }
         public byte WayOfTheBlueRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.WayOfTheBlueRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.WayOfTheBlueRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.WayOfTheBlueRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.WayOfTheBlueRank, value);
             }
         }
         public short WayOfTheBlueProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.WayOfTheBlueProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.WayOfTheBlueProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.WayOfTheBlueProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.WayOfTheBlueProgress, value);
             }
         }
         public bool RatKingDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.RatKingDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.RatKingDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.RatKingDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.RatKingDiscovered, value);
             }
         }
         public byte RatKingRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.RatKingRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.RatKingRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.RatKingRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.RatKingRank, value);
             }
         }
         public short RatKingProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.RatKingProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.RatKingProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.RatKingProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.RatKingProgress, value);
             }
         }
         public bool BellKeepersDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.BellKeepersDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BellKeepersDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.BellKeepersDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.BellKeepersDiscovered, value);
             }
         }
         public byte BellKeepersRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.BellKeepersRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BellKeepersRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.BellKeepersRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.BellKeepersRank, value);
             }
         }
         public short BellKeepersProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.BellKeepersProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BellKeepersProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.BellKeepersProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.BellKeepersProgress, value);
             }
         }
         public bool DragonRemnantsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.DragonRemnantsDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.DragonRemnantsDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.DragonRemnantsDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.DragonRemnantsDiscovered, value);
             }
         }
         public byte DragonRemnantsRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.DragonRemnantsRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.DragonRemnantsRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.DragonRemnantsRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.DragonRemnantsRank, value);
             }
         }
         public short DragonRemnantsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.DragonRemnantsProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.DragonRemnantsProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.DragonRemnantsProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.DragonRemnantsProgress, value);
             }
         }
         public bool CompanyOfChampionsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.CompanyOfChampionsDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.CompanyOfChampionsDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.CompanyOfChampionsDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.CompanyOfChampionsDiscovered, value);
             }
         }
         public byte CompanyOfChampionsRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.CompanyOfChampionsRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CompanyOfChampionsRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.CompanyOfChampionsRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.CompanyOfChampionsRank, value);
             }
         }
         public short CompanyOfChampionsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.CompanyOfChampionsProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.CompanyOfChampionsProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.CompanyOfChampionsProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.CompanyOfChampionsProgress, value);
             }
         }
         public bool PilgrimsOfDarknessDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean((int)DS2SOffsets.Covenants.PilgrimsOfDarknessDiscovered) : false;
+            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.PilgrimsOfDarknessDiscovered) : false;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteBoolean((int)DS2SOffsets.Covenants.PilgrimsOfDarknessDiscovered, value);
+                PlayerParam.WriteBoolean(Offsets.Covenants.PilgrimsOfDarknessDiscovered, value);
             }
         }
         public byte PilgrimsOfDarknessRank
         {
-            get => Loaded ? PlayerParam.ReadByte((int)DS2SOffsets.Covenants.PilgrimsOfDarknessRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.PilgrimsOfDarknessRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte((int)DS2SOffsets.Covenants.PilgrimsOfDarknessRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.PilgrimsOfDarknessRank, value);
             }
         }
         public short PilgrimsOfDarknessProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16((int)DS2SOffsets.Covenants.PilgrimsOfDarknessProgress) : (short)0;
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.PilgrimsOfDarknessProgress) : (short)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16((int)DS2SOffsets.Covenants.PilgrimsOfDarknessProgress, value);
+                PlayerParam.WriteInt16(Offsets.Covenants.PilgrimsOfDarknessProgress, value);
             }
         }
 

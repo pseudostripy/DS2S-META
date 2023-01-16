@@ -13,6 +13,7 @@ using System.Printing.IndexedProperties;
 using System.Linq;
 using System.Reflection;
 using System.IO;
+using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META
 {
@@ -38,12 +39,24 @@ namespace DS2S_META
         public int RowLength { get; private set; }
         public readonly RESOURCETYPE ResourceType;
 
+        public enum Param
+        {
+            
+        }
+
+
         public static class ParamInfo 
         {
             public const int param = 0x40;
             public const int paramID = 0x0;
             public const int paramoffset = 0x8;
             public const int nextParam = 0x18;
+
+            // Previously Param Enum:
+            public const int TotalParamLength = 0x0;
+            public const int ParamName = 0xC;
+            public const int OffsetsOnlyTableLength = 0x48;
+            public const int TableLength = 0x50; // total incl. offsets/rows parts (excls. strings)
         }
 
         private const string paramfol = "Resources/Paramdex_DS2S_09272022/";
@@ -106,11 +119,11 @@ namespace DS2S_META
         }
         private void ReadParamBytesPtr()
         {
-            string? paramType = Pointer?.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
+            string? paramType = Pointer?.ReadString(ParamInfo.ParamName, Encoding.UTF8, 0x20);
             if (paramType != Type)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
 
-            OffsetsTableLength = Pointer?.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            OffsetsTableLength = Pointer?.ReadInt32(ParamInfo.OffsetsOnlyTableLength);
 
             //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
             var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
@@ -128,13 +141,13 @@ namespace DS2S_META
             var filebytes = File.ReadAllBytes(FilePath);
             if (filebytes == null) throw new Exception("Error returning file bytes");
 
-            string paramType = Encoding.UTF8.GetString(filebytes, (int)DS2SOffsets.Param.ParamName, 0x20).TrimEnd('\0');
+            string paramType = Encoding.UTF8.GetString(filebytes, ParamInfo.ParamName, 0x20).TrimEnd('\0');
 
             //string paramType = Pointer.ReadString((int)DS2SOffsets.Param.ParamName, Encoding.UTF8, 0x20);
             if (paramType != Type)
                 throw new InvalidOperationException($"Incorrect Param Pointer: {paramType} should be {Type}");
 
-            OffsetsTableLength = BitConverter.ToInt32(filebytes, (int)DS2SOffsets.Param.OffsetsOnlyTableLength);
+            OffsetsTableLength = BitConverter.ToInt32(filebytes, ParamInfo.OffsetsOnlyTableLength);
             //OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
 
             //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);

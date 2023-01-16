@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static DS2S_META.DS2SOffsets;
+using static DS2S_META.Utils.Offsets.DS2SOffsets;
 using static SoulsFormats.PARAMDEF;
 using SoulsFormats;
 using DS2S_META.Randomizer;
