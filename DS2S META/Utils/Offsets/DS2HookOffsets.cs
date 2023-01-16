@@ -37,38 +37,13 @@ namespace DS2S_META.Utils.Offsets
         public BonfireLevels BonfireLevels { get; init; }
         public Connection Connection { get; init; }
         public Camera Camera { get; init; }
+        public Core Core { get; init; }
 
         public PlayerType PlayerType = new(0x3C, 0x3D, 0x48);
         public NetSvrBloodstainManager NetSvrBloodstainManager = new(0x38, 0x3C, 0x40);
         public PlayerPosition PlayerPosition = new(0x20, 0x24, 0x28, 0x34, 0x38, 0x3C);
 
-        // Core struct offsets:
-        public const int PlayerTypeOffset = 0xB0;
-        public const int PlayerNameOffset = 0xA8;
-        public const int AvailableItemBagOffset = 0x10;
-        public const int ItemGiveWindowPointer = 0x22E0;
-        public const int PlayerBaseMiscOffset = 0xC0;
-        public const int PlayerCtrlOffset = 0xD0;
-        public const int NetSvrBloodstainManagerOffset1 = 0x90;
-        public const int NetSvrBloodstainManagerOffset2 = 0x28;
-        public const int NetSvrBloodstainManagerOffset3 = 0x88;
-        public const int PlayerParamOffset = 0x490;
-        public const int PlayerPositionOffset1 = 0xF8;
-        public const int PlayerPositionOffset2 = 0xF0;
-        public const int PlayerMapDataOffset1 = 0x100;
-        public const int PlayerMapDataOffset2 = 0x320;
-        public const int PlayerMapDataOffset3 = 0x20;
-        public const int SpEffectCtrlOffset = 0x3E0;
-        public const int CharacterFlagsOffset = 0x490;
-        public const int EventManagerOffset = 0x70;
-        public const int WarpManagerOffset = 0x70;
-        public const int BonfireLevelsOffset1 = 0x58;
-        public const int BonfireLevelsOffset2 = 0x20;
-        public const int ConnectionOffset = 0x38;
-        public const int CameraOffset1 = 0x0;
-        public const int CameraOffset2 = 0x20;
-        public const int CameraOffset3 = 0x28;
-
+        
 
         // Functions TODO:
         public const string ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41";

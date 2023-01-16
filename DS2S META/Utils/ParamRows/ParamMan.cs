@@ -12,6 +12,7 @@ using SoulsFormats;
 using DS2S_META.Randomizer;
 using static DS2S_META.Utils.ItemRow;
 using System.Reflection;
+using DS2S_META.Utils.ParamRows;
 
 namespace DS2S_META.Utils
 {
@@ -45,11 +46,14 @@ namespace DS2S_META.Utils
             public const string ITEM_USAGE = "ITEM_USAGE_PARAM";
             public const string ARROW = "ARROW_PARAM";
             public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
-
+            public const string ARMOR_REINFORCE = "ARMOR_REINFORCE_PARAM";
+            public const string ARMOR = "ARMOR_ROW";
+            
             // Names different from underlying DEF
             public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
             public const string ITEM_LOT_CHR = "ITEM_LOT_CHR";
             public const string ENEMY_PARAM = "ENEMY_PARAM";
+            public const string LEVELUP = "PLAYER_LEVELUP_SOULS_PARAM";
 
             public static List<string> GENERATOR_PARAM { get; set; } = new()
             {
@@ -129,6 +133,9 @@ namespace DS2S_META.Utils
         public static Param? ItemUsageParam => AllParams[PAliases.ITEM_USAGE];
         public static Param? ArrowParam => AllParams[PAliases.ARROW];
         public static Param? EnemyParam => AllParams[PAliases.ENEMY_PARAM];
+        public static Param? PlayerLevelUpSoulsParam => AllParams[PAliases.LEVELUP];
+        public static Param? ArmorReinforceParam => AllParams[PAliases.ARMOR_REINFORCE];
+        public static Param? ArmorParam => AllParams[PAliases.ARMOR];
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
         public static void Initialise(DS2SHook hook)
@@ -302,6 +309,18 @@ namespace DS2S_META.Utils
 
                 case "GENERATOR_REGIST_PARAM":
                     param.initialise<GeneratorRegistRow>();
+                    break;
+
+                case "CHR_LEVEL_UP_SOULS_PARAM":
+                    param.initialise<PlayerLevelUpSoulsRow>();
+                    break;
+
+                case "ARMOR_REINFORCE_PARAM":
+                    param.initialise<ArmorReinforceRow>(); 
+                    break;
+
+                case "ARMOR_PARAM":
+                    param.initialise<ArmorRow>();
                     break;
 
                 default:

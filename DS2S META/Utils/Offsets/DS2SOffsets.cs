@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Utils.Offsets
 {
-    public class DS2SOffsets : DS2HookOffsets
+    public abstract class DS2SOffsets : DS2HookOffsets
     {
-        
+
         // BaseA
         public const string BaseAAob = "48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6";
         public const string BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
         public const int BasePtrOffset1 = 0x3;
         public const int BasePtrOffset2 = 0x7;
-        public const int PlayerTypeOffset = 0xB0;
-        public const int PlayerNameOffset = 0xA8;
+        
 
         public DS2SOffsets()
         {
@@ -168,7 +167,37 @@ namespace DS2S_META.Utils.Offsets
                 CamZ = 0x1A4,
                 CamY = 0x1A8
             };
-        }
+
+
+            Core = new()
+            {
+                PlayerTypeOffset = 0xB0,
+                PlayerNameOffset = 0xA8,
+                AvailableItemBagOffset = 0x10,
+                ItemGiveWindowPointer = 0x22E0,
+                PlayerBaseMiscOffset = 0xC0,
+                PlayerCtrlOffset = 0xD0,
+                NetSvrBloodstainManagerOffset1 = 0x90,
+                NetSvrBloodstainManagerOffset2 = 0x28,
+                NetSvrBloodstainManagerOffset3 = 0x88,
+                PlayerParamOffset = 0x490,
+                PlayerPositionOffset1 = 0xF8,
+                PlayerPositionOffset2 = 0xF0,
+                PlayerMapDataOffset1 = 0x100,
+                PlayerMapDataOffset2 = 0x320,
+                PlayerMapDataOffset3 = 0x20,
+                SpEffectCtrlOffset = 0x3E0,
+                CharacterFlagsOffset = 0x490,
+                EventManagerOffset = 0x70,
+                WarpManagerOffset = 0x70,
+                BonfireLevelsOffset1 = 0x58,
+                BonfireLevelsOffset2 = 0x20,
+                ConnectionOffset = 0x38,
+                CameraOffset1 = 0x0,
+                CameraOffset2 = 0x20,
+                CameraOffset3 = 0x28,
+        };
+    }
 
         
 

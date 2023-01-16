@@ -14,8 +14,7 @@ namespace DS2S_META.Utils.Offsets
         public const string BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
         public const int BasePtrOffset1 = 0x3;
         public const int BasePtrOffset2 = 0x7;
-        public const int PlayerTypeOffset = 0x90;
-
+        
 
         public DS2VOffsets()
         {
@@ -167,44 +166,42 @@ namespace DS2S_META.Utils.Offsets
                 CamZ = 0x1A4,
                 CamY = 0x1A8
             };
+            Core = new()
+            {
+                PlayerTypeOffset = 0x90,
+                PlayerNameOffset = UNSET,
+                AvailableItemBagOffset = 0x8,
+                ItemGiveWindowPointer = 0xCC4,
+                PlayerBaseMiscOffset = 0x60,
+                PlayerCtrlOffset = 0x74,
+                NetSvrBloodstainManagerOffset1 = 0x90,
+                NetSvrBloodstainManagerOffset2 = 0x28,
+                NetSvrBloodstainManagerOffset3 = 0x88,
+                PlayerParamOffset = 0x378,
+                PlayerPositionOffset1 = 0xB4,
+                PlayerPositionOffset2 = 0xA8,
+                PlayerMapDataOffset1 = 0x14,
+                PlayerMapDataOffset2 = 0x1B0,
+                PlayerMapDataOffset3 = 0x10,
+                SpEffectCtrlOffset = 0x308,
+                CharacterFlagsOffset = 0x490,
+                EventManagerOffset = 0x44,
+                WarpManagerOffset = 0x2C,
+                BonfireLevelsOffset1 = 0x10,
+                BonfireLevelsOffset2 = UNSET,
+                ConnectionOffset = UNSET,
+                CameraOffset1 = 0x0,
+                CameraOffset2 = 0x20,
+                CameraOffset3 = 0x28,
+                //GravityOffset1 = 0xB8,
+                //GravityOffset2 = 0x8,
+                //EquipmentOffset1 = 0x2D4,
+                //EquipmentOffset2 = 0x14,
+                //GameDataManagerOffset = 0x60,
+            };
         }
 
         
-
-
-
-        // Core structs TODO:
-        public const int GameDataManagerOffset = 0x60;
-        public const int AvailableItemBagOffset = 0x8;
-        public const int ItemGiveWindowPointer = 0xCC4;
-        public const int PointerArrayOffset1 = 0x10;
-        public const int PointerArrayOffset2 = 0x94;
-        public const int PointerArrayOffset3 = 0x298;
-        public const int PointerArrayOffset4 = 0x248;
-        public const int PlayerBaseMiscOffset = 0x60;
-        public const int PlayerCtrlOffset = 0x74;
-        public const int EquipmentOffset1 = 0x2D4;
-        public const int EquipmentOffset2 = 0x14;
-        public const int NetSvrBloodstainManagerOffset1 = 0x90;
-        public const int NetSvrBloodstainManagerOffset2 = 0x28;
-        public const int NetSvrBloodstainManagerOffset3 = 0x88;
-        public const int PlayerParamOffset = 0x378;
-        public const int PlayerPositionOffset1 = 0xB4;
-        public const int PlayerPositionOffset2 = 0xA8;
-        public const int GravityOffset1 = 0xB8;
-        public const int GravityOffset2 = 0x8;
-        public const int PlayerMapDataOffset1 = 0x14;
-        public const int PlayerMapDataOffset2 = 0x1B0;
-        public const int PlayerMapDataOffset3 = 0x10;
-        public const int SpEffectCtrlOffset = 0x308;
-        public const int CharacterFlagsOffset = 0x490;
-        public const int EventManagerOffset = 0x44;
-        public const int WarpManagerOffset = 0x2C;
-        public const int BonfireLevelsOffset = 0x10;
-        public const int CameraOffset1 = 0x0;
-        public const int CameraOffset2 = 0x20;
-        public const int CameraOffset3 = 0x28;
-
         // Functions TODO
         public const string ItemGiveFunc = "55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9";
         public const string ItemStruct2dDisplay = "55 8B EC 8B 45 08 0F 57 C0 8B 4D 14 53";
@@ -278,4 +275,4 @@ namespace DS2S_META.Utils.Offsets
 
     }
 }
-}
+

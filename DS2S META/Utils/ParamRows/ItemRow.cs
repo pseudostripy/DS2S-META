@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Utils.ParamRows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace DS2S_META.Utils
         // Behind-fields:
         private int _iconID;
         private int _weaponID;
-        private int _armourID;
+        private int _armorID;
         private int _ammunitionID;
         private int _ringID;
         private int _spellID;
@@ -63,12 +64,12 @@ namespace DS2S_META.Utils
                 WriteAt(5, BitConverter.GetBytes(value));
             }
         }
-        internal int ArmourID
+        internal int ArmorID
         {
-            get => _armourID;
+            get => _armorID;
             set
             {
-                _armourID = value;
+                _armorID = value;
                 WriteAt(6, BitConverter.GetBytes(value));
             }
         }
@@ -145,9 +146,12 @@ namespace DS2S_META.Utils
             }
         }
 
+        // Linked Params:
         internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);
+        internal ArmorRow? ArmorRow => ParamMan.GetLink<ArmorRow>(ParamMan.ArmorParam, WeaponID);
         internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
         internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
+
 
         // Useful properties:
         private List<eItemType> WepSpellsArmour = new() 
@@ -174,7 +178,7 @@ namespace DS2S_META.Utils
         {
             IconID = (int)ReadAt(0);
             WeaponID = (int)ReadAt(5);
-            ArmourID = (int)ReadAt(6);
+            ArmorID = (int)ReadAt(6);
             AmmunitionID = (int)ReadAt(7);
             RingID = (int)ReadAt(8);
             SpellID = (int)ReadAt(9);
@@ -191,8 +195,8 @@ namespace DS2S_META.Utils
             // is this how they do it?
             if (WeaponID != -1)
                 return WeaponID;
-            if (ArmourID != -1)
-                return ArmourID;
+            if (ArmorID != -1)
+                return ArmorID;
             if (AmmunitionID != -1)
                 return AmmunitionID;
             if (RingID != -1)

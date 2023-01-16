@@ -39,12 +39,7 @@ namespace DS2S_META
         public int RowLength { get; private set; }
         public readonly RESOURCETYPE ResourceType;
 
-        public enum Param
-        {
-            
-        }
-
-
+        
         public static class ParamInfo 
         {
             public const int param = 0x40;
@@ -352,6 +347,7 @@ namespace DS2S_META
                 return match.Groups["desc"].Value.Trim();
             }
             public object ReadAt(int fieldindex) => Data[fieldindex];
+            
             public void WriteAt(int fieldindex, byte[] valuebytes)
             {
                 // Note: this function isn't generalised properly yet

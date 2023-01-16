@@ -20,6 +20,7 @@ using System.Runtime.Serialization;
 using Octokit;
 using System.Reflection;
 using DS2S_META.Utils.Offsets;
+using System.CodeDom;
 
 namespace DS2S_META
 {
@@ -182,51 +183,42 @@ namespace DS2S_META
             BBJType = GetBBJType(isOldBbj);
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
-            
+
             // Further pointer setup... todo?
-            PlayerName = CreateChildPointer(BaseA, Offsets.PlayerNameOffset);
-            AvailableItemBag = CreateChildPointer(PlayerName, Offsets.AvailableItemBagOffset, Offsets.AvailableItemBagOffset);
-            ItemGiveWindow = CreateChildPointer(BaseA, Offsets.ItemGiveWindowPointer);
-            PlayerBaseMisc = CreateChildPointer(PlayerName, Offsets.PlayerBaseMiscOffset);
-            PlayerCtrl = CreateChildPointer(BaseA, Offsets.PlayerCtrlOffset);
-            PlayerPosition = CreateChildPointer(PlayerCtrl, Offsets.PlayerPositionOffset1, Offsets.PlayerPositionOffset2);
-            PlayerGravity = CreateChildPointer(PlayerCtrl, Offsets.PlayerMapDataOffset1);
-            PlayerParam = CreateChildPointer(PlayerCtrl, Offsets.PlayerParamOffset);
-            PlayerType = CreateChildPointer(PlayerCtrl, Offsets.PlayerTypeOffset);
-            SpEffectCtrl = CreateChildPointer(PlayerCtrl, Offsets.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(PlayerGravity, Offsets.PlayerMapDataOffset2, Offsets.PlayerMapDataOffset3);
-            EventManager = CreateChildPointer(BaseA, Offsets.EventManagerOffset);
-            BonfireLevels = CreateChildPointer(EventManager, Offsets.BonfireLevelsOffset1, Offsets.BonfireLevelsOffset2);
-            WarpManager = CreateChildPointer(EventManager, Offsets.WarpManagerOffset);
-            NetSvrBloodstainManager = CreateChildPointer(BaseA, Offsets.NetSvrBloodstainManagerOffset1, Offsets.NetSvrBloodstainManagerOffset2, Offsets.NetSvrBloodstainManagerOffset3);
+            Core OC = Offsets.Core; // shorthand
+            PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
+            AvailableItemBag = CreateChildPointer(PlayerName, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
+            ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
+            PlayerBaseMisc = CreateChildPointer(PlayerName, OC.PlayerBaseMiscOffset);
+            PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
+            PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
+            PlayerGravity = CreateChildPointer(PlayerCtrl, OC.PlayerMapDataOffset1);
+            PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
+            PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
+            SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
+            PlayerMapData = CreateChildPointer(PlayerGravity, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
+            EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
+            BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
+            WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);
+            NetSvrBloodstainManager = CreateChildPointer(BaseA, OC.NetSvrBloodstainManagerOffset1, OC.NetSvrBloodstainManagerOffset2, OC.NetSvrBloodstainManagerOffset3);
 
-            LevelUpSoulsParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset1, Offsets.LevelUpSoulsParamOffset, Offsets.ParamDataOffset2);
-            ArmorReinforceParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset1, Offsets.ArmorReinforceParamOffset, Offsets.ParamDataOffset2);
-            ItemUseageParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset3, Offsets.ItemUsageParamOffset1, Offsets.ItemUsageParamOffset2);
-            //ItemLotDropsParam = CreateChildPointer(BaseA, Offsets.ParamDataOffset3, Offsets.ParamDataOffset4, Offsets.ParamDataOffset2);
-
+            
             BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
-            Connection = CreateChildPointer(BaseB, Offsets.ConnectionOffset);
+            Connection = CreateChildPointer(BaseB, OC.ConnectionOffset);
 
-            Camera = CreateBasePointer(Handle + 0x160B8D0, Offsets.CameraOffset1);
-            Camera2 = CreateChildPointer(Camera, Offsets.CameraOffset2);
-            Camera3 = CreateChildPointer(BaseA, Offsets.CameraOffset2, Offsets.CameraOffset2);
-            Camera4 = CreateChildPointer(BaseA, Offsets.CameraOffset2, Offsets.CameraOffset3);
-            Camera5 = CreateChildPointer(BaseA, Offsets.CameraOffset2);
+            Camera = CreateChildPointer(BaseA, OC.CameraOffset1);
+            Camera2 = CreateChildPointer(Camera, OC.CameraOffset2);
+            Camera3 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset2);
+            Camera4 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset3);
+            Camera5 = CreateChildPointer(BaseA, OC.CameraOffset2);
 
             SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
 
-            GetLevelRequirements();
-            
-            // TO DEPRECATE 
-            ArmorReinforceParamOffsetDict = BuildOffsetDictionary(ArmorReinforceParam, "ARMOR_REINFORCE_PARAM");
-            ItemUsageParamOffsetDict = BuildOffsetDictionary(ItemUseageParam, "ITEM_USAGE_PARAM");
-                        
-            
             
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
             GetVanillaItems();
+            GetLevelRequirements();
 
             UpdateStatsProperties();
             GetSpeedhackOffsets(SpeedhackDllPath);
@@ -712,8 +704,8 @@ namespace DS2S_META
         }
         public bool Gravity
         {
-            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.Gravity) : true;
-            set => PlayerGravity.WriteBoolean(Offsets.Gravity.Gravity, !value);
+            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
+            set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
         }
         public bool Collision
         {
@@ -893,7 +885,6 @@ namespace DS2S_META
                 OnPropertyChanged(nameof(Name));
             }
         }
-
         public byte Class
         {
             get => Loaded ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
@@ -937,7 +928,6 @@ namespace DS2S_META
         {
             get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
         }
-
         public short Vigor
         {
             get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
@@ -1028,6 +1018,9 @@ namespace DS2S_META
                 UpdateSoulLevel();
             }
         }
+        #endregion
+
+        #region SoulsFunctions
         public void GiveSouls(int souls)
         {
             var asm = (byte[])DS2SAssembly.AddSouls.Clone();
@@ -1093,29 +1086,11 @@ namespace DS2S_META
         public static List<int> Levels = new();
         private void GetLevelRequirements()
         {
-            if (LevelUpSoulsParam == null)
-                throw new Exception("LevelUpSoulsParam not setup");
+            if (ParamMan.PlayerLevelUpSoulsParam == null)
+                throw new NullReferenceException("Level up cost param not found");
 
-            Levels = new List<int>();
-            var paramName = LevelUpSoulsParam.ReadString(0xC, Encoding.UTF8, 0x18);
-            if (paramName != "CHR_LEVEL_UP_SOULS_PARAM")
-                throw new InvalidOperationException("Incorrect Param Pointer: LEVEL_UP_SOULS_PARAM");
-
-            var tableLength = LevelUpSoulsParam.ReadInt32(Offsets.Param.OffsetsOnlyTableLength);
-            var paramID = 0x40;
-            var paramOffset = 0x48;
-            var nextParam = 0x18;
-            var slOffset = 0x8;
-
-            while (paramID < tableLength)
-            {
-                var soulReqOffset = LevelUpSoulsParam.ReadInt32(paramOffset);
-                var soulReq = LevelUpSoulsParam.ReadInt32(soulReqOffset + slOffset);
-                Levels.Add(soulReq);
-
-                paramID += nextParam;
-                paramOffset += nextParam;
-            }
+            foreach (var row in ParamMan.PlayerLevelUpSoulsParam.Rows.Cast<PlayerLevelUpSoulsRow>())
+                Levels.Add(row.LevelCost);
         }
 
         #endregion
@@ -1250,37 +1225,7 @@ namespace DS2S_META
         #endregion
 
         #region Params
-        private static Dictionary<int, int> ArmorReinforceParamOffsetDict = new();
-        private static Dictionary<int, int> ItemUsageParamOffsetDict = new();
         
-
-        private Dictionary<int, int> BuildOffsetDictionary(PHPointer pointer, string expectedParamName)
-        {
-            var dictionary = new Dictionary<int, int>();
-            var paramName = pointer.ReadString(Offsets.Param.ParamName, Encoding.UTF8, 0x18);
-            if (paramName != expectedParamName)
-                throw new InvalidOperationException($"Incorrect Param Pointer: {expectedParamName}");
-
-            var tableLength = pointer.ReadInt32(Offsets.Param.OffsetsOnlyTableLength);
-            var paramStartOffset = 0x40;
-            var paramLength = 0x18;
-
-            var paramIDOffset = 0x0;
-            var paramDataOffset = 0x8;
-            
-            var param = paramStartOffset;
-            while (param < tableLength)
-            {
-                var paramID = pointer.ReadInt32(param + paramIDOffset);
-                var dataOffset = pointer.ReadInt32(param + paramDataOffset);
-                dictionary.Add(paramID, dataOffset);
-
-                param += paramLength;
-            }
-
-            return dictionary;
-        }
-
         internal int GetMaxUpgrade(ItemRow item)
         {
             switch (item.ItemType)
@@ -1367,13 +1312,6 @@ namespace DS2S_META
             return SomePlayerStats.ReadInt32(tbo + 36*(int)bnstype);
         }
 
-        // ARCHAIC TO TIDY
-        internal int GetArmorMaxUpgrade(int id)
-        {
-            if  (!Setup || ArmorReinforceParam == null) return 0;
-            return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id - 10000000] + Offsets.ArmorReinforceParam.MaxUpgrade);
-            //return ArmorReinforceParam.ReadInt32(ArmorReinforceParamOffsetDict[id] + Offsets.ArmorReinforceParam.MaxUpgrade);
-        }
         
         internal void GetVanillaItems()
         {
@@ -1393,22 +1331,21 @@ namespace DS2S_META
         
 
         // TODO ARCHAIC
-        internal bool GetIsDroppable(int id)
+        internal bool GetIsDroppable(ItemRow item)
         {
-            if (!ParamMan.IsLoaded) return false;
-            if (!Setup || ItemUsageParamOffsetDict == null) return false;
-            var item = Items.Where(it => it.ID == id).FirstOrDefault();
+            if (!ParamMan.IsLoaded) 
+                return false;
 
+            if (!Setup || ParamMan.ItemUsageParam == null) 
+                return false;
+            
             if (item == null)
                 throw new Exception("Cannot find item for GetIsDroppable");
 
-            var itemUsageID = item.ItemUsageID;
-            byte bitField = ItemUseageParam.ReadByte(ItemUsageParamOffsetDict[itemUsageID] + Offsets.ItemUasgeParam.Bitfield);
-
-            if (bitField == 0)
+            bool? drp = item.ItemUsageRow?.IsDroppable;
+            if (drp == null)
                 return false;
-
-            return (bitField & 4) != 0;
+            return (bool)drp;
         }
         
         #endregion
@@ -3112,15 +3049,24 @@ namespace DS2S_META
 
         public void UnlockBonfires()
         {
-            foreach (DS2SOffsets.BonfireLevels bonfire in Enum.GetValues(typeof(DS2SOffsets.BonfireLevels)))
+            //foreach (DS2SOffsets.BonfireLevels bonfire in Enum.GetValues(typeof(DS2SOffsets.BonfireLevels)))
+            var BFlvls = Offsets.BonfireLevels;
+            foreach (var f in BFlvls.GetType().GetFields())
             {
-                var currentLevel = BonfireLevels.ReadByte((int)bonfire);
+                var fval = f.GetValue(BFlvls);
+                if (fval == null) 
+                    continue;
+                int bfoffset = (int)fval;
+                if (bfoffset == DS2HookOffsets.UNSET)
+                    continue;
 
-                if (bonfire == DS2SOffsets.BonfireLevels.FireKeepersDwelling)
-                        continue;
+                var currentLevel = BonfireLevels.ReadByte((int)bfoffset);
+
+                //if (bonfire == DS2SOffsets.BonfireLevels.FireKeepersDwelling)
+                //        continue;
 
                 if (currentLevel == 0)
-                    BonfireLevels.WriteByte((int)bonfire, 1);
+                    BonfireLevels.WriteByte((int)bfoffset, 1);
             }
         }
 
@@ -3450,11 +3396,11 @@ namespace DS2S_META
         }
         public byte HeirsOfTheSunRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.HeirsOfTheSunOfTheSunRank) : (byte)0;
+            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.HeirsOfTheSunRank) : (byte)0;
             set
             {
                 if (Reading || !Loaded) return;
-                PlayerParam.WriteByte(Offsets.Covenants.HeirsOfTheSunOfTheSunRank, value);
+                PlayerParam.WriteByte(Offsets.Covenants.HeirsOfTheSunRank, value);
             }
         }
         public short HeirsOfTheSunProgress

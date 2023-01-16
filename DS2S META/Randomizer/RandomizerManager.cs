@@ -63,17 +63,19 @@ namespace DS2S_META.Randomizer
                 return 0;
 
             // Wrapper similar to the DS2Item class call in Hook.
+            int? upgr;
             switch (item.ItemType)
             {
                 case eItemType.WEAPON1: // & shields
                 case eItemType.WEAPON2: // & staves
-                    var upgr = item.WeaponRow?.MaxUpgrade;
+                    upgr = item.WeaponRow?.MaxUpgrade;
                     return upgr ?? 0;
                 case eItemType.HEADARMOUR:
                 case eItemType.CHESTARMOUR:
                 case eItemType.GAUNTLETS:
                 case eItemType.LEGARMOUR:
-                    return Hook.GetArmorMaxUpgrade(item.ItemID + 10000000);
+                    upgr = item.ArmorRow?.ArmorReinforceRow?.MaxReinforceLevel;
+                    return upgr ?? 0;
 
                 default:
                     return 0;

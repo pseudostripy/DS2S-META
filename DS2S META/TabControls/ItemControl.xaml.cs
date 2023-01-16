@@ -240,7 +240,7 @@ namespace DS2S_META
             nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
             nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
 
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCreate.IsEnabled = Hook.GetIsDroppable(item) || Properties.Settings.Default.SpawnUndroppable;
             if (!Properties.Settings.Default.UpdateMaxLive)
                 HandleMaxAvailable();
             HandleMaxItemCheckbox();
@@ -252,7 +252,7 @@ namespace DS2S_META
                 return;
             if (item == null) return;
 
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item.ID) || Properties.Settings.Default.SpawnUndroppable;
+            btnCreate.IsEnabled = Hook.GetIsDroppable(item) || Properties.Settings.Default.SpawnUndroppable;
         }
 
         internal void EnableStats(bool enable)

@@ -9,7 +9,7 @@ namespace DS2S_META.Utils.Offsets
     public readonly record struct PlayerCtrlOffsets(int HP, int HPMin, int HPMax, int HPCap, int SP, int SPMax, int SpeedModifier);
     public readonly record struct PlayerName(int Name);
     public readonly record struct ForceQuit(int Quit);
-    public readonly record struct PlayerType(int ChrNetworkPanhtomId, int TeamType, int CharType);
+    public readonly record struct PlayerType(int ChrNetworkPhantomId, int TeamType, int CharType);
     public readonly record struct PlayerBaseMisc(int Class, int NewGame, int SaveSlot);
     public readonly record struct PlayerEquipment(int Legs, int Arms, int Chest, int Head,
                                          int RightHand1, int RightHand2, int RightHand3,
@@ -145,5 +145,33 @@ namespace DS2S_META.Utils.Offsets
         int CamX,
         int CamZ,
         int CamY
+    );
+    public readonly record struct Core
+    (
+        int PlayerTypeOffset,
+        int PlayerNameOffset,
+        int AvailableItemBagOffset,
+        int ItemGiveWindowPointer,
+        int PlayerBaseMiscOffset,
+        int PlayerCtrlOffset,
+        int NetSvrBloodstainManagerOffset1,
+        int NetSvrBloodstainManagerOffset2,
+        int NetSvrBloodstainManagerOffset3,
+        int PlayerParamOffset,
+        int PlayerPositionOffset1,
+        int PlayerPositionOffset2,
+        int PlayerMapDataOffset1,
+        int PlayerMapDataOffset2,
+        int PlayerMapDataOffset3,
+        int SpEffectCtrlOffset,
+        int CharacterFlagsOffset,
+        int EventManagerOffset,
+        int WarpManagerOffset,
+        int BonfireLevelsOffset1,
+        int BonfireLevelsOffset2,
+        int ConnectionOffset,
+        int CameraOffset1,
+        int CameraOffset2,
+        int CameraOffset3
     );
 }
