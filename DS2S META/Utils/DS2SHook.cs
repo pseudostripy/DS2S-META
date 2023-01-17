@@ -165,10 +165,12 @@ namespace DS2S_META
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
         public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
         public bool IsVanilla => new DS2VER[] {DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112}.Contains(DS2Ver);
+        public bool IsValidVer;
 
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             DS2Ver = GetDS2Ver();
+            IsValidVer = CheckValidVer();
             
             // Initial Setup & Version Checks:
             Offsets = GetOffsets();
@@ -209,6 +211,17 @@ namespace DS2S_META
 
             return GetVanillaVer(moduleSz);
         }
+        internal bool CheckValidVer()
+        {
+            var validvers = new DS2VER[]
+            {
+                DS2VER.VANILLA_V111,
+                DS2VER.VANILLA_V112,
+                DS2VER.SOTFS_V102,
+                DS2VER.SOTFS_V103,
+            };
+            return validvers.Contains(DS2Ver);
+        }
         private static DS2VER GetVanillaVer(int? modulesz)
         {
             return modulesz switch
@@ -228,6 +241,98 @@ namespace DS2S_META
                 _ => DS2VER.UNSUPPORTED,
             };
         }
+        internal BBJTYPE GetBBJType(bool isOldBbj)
+        {
+            // TODO VANILLA
+            if (IsVanilla)
+                return BBJTYPE.UNKN_VANILLA;
+
+            if (isOldBbj)
+                return BBJTYPE.OLDBBJ_SOTFS;
+
+
+            // check for new bbj
+            int jumpfcn_offset_V102 = 0x037B4BC;
+            int jumpfcn_offset_V103 = 0x0381E1C;
+            var jmpfcn_offset = IsSOTFS_CP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
+
+            var module_addr = Process?.MainModule?.BaseAddress;
+            if (module_addr == null)
+                throw new Exception("Unknown DS2 MainModule size");
+            var jmp_ptr = IntPtr.Add((IntPtr)module_addr, jmpfcn_offset);
+
+            // Read a byte to see if the bbj inject is there:
+            var jumpinj = CreateBasePointer(jmp_ptr);
+            byte testbyte = jumpinj.ReadByte(0);
+            switch (testbyte)
+            {
+                case NOBBJBYTE:
+                    return BBJTYPE.NOBBJ;
+                case NEWBBJBYTE:
+                    return BBJTYPE.NEWBBJ_SOTFS;
+                default:
+                    throw new Exception("Probably an issue with setting up the pointers/addresses");
+            }
+        }
+        private string GetStringVersion()
+        {
+            if (!IsSOTFS && !IsVanilla)
+                return "Unknown game or version";
+
+            StringBuilder sb = new();
+
+            // get main version:
+            if (IsSOTFS)
+                sb.Append("Sotfs");
+            else
+                sb.Append("Vanilla");
+
+            // get sub-version
+            switch (DS2Ver)
+            {
+                case DS2VER.SOTFS_V102:
+                    sb.Append(" V1.02");
+                    break;
+
+                case DS2VER.SOTFS_V103:
+                    sb.Append(" V1.03");
+                    break;
+
+                case DS2VER.VANILLA_V102:
+                    sb.Append(" V1.02 Old Patch");
+                    break;
+
+                case DS2VER.VANILLA_V111:
+                    sb.Append(" V1.11");
+                    break;
+
+                case DS2VER.VANILLA_V112:
+                    sb.Append(" V1.12");
+                    break;
+            }
+
+            // get mod versions:
+            switch (BBJType)
+            {
+                case BBJTYPE.NOBBJ:
+                    sb.Append(" (unmodded)");
+                    break;
+
+                case BBJTYPE.OLDBBJ_SOTFS:
+                    sb.Append(" (old bbj mod)");
+                    break;
+
+                case BBJTYPE.NEWBBJ_SOTFS:
+                    sb.Append(" (bbj mod)");
+                    break;
+
+                default:
+                    sb.Append(" (unknown mod)");
+                    break;
+            }
+            return sb.ToString();
+        }
+
         internal DS2HookOffsets GetOffsets()
         {
             return DS2Ver switch
@@ -295,97 +400,7 @@ namespace DS2S_META
         
         
         
-        internal BBJTYPE GetBBJType(bool isOldBbj)
-        {
-            // TODO VANILLA
-            if (IsVanilla)
-                return BBJTYPE.UNKN_VANILLA;
-
-            if (isOldBbj)
-                return BBJTYPE.OLDBBJ_SOTFS;
-            
-
-            // check for new bbj
-            int jumpfcn_offset_V102 = 0x037B4BC;
-            int jumpfcn_offset_V103 = 0x0381E1C;
-            var jmpfcn_offset = IsSOTFS_CP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
-
-            var module_addr = Process?.MainModule?.BaseAddress;
-            if (module_addr == null)
-                throw new Exception("Unknown DS2 MainModule size");
-            var jmp_ptr = IntPtr.Add((IntPtr)module_addr, jmpfcn_offset);
-
-            // Read a byte to see if the bbj inject is there:
-            var jumpinj = CreateBasePointer(jmp_ptr);
-            byte testbyte = jumpinj.ReadByte(0);
-            switch (testbyte)
-            {
-                case NOBBJBYTE:
-                    return BBJTYPE.NOBBJ;
-                case NEWBBJBYTE:
-                    return BBJTYPE.NEWBBJ_SOTFS;
-                default:
-                    throw new Exception("Probably an issue with setting up the pointers/addresses");
-            }
-        }
-        private string GetStringVersion()
-        {
-            if (!IsSOTFS && !IsVanilla)
-                return "Unknown game or version";
-
-            StringBuilder sb = new();
-
-            // get main version:
-            if (IsSOTFS)
-                sb.Append("Sotfs");
-            else
-                sb.Append("Vanilla");
-            
-            // get sub-version
-            switch (DS2Ver)
-            {
-                case DS2VER.SOTFS_V102:
-                    sb.Append(" V1.02");
-                    break;
-
-                case DS2VER.SOTFS_V103:
-                    sb.Append(" V1.03");
-                    break;
-
-                case DS2VER.VANILLA_V102:
-                    sb.Append(" V1.02 Old Patch");
-                    break;
-
-                case DS2VER.VANILLA_V111:
-                    sb.Append(" V1.11");
-                    break;
-
-                case DS2VER.VANILLA_V112:
-                    sb.Append(" V1.12");
-                    break;
-            }
-
-            // get mod versions:
-            switch (BBJType)
-            {
-                case BBJTYPE.NOBBJ:
-                    sb.Append(" (unmodded)");
-                    break;
-
-                case BBJTYPE.OLDBBJ_SOTFS:
-                    sb.Append(" (old bbj mod)");
-                    break;
-
-                case BBJTYPE.NEWBBJ_SOTFS:
-                    sb.Append(" (bbj mod)");
-                    break;
-
-                default:
-                    sb.Append(" (unknown mod)");
-                    break;
-            }
-            return sb.ToString();
-        }
+        
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
             if (Offsets.BasePtrOffset1 == null)

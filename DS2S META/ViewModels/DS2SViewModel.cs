@@ -91,7 +91,7 @@ namespace DS2S_META.ViewModels
                 if (!Hook.Hooked)
                     return Brushes.Black;
 
-                if (Hook.Is64Bit)
+                if (Hook.IsValidVer)
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
