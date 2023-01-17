@@ -174,4 +174,21 @@ namespace DS2S_META.Utils.Offsets
         int CameraOffset2,
         int CameraOffset3
     );
+
+    public record class Func
+    {
+        public string ItemGiveFunc { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string ItemStruct2dDisplay { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string GiveSoulsFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string SetWarpTargetFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string WarpFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string BaseBAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string CameraAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string SpeedFactorAccelOffset { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string SpeedFactorAnimOffset { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string SpeedFactorJumpOffset { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string SpeedFactorBuildupOffset { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string DisplayItem { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string ApplySpEffectAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+    };
 }

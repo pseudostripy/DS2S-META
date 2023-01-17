@@ -21,6 +21,7 @@ using Octokit;
 using System.Reflection;
 using DS2S_META.Utils.Offsets;
 using System.CodeDom;
+using System.Buffers.Text;
 
 namespace DS2S_META
 {
@@ -68,7 +69,7 @@ namespace DS2S_META
         private PHPointer SetWarpTargetFunc;
         private PHPointer WarpManager;
         private PHPointer WarpFunc;
-        private PHPointer SomePlayerStats;
+        private PHPointer? SomePlayerStats;
 
         public  PHPointer BaseA;
 
@@ -114,28 +115,30 @@ namespace DS2S_META
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
             Version = "Not Hooked";
-            BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseAAob); // needed to get DS2 Version
-
+            
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
 
         public void RegisterAOBs()
         {
-            BaseBSetup = RegisterAbsoluteAOB(DS2SOffsets.BaseBAoB);
-            SpeedFactorAccel = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAccelOffset);
-            SpeedFactorAnim = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorAnimOffset);
-            SpeedFactorJump = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorJumpOffset);
-            SpeedFactorBuildup = RegisterAbsoluteAOB(DS2SOffsets.SpeedFactorBuildupOffset);
-            GiveSoulsFunc = RegisterAbsoluteAOB(DS2SOffsets.GiveSoulsFuncAoB);
-            ItemGiveFunc = RegisterAbsoluteAOB(DS2SOffsets.ItemGiveFunc);
-            ItemStruct2dDisplay = RegisterAbsoluteAOB(DS2SOffsets.ItemStruct2dDisplay);
-            SetWarpTargetFunc = RegisterAbsoluteAOB(DS2SOffsets.SetWarpTargetFuncAoB);
-            WarpFunc = RegisterAbsoluteAOB(DS2SOffsets.WarpFuncAoB);
+            if (Offsets?.Func == null)
+                throw new Exception("Func structure null");
+
+            BaseBSetup = RegisterAbsoluteAOB(Offsets.Func.BaseBAoB);
+            SpeedFactorAccel = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAccelOffset);
+            SpeedFactorAnim = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAnimOffset);
+            SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
+            SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
+            GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
+            ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
+            ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
+            SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
+            WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
             
             // Version Specific AOBs:
-            ApplySpEffect = RegisterAbsoluteAOB(Offsets.ApplySpEffectAoB);
-            DisplayItem = RegisterAbsoluteAOB(Offsets.DisplayItem);
+            ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
+            DisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem);
         }
 
         // DS2 & BBJ Process Info Data
@@ -156,58 +159,24 @@ namespace DS2S_META
             OLDBBJ_VANILLA,
             NEWBBJ_VANILLA,
             OLDBBJ_SOTFS, 
-            NEWBBJ_SOTFS 
+            NEWBBJ_SOTFS,
+            UNKN_VANILLA,
         }
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
         public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
+        public bool IsVanilla => new DS2VER[] {DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112}.Contains(DS2Ver);
 
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             DS2Ver = GetDS2Ver();
             
-            // Eventually to remove:
-            if (!Is64Bit)
-            {
-                Version = "Vanilla (Wrong)";
-                return;
-            }
-
             // Initial Setup & Version Checks:
-            BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
             Offsets = GetOffsets();
+            BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
             BBJType = GetBBJType(isOldBbj);
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
-
-            // Further pointer setup... todo?
-            Core OC = Offsets.Core; // shorthand
-            PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
-            AvailableItemBag = CreateChildPointer(PlayerName, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
-            ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
-            PlayerBaseMisc = CreateChildPointer(PlayerName, OC.PlayerBaseMiscOffset);
-            PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
-            PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
-            PlayerGravity = CreateChildPointer(PlayerCtrl, OC.PlayerMapDataOffset1);
-            PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
-            PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
-            SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(PlayerGravity, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
-            EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
-            BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
-            WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);
-            NetSvrBloodstainManager = CreateChildPointer(BaseA, OC.NetSvrBloodstainManagerOffset1, OC.NetSvrBloodstainManagerOffset2, OC.NetSvrBloodstainManagerOffset3);
-
-            
-            BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
-            Connection = CreateChildPointer(BaseB, OC.ConnectionOffset);
-
-            Camera = CreateChildPointer(BaseA, OC.CameraOffset1);
-            Camera2 = CreateChildPointer(Camera, OC.CameraOffset2);
-            Camera3 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset2);
-            Camera4 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset3);
-            Camera5 = CreateChildPointer(BaseA, OC.CameraOffset2);
-
-            SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
+            SetupChildPointers();
 
             
             // Slowly migrate to param handling class:
@@ -220,30 +189,16 @@ namespace DS2S_META
             Version = GetStringVersion();
             Setup = true;
         }
-
-        internal void BasePointerSetup(out bool isOldBbj)
+        private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
-            // Attempt "normal" version:
-            IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
-            BaseA = CreateBasePointer(bp_orig);
-            isOldBbj = BaseA.Resolve() == IntPtr.Zero;
-            if (!isOldBbj)
-                return;
+            Version = "Not Hooked";
+            Setup = false;
+            ClearSpeedhackInject();
+            ParamMan.Uninitialise();
+            MW.HKM.ClearHooks();
+        }
 
-            // Old BBJ mod BasePointer adjustment:
-            BaseASetup = RegisterAbsoluteAOB(DS2SOffsets.BaseABabyJumpAoB);
-            RescanAOB();
-            BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
-        }
-        internal DS2SOffsets GetOffsets()
-        {
-            return DS2Ver switch
-            {
-                DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
-                DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
-                _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
-            };
-        }
+        // Major setup functions:
         internal DS2VER GetDS2Ver()
         {
             // Size of running DS2 application
@@ -273,8 +228,79 @@ namespace DS2S_META
                 _ => DS2VER.UNSUPPORTED,
             };
         }
+        internal DS2HookOffsets GetOffsets()
+        {
+            return DS2Ver switch
+            {
+                DS2VER.VANILLA_V102 => throw new Exception("Not implemented yet"),
+                DS2VER.VANILLA_V111 => new DS2VOffsets(),
+                DS2VER.VANILLA_V112 => new DS2VOffsets(),
+                DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
+                DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
+                _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
+            };
+        }
+        internal void BasePointerSetup(out bool isOldBbj)
+        {
+            BaseASetup = RegisterAbsoluteAOB(Offsets.BaseAAob);
+            RescanAOB();
+
+            // Attempt "normal" version:
+            IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
+            BaseA = CreateBasePointer(bp_orig);
+            isOldBbj = BaseA.Resolve() == IntPtr.Zero;
+            if (!isOldBbj)
+                return;
+
+            // Old BBJ mod BasePointer adjustment:
+            BaseASetup = RegisterAbsoluteAOB(Offsets.BaseABabyJumpAoB);
+            RescanAOB();
+            BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
+        }
+        internal void SetupChildPointers()
+        {
+            // Further pointer setup... todo?
+            Core OC = Offsets.Core; // shorthand
+            PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
+            AvailableItemBag = CreateChildPointer(PlayerName, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
+            ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
+            PlayerBaseMisc = CreateChildPointer(PlayerName, OC.PlayerBaseMiscOffset);
+            PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
+            PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
+            PlayerGravity = CreateChildPointer(PlayerCtrl, OC.PlayerMapDataOffset1);
+            PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
+            PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
+            SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
+            PlayerMapData = CreateChildPointer(PlayerGravity, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
+            EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
+            BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
+            WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);
+            NetSvrBloodstainManager = CreateChildPointer(BaseA, OC.NetSvrBloodstainManagerOffset1, OC.NetSvrBloodstainManagerOffset2, OC.NetSvrBloodstainManagerOffset3);
+
+
+            BaseB = CreateBasePointer(BasePointerFromSetupPointer(BaseBSetup));
+            Connection = CreateChildPointer(BaseB, OC.ConnectionOffset);
+
+            Camera = CreateChildPointer(BaseA, OC.CameraOffset1);
+            Camera2 = CreateChildPointer(Camera, OC.CameraOffset2);
+            Camera3 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset2);
+            Camera4 = CreateChildPointer(BaseA, OC.CameraOffset2, OC.CameraOffset3);
+            Camera5 = CreateChildPointer(BaseA, OC.CameraOffset2);
+
+            if (Offsets.PlayerStatsOffsets != null)
+                SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
+        }
+
+
+        
+        
+        
         internal BBJTYPE GetBBJType(bool isOldBbj)
         {
+            // TODO VANILLA
+            if (IsVanilla)
+                return BBJTYPE.UNKN_VANILLA;
+
             if (isOldBbj)
                 return BBJTYPE.OLDBBJ_SOTFS;
             
@@ -304,40 +330,90 @@ namespace DS2S_META
         }
         private string GetStringVersion()
         {
-            string verstr = IsSOTFS_CP ? "V1.03" : "V1.02";
+            if (!IsSOTFS && !IsVanilla)
+                return "Unknown game or version";
+
+            StringBuilder sb = new();
+
+            // get main version:
+            if (IsSOTFS)
+                sb.Append("Sotfs");
+            else
+                sb.Append("Vanilla");
+            
+            // get sub-version
+            switch (DS2Ver)
+            {
+                case DS2VER.SOTFS_V102:
+                    sb.Append(" V1.02");
+                    break;
+
+                case DS2VER.SOTFS_V103:
+                    sb.Append(" V1.03");
+                    break;
+
+                case DS2VER.VANILLA_V102:
+                    sb.Append(" V1.02 Old Patch");
+                    break;
+
+                case DS2VER.VANILLA_V111:
+                    sb.Append(" V1.11");
+                    break;
+
+                case DS2VER.VANILLA_V112:
+                    sb.Append(" V1.12");
+                    break;
+            }
+
+            // get mod versions:
             switch (BBJType)
             {
                 case BBJTYPE.NOBBJ:
-                    return $"{verstr} (unmodded)";
+                    sb.Append(" (unmodded)");
+                    break;
 
                 case BBJTYPE.OLDBBJ_SOTFS:
-                    return $"{verstr} (old bbj mod)";
+                    sb.Append(" (old bbj mod)");
+                    break;
 
                 case BBJTYPE.NEWBBJ_SOTFS:
-                    return $"{verstr} (bbj mod)";
+                    sb.Append(" (bbj mod)");
+                    break;
 
                 default:
-                    return $"{verstr} unexpected mod check??";
+                    sb.Append(" (unknown mod)");
+                    break;
             }
+            return sb.ToString();
         }
-        public IntPtr BasePointerFromSetupPointer(PHPointer pointer)
+        public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
-            var readInt = pointer.ReadInt32(DS2SOffsets.BasePtrOffset1);
-            return pointer.ReadIntPtr(readInt + DS2SOffsets.BasePtrOffset2);
+            if (Offsets.BasePtrOffset1 == null)
+                throw new Exception("Base pointer offset undefined");
+            if (Offsets.BasePtrOffset2 == null)
+                throw new Exception("Base pointer offset 2 undefined");
+
+            if (IsVanilla)
+            {
+                var addrBaseA = CreateChildPointer(aobpointer, (int)Offsets.BasePtrOffset1);
+                return addrBaseA.ReadIntPtr((int)Offsets.BasePtrOffset2);
+            }
+            else
+            {
+                // The instruction seems to be a relative offset in 64-bit?
+                var readInt = aobpointer.ReadInt32((int)Offsets.BasePtrOffset1);
+                return aobpointer.ReadIntPtr(readInt + (int)Offsets.BasePtrOffset2);
+            }
+            
         }
         public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
         {
-            return pointer.ReadIntPtr(0x0121D4D0 + DS2SOffsets.BasePtrOffset2);
+
+            // TODO!
+            return pointer.ReadIntPtr(0x0121D4D0 + (int)Offsets.BasePtrOffset2);
         }
 
-        private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
-        {
-            Version = "Not Hooked";
-            Setup = false;
-            ClearSpeedhackInject();
-            ParamMan.Uninitialise();
-            MW.HKM.ClearHooks();
-        }
+        
 
         public void UpdateName()
         {
@@ -1311,6 +1387,7 @@ namespace DS2S_META
         public int GetBonus(BNSTYPE bnstype)
         {
             if (!Hooked) return 0;
+            if (SomePlayerStats == null) return 0;
             return SomePlayerStats.ReadInt32(tbo + 36*(int)bnstype);
         }
 

@@ -8,16 +8,16 @@ namespace DS2S_META.Utils.Offsets
 {
     internal class DS2VOffsets : DS2HookOffsets
     {
-        public const string BaseAAoB = "8B F1 8B 0D ? ? ? 01 8B 01 8B 50 28 FF D2 84 C0 74 0C";
-        public const int BaseOffset1 = 0x4;
-        public const int BaseOffset2 = 0x0;
-        public const string BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
-        public const int BasePtrOffset1 = 0x3;
-        public const int BasePtrOffset2 = 0x7;
-        
-
         public DS2VOffsets()
         {
+            // BaseA
+            BaseAAob = "8B F1 8B 0D ? ? ? 01 8B 01 8B 50 28 FF D2 84 C0 74 0C";
+            BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
+            BasePtrOffset1 = 0x4;
+            BasePtrOffset2 = 0x0;
+
+
+            // Records    
             PlayerName = new(0xA4);
             ForceQuit = new(0xDF1);
             PlayerCtrl = new(HP: 0xFC, HPMin: 0x100, HPMax: 0x104, HPCap: 0x108, SP: 0x140, SPMax: 0x148, SpeedModifier: 0x208);
@@ -166,6 +166,8 @@ namespace DS2S_META.Utils.Offsets
                 CamZ = 0x1A4,
                 CamY = 0x1A8
             };
+           
+            // Core structures:
             Core = new()
             {
                 PlayerTypeOffset = 0x90,
@@ -199,24 +201,25 @@ namespace DS2S_META.Utils.Offsets
                 //EquipmentOffset2 = 0x14,
                 //GameDataManagerOffset = 0x60,
             };
+
+            // Func AOBs
+            Func = new()
+            {
+                ItemGiveFunc = "55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9",
+                ItemStruct2dDisplay = "55 8B EC 8B 45 08 0F 57 C0 8B 4D 14 53",
+                GiveSoulsFuncAoB = "55 8B EC 8B 01 83 EC 08 85 C0 74 20 8B 80 94 00 00 00",
+                SetWarpTargetFuncAoB = "55 8B EC 83 EC 44 53 56 8B 75 0C 57 56 8D 4D 0C",
+                WarpFuncAoB = "55 8B EC 83 EC 40 53 56 8B 75 08 8B D9 57 B9 10 00 00 00",
+                BaseBAoB = "89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0",
+                CameraAoB = "60 02 2c f0 f3 7f 00 00",
+                SpeedFactorAccelOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9",
+                SpeedFactorAnimOffset = "F3 0F 10 89 08 02 00 00 8B 89 B4 00 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 89",
+                SpeedFactorJumpOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 0F 5A C9 F2 0F 59 C1 66 0F 5A C0 F3 0F 11 45 F4",
+                SpeedFactorBuildupOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC",
+                DisplayItem = "55 8B EC 8B 49 6C 85 C9 74 06 5D",
+                ApplySpEffectAoB = "E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?",
+            };
         }
-
-        
-        // Functions TODO
-        public const string ItemGiveFunc = "55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9";
-        public const string ItemStruct2dDisplay = "55 8B EC 8B 45 08 0F 57 C0 8B 4D 14 53";
-        public const string DisplayItem = "55 8B EC 8B 49 6C 85 C9 74 06 5D";
-        public const string ApplySpEffectAoB = "E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?";
-        public const string GiveSoulsFuncAoB = "55 8B EC 8B 01 83 EC 08 85 C0 74 20 8B 80 94 00 00 00";
-        public const string SetWarpTargetFuncAoB = "55 8B EC 83 EC 44 53 56 8B 75 0C 57 56 8D 4D 0C";
-        public const string WarpFuncAoB = "55 8B EC 83 EC 40 53 56 8B 75 08 8B D9 57 B9 10 00 00 00";
-        public const string BaseBAoB = "89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0";
-        public const string CameraAoB = "60 02 2c f0 f3 7f 00 00";
-        public const string SpeedFactorAccelOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9";
-        public const string SpeedFactorAnimOffset = "F3 0F 10 89 08 02 00 00 8B 89 B4 00 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 89";
-        public const string SpeedFactorJumpOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 0F 5A C9 F2 0F 59 C1 66 0F 5A C0 F3 0F 11 45 F4";
-        public const string SpeedFactorBuildupOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC";
-
 
 
         //#region Param

@@ -8,18 +8,16 @@ namespace DS2S_META.Utils.Offsets
 {
     public abstract class DS2SOffsets : DS2HookOffsets
     {
-
-        // BaseA
-        public const string BaseAAob = "48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6";
-        public const string BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
-        public const int BasePtrOffset1 = 0x3;
-        public const int BasePtrOffset2 = 0x7;
-        
-
         public DS2SOffsets()
         {
+            // BaseA
+            BaseAAob = "48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6";
+            BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
+            BasePtrOffset1 = 0x3;
+            BasePtrOffset2 = 0x7;
+
             // Records:
-            ForceQuit = new(0x24B1);
+            ForceQuit = new (0x24B1);
             PlayerName = new(0x114);
             PlayerCtrl = new(0x168, 0x16C, 0x170, 0x174, 0x1AC, 0x1B4, 0x2A8);
             PlayerBaseMisc = new(0x64, 0x68, 0x18A8);
@@ -168,7 +166,7 @@ namespace DS2S_META.Utils.Offsets
                 CamY = 0x1A8
             };
 
-
+            // Core structures:
             Core = new()
             {
                 PlayerTypeOffset = 0xB0,
@@ -196,49 +194,26 @@ namespace DS2S_META.Utils.Offsets
                 CameraOffset1 = 0x0,
                 CameraOffset2 = 0x20,
                 CameraOffset3 = 0x28,
-        };
-    }
+            };
 
-        
-
-
-        // Core structs TODO:
-        public const int PlayerBaseMiscOffset = 0xC0;
-        public const int PlayerCtrlOffset = 0xD0;
-        public const int AvailableItemBagOffset = 0x10;
-        public const int ItemGiveWindowPointer = 0x22E0;
-        public const int NetSvrBloodstainManagerOffset1 = 0x90;
-        public const int NetSvrBloodstainManagerOffset2 = 0x28;
-        public const int NetSvrBloodstainManagerOffset3 = 0x88;
-        public const int PlayerParamOffset = 0x490;
-        public const int PlayerPositionOffset1 = 0xF8;
-        public const int PlayerPositionOffset2 = 0xF0;
-        public const int PlayerMapDataOffset1 = 0x100;
-        public const int PlayerMapDataOffset2 = 0x320;
-        public const int PlayerMapDataOffset3 = 0x20;
-        public const int SpEffectCtrlOffset = 0x3E0;
-        public const int CharacterFlagsOffset = 0x490;
-        public const int EventManagerOffset = 0x70;
-        public const int WarpManagerOffset = 0x70;
-        public const int BonfireLevelsOffset1 = 0x58;
-        public const int BonfireLevelsOffset2 = 0x20;
-        public const int ConnectionOffset = 0x38;
-        public const int CameraOffset1 = 0x0;
-        public const int CameraOffset2 = 0x20;
-        public const int CameraOffset3 = 0x28;
-
-        // Functions TODO:
-        public const string ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41";
-        public const string ItemStruct2dDisplay = "40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11";
-        public const string GiveSoulsFuncAoB = "48 83 ec 28 48 8b 01 48 85 c0 74 23 48 8b 80 b8 00 00 00";
-        public const string SetWarpTargetFuncAoB = "48 89 5C 24 08 48 89 74 24 20 57 48 83 EC 60 0F B7 FA";
-        public const string WarpFuncAoB = "40 53 48 83 EC 60 8B 02 48 8B D9 89 01 8B 42 04";
-        public const string BaseBAoB = "48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8";
-        public const string CameraAoB = "60 02 2c f0 f3 7f 00 00";
-        public const string SpeedFactorAccelOffset = "F3 0F 59 9F A8 02 00 00 F3 0F 10 16";
-        public const string SpeedFactorAnimOffset = "F3 0F 59 99 A8 02 00 00";
-        public const string SpeedFactorJumpOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E0 00 00 00";
-        public const string SpeedFactorBuildupOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00";
-
+            // Func AoBs:
+            Func = new()
+            {
+                ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41",
+                ItemStruct2dDisplay = "40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11",
+                GiveSoulsFuncAoB = "48 83 EC 28 48 8b 01 48 85 C0 74 23 48 8b 80 b8 00 00 00",
+                SetWarpTargetFuncAoB = "48 89 5C 24 08 48 89 74 24 20 57 48 83 EC 60 0F B7 FA",
+                WarpFuncAoB = "40 53 48 83 EC 60 8B 02 48 8B D9 89 01 8B 42 04",
+                BaseBAoB = "48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8",
+                CameraAoB = "60 02 2C F0 F3 7F 00 00",
+                SpeedFactorAccelOffset = "F3 0F 59 9F A8 02 00 00 F3 0F 10 16",
+                SpeedFactorAnimOffset = "F3 0F 59 99 A8 02 00 00",
+                SpeedFactorJumpOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E0 00 00 00",
+                SpeedFactorBuildupOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00",
+                // sub-versioned
+                //DisplayItem = AOB_UNSET, 
+                //ApplySpEffectAoB = AOB_UNSET,
+            };
+        }
     }
 }

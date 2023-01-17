@@ -1,17 +1,13 @@
 ﻿using PropertyHook;
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static DS2S_META.Utils.Offsets.DS2SOffsets;
 using static SoulsFormats.PARAMDEF;
 using SoulsFormats;
 using DS2S_META.Randomizer;
-using static DS2S_META.Utils.ItemRow;
-using System.Reflection;
 using DS2S_META.Utils.ParamRows;
 
 namespace DS2S_META.Utils
@@ -141,7 +137,7 @@ namespace DS2S_META.Utils
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
-            GetParams();
+            GetParams(Hook.IsVanilla);
             IsLoaded = true;
         }
         public static void Uninitialise()
@@ -152,16 +148,18 @@ namespace DS2S_META.Utils
             _loaded = false;
         }
 
-        private static void GetParams()
+        private static void GetParams(bool isVanilla)
         {
-            List<Param> paramList = new List<Param>();
-            string resourcePath = $"{ExeDir}/Resources";
             string paramPath = $"{ExeDir}/Resources/Paramdex_DS2S_09272022";
-
             string pointerPath = $"{paramPath}/Pointers";
-            
+            List<Param> paramList = new();
+
             // Add all [Memory-Pointer-Offset] based params:
-            string paramPointers = $"{pointerPath}/ParamOffsets.txt";
+            string paramPointers;
+            if (isVanilla)
+                paramPointers = $"{pointerPath}/ParamOffsetsVanilla.txt"; // Vanilla Param offsets
+            else
+                paramPointers = $"{pointerPath}/ParamOffsets.txt";
             string[] pointers = File.ReadAllLines(paramPointers);
             AddMemoryParams(paramList, paramPath, paramPointers, pointers);
             AddFileParams(paramList);
@@ -188,7 +186,7 @@ namespace DS2S_META.Utils
                 int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
-                Param param = new(pointer, offsets, paramDef, name);
+                Param param = new(pointer, offsets, paramDef, name, Hook.Is64Bit);
 
                 // Currently this works for the names we've used. In general we need a dictionary:
                 param.StringsFileName = param.Name.Replace("_", string.Empty);
@@ -219,7 +217,7 @@ namespace DS2S_META.Utils
 
                 string defPath = $"{paramPath}/Defs/{defName}.xml";
                 PARAMDEF paramDef = XmlDeserialize(defPath);
-                Param param = new(pfile, paramDef, name);
+                Param param = new(pfile, paramDef, name, true); // using the sotfs files
                 param.StringsFileName = $"{name}";
                 RowOverloadHandler(param);
                 paramList.Add(param);

@@ -5,19 +5,29 @@ using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
-using System.Security.Cryptography;
-using System.Printing.IndexedProperties;
 using System.Linq;
 using System.Reflection;
 using System.IO;
-using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META
 {
     public enum RESOURCETYPE { MEMORY, FILE }
+    public class ParamInfo
+    {
+        public int Param { get; init; }
+        public int ParamID { get; init; }
+        public int Paramoffset { get; init; }
+        public int NextParam { get; init; }
+
+        // Previously Param Enum:
+        public int TotalParamLength { get; init; }
+        public int ParamName { get; init; }
+
+        // possibly this should be 0x30 but I dont think it matters fortunately
+        public int OffsetsOnlyTableLength { get; init; }
+    }
     public class Param : IComparable<Param>
     {
         public string? FilePath { get; private set; }
@@ -38,27 +48,42 @@ namespace DS2S_META
         public Dictionary<int, int> OffsetDict { get; private set; } = new();
         public int RowLength { get; private set; }
         public readonly RESOURCETYPE ResourceType;
+        private readonly bool Is64;
+        private ParamInfo ParamInfo => Is64 ? PInfo64 : PInfo32;
 
-        
-        public static class ParamInfo 
+
+        private readonly ParamInfo PInfo32 = new()
         {
-            public const int param = 0x40;
-            public const int paramID = 0x0;
-            public const int paramoffset = 0x8;
-            public const int nextParam = 0x18;
+            Param = 0x40,
+            ParamID = 0x0,
+            Paramoffset = 0x4,
+            NextParam = 0xC,
 
             // Previously Param Enum:
-            public const int TotalParamLength = 0x0;
-            public const int ParamName = 0xC;
-            public const int OffsetsOnlyTableLength = 0x48;
-            public const int TableLength = 0x50; // total incl. offsets/rows parts (excls. strings)
-        }
+            TotalParamLength = 0x0,
+            ParamName = 0xC,
+            OffsetsOnlyTableLength = 0x30,
+        };
+        private readonly ParamInfo PInfo64 = new()
+        {
+            Param = 0x40,
+            ParamID = 0x0,
+            Paramoffset = 0x8,
+            NextParam = 0x18,
+
+            // Previously Param Enum:
+            TotalParamLength = 0x0,
+            ParamName = 0xC,
+            OffsetsOnlyTableLength = 0x30,
+        };
+        
 
         private const string paramfol = "Resources/Paramdex_DS2S_09272022/";
 
         // Constructors:
-        public Param(PHPointer pointer, int[] offsets, PARAMDEF Paramdef, string name)
+        public Param(PHPointer pointer, int[] offsets, PARAMDEF Paramdef, string name, bool isSotfs)
         {
+            Is64 = isSotfs;
             ResourceType = RESOURCETYPE.MEMORY;
             Pointer = pointer;
             Offsets = offsets;
@@ -67,8 +92,9 @@ namespace DS2S_META
             Type = Paramdef.ParamType;
             RowLength = ParamDef.GetRowSize();
         }
-        public Param(string filepath, PARAMDEF Paramdef, string name)
+        public Param(string filepath, PARAMDEF Paramdef, string name, bool isSotfs)
         {
+            Is64 = isSotfs;
             ResourceType = RESOURCETYPE.FILE;
             FilePath = filepath;
             ParamDef = Paramdef;
@@ -121,9 +147,9 @@ namespace DS2S_META
             OffsetsTableLength = Pointer?.ReadInt32(ParamInfo.OffsetsOnlyTableLength);
 
             //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
-            var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
+            var nparams = (OffsetsTableLength - ParamInfo.Param) / ParamInfo.NextParam;
 
-            if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
+            if ((OffsetsTableLength - ParamInfo.Param) % ParamInfo.NextParam != 0)
                 throw new Exception("Potential mismatch in param total bytes");
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
             if (TotalTableLength == null)
@@ -146,9 +172,9 @@ namespace DS2S_META
             //OffsetsTableLength = Pointer.ReadInt32((int)DS2SOffsets.Param.OffsetsOnlyTableLength);
 
             //var offsetBytes = Pointer.ReadBytes(0x0, (uint)OffsetsTableLength);
-            var nparams = (OffsetsTableLength - ParamInfo.param) / ParamInfo.nextParam;
+            var nparams = (OffsetsTableLength - ParamInfo.Param) / ParamInfo.NextParam;
 
-            if ((OffsetsTableLength - ParamInfo.param) % ParamInfo.nextParam != 0)
+            if ((OffsetsTableLength - ParamInfo.Param) % ParamInfo.NextParam != 0)
                 throw new Exception("Potential mismatch in param total bytes");
             TotalTableLength = OffsetsTableLength + nparams * RowLength;
 
@@ -162,11 +188,11 @@ namespace DS2S_META
             if (ctor == null)
                 throw new NullReferenceException("Cannot find appropriate row constructor");
 
-            int currparam = ParamInfo.param; // 0x40
+            int currparam = ParamInfo.Param; // 0x40
             while (currparam < OffsetsTableLength)
             {
-                int itemID = BitConverter.ToInt32(Bytes, currparam + ParamInfo.paramID);
-                int itemParamOffset = BitConverter.ToInt32(Bytes, currparam + ParamInfo.paramoffset);
+                int itemID = BitConverter.ToInt32(Bytes, currparam + ParamInfo.ParamID);
+                int itemParamOffset = BitConverter.ToInt32(Bytes, currparam + ParamInfo.Paramoffset);
                 string name = $"{itemID} - ";
                 if (NameDictionary.ContainsKey(itemID))
                     name += $"{NameDictionary[itemID]}";
@@ -177,7 +203,7 @@ namespace DS2S_META
                 // Create the new object of type Row (or class "T" inheriting from Row)
                 T row = (T)ctor.Invoke(new object[] { this, name, itemID, itemParamOffset });
                 Rows.Add(row);
-                currparam += ParamInfo.nextParam;
+                currparam += ParamInfo.NextParam;
             }
         }
         public void StoreRowBytes(Row row)
