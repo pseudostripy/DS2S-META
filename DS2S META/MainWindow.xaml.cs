@@ -159,7 +159,7 @@ namespace DS2S_META
 
             //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
             VersionUpdateCheck("Pseudostripy"); // Randomizer updates
-            lblWindowName.Content = $"DS2 Scholar META {MVI.MetaVersionStr}";
+            lblWindowName.Content = $"META {MVI.MetaVersionStr}";
 
             UpdateTimer.Interval = 16;
             UpdateTimer.Elapsed += UpdateTimer_Elapsed;
