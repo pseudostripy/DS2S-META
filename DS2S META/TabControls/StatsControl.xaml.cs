@@ -119,7 +119,8 @@ namespace DS2S_META
 
         private void RestoreHumanity_Click(object sender, RoutedEventArgs e)
         {
-            Hook.ApplySpecialEffect(100000010);
+            var RestoreHumanityEffect = 100000010;
+            Hook.ApplySpecialEffect(RestoreHumanityEffect);
         }
 
         private void NewTestCharacter_Click(object sender, RoutedEventArgs e)

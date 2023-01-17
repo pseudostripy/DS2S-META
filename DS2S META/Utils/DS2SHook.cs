@@ -395,12 +395,6 @@ namespace DS2S_META
             if (Offsets.PlayerStatsOffsets != null)
                 SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
         }
-
-
-        
-        
-        
-        
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
             if (Offsets.BasePtrOffset1 == null)
@@ -878,6 +872,7 @@ namespace DS2S_META
 
         internal void ApplySpecialEffect(int spEffect)
         {
+            // Prepare inputs:
             var effectStruct = Allocate(0x16);
             Kernel32.WriteBytes(Handle, effectStruct, BitConverter.GetBytes(spEffect));
             Kernel32.WriteBytes(Handle, effectStruct + 0x4, BitConverter.GetBytes(0x1));
@@ -886,16 +881,19 @@ namespace DS2S_META
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
 
+            var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt64());
+            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt64());
+            var float_m1 = BitConverter.GetBytes(unk.ToInt64());
+            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
+
+            // Update assembly with variables:
             var asm = (byte[])DS2SAssembly.ApplySpecialEffect.Clone();
-            var bytes = BitConverter.GetBytes(effectStruct.ToInt64());
-            Array.Copy(bytes, 0x0, asm, 0x6, bytes.Length);
-            bytes = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt64());
-            Array.Copy(bytes, 0x0, asm, 0x10, bytes.Length);
-            bytes = BitConverter.GetBytes(unk.ToInt64());
-            Array.Copy(bytes, 0x0, asm, 0x1A, bytes.Length);
-            bytes = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
-            Array.Copy(bytes, 0x0, asm, 0x2E, bytes.Length);
+            Array.Copy(ptrEffectStruct, 0x0, asm, 0x6,  ptrEffectStruct.Length);
+            Array.Copy(SpEfCtrl,        0x0, asm, 0x10, SpEfCtrl.Length);
+            Array.Copy(float_m1,        0x0, asm, 0x1A, float_m1.Length);
+            Array.Copy(ptrApplySpEf,    0x0, asm, 0x2E, ptrApplySpEf.Length);
              
+            // Run and tidy-up
             Execute(asm);
             Free(effectStruct);
             Free(unk);
