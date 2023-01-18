@@ -121,8 +121,11 @@
   <data name="AddSouls" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\addsouls.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="ApplySpecialEffect" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\assembly\applyspecialeffect.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="ApplySpecialEffect32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\assembly\applyspecialeffect32.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="ApplySpecialEffect64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Assembly\ApplySpecialEffect64.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="BonfireWarp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\bonfirewarp.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

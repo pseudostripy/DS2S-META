@@ -79,22 +79,37 @@ namespace DS2S_META.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  48 83 ec 38             sub    rsp,0x38
-        ///4:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000
+        ///4:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000 (0x6_pEffectStruct)
         ///b:  ff ff ff
-        ///e:  48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000
+        ///e:  48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 (0x10_SpEfCtrl)
         ///15: ff ff ff
-        ///18: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000
+        ///18: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x1A_pfloat_-1.0)
         ///1f: ff ff ff
         ///22: f3 0f 10 00             movss  xmm0,DWORD PTR [rax]
         ///26: f3 0f 11 44 24 28       movss  DWORD PTR [rsp+0x28],xmm0
-        ///2c: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000
-        ///33: ff ff ff
-        ///36: ff d0                   call   rax
-        ///38: 48 83 c4 38  [rest of string was truncated]&quot;;.
+        ///2c: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x2E_pfuncApply [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ApplySpecialEffect {
+        internal static string ApplySpecialEffect32 {
             get {
-                return ResourceManager.GetString("ApplySpecialEffect", resourceCulture);
+                return ResourceManager.GetString("ApplySpecialEffect32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0:  48 83 ec 38             sub    rsp,0x38
+        ///4:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000 (0x6_pEffectStruct)
+        ///b:  ff ff ff
+        ///e:  48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 (0x10_SpEfCtrl)
+        ///15: ff ff ff
+        ///18: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x1A_pfloat_-1.0)
+        ///1f: ff ff ff
+        ///22: f3 0f 10 00             movss  xmm0,DWORD PTR [rax]
+        ///26: f3 0f 11 44 24 28       movss  DWORD PTR [rsp+0x28],xmm0
+        ///2c: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x2E_pfuncApply [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ApplySpecialEffect64 {
+            get {
+                return ResourceManager.GetString("ApplySpecialEffect64", resourceCulture);
             }
         }
         
@@ -135,7 +150,7 @@ namespace DS2S_META.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  48 81 ec e8 01 00 00    sub    rsp,0x1e8
-        ///7:  41 b8 08 00 00 00       mov    r8d,0x8 ;item amount
+        ///7:  41 b8 08 00 00 00       mov    r8d,0x8 ;Number of items
         ///d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
         ///14: ff ff ff
         ///17: 49 8d 17                lea    rdx,[r15]
@@ -144,7 +159,7 @@ namespace DS2S_META.Properties {
         ///24: 45 31 c9                xor    r9d,r9d
         ///27: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 ;Call add item function DarkSoulsII.exe+1A8C67
         ///2e: ff ff ff
-        ///31: 41 ff d6          [rest of string was truncated]&quot;;.
+        ///31: 41 ff d6      [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GiveItemWithMenu {
             get {
