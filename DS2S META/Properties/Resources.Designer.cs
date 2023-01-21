@@ -79,15 +79,16 @@ namespace DS2S_META.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  89 e5                   mov    ebp,esp
-        ///2:  83 ec 18                sub    esp,0x18
-        ///5:  c7 45 e8 00 00 99 99    mov    DWORD PTR [ebp-0x18],0x99990000 (spEffectID)
-        ///c:  c7 45 ec 01 00 00 00    mov    DWORD PTR [ebp-0x14],0x1
-        ///13: f3 0f 10 05 00 00 00    movss  xmm0,DWORD PTR XXXXXXXX (pfloat_-1.0)
-        ///1a: 00
-        ///1b: f3 0f 11 45 f0          movss  DWORD PTR [ebp-0x10],xmm0
-        ///20: 66 c7 45 f4 19 02       mov    WORD PTR [ebp-0xc],0x219
-        ///26: 8d 45 e8                lea    eax,[ebp-0x18]
-        ///29: 50                    [rest of string was truncated]&quot;;.
+        ///2:  83 ec 1C                sub    esp,0x18
+        ///5:  c7 44 24 04 70 70 70    mov    DWORD PTR [esp+0x4],0x70707070	// SpEfID
+        ///c:  70
+        ///d:  c7 44 24 08 01 00 00    mov    DWORD PTR [esp+0x8],0x1
+        ///14: 00
+        ///15: b8 70 70 70 70          mov    eax,0x70707070					// &amp;-1f
+        ///1a: f3 0f 10 00             movss  xmm0,DWORD PTR [eax]
+        ///1e: f3 0f 11 44 24 0c       movss  DWORD PTR [esp+0xc],xmm0
+        ///24: 66 c7 44 24 10 19 02    mov    WORD PTR [esp+0x10],0x219
+        ///2b: 8d 44 24 04             [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ApplySpecialEffect32 {
             get {
@@ -125,9 +126,27 @@ namespace DS2S_META.Properties {
         ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
         ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0x [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string BonfireWarp {
+        internal static string BonfireWarp32 {
             get {
-                return ResourceManager.GetString("BonfireWarp", resourceCulture);
+                return ResourceManager.GetString("BonfireWarp32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0:  48 81 ec 10 01 00 00    sub    rsp,0x110
+        ///7:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000
+        ///e:  ff ff ff
+        ///11: 0f b7 12                movzx  edx,WORD PTR [rdx]
+        ///14: 48 8d 4c 24 50          lea    rcx,[rsp+0x50]
+        ///19: 41 b8 02 00 00 00       mov    r8d,0x2
+        ///1f: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000
+        ///26: ff ff ff
+        ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
+        ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0x [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string BonfireWarp64 {
+            get {
+                return ResourceManager.GetString("BonfireWarp64", resourceCulture);
             }
         }
         

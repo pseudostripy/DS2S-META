@@ -1,0 +1,20 @@
+﻿0:  89 e5                   mov    ebp,esp
+2:  81 ec b8 00 00 00       sub    esp,0xb8
+8:  6a 02                   push   0x2						// assume default_area_warp until told otherwise
+a:  68 70 70 70 70          push   0x70707070				// BonfireID
+f:  8d 55 b0                lea    edx,[ebp-0x50]
+12: 52                      push   edx
+13: b8 70 70 70 70          mov    eax,0x70707070			// funcSetWarpTarget
+18: ff d0                   call   eax
+1a: 8d 45 b0                lea    eax,[ebp-0x50]
+1d: c7 00 02 00 00 00       mov    DWORD PTR [eax],0x2		// Updated for Bonfire Warp vs Area_default_warp
+23: b9 70 70 70 70          mov    ecx,0x70707070			// BaseA
+28: 8b 51 44                mov    edx,DWORD PTR [ecx+0x44]
+2b: 8b 4a 38                mov    ecx,DWORD PTR [edx+0x38]
+2e: 83 c4 0c                add    esp,0xc
+31: 8d 45 b0                lea    eax,[ebp-0x50]
+34: 50                      push   eax
+35: b8 70 70 70 70          mov    eax,0x70707070			// WarpFcn
+3a: ff d0                   call   eax
+3c: 81 c4 b8 00 00 00       add    esp,0xb8
+42: c3                      ret

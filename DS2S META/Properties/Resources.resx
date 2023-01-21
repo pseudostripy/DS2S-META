@@ -127,8 +127,11 @@
   <data name="ApplySpecialEffect64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Assembly\ApplySpecialEffect64.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="BonfireWarp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\assembly\bonfirewarp.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="BonfireWarp32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Assembly\BonfireWarp32.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="BonfireWarp64" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Assembly\BonfireWarp64.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Classes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\systems\classes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

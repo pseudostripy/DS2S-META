@@ -835,6 +835,13 @@ namespace DS2S_META
         }
         internal bool Warp(ushort id, bool areadefault = false)
         {
+            if (Is64Bit)
+                return Warp64(id, areadefault);
+            else
+                return Warp32(id, areadefault);
+        }
+        internal bool Warp64(ushort id, bool areadefault = false)
+        {
             // area default means warp to the 0,0 part of the map (like a wrong warp)
             // areadefault = false is a normal "warp to bonfire"
             int WARPAREADEFAULT = 2;
@@ -843,7 +850,7 @@ namespace DS2S_META
             var value = Allocate(sizeof(short));
             Kernel32.WriteBytes(Handle, value, BitConverter.GetBytes(id));
 
-            var asm = (byte[])DS2SAssembly.BonfireWarp.Clone();
+            var asm = (byte[])DS2SAssembly.BonfireWarp64.Clone();
             var bytes = BitConverter.GetBytes(value.ToInt64());
             Array.Copy(bytes, 0x0, asm, 0x9, bytes.Length);
             bytes = BitConverter.GetBytes(SetWarpTargetFunc.Resolve().ToInt64());
@@ -865,6 +872,41 @@ namespace DS2S_META
             }
 
             Free(value);
+            return warped;
+        }
+        internal bool Warp32(ushort bfid, bool areadefault = false)
+        {
+            // area default means warp to the 0,0 part of the map (like a wrong warp)
+            // areadefault = false is a normal "warp to bonfire"
+            int WARPAREADEFAULT = 2;
+            int WARPBONFIRE = 3;
+            int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
+
+            // Get assembly template
+            var asm = (byte[])DS2SAssembly.BonfireWarp32.Clone();
+
+            // Get variables for byte changes
+            var bfiD_bytes = BitConverter.GetBytes(bfid);
+            var pWarpTargetFunc = BitConverter.GetBytes(SetWarpTargetFunc.Resolve().ToInt32()); // same as warpman?
+            var warptypeflag = BitConverter.GetBytes(flag);
+            var pBaseA = BitConverter.GetBytes(BaseA.Resolve().ToInt32());
+            var pWarpFun = BitConverter.GetBytes(WarpFunc.Resolve().ToInt32());
+
+            // Change bytes
+            Array.Copy(bfiD_bytes, 0x0, asm, 0xB, bfiD_bytes.Length);
+            Array.Copy(pWarpTargetFunc, 0x0, asm, 0x14, pWarpTargetFunc.Length);
+            Array.Copy(warptypeflag, 0x0, asm, 0x1F, warptypeflag.Length);
+            Array.Copy(pBaseA, 0x0, asm, 0x24, pBaseA.Length);
+            Array.Copy(pWarpFun, 0x0, asm, 0x36, pWarpFun.Length);
+
+            // Safety checks
+            var warped = false;
+            if (Multiplayer)
+                return warped; // No warping in multiplayer!
+            
+            // Execute:
+            Execute(asm);
+            warped = true;
             return warped;
         }
 

@@ -3,7 +3,7 @@
 e:  ff ff ff
 11: 0f b7 12                movzx  edx,WORD PTR [rdx]
 14: 48 8d 4c 24 50          lea    rcx,[rsp+0x50]
-19: 41 b8 02 00 00 00       mov    r8d,0x2
+19: 41 b8 02 00 00 00       mov    r8d,0x2					// default to area start if this value is NOT updated to 3 inside warpman
 1f: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000
 26: ff ff ff
 29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
