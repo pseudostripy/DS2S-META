@@ -57,9 +57,6 @@ namespace DS2S_META
 
         public static bool Reading { get; set; }
 
-        //private GetIntPtr 
-
-        
         
         public List<ItemRow> Items = new();
         
@@ -339,8 +336,8 @@ namespace DS2S_META
             return DS2Ver switch
             {
                 DS2VER.VANILLA_V102 => throw new Exception("Not implemented yet"),
-                DS2VER.VANILLA_V111 => new DS2VOffsets(),
-                DS2VER.VANILLA_V112 => new DS2VOffsets(),
+                DS2VER.VANILLA_V111 => new DS2VOffsetsV111(),
+                DS2VER.VANILLA_V112 => new DS2VOffsetsV112(),
                 DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
                 DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
                 _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
@@ -881,25 +878,28 @@ namespace DS2S_META
         }
         internal void ApplySpecialEffect64(int spEffect)
         {
+            // Get assembly template
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect64.Clone();
+
             // Prepare inputs:
             var effectStruct = Allocate(0x16);
             Kernel32.WriteBytes(Handle, effectStruct, BitConverter.GetBytes(spEffect));
             Kernel32.WriteBytes(Handle, effectStruct + 0x4, BitConverter.GetBytes(0x1));
             Kernel32.WriteBytes(Handle, effectStruct + 0xC, BitConverter.GetBytes(0x219));
-
+            
+            
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
+            var float_m1 = BitConverter.GetBytes(unk.ToInt64());
+            Array.Copy(float_m1, 0x0, asm, 0x1A, float_m1.Length);
 
             var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt64());
             var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt64());
-            var float_m1 = BitConverter.GetBytes(unk.ToInt64());
             var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
 
             // Update assembly with variables:
-            var asm = (byte[])DS2SAssembly.ApplySpecialEffect64.Clone();
             Array.Copy(ptrEffectStruct, 0x0, asm, 0x6, ptrEffectStruct.Length);
             Array.Copy(SpEfCtrl, 0x0, asm, 0x10, SpEfCtrl.Length);
-            Array.Copy(float_m1, 0x0, asm, 0x1A, float_m1.Length);
             Array.Copy(ptrApplySpEf, 0x0, asm, 0x2E, ptrApplySpEf.Length);
 
             // Run and tidy-up
@@ -907,32 +907,30 @@ namespace DS2S_META
             Free(effectStruct);
             Free(unk);
         }
-        internal void ApplySpecialEffect32(int spEffect)
+        internal void ApplySpecialEffect32(int spEffectID)
         {
-            // Prepare inputs:
-            var effectStruct = Allocate(0x16);
-            Kernel32.WriteBytes(Handle, effectStruct, BitConverter.GetBytes(spEffect));
-            Kernel32.WriteBytes(Handle, effectStruct + 0x4, BitConverter.GetBytes(0x1));
-            Kernel32.WriteBytes(Handle, effectStruct + 0xC, BitConverter.GetBytes(0x219));
+            // Assembly template
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect32.Clone();
 
+            //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
+            var spEfId = BitConverter.GetBytes(spEffectID);
+            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
+            
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
+            var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
 
-            var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt64());
-            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt64());
-            var float_m1 = BitConverter.GetBytes(unk.ToInt64());
-            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
 
             // Update assembly with variables:
-            var asm = (byte[])DS2SAssembly.ApplySpecialEffect64.Clone();
-            Array.Copy(ptrEffectStruct, 0x0, asm, 0x6, ptrEffectStruct.Length);
-            Array.Copy(SpEfCtrl, 0x0, asm, 0x10, SpEfCtrl.Length);
-            Array.Copy(float_m1, 0x0, asm, 0x1A, float_m1.Length);
-            Array.Copy(ptrApplySpEf, 0x0, asm, 0x2E, ptrApplySpEf.Length);
+            Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
+            Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
+            Array.Copy(SpEfCtrl, 0x0, asm, 0x33, SpEfCtrl.Length);
+            Array.Copy(ptrApplySpEf, 0x0, asm, 0x38, ptrApplySpEf.Length);
 
             // Run and tidy-up
+            //File.WriteAllBytes("./TESTBYTES64.txt", asm); // debugging
             Execute(asm);
-            Free(effectStruct);
             Free(unk);
         }
         #endregion

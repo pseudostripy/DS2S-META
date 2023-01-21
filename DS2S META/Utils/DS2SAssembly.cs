@@ -13,7 +13,7 @@ namespace DS2S_META
     // I like to keep the whole thing for quick reference to line numbers and so on
     static class DS2SAssembly
     {
-        private static Regex asmLineRx = new Regex(@"^[\w\d]+:\s+((?:[\w\d][\w\d] ?)+)");
+        private static readonly Regex asmLineRx = new(@"^[\w\d]+:\s+((?:[\w\d][\w\d] ?)+)");
 
         private static byte[] LoadDefuseOutput(string lines)
         {
@@ -22,8 +22,8 @@ namespace DS2S_META
             {
                 Match match = asmLineRx.Match(line);
                 string hexes = match.Groups[1].Value;
-                foreach (Match hex in Regex.Matches(hexes, @"\S+"))
-                    bytes.Add(Byte.Parse(hex.Value, System.Globalization.NumberStyles.AllowHexSpecifier));
+                foreach (Match hex in Regex.Matches(hexes, @"\S+").Cast<Match>())
+                    bytes.Add(byte.Parse(hex.Value, System.Globalization.NumberStyles.AllowHexSpecifier));
             }
             return bytes.ToArray();
         }
@@ -37,5 +37,20 @@ namespace DS2S_META
         public static byte[] OgSpeedFactor = LoadDefuseOutput(Properties.Resources.OgSpeedFactor);
         public static byte[] BonfireWarp = LoadDefuseOutput(Properties.Resources.BonfireWarp);
         public static byte[] ApplySpecialEffect64 = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect64);
+        public static byte[] ApplySpecialEffect32 = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect32);
+
+        // Debugging resource memes
+        //public static byte[] AddSouls = new byte[1];
+        //public static byte[] GetItem = new byte[1];
+        //public static byte[] GetItemNoMenu = new byte[1];
+        //public static byte[] SpeedFactorAccel = new byte[1];
+        //public static byte[] OgSpeedFactorAccel = new byte[1];
+        //public static byte[] SpeedFactor = new byte[1];
+        //public static byte[] OgSpeedFactor = new byte[1];
+        //public static byte[] BonfireWarp = new byte[1];
+        //public static byte[] ApplySpecialEffect64 = new byte[1];
+        //public static byte[] ApplySpecialEffect32 = new byte[1];
+
+
     }
 }

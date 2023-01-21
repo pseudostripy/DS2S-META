@@ -78,16 +78,16 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0:  48 83 ec 38             sub    rsp,0x38
-        ///4:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000 (0x6_pEffectStruct)
-        ///b:  ff ff ff
-        ///e:  48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 (0x10_SpEfCtrl)
-        ///15: ff ff ff
-        ///18: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x1A_pfloat_-1.0)
-        ///1f: ff ff ff
-        ///22: f3 0f 10 00             movss  xmm0,DWORD PTR [rax]
-        ///26: f3 0f 11 44 24 28       movss  DWORD PTR [rsp+0x28],xmm0
-        ///2c: 48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000 (0x2E_pfuncApply [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to 0:  89 e5                   mov    ebp,esp
+        ///2:  83 ec 18                sub    esp,0x18
+        ///5:  c7 45 e8 00 00 99 99    mov    DWORD PTR [ebp-0x18],0x99990000 (spEffectID)
+        ///c:  c7 45 ec 01 00 00 00    mov    DWORD PTR [ebp-0x14],0x1
+        ///13: f3 0f 10 05 00 00 00    movss  xmm0,DWORD PTR XXXXXXXX (pfloat_-1.0)
+        ///1a: 00
+        ///1b: f3 0f 11 45 f0          movss  DWORD PTR [ebp-0x10],xmm0
+        ///20: 66 c7 45 f4 19 02       mov    WORD PTR [ebp-0xc],0x219
+        ///26: 8d 45 e8                lea    eax,[ebp-0x18]
+        ///29: 50                    [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ApplySpecialEffect32 {
             get {

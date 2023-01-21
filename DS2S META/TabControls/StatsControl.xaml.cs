@@ -119,7 +119,10 @@ namespace DS2S_META
 
         private void RestoreHumanity_Click(object sender, RoutedEventArgs e)
         {
-            var RestoreHumanityEffect = 100000010;
+            // These both work apparently:
+            var RestoreHumanityEffect = 100000010; // Shrine of Amana effect
+            //var RestoreHumanityEffect = 60151000;   // Using Effigy effect
+            //var RestoreHumanityEffect = 60355000;   // Warp effect
             Hook.ApplySpecialEffect(RestoreHumanityEffect);
         }
 

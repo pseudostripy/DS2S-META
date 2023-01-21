@@ -172,7 +172,9 @@ namespace DS2S_META.Utils.Offsets
         int ConnectionOffset,
         int CameraOffset1,
         int CameraOffset2,
-        int CameraOffset3
+        int CameraOffset3,
+        
+        int SpEfCtrl2
     );
 
     public record class Func

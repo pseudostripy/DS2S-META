@@ -166,7 +166,7 @@ namespace DS2S_META.Utils.Offsets
                 CamZ = 0x1A4,
                 CamY = 0x1A8
             };
-           
+
             // Core structures:
             Core = new()
             {
@@ -200,6 +200,7 @@ namespace DS2S_META.Utils.Offsets
                 //EquipmentOffset1 = 0x2D4,
                 //EquipmentOffset2 = 0x14,
                 //GameDataManagerOffset = 0x60,
+                SpEfCtrl2 = 0xF8,
             };
 
             // Func AOBs
@@ -217,10 +218,11 @@ namespace DS2S_META.Utils.Offsets
                 SpeedFactorJumpOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 0F 5A C9 F2 0F 59 C1 66 0F 5A C0 F3 0F 11 45 F4",
                 SpeedFactorBuildupOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC",
                 DisplayItem = "55 8B EC 8B 49 6C 85 C9 74 06 5D",
-                ApplySpEffectAoB = "E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?",
             };
         }
 
+
+        // applyspef2: 89 6c 24 fc 8d 64 24 fc 54 5d 8b 45 08
 
         //#region Param
 
