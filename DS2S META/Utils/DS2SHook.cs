@@ -339,7 +339,7 @@ namespace DS2S_META
         {
             return DS2Ver switch
             {
-                DS2VER.VANILLA_V102 => throw new Exception("Not implemented yet"),
+                DS2VER.VANILLA_V102 => new DS2VOffsetsV102(),
                 DS2VER.VANILLA_V111 => new DS2VOffsetsV111(),
                 DS2VER.VANILLA_V112 => new DS2VOffsetsV112(),
                 DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
@@ -786,13 +786,7 @@ namespace DS2S_META
             Free(unk);
         }
 
-        public void GiveItem_wrapper(int item, short amount, byte upgrade, byte infusion)
-        {
-            if (Properties.Settings.Default.SilentItemGive)
-                GiveItemSilently(item, amount, upgrade, infusion);
-            else
-                GiveItem(item, amount, upgrade, infusion);
-        }
+        
         public void GiveItems(int[] itemids, short[] amounts)
         {
             // Fix wrapping for optionals
@@ -856,12 +850,24 @@ namespace DS2S_META
             Free(itemStruct);
         }
 
-        private void GiveItem(int item, short amount, byte upgrade, byte infusion)
+        public void GiveItem(int item, short amount, byte upgrade, byte infusion, int force_silent = -1)
         {
+            var showdialog = force_silent switch
+            {
+                -1 => !Properties.Settings.Default.SilentItemGive,
+                0 => false,
+                _ => true,
+            };
+
             if (Is64Bit)
-                GiveItem64(item, amount, upgrade, infusion);
+            {
+                if (showdialog)
+                    GiveItem64(item, amount, upgrade, infusion);
+                else
+                    GiveItemSilently(item, amount, upgrade, infusion);
+            } 
             else
-                GiveItem32(item, amount, upgrade, infusion);
+                GiveItem32(item, amount, upgrade, infusion, showdialog);
         }
         public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
         {
@@ -923,7 +929,7 @@ namespace DS2S_META
             Execute(asm);
             Free(itemStruct);
         }
-        private void GiveItem32(int item, short amount, byte upgrade, byte infusion)
+        private void GiveItem32(int item, short amount, byte upgrade, byte infusion, bool showdialog = true)
         {
             // Setup item struct
             var itemStruct = Allocate(0x8A);
@@ -947,8 +953,7 @@ namespace DS2S_META
             var pfloat_bytes = BitConverter.GetBytes(pfloat_test.ToInt32());
 
             // Figure out the more complicated displayItem pointer:
-            if (Offsets?.Func == null)
-                throw new Exception("Null reference");
+            if (Offsets?.Func == null) throw new Exception("Null reference");
             string bytestring = Offsets.Func.DisplayItem;
             var aob_sz = bytestring.Trim().Split(" ").Length;
             var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
@@ -957,12 +962,11 @@ namespace DS2S_META
 
             // assembly template
             var asm = (byte[])DS2SAssembly.GiveItem32.Clone();
-            bool showdialogue = true;
-
+            
             // inject ret instr at mid_ret index and escape early
             int mid_ret = 0x20; // return early instruction index
             byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
-            if (!showdialogue)
+            if (!showdialog)
             {
                 var asm_first = asm.Take(mid_ret).ToArray();
                 var asm_end = new byte[] { 0x81, 0xc4 } // sub esp
@@ -977,7 +981,7 @@ namespace DS2S_META
             Array.Copy(availItemBag, 0, asm, 0x11, availItemBag.Length);
             Array.Copy(itemGiveFunc, 0, asm, 0x1a, itemGiveFunc.Length);
 
-            if (showdialogue)
+            if (showdialog)
             {
                 Array.Copy(pItemStruct, 0, asm, 0x29, pItemStruct.Length);
                 Array.Copy(pfloat_bytes, 0, asm, 0x2f, pfloat_bytes.Length);

@@ -287,7 +287,7 @@ namespace DS2S_META
                 var infuidval = infusion.AsByte();
                  
 
-                Hook.GiveItem_wrapper(ds2item.ID, quanval, upgrval, infuidval);
+                Hook.GiveItem(ds2item.ID, quanval, upgrval, infuidval);
                 if (!Properties.Settings.Default.UpdateMaxLive)
                     HandleMaxAvailable();
             }

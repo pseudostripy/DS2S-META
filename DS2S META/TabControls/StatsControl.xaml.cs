@@ -274,7 +274,7 @@ namespace DS2S_META
                 Hook.GiveItemSilently(id, 1, 0, 0);
 
             // Gestures:
-            Hook.GiveItem_wrapper(decapitateid, 1, 0, 0);        // show visibly
+            Hook.GiveItem(decapitateid, 1, 0, 0);        // show visibly
             
 
 
