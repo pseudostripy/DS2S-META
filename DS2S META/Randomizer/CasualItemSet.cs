@@ -102,7 +102,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(60008110, NGPlusInfo("[Betwixt] Pursuer drop in NG+", KEYID.TENBRANCHLOCK));
 
             // Majula:
-            Dold.Add(1700000, NpcInfo("[Majula] Gift from the Emerald Herald"));
+            Dold.Add(1700000, NpcInfo("[Majula] Vanilla Estus: Gift from the Emerald Herald"));
             Dold.Add(1704000, NpcInfo("[Majula] Gift from Gilligan after buying the longest ladders", KEYID.ROTUNDA));
             Dold.Add(1741000, NpcInfo("[Majula] Gift from Saulden after 100 deaths"));
             Dold.Add(1741010, NpcInfo("[Majula] Gift from Saulden after bringing 4 people to Majula"));
@@ -697,7 +697,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(10325100, MChestInfo("[ShadedWoods] Metal chest blocked by petrified statue", KEYID.TENBRANCHLOCK));
             Dold.Add(10326230, SafeInfo("[ShadedWoods] Next to Vengarl's body", KEYID.TENBRANCHLOCK));
             Dold.Add(10325040, MChestInfo("[ShadedWoods] Metal chest in room blocked by petrified statue", KEYID.TENBRANCHLOCK));
-            Dold.Add(60009000, SafeInfo("[ShadedWoods] Vanilla Fang Key: drop from the petrified lion warrior by the tree bridge", KEYID.TENBRANCHLOCK));
+            Dold.Add(60009000, VolInfo("[ShadedWoods] Vanilla Fang Key: drop from the petrified lion warrior by the tree bridge", KEYID.TENBRANCHLOCK));
 
             // Doors of Pharros:
             Dold.Add(223500, BossInfo("[Pharros] Royal Rat Authority drop", KEYID.BRANCH));
