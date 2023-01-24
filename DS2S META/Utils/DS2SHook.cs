@@ -22,6 +22,7 @@ using System.Reflection;
 using DS2S_META.Utils.Offsets;
 using System.CodeDom;
 using System.Buffers.Text;
+using System.Windows.Media.Media3D;
 
 namespace DS2S_META
 {
@@ -608,24 +609,21 @@ namespace DS2S_META
         #region AssemblyScripts
         public void UnlockBonfires()
         {
-            //foreach (DS2SOffsets.BonfireLevels bonfire in Enum.GetValues(typeof(DS2SOffsets.BonfireLevels)))
             var BFlvls = Offsets.BonfireLevels;
-            foreach (var f in BFlvls.GetType().GetFields())
+            PropertyInfo[] props = typeof(BonfireLevels).GetProperties();
+            foreach (var p in props)
             {
-                var fval = f.GetValue(BFlvls);
+                var fval = (int?)p?.GetValue(BFlvls);
+
                 if (fval == null)
                     continue;
                 int bfoffset = (int)fval;
                 if (bfoffset == DS2HookOffsets.UNSET)
                     continue;
 
-                var currentLevel = BonfireLevels.ReadByte((int)bfoffset);
-
-                //if (bonfire == DS2SOffsets.BonfireLevels.FireKeepersDwelling)
-                //        continue;
-
+                var currentLevel = BonfireLevels.ReadByte(bfoffset);
                 if (currentLevel == 0)
-                    BonfireLevels.WriteByte((int)bfoffset, 1);
+                    BonfireLevels.WriteByte(bfoffset, 1);
             }
         }
 
@@ -865,6 +863,31 @@ namespace DS2S_META
             else
                 GiveItem32(item, amount, upgrade, infusion);
         }
+        public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
+        {
+            // 64 bit only TODO
+
+            var itemStruct = Allocate(0x8A);
+            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
+            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
+            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
+            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
+            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
+
+            var asm = (byte[])DS2SAssembly.GetItemNoMenu.Clone();
+
+            var bytes = BitConverter.GetBytes(0x1);
+            Array.Copy(bytes, 0, asm, 0x6, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0xC, 8);
+            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x19, 8);
+            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x26, 8);
+
+            Execute(asm);
+            Free(itemStruct);
+        }
         private void GiveItem64(int item, short amount, byte upgrade, byte infusion)
         {
             var itemStruct = Allocate(0x8A); // should this be d128?
@@ -969,29 +992,6 @@ namespace DS2S_META
             Free(itemStruct);
         }
 
-        public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
-        {
-            var itemStruct = Allocate(0x8A);
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
-
-            var asm = (byte[])DS2SAssembly.GetItemNoMenu.Clone();
-
-            var bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x6, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xC, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x19, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x26, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
         #endregion
 
         #region Speedhack
