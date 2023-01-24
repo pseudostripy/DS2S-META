@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Converters;
 
 namespace DS2S_META.Utils.Offsets
 {
@@ -171,6 +172,7 @@ namespace DS2S_META.Utils.Offsets
             {
                 PlayerTypeOffset = 0xB0,
                 PlayerNameOffset = 0xA8,
+                GameDataManagerOffset = 0xA8, // CAREFUL/UNCHECKED
                 AvailableItemBagOffset = 0x10,
                 ItemGiveWindowPointer = 0x22E0,
                 PlayerBaseMiscOffset = 0xC0,
@@ -195,6 +197,8 @@ namespace DS2S_META.Utils.Offsets
                 CameraOffset2 = 0x20,
                 CameraOffset3 = 0x28,
                 SpEfCtrl2 = UNSET,
+                ItemGiveGameDataMan = Array.Empty<int>(),
+                UnknItemDisplayPtr = Array.Empty<int>(),
             };
 
             // Func AoBs:

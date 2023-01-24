@@ -115,16 +115,16 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0:  48 81 ec 10 01 00 00    sub    rsp,0x110
-        ///7:  48 ba 00 00 00 00 ff    movabs rdx,0xffffffff00000000
-        ///e:  ff ff ff
-        ///11: 0f b7 12                movzx  edx,WORD PTR [rdx]
-        ///14: 48 8d 4c 24 50          lea    rcx,[rsp+0x50]
-        ///19: 41 b8 02 00 00 00       mov    r8d,0x2
-        ///1f: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000
-        ///26: ff ff ff
-        ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
-        ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0x [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to 0:  89 e5                   mov    ebp,esp
+        ///2:  81 ec b8 00 00 00       sub    esp,0xb8
+        ///8:  6a 02                   push   0x2						// assume default_area_warp until told otherwise
+        ///a:  68 70 70 70 70          push   0x70707070				// BonfireID
+        ///f:  8d 55 b0                lea    edx,[ebp-0x50]
+        ///12: 52                      push   edx
+        ///13: b8 70 70 70 70          mov    eax,0x70707070			// funcSetWarpTarget
+        ///18: ff d0                   call   eax
+        ///1a: 8d 45 b0                lea    eax,[ebp-0x50]
+        ///1d: c7 00  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BonfireWarp32 {
             get {
@@ -138,11 +138,10 @@ namespace DS2S_META.Properties {
         ///e:  ff ff ff
         ///11: 0f b7 12                movzx  edx,WORD PTR [rdx]
         ///14: 48 8d 4c 24 50          lea    rcx,[rsp+0x50]
-        ///19: 41 b8 02 00 00 00       mov    r8d,0x2
+        ///19: 41 b8 02 00 00 00       mov    r8d,0x2					// default to area start if this value is NOT updated to 3 inside warpman
         ///1f: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000
         ///26: ff ff ff
-        ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWarpStruct, rdx=bonfireID, int param3)
-        ///2c: 48 b9 00 00 00 00 ff    movabs rcx,0x [rest of string was truncated]&quot;;.
+        ///29: 41 ff d6                call   r14						// call 001811d0_warpFunctionManager(rcx=*retWar [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BonfireWarp64 {
             get {
@@ -168,6 +167,26 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0:  b8 01 00 00 00          mov    eax,0x1
+        ///5:  ba 70 70 70 70          mov    edx,0x70707070
+        ///a:  b9 70 70 70 70          mov    ecx,0x70707070
+        ///f:  6a 00                   push   0x0
+        ///11: 50                      push   eax
+        ///12: 52                      push   edx
+        ///13: b8 70 70 70 70          mov    eax,0x70707070
+        ///18: ff d0                   call   eax
+        ///1a: b9 01 00 00 00          mov    ecx,0x1
+        ///1f: 6a 01                   push   0x1
+        ///21: 51                      push   ecx
+        ///22: ba 70 70 70 70          mov [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GiveItemWithMenu32 {
+            get {
+                return ResourceManager.GetString("GiveItemWithMenu32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0:  48 81 ec e8 01 00 00    sub    rsp,0x1e8
         ///7:  41 b8 08 00 00 00       mov    r8d,0x8 ;Number of items
         ///d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
@@ -180,9 +199,9 @@ namespace DS2S_META.Properties {
         ///2e: ff ff ff
         ///31: 41 ff d6      [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GiveItemWithMenu {
+        internal static string GiveItemWithMenu64 {
             get {
-                return ResourceManager.GetString("GiveItemWithMenu", resourceCulture);
+                return ResourceManager.GetString("GiveItemWithMenu64", resourceCulture);
             }
         }
         

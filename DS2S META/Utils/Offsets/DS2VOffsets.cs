@@ -172,6 +172,7 @@ namespace DS2S_META.Utils.Offsets
             {
                 PlayerTypeOffset = 0x90,
                 PlayerNameOffset = UNSET,
+                GameDataManagerOffset = 0x60,
                 AvailableItemBagOffset = 0x8,
                 ItemGiveWindowPointer = 0xCC4,
                 PlayerBaseMiscOffset = 0x60,
@@ -201,6 +202,9 @@ namespace DS2S_META.Utils.Offsets
                 //EquipmentOffset2 = 0x14,
                 //GameDataManagerOffset = 0x60,
                 SpEfCtrl2 = 0xF8,
+                ItemGiveGameDataMan = new int[5] { 0x60, 0x10, 0x94, 0x298, 0x248 },
+                UnknItemDisplayPtr = new int[4] { 0x60, 0x10, 0x94, 0x298 }
+                //UnknItemDisplayPtr = new int[6] {0x18, 0x2a8, 0x94, 0xc30, 0x698, 0x38}
             };
 
             // Func AOBs
@@ -217,7 +221,7 @@ namespace DS2S_META.Utils.Offsets
                 SpeedFactorAnimOffset = "F3 0F 10 89 08 02 00 00 8B 89 B4 00 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 89",
                 SpeedFactorJumpOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 0F 5A C9 F2 0F 59 C1 66 0F 5A C0 F3 0F 11 45 F4",
                 SpeedFactorBuildupOffset = "F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC",
-                DisplayItem = "55 8B EC 8B 49 6C 85 C9 74 06 5D",
+                DisplayItem = "83 c4 10 8d 95 6c fe ff ff 52 8b ce e8 ? ? ? ?", // rel call!
             };
         }
 

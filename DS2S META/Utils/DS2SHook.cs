@@ -63,7 +63,9 @@ namespace DS2S_META
         private PHPointer GiveSoulsFunc;
         private PHPointer ItemGiveFunc;
         private PHPointer ItemStruct2dDisplay;
-        private PHPointer DisplayItem;
+        private PHPointer phpDisplayItem;
+        private Int64 DisplayItem64;
+        private Int32 DisplayItem32;
         private PHPointer SetWarpTargetFunc;
         private PHPointer WarpManager;
         private PHPointer WarpFunc;
@@ -74,6 +76,7 @@ namespace DS2S_META
         private PHPointer PlayerName;
         private PHPointer AvailableItemBag;
         private PHPointer ItemGiveWindow;
+        private PHPointer UnknItemDisplayPtr;
         private PHPointer PlayerBaseMisc;
         private PHPointer PlayerCtrl;
         private PHPointer PlayerPosition;
@@ -136,7 +139,7 @@ namespace DS2S_META
             
             // Version Specific AOBs:
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
-            DisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem);
+            phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
         }
 
         // DS2 & BBJ Process Info Data
@@ -365,8 +368,10 @@ namespace DS2S_META
             // Further pointer setup... todo?
             Core OC = Offsets.Core; // shorthand
             PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
-            AvailableItemBag = CreateChildPointer(PlayerName, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
+            AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
+            UnknItemDisplayPtr = CreateChildPointer(BaseA, OC.UnknItemDisplayPtr);
+
             PlayerBaseMisc = CreateChildPointer(PlayerName, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
@@ -599,225 +604,32 @@ namespace DS2S_META
             OnPropertyChanged(nameof(EnableSpeedFactors));
         }
 
-        
 
-        public byte FastQuit
+        #region AssemblyScripts
+        public void UnlockBonfires()
         {
-            set
+            //foreach (DS2SOffsets.BonfireLevels bonfire in Enum.GetValues(typeof(DS2SOffsets.BonfireLevels)))
+            var BFlvls = Offsets.BonfireLevels;
+            foreach (var f in BFlvls.GetType().GetFields())
             {
-                BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
+                var fval = f.GetValue(BFlvls);
+                if (fval == null)
+                    continue;
+                int bfoffset = (int)fval;
+                if (bfoffset == DS2HookOffsets.UNSET)
+                    continue;
+
+                var currentLevel = BonfireLevels.ReadByte((int)bfoffset);
+
+                //if (bonfire == DS2SOffsets.BonfireLevels.FireKeepersDwelling)
+                //        continue;
+
+                if (currentLevel == 0)
+                    BonfireLevels.WriteByte((int)bfoffset, 1);
             }
         }
 
-        #region Player
-        public int Health
-        {
-            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
-            set 
-            {
-                if (Reading || !Loaded) return;
-                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
-            }
-        }
-        public int HealthMax
-        {
-            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
-            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
-        }
-        public int HealthCap
-        {
-            get 
-            {
-                if (!Loaded) return 0;
-                var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
-                return cap < HealthMax ? cap : HealthMax;
-            }
-            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
-        }
-        public float Stamina
-        {
-            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
-            set 
-            { 
-                if (Reading || !Loaded) return;
-                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
-            }
-        }
-        public float MaxStamina
-        {
-            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
-            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
-        }
-        public byte NetworkPhantomID
-        {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
-            set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
-        }
-        public byte TeamType
-        {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
-            //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
-        }
-        public byte CharType
-        {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
-            //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
-        }
-        public float PosX
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
-            }
-        }
-        public float PosY
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
-            }
-        }
-        public float PosZ
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
-            }
-        }
-        public float AngX
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
-        }
-        public float AngY
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
-        }
-        public float AngZ
-        {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
-        }
-        public float StableX
-        {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
-            }
-        }
-        public float StableY
-        {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
-            }
-        }
-        public float StableZ
-        {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
-            }
-        }
-        public float BloodstainX
-        {
-            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainX);
-        }
-        public float BloodstainY
-        {
-            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainY);
-        }
-        public float BloodstainZ
-        {
-            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainZ);
-        }
-        public byte[] CameraData
-        {
-            get => Camera5.ReadBytes((int)0xE9C, 64);
-            set => Camera5.WriteBytes((int)0xE9C, value);
-        }
-        public byte[] CameraData2
-        {
-            get => Camera4.ReadBytes(Offsets.Camera.CamStart3, 512);
-            set => Camera4.WriteBytes(Offsets.Camera.CamStart3, value);
-        }
-        public float CamX
-        {
-            get => Camera2.ReadSingle(Offsets.Camera.CamX);
-            set => Camera2.WriteSingle(Offsets.Camera.CamX, value);
-        }
-        public float CamY
-        {
-            get => Camera2.ReadSingle(Offsets.Camera.CamY);
-            set => Camera2.WriteSingle(Offsets.Camera.CamY, value);
-        }
-        public float CamZ
-        {
-            get => Camera2.ReadSingle(Offsets.Camera.CamZ);
-            set => Camera2.WriteSingle(Offsets.Camera.CamZ, value);
-        }
-        public float Speed
-        {
-            set 
-            {
-                if (!Loaded) return;
-                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value); 
-            }
-        }
-        public bool Gravity
-        {
-            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
-            set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
-        }
-        public bool Collision
-        {
-            get => Loaded ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
-            set
-            {
-                if (Reading || !Loaded) return;
-                if (value)
-                    NetworkPhantomID = 0;
-                else
-                    NetworkPhantomID = 18;
-            }
-        }
-        public ushort LastBonfireID
-        {
-            get => Loaded ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
-            set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
-        }
-        public int LastBonfireAreaID
-        {
-            get => Loaded ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
-            set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
-        }
-        public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
-        public bool Online => Loaded ? ConnectionType > 0 : true;
-        public int ConnectionType
-        {
-            get
-            {
-                var test = Hooked;
-                return Hooked && Connection != null ? Connection.ReadInt32(Offsets.Connection.Online) : 0;
-            }
-        }
-        
+
         internal bool WarpLast()
         {
             // TO TIDY with bonfire objects
@@ -975,6 +787,211 @@ namespace DS2S_META
             Execute(asm);
             Free(unk);
         }
+
+        public void GiveItem_wrapper(int item, short amount, byte upgrade, byte infusion)
+        {
+            if (Properties.Settings.Default.SilentItemGive)
+                GiveItemSilently(item, amount, upgrade, infusion);
+            else
+                GiveItem(item, amount, upgrade, infusion);
+        }
+        public void GiveItems(int[] itemids, short[] amounts)
+        {
+            // Fix wrapping for optionals
+            var len = itemids.Length;
+            var upgrades_list = new List<byte>(len);
+            var infusions_list = new List<byte>(len);
+            for (int i = 0; i < len; i++)
+            {
+                upgrades_list.Add(0);
+                infusions_list.Add(0);
+            }
+
+            byte[] upgrades = upgrades_list.ToArray();
+            byte[] infusions = infusions_list.ToArray();
+
+            // Call function
+            GiveItems(itemids, amounts, upgrades, infusions);
+        }
+        public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions)
+        {
+            int numitems = itemids.Length;
+            if (numitems > 8)
+                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
+
+            // Create item structure to pass to DS2
+            var itemStruct = Allocate(0x8A); // should this be d128?
+            for (int i = 0; i < itemids.Length; i++)
+            {
+                var offi = i * 16; // length of one itemStruct
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
+            }
+
+            // Fix assembly
+            var asm = (byte[])DS2SAssembly.GiveItem64.Clone();
+
+            var bytes = BitConverter.GetBytes(numitems);
+            Array.Copy(bytes, 0, asm, 0x9, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0xF, 8);
+            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x1C, 8);
+            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x29, 8);
+            bytes = BitConverter.GetBytes(numitems);
+            Array.Copy(bytes, 0, asm, 0x36, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0x3C, 8);
+            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x54, 8);
+            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x66, 8);
+            DisplayItem64 = phpDisplayItem.Resolve().ToInt64();
+            bytes = BitConverter.GetBytes(DisplayItem64);
+            Array.Copy(bytes, 0, asm, 0x70, 8);
+
+            Execute(asm);
+            Free(itemStruct);
+        }
+
+        private void GiveItem(int item, short amount, byte upgrade, byte infusion)
+        {
+            if (Is64Bit)
+                GiveItem64(item, amount, upgrade, infusion);
+            else
+                GiveItem32(item, amount, upgrade, infusion);
+        }
+        private void GiveItem64(int item, short amount, byte upgrade, byte infusion)
+        {
+            var itemStruct = Allocate(0x8A); // should this be d128?
+
+            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
+            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
+            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
+            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
+            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
+
+            var asm = (byte[])DS2SAssembly.GiveItem64.Clone();
+
+            var bytes = BitConverter.GetBytes(0x1);
+            Array.Copy(bytes, 0, asm, 0x9, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0xF, 8);
+            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x1C, 8);
+            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x29, 8);
+            bytes = BitConverter.GetBytes(0x1);
+            Array.Copy(bytes, 0, asm, 0x36, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0x3C, 8);
+            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x54, 8);
+            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x66, 8);
+            DisplayItem64 = phpDisplayItem.Resolve().ToInt64();
+            bytes = BitConverter.GetBytes(DisplayItem64);
+            Array.Copy(bytes, 0, asm, 0x70, 8);
+
+            Execute(asm);
+            Free(itemStruct);
+        }
+        private void GiveItem32(int item, short amount, byte upgrade, byte infusion)
+        {
+            // Setup item struct
+            var itemStruct = Allocate(0x8A);
+            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
+            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
+            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
+            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
+            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
+
+            // Setup dynamic data
+            int stacksz = 0x1E8;
+            var stackAlloc = BitConverter.GetBytes(stacksz);
+            var pItemStruct = BitConverter.GetBytes(itemStruct.ToInt32());
+            var availItemBag = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt32());
+            var itemGiveFunc = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt32());
+            var itemStruct2Display = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt32());
+            var itemGiveWindow = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt32());
+
+            var pfloat_test = Allocate(sizeof(float));
+            Kernel32.WriteBytes(Handle, pfloat_test, BitConverter.GetBytes(6.0f));
+            var pfloat_bytes = BitConverter.GetBytes(pfloat_test.ToInt32());
+
+            // Figure out the more complicated displayItem pointer:
+            if (Offsets?.Func == null)
+                throw new Exception("Null reference");
+            string bytestring = Offsets.Func.DisplayItem;
+            var aob_sz = bytestring.Trim().Split(" ").Length;
+            var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
+            DisplayItem32 = phpDisplayItem.Resolve().ToInt32() + addr_jump_rel + aob_sz; // deal with rel jmp
+            var displayItem = BitConverter.GetBytes(DisplayItem32);
+
+            // assembly template
+            var asm = (byte[])DS2SAssembly.GiveItem32.Clone();
+            bool showdialogue = true;
+
+            // inject ret instr at mid_ret index and escape early
+            int mid_ret = 0x20; // return early instruction index
+            byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
+            if (!showdialogue)
+            {
+                var asm_first = asm.Take(mid_ret).ToArray();
+                var asm_end = new byte[] { 0x81, 0xc4 } // sub esp
+                                .Concat(stackAlloc)
+                                .Concat(ret);
+                asm = asm_first.Concat(asm_end).ToArray();
+            }
+                
+            // Fix assembly
+            Array.Copy(stackAlloc, 0, asm, 0x2, stackAlloc.Length);
+            Array.Copy(pItemStruct, 0, asm, 0xC, pItemStruct.Length);
+            Array.Copy(availItemBag, 0, asm, 0x11, availItemBag.Length);
+            Array.Copy(itemGiveFunc, 0, asm, 0x1a, itemGiveFunc.Length);
+
+            if (showdialogue)
+            {
+                Array.Copy(pItemStruct, 0, asm, 0x29, pItemStruct.Length);
+                Array.Copy(pfloat_bytes, 0, asm, 0x2f, pfloat_bytes.Length);
+                Array.Copy(itemStruct2Display, 0, asm, 0x35, itemStruct2Display.Length);
+                Array.Copy(pfloat_bytes, 0, asm, 0x3f, pfloat_bytes.Length);
+                Array.Copy(itemGiveWindow, 0, asm, 0x45, itemGiveWindow.Length);
+                Array.Copy(displayItem, 0, asm, 0x4a, displayItem.Length);
+                Array.Copy(stackAlloc, 0, asm, 0x52, stackAlloc.Length);
+            }
+
+            Execute(asm);
+            Free(itemStruct);
+        }
+
+        public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
+        {
+            var itemStruct = Allocate(0x8A);
+            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
+            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
+            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
+            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
+            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
+
+            var asm = (byte[])DS2SAssembly.GetItemNoMenu.Clone();
+
+            var bytes = BitConverter.GetBytes(0x1);
+            Array.Copy(bytes, 0, asm, 0x6, 4);
+            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            Array.Copy(bytes, 0, asm, 0xC, 8);
+            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x19, 8);
+            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x26, 8);
+
+            Execute(asm);
+            Free(itemStruct);
+        }
         #endregion
 
         #region Speedhack
@@ -1031,153 +1048,6 @@ namespace DS2S_META
             SetSpeedPtr = (IntPtr)setSpeedOffset;
             DetachPtr = (IntPtr)detachOffset;
             Free(lib);
-        }
-        #endregion
-
-        #region Stats
-        public string Name
-        {
-            get => Loaded ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
-            set
-            {
-                if (Reading || !Loaded) return;
-                if (Name == value) return;
-                PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
-                OnPropertyChanged(nameof(Name));
-            }
-        }
-        public byte Class
-        {
-            get => Loaded ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
-            }
-        }
-        public int SoulLevel
-        {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
-            set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
-        }
-        public int SoulMemory
-        {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
-            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
-        }
-        public int SoulMemory2
-        {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
-            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
-        }
-        public byte SinnerLevel
-        {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
-        }
-        public byte SinnerPoints
-        {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
-        }
-        public byte HollowLevel
-        {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
-        }
-        public int Souls
-        {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
-        }
-        public short Vigor
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Endurance
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
-            set 
-            { 
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.END, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Vitality
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Attunement
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Strength
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Dexterity
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Adaptability
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Intelligence
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Faith
-        {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
-            set
-            {
-                if (Reading || !Loaded) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
-                UpdateSoulLevel();
-            }
         }
         #endregion
 
@@ -1256,137 +1126,8 @@ namespace DS2S_META
 
         #endregion
 
-        #region Items
-        public void GiveItem_wrapper(int item, short amount, byte upgrade, byte infusion)
-        {
-            if (Properties.Settings.Default.SilentItemGive)
-                GiveItemSilently(item, amount, upgrade, infusion);
-            else
-                GiveItem(item, amount, upgrade, infusion);
-        }
-        public void GiveItems(int[] itemids, short[] amounts)
-        {
-            // Fix wrapping for optionals
-            var len = itemids.Length;
-            var upgrades_list = new List<byte>(len);
-            var infusions_list = new List<byte>(len);
-            for (int i = 0; i< len; i++)
-            {
-                upgrades_list.Add(0);
-                infusions_list.Add(0);
-            }
-
-            byte[] upgrades = upgrades_list.ToArray();
-            byte[] infusions = infusions_list.ToArray();
-
-            // Call function
-            GiveItems(itemids, amounts, upgrades, infusions);
-        }
-        public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions)
-        {
-            int numitems = itemids.Length;
-            if (numitems > 8)
-                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
-            
-            // Create item structure to pass to DS2
-            var itemStruct = Allocate(0x8A); // should this be d128?
-            for (int i = 0; i< itemids.Length; i++)
-            {
-                var offi = i * 16; // length of one itemStruct
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
-            }
-
-            // Fix assembly
-            var asm = (byte[])DS2SAssembly.GetItem.Clone();
-
-            var bytes = BitConverter.GetBytes(numitems);
-            Array.Copy(bytes, 0, asm, 0x9, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xF, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x1C, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x29, 8);
-            bytes = BitConverter.GetBytes(numitems);
-            Array.Copy(bytes, 0, asm, 0x36, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0x3C, 8);
-            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x54, 8);
-            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x66, 8);
-            bytes = BitConverter.GetBytes(DisplayItem.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x70, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-
-        private void GiveItem(int item, short amount, byte upgrade, byte infusion)
-        {
-            var itemStruct = Allocate(0x8A); // should this be d128?
-
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
-
-            var asm = (byte[])DS2SAssembly.GetItem.Clone();
-
-            var bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x9, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xF, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x1C, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x29, 8);
-            bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x36, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0x3C, 8);
-            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x54, 8);
-            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x66, 8);
-            bytes = BitConverter.GetBytes(DisplayItem.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x70, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-        public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
-        {
-            var itemStruct = Allocate(0x8A);
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
-
-            var asm = (byte[])DS2SAssembly.GetItemNoMenu.Clone();
-
-            var bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x6, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xC, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x19, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x26, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-        #endregion
-
-        #region Params
         
+        // Get info requests:
         internal int GetMaxUpgrade(ItemRow item)
         {
             if (!ParamMan.IsLoaded)
@@ -1410,7 +1151,6 @@ namespace DS2S_META
                     return 0;
             }
         }
-        
         internal int GetHeld(ItemRow itemrow)
         {
             switch (itemrow.ItemType)
@@ -1425,7 +1165,6 @@ namespace DS2S_META
                     return 0;
             }
         }
-        
         private int GetHeldInInventoryStackable(int id)
         {
             var inventorySlot = 0x30;
@@ -1461,7 +1200,6 @@ namespace DS2S_META
         {
             return 0;
         }
-
         private const int tbo = 0x7A8; // table bonus offset
         public enum BNSTYPE
         {
@@ -1480,8 +1218,6 @@ namespace DS2S_META
             if (SomePlayerStats == null) return 0;
             return SomePlayerStats.ReadInt32(tbo + 36*(int)bnstype);
         }
-
-        
         internal void GetVanillaItems()
         {
             if (ParamMan.ItemParam == null)
@@ -1497,8 +1233,6 @@ namespace DS2S_META
             }
             return;
         }
-        
-
         // TODO ARCHAIC
         internal bool GetIsDroppable(ItemRow item)
         {
@@ -1516,13 +1250,226 @@ namespace DS2S_META
                 return false;
             return (bool)drp;
         }
-        
-        #endregion
 
-        #region Bonfires
+        #region Internal
+        public byte FastQuit
+        {
+            set
+            {
+                BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
+            }
+        }
+        public int Health
+        {
+            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
+            }
+        }
+        public int HealthMax
+        {
+            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
+            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
+        }
+        public int HealthCap
+        {
+            get
+            {
+                if (!Loaded) return 0;
+                var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
+                return cap < HealthMax ? cap : HealthMax;
+            }
+            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
+        }
+        public float Stamina
+        {
+            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
+            }
+        }
+        public float MaxStamina
+        {
+            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
+            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
+        }
+        public byte NetworkPhantomID
+        {
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
+            set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
+        }
+        public byte TeamType
+        {
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
+            //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
+        }
+        public byte CharType
+        {
+            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
+            //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
+        }
+        public float PosX
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
+            }
+        }
+        public float PosY
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
+            }
+        }
+        public float PosZ
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
+            }
+        }
+        public float AngX
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
+        }
+        public float AngY
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
+        }
+        public float AngZ
+        {
+            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
+            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
+        }
+        public float StableX
+        {
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
+            set
+            {
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
+            }
+        }
+        public float StableY
+        {
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
+            set
+            {
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
+            }
+        }
+        public float StableZ
+        {
+            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
+            set
+            {
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
+                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
+            }
+        }
+        public float BloodstainX
+        {
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainX);
+        }
+        public float BloodstainY
+        {
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainY);
+        }
+        public float BloodstainZ
+        {
+            get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainZ);
+        }
+        public byte[] CameraData
+        {
+            get => Camera5.ReadBytes((int)0xE9C, 64);
+            set => Camera5.WriteBytes((int)0xE9C, value);
+        }
+        public byte[] CameraData2
+        {
+            get => Camera4.ReadBytes(Offsets.Camera.CamStart3, 512);
+            set => Camera4.WriteBytes(Offsets.Camera.CamStart3, value);
+        }
+        public float CamX
+        {
+            get => Camera2.ReadSingle(Offsets.Camera.CamX);
+            set => Camera2.WriteSingle(Offsets.Camera.CamX, value);
+        }
+        public float CamY
+        {
+            get => Camera2.ReadSingle(Offsets.Camera.CamY);
+            set => Camera2.WriteSingle(Offsets.Camera.CamY, value);
+        }
+        public float CamZ
+        {
+            get => Camera2.ReadSingle(Offsets.Camera.CamZ);
+            set => Camera2.WriteSingle(Offsets.Camera.CamZ, value);
+        }
+        public float Speed
+        {
+            set
+            {
+                if (!Loaded) return;
+                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value);
+            }
+        }
+        public bool Gravity
+        {
+            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
+            set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
+        }
+        public bool Collision
+        {
+            get => Loaded ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
+            set
+            {
+                if (Reading || !Loaded) return;
+                if (value)
+                    NetworkPhantomID = 0;
+                else
+                    NetworkPhantomID = 18;
+            }
+        }
+        public ushort LastBonfireID
+        {
+            get => Loaded ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
+            set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
+        }
+        public int LastBonfireAreaID
+        {
+            get => Loaded ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
+            set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
+        }
+        public bool Multiplayer => Loaded ? ConnectionType > 1 : true;
+        public bool Online => Loaded ? ConnectionType > 0 : true;
+        public int ConnectionType
+        {
+            get
+            {
+                var test = Hooked;
+                return Hooked && Connection != null ? Connection.ReadInt32(Offsets.Connection.Online) : 0;
+            }
+        }
+
         public byte FireKeepersDwelling
         {
-            get 
+            get
             {
                 byte level = 0;
 
@@ -1542,7 +1489,6 @@ namespace DS2S_META
                 BonfireLevels.WriteByte(Offsets.BonfireLevels.FireKeepersDwelling, level);
             }
         }
-
         public byte TheFarFire
         {
             get
@@ -3216,33 +3162,6 @@ namespace DS2S_META
             }
         }
 
-        public void UnlockBonfires()
-        {
-            //foreach (DS2SOffsets.BonfireLevels bonfire in Enum.GetValues(typeof(DS2SOffsets.BonfireLevels)))
-            var BFlvls = Offsets.BonfireLevels;
-            foreach (var f in BFlvls.GetType().GetFields())
-            {
-                var fval = f.GetValue(BFlvls);
-                if (fval == null) 
-                    continue;
-                int bfoffset = (int)fval;
-                if (bfoffset == DS2HookOffsets.UNSET)
-                    continue;
-
-                var currentLevel = BonfireLevels.ReadByte((int)bfoffset);
-
-                //if (bonfire == DS2SOffsets.BonfireLevels.FireKeepersDwelling)
-                //        continue;
-
-                if (currentLevel == 0)
-                    BonfireLevels.WriteByte((int)bfoffset, 1);
-            }
-        }
-
-        #endregion
-
-        #region Internal
-
         public string Head
         {
             get
@@ -3536,11 +3455,7 @@ namespace DS2S_META
             Kernel32.WriteBytes(Handle, codePointer, newCode);
             speedFactorPointer.WriteBytes(0x0, inject);
         }
-
-        #endregion
-
-        #region Covenant
-
+        
         public byte CurrentCovenant
         {
             get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
@@ -3797,8 +3712,151 @@ namespace DS2S_META
                 PlayerParam.WriteInt16(Offsets.Covenants.PilgrimsOfDarknessProgress, value);
             }
         }
-
+        
+        public string Name
+        {
+            get => Loaded ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
+            set
+            {
+                if (Reading || !Loaded) return;
+                if (Name == value) return;
+                PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+        public byte Class
+        {
+            get => Loaded ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
+            }
+        }
+        public int SoulLevel
+        {
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
+            set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
+        }
+        public int SoulMemory
+        {
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
+            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
+        }
+        public int SoulMemory2
+        {
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
+            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
+        }
+        public byte SinnerLevel
+        {
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
+        }
+        public byte SinnerPoints
+        {
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
+        }
+        public byte HollowLevel
+        {
+            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
+            set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
+        }
+        public int Souls
+        {
+            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
+        }
+        public short Vigor
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Endurance
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.END, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Vitality
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Attunement
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Strength
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Dexterity
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Adaptability
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Intelligence
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
+                UpdateSoulLevel();
+            }
+        }
+        public short Faith
+        {
+            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
+                UpdateSoulLevel();
+            }
+        }
         #endregion
-
     }
 }

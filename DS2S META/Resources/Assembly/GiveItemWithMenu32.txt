@@ -1,0 +1,26 @@
+﻿0:  81 ec e8 01 00 00       sub    esp,0x1e8
+6:  b8 01 00 00 00          mov    eax,0x1
+b:  ba 70 70 70 70          mov    edx,0x70707070
+10: b9 70 70 70 70          mov    ecx,0x70707070
+15: 6a 00                   push   0x0
+17: 50                      push   eax
+18: 52                      push   edx
+19: b8 70 70 70 70          mov    eax,0x70707070
+1e: ff d0                   call   eax
+20: b9 01 00 00 00          mov    ecx,0x1			// NumItems (unique pickup things)
+25: 6a 01                   push   0x1				// ?
+27: 51                      push   ecx				// Push NumItems
+28: ba 70 70 70 70          mov    edx,0x70707070	// ItemStruct
+2d: 52                      push   edx				// Push ItemStruct
+2e: b8 70 70 70 70          mov    eax,0x70707070	// some float 6 or 8?
+33: 50                      push   eax				
+34: b8 70 70 70 70          mov    eax,0x70707070	// convertItemStruct2Display
+39: ff d0                   call   eax				
+3b: 83 c4 10                add    esp,0x10			
+3e: b9 70 70 70 70          mov    ecx,0x70707070	// some float 6 or 8?
+43: 51                      push   ecx
+44: b9 70 70 70 70          mov    ecx,0x70707070	// itemGiveWindow
+49: b8 70 70 70 70          mov    eax,0x70707070	// displayItem function
+4e: ff d0                   call   eax
+50: 81 c4 e8 01 00 00       add    esp,0x1e8
+56: c3                      ret
