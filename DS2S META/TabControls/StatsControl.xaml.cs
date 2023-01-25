@@ -111,8 +111,7 @@ namespace DS2S_META
 
         private void Max_Click(object sender, RoutedEventArgs e)
         {
-            foreach (IntegerUpDown nudLev in nudLevels)
-                nudLev.Value = 99;
+            Hook.SetMaxLevels();
         }
 
         private void RestoreHumanity_Click(object sender, RoutedEventArgs e)

@@ -11,7 +11,7 @@ using System.Text;
 using DS2S_META.Utils;
 using System.Reflection;
 using DS2S_META.Utils.Offsets;
-
+using Xceed.Wpf.Toolkit;
 
 namespace DS2S_META
 {
@@ -635,12 +635,36 @@ namespace DS2S_META
             LastBonfireAreaID = BETWIXTAREA;
             return Warp(BETWIXTBFID, true);
         }
-        internal bool Warp(ushort id, bool areadefault = false)
+
+        public enum WARPOPTIONS
         {
+            DEFAULT,
+            WARPREST,
+            WARPONLY,
+        }
+        internal bool Warp(ushort id, bool areadefault = false, WARPOPTIONS wopt = WARPOPTIONS.DEFAULT)
+        {
+            bool bsuccess = false;
             if (Is64Bit)
-                return Warp64(id, areadefault);
+                bsuccess = Warp64(id, areadefault);
             else
-                return Warp32(id, areadefault);
+                bsuccess = Warp32(id, areadefault);
+
+            // Multiplayer mode cannot warp
+            if (!bsuccess)
+                return false;
+
+            // Apply rest after warp
+            bool do_rest = wopt switch
+            {
+                WARPOPTIONS.DEFAULT => Properties.Settings.Default.RestAfterWarp,
+                WARPOPTIONS.WARPREST => true,
+                WARPOPTIONS.WARPONLY => false,
+                _ => throw new Exception("Unexpected flag for Silent Item switch")
+            };
+            if (do_rest)
+                BonfireRest();
+            return true;
         }
         internal bool Warp64(ushort id, bool areadefault = false)
         {
@@ -712,11 +736,18 @@ namespace DS2S_META
             return warped;
         }
 
+        public enum SPECIAL_EFFECT
+        {
+            RESTOREHUMANITY = 100000010,
+            BONFIREREST = 110000010,
+        }
         internal void RestoreHumanity()
         {
-            // wrapper for ApplySpEffect
-            var RestoreHumanityEffect = 100000010; // Shrine of Amana effect
-            ApplySpecialEffect(RestoreHumanityEffect);
+            ApplySpecialEffect((int)SPECIAL_EFFECT.RESTOREHUMANITY);
+        }
+        internal void BonfireRest()
+        {
+            ApplySpecialEffect((int)SPECIAL_EFFECT.BONFIREREST);
         }
         internal void ApplySpecialEffect(int spEffect)
         {
@@ -1123,6 +1154,19 @@ namespace DS2S_META
             Free(itemStruct);
         }
         
+        public void SetMaxLevels()
+        {
+            // Possibly to tidy
+            Vigor = 99;
+            Endurance = 99;
+            Vitality = 99;
+            Attunement = 99;
+            Strength = 99;
+            Dexterity = 99;
+            Adaptability = 99;
+            Intelligence = 99;
+            Faith = 99;
+        }
         public void NewTestCharacter()
         {
             // Define character multi-items
@@ -1281,16 +1325,15 @@ namespace DS2S_META
 
             // Used to create a character with commonly useful things
             RestoreHumanity();
-            //Max_Click(sender, e);               // max levels
-            //Hook.GiveSouls(9999999);            // give souls
-            UnlockBonfires();              // unlock all bonfire
-
+            SetMaxLevels();
+            AddSouls(9999999);
+            UnlockBonfires();
 
             // to tidy:
             DS2SBonfire majula = new(168034304, 4650, "The Far Fire");
             LastBonfireID = majula.ID;
             LastBonfireAreaID = majula.AreaID;
-            Warp(majula.ID);
+            Warp(majula.ID, false, WARPOPTIONS.WARPREST);
         }
 
         #endregion

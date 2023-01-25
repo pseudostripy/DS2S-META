@@ -370,5 +370,17 @@ namespace DS2S_META.Properties {
                 this["hkyGive17k"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RestAfterWarp {
+            get {
+                return ((bool)(this["RestAfterWarp"]));
+            }
+            set {
+                this["RestAfterWarp"] = value;
+            }
+        }
     }
 }

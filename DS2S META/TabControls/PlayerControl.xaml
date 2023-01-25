@@ -139,7 +139,7 @@
                         </Grid.ColumnDefinitions>
                         <Label Content="Bonfire Warp" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
                         <CheckBox Content="Quick Select" x:Name="cbxQuickSelectBonfire" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
-                        <CheckBox Content="Rest After Warp" x:Name="cbxWarpRest" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2"/>
+                        <CheckBox Content="Rest After Warp" x:Name="cbxWarpRest" IsChecked="{Binding RestAfterWarp, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2"/>
                     </Grid>
                     <Grid HorizontalAlignment="Center">
                         <Grid.RowDefinitions>
