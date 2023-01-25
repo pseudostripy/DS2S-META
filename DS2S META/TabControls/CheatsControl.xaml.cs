@@ -56,7 +56,7 @@ namespace DS2S_META
             var itemids = new int[2] { 0x03D09000, 0x0264CB00 };
             var amounts = new short[2] { 1, 1 };
             Hook.GiveItems(itemids, amounts);
-            Hook.GiveSouls(17001);
+            Hook.AddSouls(17001);
         }
     }
 }

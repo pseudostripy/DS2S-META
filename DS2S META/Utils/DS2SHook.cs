@@ -52,6 +52,7 @@ namespace DS2S_META
         public List<ItemRow> Items = new();
 
         private PHPointer GiveSoulsFunc;
+        private PHPointer RemoveSoulsFunc;
         private PHPointer ItemGiveFunc;
         private PHPointer ItemStruct2dDisplay;
         private PHPointer phpDisplayItem;
@@ -123,6 +124,7 @@ namespace DS2S_META
             SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
             SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
             GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
+            RemoveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.RemoveSoulsFuncAoB);
             ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
             ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
@@ -781,6 +783,115 @@ namespace DS2S_META
             Free(unk);
         }
 
+        internal void AddSouls(int numsouls)
+        {
+            if (Is64Bit)
+                UpdateSoulCount64(numsouls);
+            else
+                UpdateSoulCount32(numsouls);
+                
+        }
+        public void UpdateSoulCount64(int souls)
+        {
+            var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
+
+            var bytes = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x6, 8);
+            bytes = BitConverter.GetBytes(souls);
+            Array.Copy(bytes, 0, asm, 0x11, 4);
+            bytes = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0, asm, 0x17, 8);
+            Execute(asm);
+        }
+        public void UpdateSoulCount32(int souls_input)
+        {
+            var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
+            bool isAdd = souls_input >= 0;
+
+            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt32());
+            byte[] numSouls;
+            byte[] funcChangeSouls;
+
+            if (isAdd)
+            {
+                numSouls = BitConverter.GetBytes(souls_input); // AddSouls
+                funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt32());
+            }
+            else
+            {
+                int new_souls = -souls_input; // needs to "subtract a positive number"
+                numSouls = BitConverter.GetBytes(new_souls); // SubractSouls
+                funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt32());
+            }
+
+            // Update assembly:
+            Array.Copy(playerParam, 0, asm, 0x4, playerParam.Length);
+            Array.Copy(numSouls, 0, asm, 0x9, numSouls.Length);
+            Array.Copy(funcChangeSouls, 0, asm, 0xF, funcChangeSouls.Length);
+            Execute(asm);
+        }
+
+        private void UpdateSoulLevel()
+        {
+            var charClass = DS2SClass.All.FirstOrDefault(c => c.ID == Class);
+            if (charClass == null) return;
+
+            var soulLevel = GetSoulLevel(charClass);
+            SoulLevel = soulLevel;
+            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
+            if (reqSoulMemory > SoulMemory)
+            {
+                SoulMemory = reqSoulMemory;
+                SoulMemory2 = reqSoulMemory;
+            }
+        }
+        private int GetSoulLevel(DS2SClass charClass)
+        {
+            int sl = charClass.SoulLevel;
+            sl += Vigor - charClass.Vigor;
+            sl += Attunement - charClass.Attunement;
+            sl += Vitality - charClass.Vitality;
+            sl += Endurance - charClass.Endurance;
+            sl += Strength - charClass.Strength;
+            sl += Dexterity - charClass.Dexterity;
+            sl += Adaptability - charClass.Adaptability;
+            sl += Intelligence - charClass.Intelligence;
+            sl += Faith - charClass.Faith;
+            return sl;
+        }
+        public void ResetSoulMemory()
+        {
+            var charClass = DS2SClass.All.FirstOrDefault(c => c.ID == Class);
+            if (charClass == null) return;
+
+            var soulLevel = GetSoulLevel(charClass);
+            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
+
+            SoulMemory = reqSoulMemory;
+            SoulMemory2 = reqSoulMemory;
+        }
+        private int GetRequiredSoulMemory(int SL, int baseSL)
+        {
+            int soulMemory = 0;
+            for (int i = baseSL; i < SL; i++)
+            {
+                var index = i <= 850 ? i : 850;
+                soulMemory += Levels[index];
+            }
+            return soulMemory;
+        }
+
+        public static List<int> Levels = new();
+        private void GetLevelRequirements()
+        {
+            if (ParamMan.PlayerLevelUpSoulsParam == null)
+                throw new NullReferenceException("Level up cost param not found");
+
+            foreach (var row in ParamMan.PlayerLevelUpSoulsParam.Rows.Cast<PlayerLevelUpSoulsRow>())
+                Levels.Add(row.LevelCost);
+        }
+
+
 
         public void GiveItems(int[] itemids, short[] amounts)
         {
@@ -851,8 +962,7 @@ namespace DS2S_META
             SHOWDIALOG,
             GIVESILENTLY,
         }
-        public void GiveItem(int item, short amount, byte upgrade, byte infusion, 
-                                            GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
+        public void GiveItem(int item, short amount, byte upgrade, byte infusion, GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
         {
             var showdialog = opt switch
             {
@@ -1000,6 +1110,7 @@ namespace DS2S_META
             Execute(asm);
             Free(itemStruct);
         }
+        
         public void NewTestCharacter()
         {
             // Define character multi-items
@@ -1229,81 +1340,8 @@ namespace DS2S_META
         }
         #endregion
 
-        #region SoulsFunctions
-        public void GiveSouls(int souls)
-        {
-            var asm = (byte[])DS2SAssembly.AddSouls.Clone();
 
-            var bytes = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x6, 8);
-            bytes = BitConverter.GetBytes(souls);
-            Array.Copy(bytes, 0, asm, 0x11, 4);
-            bytes = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x17, 8);
-            Execute(asm);
-        }
-        private void UpdateSoulLevel()
-        {
-            var charClass = DS2SClass.All.FirstOrDefault(c => c.ID == Class);
-            if (charClass == null) return;
-
-            var soulLevel = GetSoulLevel(charClass);
-            SoulLevel = soulLevel;
-            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
-            if (reqSoulMemory > SoulMemory)
-            {
-                SoulMemory = reqSoulMemory;
-                SoulMemory2 = reqSoulMemory;
-            }
-        }
-        private int GetSoulLevel(DS2SClass charClass)
-        {
-            int sl = charClass.SoulLevel;
-            sl += Vigor - charClass.Vigor;
-            sl += Attunement - charClass.Attunement;
-            sl += Vitality - charClass.Vitality;
-            sl += Endurance - charClass.Endurance;
-            sl += Strength - charClass.Strength;
-            sl += Dexterity - charClass.Dexterity;
-            sl += Adaptability - charClass.Adaptability;
-            sl += Intelligence - charClass.Intelligence;
-            sl += Faith - charClass.Faith;
-            return sl;
-        }
-        public void ResetSoulMemory()
-        {
-            var charClass = DS2SClass.All.FirstOrDefault(c => c.ID == Class);
-            if (charClass == null) return;
-
-            var soulLevel = GetSoulLevel(charClass);
-            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
-
-            SoulMemory = reqSoulMemory;
-            SoulMemory2 = reqSoulMemory;
-        }
-        private int GetRequiredSoulMemory(int SL, int baseSL)
-        {
-            int soulMemory = 0;
-            for (int i = baseSL; i < SL; i++)
-            {
-                var index = i <= 850 ? i : 850;
-                soulMemory += Levels[index];
-            }
-            return soulMemory;
-        }
-
-        public static List<int> Levels = new();
-        private void GetLevelRequirements()
-        {
-            if (ParamMan.PlayerLevelUpSoulsParam == null)
-                throw new NullReferenceException("Level up cost param not found");
-
-            foreach (var row in ParamMan.PlayerLevelUpSoulsParam.Rows.Cast<PlayerLevelUpSoulsRow>())
-                Levels.Add(row.LevelCost);
-        }
-
-        #endregion
-
+        
 
         // Get info requests:
         internal int GetMaxUpgrade(ItemRow item)

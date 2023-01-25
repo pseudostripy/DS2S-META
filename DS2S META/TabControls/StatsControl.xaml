@@ -51,13 +51,13 @@
                         <Label Content="Souls" Grid.Row="0" Grid.Column="0"/>
                         <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                         <Label Content="SoulMemory" Grid.Row="1" Grid.Column="0" />
-                        <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                        <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
                         <Label Content="SoulMemory2" Grid.Row="2" Grid.Column="0"/>
                         <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                     </Grid>
                     <Button Content="Reset Soul Memory" x:Name="btnResetSoulMemory" Width="150" IsEnabled="False" Click="ResetSoulMemory_Click"/>
                     <Label Content="Give Souls" HorizontalAlignment="Center"/>
-                    <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Minimum="0" Value="0" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Minimum="-9999999" Value="0" ClipValueToMinMax="True"/>
                     <Separator Visibility="Hidden"/>
                     <Button x:Name="btnGive" Content="Give" Width="100" Click="GiveSouls_Click" IsEnabled="False" />
                 </StackPanel>

@@ -93,7 +93,7 @@ namespace DS2S_META
         private void GiveSouls_Click(object sender, RoutedEventArgs e)
         {
             if (nudGiveSouls.Value.HasValue)
-                Hook.GiveSouls(nudGiveSouls.Value.Value);
+                Hook.AddSouls(nudGiveSouls.Value.Value);
         }
         private void ResetSoulMemory_Click(object sender, RoutedEventArgs e)
         {

@@ -15,7 +15,7 @@ namespace DS2S_META.Utils.Offsets
 
             if (Func == null)
                 return;
-            //Func.DisplayItem = "48 8B 89 D8 00 00 00 48 85 C9 0F 85 40 5E 00 00";
+
             Func.ApplySpEffectAoB = "89 6c 24 fc 8d 64 24 fc 54 5d 8b 45 08";
         }
     }

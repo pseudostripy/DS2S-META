@@ -185,6 +185,7 @@ namespace DS2S_META.Utils.Offsets
         public string ItemGiveFunc { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string ItemStruct2dDisplay { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string GiveSoulsFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+        public string RemoveSoulsFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string SetWarpTargetFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string WarpFuncAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string BaseBAoB { get; set; } = DS2HookOffsets.AOB_UNSET;

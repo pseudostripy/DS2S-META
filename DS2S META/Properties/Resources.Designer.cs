@@ -61,6 +61,22 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0:  83 ec 28                sub    esp,0x28
+        ///3:  b9 70 70 70 70          mov    ecx,0x70707070	// PlayerParam
+        ///8:  b8 70 70 70 70          mov    eax,0x70707070	// Number of Souls
+        ///d:  50                      push   eax
+        ///e:  b8 70 70 70 70          mov    eax,0x70707070	// funcGiveSouls
+        ///13: ff d0                   call   eax
+        ///15: 83 c4 28                add    esp,0x28
+        ///18: c3                      ret.
+        /// </summary>
+        internal static string AddSouls32 {
+            get {
+                return ResourceManager.GetString("AddSouls32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0:  48 83 ec 28             sub    rsp,0x28 
         ///4:  48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 ;PlayerParam Pointer
         ///b:  ff ff ff
@@ -71,9 +87,9 @@ namespace DS2S_META.Properties {
         ///22: 48 83 c4 28             add    rsp,0x28
         ///26: c3                      ret .
         /// </summary>
-        internal static string AddSouls {
+        internal static string AddSouls64 {
             get {
-                return ResourceManager.GetString("AddSouls", resourceCulture);
+                return ResourceManager.GetString("AddSouls64", resourceCulture);
             }
         }
         
@@ -167,18 +183,17 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 0:  b8 01 00 00 00          mov    eax,0x1
-        ///5:  ba 70 70 70 70          mov    edx,0x70707070
-        ///a:  b9 70 70 70 70          mov    ecx,0x70707070
-        ///f:  6a 00                   push   0x0
-        ///11: 50                      push   eax
-        ///12: 52                      push   edx
-        ///13: b8 70 70 70 70          mov    eax,0x70707070
-        ///18: ff d0                   call   eax
-        ///1a: b9 01 00 00 00          mov    ecx,0x1
-        ///1f: 6a 01                   push   0x1
-        ///21: 51                      push   ecx
-        ///22: ba 70 70 70 70          mov [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to 0:  81 ec e8 01 00 00       sub    esp,0x1e8
+        ///6:  b8 01 00 00 00          mov    eax,0x1
+        ///b:  ba 70 70 70 70          mov    edx,0x70707070
+        ///10: b9 70 70 70 70          mov    ecx,0x70707070
+        ///15: 6a 00                   push   0x0
+        ///17: 50                      push   eax
+        ///18: 52                      push   edx
+        ///19: b8 70 70 70 70          mov    eax,0x70707070
+        ///1e: ff d0                   call   eax
+        ///20: b9 01 00 00 00          mov    ecx,0x1			// NumItems (unique pickup things)
+        ///25: 6a 01                    [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GiveItemWithMenu32 {
             get {
