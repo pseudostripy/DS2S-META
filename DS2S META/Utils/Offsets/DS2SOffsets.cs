@@ -205,6 +205,7 @@ namespace DS2S_META.Utils.Offsets
             Func = new()
             {
                 ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41",
+                RemoveSoulsFuncAoB = "44 8b 81 ec 00 00 00 41 3b d0 73 05 44 2b c2 eb 03",
                 ItemStruct2dDisplay = "40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11",
                 GiveSoulsFuncAoB = "48 83 EC 28 48 8b 01 48 85 C0 74 23 48 8b 80 b8 00 00 00",
                 SetWarpTargetFuncAoB = "48 89 5C 24 08 48 89 74 24 20 57 48 83 EC 60 0F B7 FA",

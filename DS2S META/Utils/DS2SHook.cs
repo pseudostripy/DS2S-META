@@ -793,42 +793,54 @@ namespace DS2S_META
         }
         public void UpdateSoulCount64(int souls)
         {
+            // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
+            
+            // Setup dynamic vars:
+            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
+            GetAddRemSoulFunc(souls, out byte[] numSouls, out byte[] funcChangeSouls);
 
-            var bytes = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x6, 8);
-            bytes = BitConverter.GetBytes(souls);
-            Array.Copy(bytes, 0, asm, 0x11, 4);
-            bytes = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x17, 8);
+            // Update assembly & execute:
+            Array.Copy(playerParam, 0, asm, 0x6, playerParam.Length);
+            Array.Copy(numSouls, 0, asm, 0x11, numSouls.Length);
+            Array.Copy(funcChangeSouls, 0, asm, 0x17, funcChangeSouls.Length);
             Execute(asm);
         }
         public void UpdateSoulCount32(int souls_input)
         {
+            // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
-            bool isAdd = souls_input >= 0;
-
+            
+            // Setup dynamic vars:
             var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt32());
-            byte[] numSouls;
-            byte[] funcChangeSouls;
+            GetAddRemSoulFunc(souls_input, out byte[] numSouls, out byte[] funcChangeSouls);
 
-            if (isAdd)
-            {
-                numSouls = BitConverter.GetBytes(souls_input); // AddSouls
-                funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt32());
-            }
-            else
-            {
-                int new_souls = -souls_input; // needs to "subtract a positive number"
-                numSouls = BitConverter.GetBytes(new_souls); // SubractSouls
-                funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt32());
-            }
-
-            // Update assembly:
+            // Update assembly & execute:
             Array.Copy(playerParam, 0, asm, 0x4, playerParam.Length);
             Array.Copy(numSouls, 0, asm, 0x9, numSouls.Length);
             Array.Copy(funcChangeSouls, 0, asm, 0xF, funcChangeSouls.Length);
             Execute(asm);
+        }
+        private void GetAddRemSoulFunc(int inSouls, out byte[] outSouls, out byte[] funcChangeSouls)
+        {
+            bool isAdd = inSouls >= 0;
+            if (isAdd)
+            {
+                outSouls = BitConverter.GetBytes(inSouls); // AddSouls
+                if (Is64Bit)
+                    funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt64());
+                else    
+                    funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt32());
+            }
+            else
+            {
+                int new_souls = -inSouls; // needs to "subtract a positive number"
+                outSouls = BitConverter.GetBytes(new_souls); // SubractSouls
+                if (Is64Bit)
+                    funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt64());
+                else    
+                    funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt32());
+            }
         }
 
         private void UpdateSoulLevel()
