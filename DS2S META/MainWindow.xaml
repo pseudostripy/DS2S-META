@@ -49,59 +49,40 @@
                         BorderThickness="0"/>
                 </StackPanel>
             </Grid>
-            <Grid Height="95" VerticalAlignment="Stretch">
+            <Grid x:Name="TitleGrid" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" MinWidth="90"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="7*"/>
-                    <ColumnDefinition Width="103*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto" MaxHeight="1"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,24" Grid.RowSpan="2">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Process:" />
-                        <!--<wpfTool:IntegerUpDown Value="{Binding ElementName=DS2META, Path=Hook.ID, Mode=OneWay}" />-->
-                        <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}"/>
-                    </StackPanel>
-                </StackPanel >
-                <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,0,23" Grid.RowSpan="2">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Loaded:" />
-                        <Label Name="lblLoaded" Content="{Binding ContentLoaded}" Margin="1,0,0,0" Foreground="{Binding ForegroundLoaded}"/>
-                    </StackPanel>
-                </StackPanel >
-                <StackPanel Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Left">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Online:" />
-                        <Label Content="{Binding ContentOnline}" Margin="5,0,0,0" Foreground="{Binding ForegroundOnline}"/>
-                    </StackPanel>
-                </StackPanel >
-                <StackPanel Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="50,0,0,23" Grid.RowSpan="2">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="DS2 Version:" />
-                        <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" />
-                    </StackPanel>
-                </StackPanel >
-                <StackPanel Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="3" Width="175" Margin="50,0,0,24" Grid.RowSpan="2">
-                    <Grid>
-                        <Label x:Name="labelCheckVersion" />
-                        <StackPanel Grid.Column="1" Grid.Row="0" >
-                            <Label x:Name="lblNewVersion" Visibility="Hidden">
-                                <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
-                                    New version available!
-                                </Hyperlink>
-                            </Label>
-                        </StackPanel>
+                <Label Content="Process:" />
+                <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}" Grid.Column="1" Margin="5,0,0,0"/>
 
-                    </Grid>
-                </StackPanel>
-                <CheckBox x:Name="cbxUpdateOK" Grid.Column="2" Content="Update Successful" Grid.Row="2" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.RowSpan="2" FontSize="16" RenderTransformOrigin="0.509,1.246" Margin="10,12,0,0" HorizontalAlignment="Left" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" Grid.ColumnSpan="3" Visibility="Hidden"/>
+                <Label Content="Loaded:" Grid.Row="1" />
+                <Label Name="lblLoaded" Content="{Binding ContentLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
+
+                <Label Content="Online:" Grid.Row="2" />
+                <Label Content="{Binding ContentOnline}" Margin="5,0,0,0" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1"/>
+
+                <Label Content="DS2 Version:" Grid.Row="1" Grid.Column="2" Margin="5,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" Grid.Row="1" Grid.Column="3" Width="150" Grid.RowSpan="2" HorizontalAlignment="Center" />
+
+                
+                <Label x:Name="labelCheckVersion" Grid.Column="2" />
+                <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0,0,0" Visibility="Hidden">
+                    <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
+                        New version available!
+                    </Hyperlink>
+                </Label>
+
+                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="Hidden"/>
             </Grid>
             <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450" MinHeight="650">
                 <TabControl.ItemsPanel>
@@ -165,6 +146,7 @@
                 </TabItem>
             </TabControl>
         </StackPanel>
+
 
 
     </Grid>

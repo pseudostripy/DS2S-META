@@ -209,6 +209,7 @@ namespace DS2S_META
         {
             var validvers = new DS2VER[]
             {
+                DS2VER.VANILLA_V102,
                 DS2VER.VANILLA_V111,
                 DS2VER.VANILLA_V112,
                 DS2VER.SOTFS_V102,
@@ -306,22 +307,23 @@ namespace DS2S_META
             }
 
             // get mod versions:
+            sb.Append(Environment.NewLine);
             switch (BBJType)
             {
                 case BBJTYPE.NOBBJ:
-                    sb.Append(" (unmodded)");
+                    sb.Append("(unmodded)");
                     break;
 
                 case BBJTYPE.OLDBBJ_SOTFS:
-                    sb.Append(" (old bbj mod)");
+                    sb.Append("(old bbj mod)");
                     break;
 
                 case BBJTYPE.NEWBBJ_SOTFS:
-                    sb.Append(" (bbj mod)");
+                    sb.Append("(bbj mod)");
                     break;
 
                 default:
-                    sb.Append(" (unknown mod)");
+                    sb.Append("(unknown mod)");
                     break;
             }
             return sb.ToString();

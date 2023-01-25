@@ -1,0 +1,18 @@
+﻿<Window x:Class="DS2S_META.WindowControls.Window1"
+        x:Name="DS2META"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:p="clr-namespace:DS2S_META.Properties"
+        mc:Ignorable="d"
+        xmlns:local="clr-namespace:DS2S_META" xmlns:local1="clr-namespace:DS2S_META.ViewModels"
+        Title="DS2 META" Background="DarkGray" ResizeMode="NoResize" d:DesignHeight="337.773" d:DesignWidth="636.131" >
+    <Window.DataContext>
+        <local1:TestVM x:Name="ViewModel"/>
+    </Window.DataContext>
+    
+    <Grid>
+        
+    </Grid>
+</Window>

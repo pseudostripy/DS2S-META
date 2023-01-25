@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +23,17 @@ namespace DS2S_META.ViewModels
         }
 
 
+        public static bool DesignMode
+        {
+            get { return DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()); }
+        }
 
         public DS2SViewModel()
         {
+            if (DesignMode)
+                return; // maaaaybe fixes designer unhandled crash :thinking:?
+                
+
             Hook = new DS2SHook(5000, 5000);
             Hook.OnHooked += Hook_OnHooked;
             Hook.OnUnhooked += Hook_OnUnhooked;

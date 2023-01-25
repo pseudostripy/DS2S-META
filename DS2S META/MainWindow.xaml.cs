@@ -136,6 +136,7 @@ namespace DS2S_META
                 return;
 
             ShowUpdateComplete = false;
+            TitleGrid.RowDefinitions[3].MaxHeight = 100;
             cbxUpdateOK.Visibility = Visibility.Visible;
             this.Activate();
         }
@@ -360,6 +361,7 @@ namespace DS2S_META
         {
             cbxUpdateOK.IsChecked = false;
             cbxUpdateOK.Visibility = Visibility.Hidden;
+            TitleGrid.RowDefinitions[3].MaxHeight = 1;
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
