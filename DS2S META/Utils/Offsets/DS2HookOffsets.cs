@@ -15,7 +15,7 @@ namespace DS2S_META.Utils.Offsets
     {
         // Misc/Global
         public const int UNSET = -1;
-        public const string AOB_UNSET = "";
+        public const string AOB_UNSET = "AB CD EF FF FF FF FF BA DC FE"; // some unlikely string I guess.
 
         // BaseA
         public string? BaseAAob;

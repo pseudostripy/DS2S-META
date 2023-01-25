@@ -22,8 +22,7 @@ namespace DS2S_META
     /// </summary>
     public partial class StatsControl : METAControl
     {
-        public List<IntegerUpDown> nudLevels => new List<IntegerUpDown>() 
-            { nudVig, nudEnd, nudVit, nudAtt, nudStr, nudDex, nudAdp, nudInt, nudFth };
+        public List<IntegerUpDown> nudLevels => new() { nudVig, nudEnd, nudVit, nudAtt, nudStr, nudDex, nudAdp, nudInt, nudFth };
 
         public StatsControl()
         {

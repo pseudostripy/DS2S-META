@@ -134,7 +134,7 @@ namespace DS2S_META
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
             phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
         }
-
+        
         // DS2 & BBJ Process Info Data
         private const byte NOBBJBYTE = 0xF3;
         private const byte NEWBBJBYTE = 0x49;
