@@ -8,21 +8,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DS2S_META.Randomizer;
-
-using SoulsFormats;
-using static SoulsFormats.PARAMDEF;
 using DS2S_META.Utils;
-using System.Windows.Automation;
-using System.Runtime.Serialization;
-using Octokit;
 using System.Reflection;
 using DS2S_META.Utils.Offsets;
-using System.CodeDom;
-using System.Buffers.Text;
-using System.Windows.Media.Media3D;
+
 
 namespace DS2S_META
 {
@@ -42,10 +31,11 @@ namespace DS2S_META
         public IntPtr BaseAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
+        private readonly GIVEOPTIONS GIVESILENT = GIVEOPTIONS.GIVESILENTLY;
         private string _version = "";
-        public string Version 
-        { 
-            get =>_version;
+        public string Version
+        {
+            get => _version;
             private set
             {
                 _version = value;
@@ -58,9 +48,9 @@ namespace DS2S_META
 
         public static bool Reading { get; set; }
 
-        
+
         public List<ItemRow> Items = new();
-        
+
         private PHPointer GiveSoulsFunc;
         private PHPointer ItemGiveFunc;
         private PHPointer ItemStruct2dDisplay;
@@ -72,7 +62,7 @@ namespace DS2S_META
         private PHPointer WarpFunc;
         private PHPointer? SomePlayerStats;
 
-        public  PHPointer BaseA;
+        public PHPointer BaseA;
 
         private PHPointer PlayerName;
         private PHPointer AvailableItemBag;
@@ -91,7 +81,7 @@ namespace DS2S_META
         private PHPointer BonfireLevels;
         private PHPointer NetSvrBloodstainManager;
 
-        
+
         private PHPointer BaseASetup;
         private PHPointer BaseBSetup;
         private PHPointer BaseB;
@@ -117,7 +107,7 @@ namespace DS2S_META
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
             Version = "Not Hooked";
-            
+
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
@@ -137,7 +127,7 @@ namespace DS2S_META
             ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
             WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
-            
+
             // Version Specific AOBs:
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
             phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
@@ -146,34 +136,34 @@ namespace DS2S_META
         // DS2 & BBJ Process Info Data
         private const byte NOBBJBYTE = 0xF3;
         private const byte NEWBBJBYTE = 0x49;
-        public enum DS2VER 
-        { 
+        public enum DS2VER
+        {
             VANILLA_V112,
-            VANILLA_V111, 
-            VANILLA_V102, 
-            SOTFS_V102, 
-            SOTFS_V103, 
-            UNSUPPORTED 
+            VANILLA_V111,
+            VANILLA_V102,
+            SOTFS_V102,
+            SOTFS_V103,
+            UNSUPPORTED
         }
         public enum BBJTYPE
         {
-            NOBBJ, 
+            NOBBJ,
             OLDBBJ_VANILLA,
             NEWBBJ_VANILLA,
-            OLDBBJ_SOTFS, 
+            OLDBBJ_SOTFS,
             NEWBBJ_SOTFS,
             UNKN_VANILLA,
         }
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
         public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
-        public bool IsVanilla => new DS2VER[] {DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112}.Contains(DS2Ver);
+        public bool IsVanilla => new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 }.Contains(DS2Ver);
         public bool IsValidVer;
 
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             DS2Ver = GetDS2Ver();
             IsValidVer = CheckValidVer();
-            
+
             // Initial Setup & Version Checks:
             Offsets = GetOffsets();
             BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
@@ -182,7 +172,7 @@ namespace DS2S_META
             RescanAOB();
             SetupChildPointers();
 
-            
+
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
             GetVanillaItems();
@@ -417,7 +407,7 @@ namespace DS2S_META
                 var readInt = aobpointer.ReadInt32((int)Offsets.BasePtrOffset1);
                 return aobpointer.ReadIntPtr(readInt + (int)Offsets.BasePtrOffset2);
             }
-            
+
         }
         public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
         {
@@ -426,7 +416,7 @@ namespace DS2S_META
             return pointer.ReadIntPtr(0x0121D4D0 + (int)Offsets.BasePtrOffset2);
         }
 
-        
+
 
         public void UpdateName()
         {
@@ -713,14 +703,19 @@ namespace DS2S_META
             var warped = false;
             if (Multiplayer)
                 return warped; // No warping in multiplayer!
-            
+
             // Execute:
             Execute(asm);
             warped = true;
             return warped;
         }
 
-
+        internal void RestoreHumanity()
+        {
+            // wrapper for ApplySpEffect
+            var RestoreHumanityEffect = 100000010; // Shrine of Amana effect
+            ApplySpecialEffect(RestoreHumanityEffect);
+        }
         internal void ApplySpecialEffect(int spEffect)
         {
             if (Is64Bit)
@@ -738,8 +733,8 @@ namespace DS2S_META
             Kernel32.WriteBytes(Handle, effectStruct, BitConverter.GetBytes(spEffect));
             Kernel32.WriteBytes(Handle, effectStruct + 0x4, BitConverter.GetBytes(0x1));
             Kernel32.WriteBytes(Handle, effectStruct + 0xC, BitConverter.GetBytes(0x219));
-            
-            
+
+
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
             var float_m1 = BitConverter.GetBytes(unk.ToInt64());
@@ -768,7 +763,7 @@ namespace DS2S_META
             var spEfId = BitConverter.GetBytes(spEffectID);
             var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
             var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
-            
+
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
             var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
@@ -786,7 +781,7 @@ namespace DS2S_META
             Free(unk);
         }
 
-        
+
         public void GiveItems(int[] itemids, short[] amounts)
         {
             // Fix wrapping for optionals
@@ -850,13 +845,21 @@ namespace DS2S_META
             Free(itemStruct);
         }
 
-        public void GiveItem(int item, short amount, byte upgrade, byte infusion, int force_silent = -1)
+        public enum GIVEOPTIONS
         {
-            var showdialog = force_silent switch
+            DEFAULT,
+            SHOWDIALOG,
+            GIVESILENTLY,
+        }
+        public void GiveItem(int item, short amount, byte upgrade, byte infusion, 
+                                            GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
+        {
+            var showdialog = opt switch
             {
-                -1 => !Properties.Settings.Default.SilentItemGive,
-                0 => false,
-                _ => true,
+                GIVEOPTIONS.DEFAULT => !Properties.Settings.Default.SilentItemGive,
+                GIVEOPTIONS.SHOWDIALOG => true,
+                GIVEOPTIONS.GIVESILENTLY => false,
+                _ => throw new Exception("Unexpected flag for Silent Item switch")
             };
 
             if (Is64Bit)
@@ -865,13 +868,15 @@ namespace DS2S_META
                     GiveItem64(item, amount, upgrade, infusion);
                 else
                     GiveItemSilently(item, amount, upgrade, infusion);
-            } 
+            }
             else
                 GiveItem32(item, amount, upgrade, infusion, showdialog);
         }
         public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
         {
             // 64 bit only TODO
+            if (!Is64Bit)
+                throw new Exception("This is handled differently in 32bit: TODO 64 fix");
 
             var itemStruct = Allocate(0x8A);
             Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
@@ -962,7 +967,7 @@ namespace DS2S_META
 
             // assembly template
             var asm = (byte[])DS2SAssembly.GiveItem32.Clone();
-            
+
             // inject ret instr at mid_ret index and escape early
             int mid_ret = 0x20; // return early instruction index
             byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
@@ -974,7 +979,7 @@ namespace DS2S_META
                                 .Concat(ret);
                 asm = asm_first.Concat(asm_end).ToArray();
             }
-                
+
             // Fix assembly
             Array.Copy(stackAlloc, 0, asm, 0x2, stackAlloc.Length);
             Array.Copy(pItemStruct, 0, asm, 0xC, pItemStruct.Length);
@@ -994,6 +999,175 @@ namespace DS2S_META
 
             Execute(asm);
             Free(itemStruct);
+        }
+        public void NewTestCharacter()
+        {
+            // Define character multi-items
+            var lifegemid = 60010000;
+            var oldradid = 60030000;
+            var mushroomid = 60035000;
+            var blessingid = 60105000;
+            var effigyid = 60151000;
+            var mossid = 60070000;
+            var wiltherbid = 60060000;
+            var oozeid = 60240000;
+            var gprid = 60250000;
+            var dprid = 60270000;
+            var featherid = 60355000;
+            var branchid = 60537000;
+            var witchurnid = 60550000;
+            var firebombid = 60570000;
+            var blkfirebombid = 60575000;
+            var dungid = 60595000;
+            var poisonknifeid = 60590000;
+            var greatheroid = 60720000;
+            var odosid = 64320000;
+            var skullsid = 60530000;
+            var torchid = 60420000;
+            //
+            var titshardid = 60970000;
+            var ltsid = 60975000;
+            var chunkid = 60980000;
+            var slabid = 60990000;
+            var twinklingid = 61000000;
+            var ptbid = 61030000;
+            var boltstoneid = 61070000;
+            var darkstoneid = 61090000;
+            var rawstoneid = 61130000;
+            var palestoneid = 61160000;
+            var lockstoneid = 60536000;
+            var brightbug = 0x03972C98;
+
+            var multi_items = new List<int>() { lifegemid, oldradid, mushroomid, blessingid, effigyid, mossid, wiltherbid,
+                                                oozeid, gprid, dprid, featherid, branchid, witchurnid, firebombid, blkfirebombid,
+                                                dungid, poisonknifeid, greatheroid, odosid, skullsid, torchid,
+                                                titshardid, ltsid, chunkid, slabid, twinklingid, ptbid, boltstoneid, darkstoneid,
+                                                rawstoneid, palestoneid, lockstoneid, brightbug};
+
+            foreach (int id in multi_items)
+                GiveItem(id, 95, 0, 0, GIVESILENT);
+
+            // ammo
+            var woodarrowid = 60760000;
+            var ironarrowid = 60770000;
+            var magicarrowid = 60780000;
+            var firearrowid = 60800000;
+            var psnarrowid = 60820000;
+            var heavyboltid = 60920000;
+
+            var ammo_items = new List<int>() { woodarrowid, ironarrowid, magicarrowid, firearrowid, psnarrowid, heavyboltid };
+            foreach (int id in ammo_items)
+                GiveItem(id, 950, 0, 0, GIVESILENT);
+
+            // unupgraded stuff:
+            var estusid = 60155000;
+            var binoid = 6100000;
+            var bucklerid = 11000000;
+            var goldenshield = 11050000;
+            var ironparmaid = 11020000;
+
+            var clo1id = 40020001;
+            var bladesid = 40160000;
+            var catringid = 40420000;
+            var soul1ringid = 40370001;
+            var flynnsid = 41100000;
+
+            var staffid = 3800000;
+            var chimeid = 4010000;
+            var pyroid = 5400000;
+            var dwid = 34060000;
+            var slbid = 32260000;
+
+            var bflyskirtid = 21470103;
+            var bflywingsid = 21470101;
+            var tseldorahatid = 22460100;
+            var tseldorabodyid = 22460101;
+            var tseldoraglovesid = 22460102;
+            var tseldorapantsid = 22460103;
+
+            var single_items = new List<int>() { estusid, binoid, bucklerid, goldenshield, ironparmaid,
+                                                clo1id, bladesid, catringid, soul1ringid, flynnsid,
+                                                staffid, chimeid, pyroid, dwid, slbid,
+                                                bflyskirtid, bflywingsid, tseldorahatid, tseldorabodyid, tseldoraglovesid, tseldorapantsid};
+            foreach (int id in single_items)
+                GiveItem(id, 1, 0, 0, GIVESILENT);
+
+            // upgraded speedrun weapons:
+            var daggerid = 1000000;
+            var rapierid = 1500000;
+            var mace = 2410000;
+            var shortbowid = 4200000;
+            var lightcbwid = 4600000;
+            var uchiid = 1700000;
+
+            var upgr_weapons = new List<int>() { daggerid, rapierid, mace, shortbowid, lightcbwid, uchiid };
+            foreach (int id in upgr_weapons)
+                GiveItem(id, 1, 10, 0, GIVESILENT);
+
+            // Misc other weapons:
+            GiveItem(rapierid, 1, 0, 0, GIVESILENT);   // basic rapier
+            GiveItem(rapierid, 1, 10, 3, GIVESILENT);  // lightning rapier
+            GiveItem(rapierid, 1, 10, 4, GIVESILENT);  // dark rapier
+            var ritbid = 5350000;
+            GiveItem(ritbid, 1, 10, 3, GIVESILENT);    // lightning RITB
+            var dbgsid = 1990000;
+            GiveItem(dbgsid, 1, 5, 0, GIVESILENT);
+            var decapitateid = 63017000; // :D
+
+            // Keys:
+            List<int> keylist = new()
+            {
+                0x03041840, // Soldier Key
+                0x03043F50, // Key to King's Passage
+                0x0304B480, // Weapon Smithbox
+                0x0304DB90, // Armor Smithbox
+                0x03072580, // Bastille Key
+                0x03074C90, // Iron Key
+                0x030773A0, // Forgotten Key
+                0x03079AB0, // Brightstone Key
+                0x0307C1C0, // Antiquated Key
+                0x0307E8D0, // Fang Key
+                0x03080FE0, // House Key
+                0x030836F0, // Lenigrast's Key
+                0x03085E00, // Smooth & Silky Stone
+                0x03087188, // Small Smooth & Silky Stone
+                0x03088510, // Rotunda Lockstone
+                0x0308AC20, // Giant's Kinship
+                0x0308D330, // Ashen Mist Heart
+                0x0308FA40, // Soul of a Giant
+                0x03092150, // Tseldora Den Key
+                0x0309BD90, // Undead Lockaway Key
+                0x030A0BB0, // Dull Ember
+                0x030A32C0, // Crushed Eye Orb
+                0x030AA7F0, // Aldia Key
+                0x03197500, // Dragon Talon
+                0x031AFBA0, // Heavy Iron Key
+                0x031C8240, // Frozen Flower
+                0x031E08E0, // Eternal Sanctum Key
+                0x031F8F80, // Tower Key
+                0x03211620, // Garrison Ward Key
+                0x03236010 // Dragon Stone
+            };
+            foreach (int id in keylist)
+                GiveItem(id, 1, 0, 0, GIVESILENT);
+
+            // Gestures:
+            GiveItem(decapitateid, 1, 0, 0); // show visibly
+
+
+
+            // Used to create a character with commonly useful things
+            RestoreHumanity();
+            //Max_Click(sender, e);               // max levels
+            //Hook.GiveSouls(9999999);            // give souls
+            UnlockBonfires();              // unlock all bonfire
+
+
+            // to tidy:
+            DS2SBonfire majula = new(168034304, 4650, "The Far Fire");
+            LastBonfireID = majula.ID;
+            LastBonfireAreaID = majula.AreaID;
+            Warp(majula.ID);
         }
 
         #endregion
@@ -1130,7 +1304,7 @@ namespace DS2S_META
 
         #endregion
 
-        
+
         // Get info requests:
         internal int GetMaxUpgrade(ItemRow item)
         {
@@ -1160,8 +1334,8 @@ namespace DS2S_META
             switch (itemrow.ItemType)
             {
                 //case eItemType.AMMO+
-                    // return GetHeldInInventoryUnstackable(item.ID); // TODO
-            
+                // return GetHeldInInventoryUnstackable(item.ID); // TODO
+
                 case eItemType.CONSUMABLE:
                     return GetHeldInInventoryStackable(itemrow.ID);
 
@@ -1182,7 +1356,7 @@ namespace DS2S_META
 
             var inventory = AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
 
-           while (inventorySlot < bagSize)
+            while (inventorySlot < bagSize)
             {
                 // Get next item in inventory
                 var itemID = BitConverter.ToInt32(inventory, inventorySlot + itemOffset);
@@ -1220,15 +1394,15 @@ namespace DS2S_META
         {
             if (!Hooked) return 0;
             if (SomePlayerStats == null) return 0;
-            return SomePlayerStats.ReadInt32(tbo + 36*(int)bnstype);
+            return SomePlayerStats.ReadInt32(tbo + 36 * (int)bnstype);
         }
         internal void GetVanillaItems()
         {
             if (ParamMan.ItemParam == null)
                 throw new NullReferenceException("Should be loaded by this point I think");
             Items = ParamMan.ItemParam.Rows.OfType<ItemRow>().ToList();
-            
-            foreach(var item in Items)
+
+            foreach (var item in Items)
             {
                 var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ID).FirstOrDefault();
                 if (temp == null)
@@ -1240,12 +1414,12 @@ namespace DS2S_META
         // TODO ARCHAIC
         internal bool GetIsDroppable(ItemRow item)
         {
-            if (!ParamMan.IsLoaded) 
+            if (!ParamMan.IsLoaded)
                 return false;
 
-            if (!Setup || ParamMan.ItemUsageParam == null) 
+            if (!Setup || ParamMan.ItemUsageParam == null)
                 return false;
-            
+
             if (item == null)
                 throw new Exception("Cannot find item for GetIsDroppable");
 
@@ -3459,7 +3633,7 @@ namespace DS2S_META
             Kernel32.WriteBytes(Handle, codePointer, newCode);
             speedFactorPointer.WriteBytes(0x0, inject);
         }
-        
+
         public byte CurrentCovenant
         {
             get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
@@ -3716,7 +3890,7 @@ namespace DS2S_META
                 PlayerParam.WriteInt16(Offsets.Covenants.PilgrimsOfDarknessProgress, value);
             }
         }
-        
+
         public string Name
         {
             get => Loaded ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
