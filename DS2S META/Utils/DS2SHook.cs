@@ -187,11 +187,11 @@ namespace DS2S_META
             Version = GetStringVersion();
             Setup = true;
 
-            // asm execution update:
-            //if (Is64Bit)
-            //    Engine = new(Keystone.Architecture.X86, Mode.X64);
-            //else
-            //    Engine = new(Keystone.Architecture.X86, Mode.X32);
+            //asm execution update:
+            if (Is64Bit)
+                Engine = new(Keystone.Architecture.X86, Mode.X64);
+            else
+                Engine = new(Keystone.Architecture.X86, Mode.X32);
             var test = Keystone.Architecture.X86;
             var debyg = -1;
 
