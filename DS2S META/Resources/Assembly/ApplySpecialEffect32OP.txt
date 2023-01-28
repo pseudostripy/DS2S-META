@@ -1,0 +1,18 @@
+﻿0:  89 e5                   mov    ebp,esp
+2:  83 ec 44                sub    esp,0x44
+5:  c7 44 24 08 70 70 70    mov    DWORD PTR [esp+0x8],0x70707070
+c:  70
+d:  c7 44 24 0c 01 00 00    mov    DWORD PTR [esp+0xc],0x1
+14: 00
+15: b8 70 70 70 70          mov    eax,0x70707070
+1a: f3 0f 10 00             movss  xmm0,DWORD PTR [eax]
+1e: f3 0f 11 44 24 10       movss  DWORD PTR [esp+0x10],xmm0
+24: c7 44 24 14 16 02 00    mov    DWORD PTR [esp+0x14],0x216
+2b: 00
+2c: 8d 44 24 08             lea    eax,[esp+0x8]
+30: 89 04 24                mov    DWORD PTR [esp],eax
+33: b9 70 70 70 70          mov    ecx,0x70707070
+38: b8 70 70 70 70          mov    eax,0x70707070
+3d: ff d0                   call   eax
+3f: 83 c4 40                add    esp,0x40
+42: c3                      ret

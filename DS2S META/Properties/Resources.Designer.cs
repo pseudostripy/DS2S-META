@@ -65,7 +65,7 @@ namespace DS2S_META.Properties {
         ///3:  b9 70 70 70 70          mov    ecx,0x70707070	// PlayerParam
         ///8:  b8 70 70 70 70          mov    eax,0x70707070	// Number of Souls
         ///d:  50                      push   eax
-        ///e:  b8 70 70 70 70          mov    eax,0x70707070	// funcGiveSouls
+        ///e:  b8 70 70 70 70          mov    eax,0x70707070	// funcGiveSouls / funcRemoveSouls
         ///13: ff d0                   call   eax
         ///15: 83 c4 28                add    esp,0x28
         ///18: c3                      ret.
@@ -109,6 +109,25 @@ namespace DS2S_META.Properties {
         internal static string ApplySpecialEffect32 {
             get {
                 return ResourceManager.GetString("ApplySpecialEffect32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0:  89 e5                   mov    ebp,esp
+        ///2:  83 ec 18                sub    esp,0x18
+        ///5:  c7 44 24 04 70 70 70    mov    DWORD PTR [esp+0x4],0x70707070	// spefID
+        ///c:  70
+        ///d:  c7 44 24 08 01 00 00    mov    DWORD PTR [esp+0x8],0x1
+        ///14: 00
+        ///15: b8 70 70 70 70          mov    eax,0x70707070					// &amp;-1f
+        ///1a: f3 0f 10 00             movss  xmm0,DWORD PTR [eax]
+        ///1e: f3 0f 11 44 24 0c       movss  DWORD PTR [esp+0xc],xmm0
+        ///24: b8 70 70 70 70          mov    eax,0x70707070					// ??any non-null pointer??
+        ///29: 89 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ApplySpecialEffect32OP {
+            get {
+                return ResourceManager.GetString("ApplySpecialEffect32OP", resourceCulture);
             }
         }
         

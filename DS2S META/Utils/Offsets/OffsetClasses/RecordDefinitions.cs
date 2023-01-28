@@ -174,8 +174,6 @@ namespace DS2S_META.Utils.Offsets
         int CameraOffset1,
         int CameraOffset2,
         int CameraOffset3,
-        
-        int SpEfCtrl2,
         int[] ItemGiveGameDataMan,
         int[] UnknItemDisplayPtr
     );

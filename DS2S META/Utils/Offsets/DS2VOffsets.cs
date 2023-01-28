@@ -201,7 +201,7 @@ namespace DS2S_META.Utils.Offsets
                 //EquipmentOffset1 = 0x2D4,
                 //EquipmentOffset2 = 0x14,
                 //GameDataManagerOffset = 0x60,
-                SpEfCtrl2 = 0xF8,
+                //SpEfCtrl2 = 0xF8,
                 ItemGiveGameDataMan = new int[5] { 0x60, 0x10, 0x94, 0x298, 0x248 },
                 UnknItemDisplayPtr = new int[4] { 0x60, 0x10, 0x94, 0x298 }
                 //UnknItemDisplayPtr = new int[6] {0x18, 0x2a8, 0x94, 0xc30, 0x698, 0x38}

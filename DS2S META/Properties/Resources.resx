@@ -127,6 +127,9 @@
   <data name="ApplySpecialEffect32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\applyspecialeffect32.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="ApplySpecialEffect32OP" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Assembly\ApplySpecialEffect32OP.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="ApplySpecialEffect64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Assembly\ApplySpecialEffect64.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

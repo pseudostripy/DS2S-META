@@ -41,6 +41,7 @@ namespace DS2S_META
         public static byte[] BonfireWarp32 = LoadDefuseOutput(Properties.Resources.BonfireWarp32);
         public static byte[] ApplySpecialEffect64 = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect64);
         public static byte[] ApplySpecialEffect32 = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect32);
+        public static byte[] ApplySpecialEffect32OP = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect32OP);
 
         // Debugging resource memes
         //public static byte[] AddSouls = new byte[1];

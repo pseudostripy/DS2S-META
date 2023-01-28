@@ -1,17 +1,17 @@
-﻿0:  89 e5                   mov    ebp,esp
-2:  83 ec 1C                sub    esp,0x18
-5:  c7 44 24 04 70 70 70    mov    DWORD PTR [esp+0x4],0x70707070	// SpEfID
-c:  70
-d:  c7 44 24 08 01 00 00    mov    DWORD PTR [esp+0x8],0x1
-14: 00
-15: b8 70 70 70 70          mov    eax,0x70707070					// &-1f
-1a: f3 0f 10 00             movss  xmm0,DWORD PTR [eax]
-1e: f3 0f 11 44 24 0c       movss  DWORD PTR [esp+0xc],xmm0
-24: 66 c7 44 24 10 19 02    mov    WORD PTR [esp+0x10],0x219
-2b: 8d 44 24 04             lea    eax,[esp+0x4]
-2f: 89 04 24                mov    DWORD PTR [esp],eax				// addr of SpEfID
-32: b9 70 70 70 70          mov    ecx,0x70707070					// SpEffCtrl
-37: b8 70 70 70 70          mov    eax,0x70707070					// pfuncApplySpEffect 
-3c: ff d0                   call   eax								// "call ApplySpEffect: DS2.exe+1DB3E0"
-3e: 83 c4 18                add    esp,0x18
-41: c3                      ret
+﻿mov    ebp,esp
+sub    esp,0x18
+mov    DWORD PTR [esp+0x4],{0:X2}	; SpEfID
+
+mov    DWORD PTR [esp+0x8],0x1
+
+mov    eax,0x{1:X2}					; &-1f
+movss  xmm0,DWORD PTR [eax]
+movss  DWORD PTR [esp+0xc],xmm0
+mov    WORD PTR [esp+0x10],0x219
+lea    eax,[esp+0x4]
+mov    DWORD PTR [esp],eax			; addr of SpEfID
+mov    ecx,0x{2:X2}					; SpEffCtrl
+mov    eax,0x{3:X2}					; pfuncApplySpEffect 
+call   eax							; "call ApplySpEffect: DS2.exe+1DB3E0"
+add    esp,0x18
+ret

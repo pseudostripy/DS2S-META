@@ -196,7 +196,7 @@ namespace DS2S_META.Utils.Offsets
                 CameraOffset1 = 0x0,
                 CameraOffset2 = 0x20,
                 CameraOffset3 = 0x28,
-                SpEfCtrl2 = UNSET,
+                //SpEfCtrl2 = UNSET,
                 ItemGiveGameDataMan = Array.Empty<int>(),
                 UnknItemDisplayPtr = Array.Empty<int>(),
             };

@@ -13,7 +13,9 @@ namespace DS2S_META.Utils.Offsets
             if (Func == null)
                 return;
             
-            Func.ApplySpEffectAoB = "E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?";
+            //Core.SpEffectCtrlOffset
+
+            Func.ApplySpEffectAoB = "e8 a1 2b eb ff 5f 5b 5e";
             Func.ItemStruct2dDisplay = "55 8b ec 8b 45 08 8b 4d 14 53 8b 5d 10 56 33 f6";
             Func.GiveSoulsFuncAoB = "55 8b ec 8b 81 e8 00 00 00 8b 55 08 83 ec 08 56";
 

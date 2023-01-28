@@ -12,6 +12,7 @@ using DS2S_META.Utils;
 using System.Reflection;
 using DS2S_META.Utils.Offsets;
 using Xceed.Wpf.Toolkit;
+using Keystone;
 
 namespace DS2S_META
 {
@@ -156,6 +157,7 @@ namespace DS2S_META
             NEWBBJ_SOTFS,
             UNKN_VANILLA,
         }
+        public bool IsOldPatch => DS2Ver == DS2VER.VANILLA_V102;
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
         public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
         public bool IsVanilla => new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 }.Contains(DS2Ver);
@@ -184,6 +186,16 @@ namespace DS2S_META
             GetSpeedhackOffsets(SpeedhackDllPath);
             Version = GetStringVersion();
             Setup = true;
+
+            // asm execution update:
+            //if (Is64Bit)
+            //    Engine = new(Keystone.Architecture.X86, Mode.X64);
+            //else
+            //    Engine = new(Keystone.Architecture.X86, Mode.X32);
+            var test = Keystone.Architecture.X86;
+            var debyg = -1;
+
+
         }
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
@@ -738,6 +750,44 @@ namespace DS2S_META
             return warped;
         }
 
+
+        private Engine Engine;
+        private void AsmExecute(string asm)
+        {
+            //Assemble once to get the size
+            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
+            
+            KeystoneError error = Engine.GetLastKeystoneError();
+            if (error != KeystoneError.KS_ERR_OK)
+                throw new("Something went wrong during assembly. Code could not be assembled.");
+
+            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
+
+            //Reassemble with the location of the isertPtr to support relative instructions
+            bytes = Engine.Assemble(asm, (ulong)insertPtr);
+            error = Engine.GetLastKeystoneError();
+
+            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
+#if DEBUG
+            DebugPrintArray(bytes.Buffer);
+#endif
+
+            Execute(insertPtr);
+            Free(insertPtr);
+        }
+
+#if DEBUG
+        private static void DebugPrintArray(byte[] bytes)
+        {
+            Debug.WriteLine("");
+            foreach (byte b in bytes)
+            {
+                Debug.Write($"{b:X2} ");
+            }
+            Debug.WriteLine("");
+        }
+#endif
+
         public enum SPECIAL_EFFECT
         {
             RESTOREHUMANITY = 100000010,
@@ -755,6 +805,9 @@ namespace DS2S_META
         {
             if (Is64Bit)
                 ApplySpecialEffect64(spEffect);
+            else if (IsOldPatch)
+                //ApplySpecialEffect32OP(spEffect);
+                ApplySpecialEffect32(spEffect);
             else
                 ApplySpecialEffect32(spEffect);
         }
@@ -792,6 +845,35 @@ namespace DS2S_META
         internal void ApplySpecialEffect32(int spEffectID)
         {
             // Assembly template
+            var asmTemplate = (string)DS2SAssembly.ApplySpecialEffect32.Clone();
+
+            //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
+            var spEfId = BitConverter.GetBytes(spEffectID);
+            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
+
+            var unk = Allocate(sizeof(float));
+            Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
+            var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
+
+            string asm = string.Format(asmTemplate, spEfId, addr_float_m1, 
+                                                    SpEfCtrl, ptrApplySpEf);
+
+
+            //// Update assembly with variables:
+            //Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
+            //Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
+            //Array.Copy(SpEfCtrl, 0x0, asm, 0x33, SpEfCtrl.Length);
+            //Array.Copy(ptrApplySpEf, 0x0, asm, 0x38, ptrApplySpEf.Length);
+
+            // Run and tidy-up
+            //File.WriteAllBytes("./TESTBYTES64.txt", asm); // debugging
+            AsmExecute(asm);
+            Free(unk);
+        }
+        internal void ApplySpecialEffect32_backup(int spEffectID)
+        {
+            // Assembly template
             var asm = (byte[])DS2SAssembly.ApplySpecialEffect32.Clone();
 
             //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
@@ -812,6 +894,44 @@ namespace DS2S_META
 
             // Run and tidy-up
             //File.WriteAllBytes("./TESTBYTES64.txt", asm); // debugging
+            Execute(asm);
+            Free(unk);
+        }
+
+        internal void ApplySpecialEffect32OP(int spEffectID)
+        {
+
+            
+            // Assembly template
+            spEffectID = 0x039E8380;
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect32OP.Clone();
+
+            //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
+            var spEfId = BitConverter.GetBytes(spEffectID);
+            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
+            var pbasea = BitConverter.GetBytes(BaseA.Resolve().ToInt32());
+            
+
+            var unk = Allocate(sizeof(float));
+            Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
+            var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
+
+
+            //var p22 = Allocate(sizeof(int)); // I guess technically byte
+            //Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(0x16)); //22
+            //var addr22 = BitConverter.GetBytes(p22.ToInt32());
+            //var twowordtest = BitConverter.GetBytes(0x3E000116);
+
+            // Update assembly with variables:
+            Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
+            Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
+            //Array.Copy(addr22, 0x0, asm, 0x25, addr22.Length);
+            //Array.Copy(twowordtest, 0x0, asm, 0x25, addr22.Length);
+            Array.Copy(SpEfCtrl, 0x0, asm, 0x34, SpEfCtrl.Length);
+            Array.Copy(ptrApplySpEf, 0x0, asm, 0x39, ptrApplySpEf.Length);
+
+            // Run and tidy-up
             Execute(asm);
             Free(unk);
         }
@@ -1326,7 +1446,9 @@ namespace DS2S_META
 
 
             // Used to create a character with commonly useful things
-            RestoreHumanity();
+
+            if (!IsOldPatch)
+                RestoreHumanity(); // applyspeffect not solved yet
             SetMaxLevels();
             AddSouls(9999999);
             UnlockBonfires();
@@ -1335,7 +1457,10 @@ namespace DS2S_META
             DS2SBonfire majula = new(168034304, 4650, "The Far Fire");
             LastBonfireID = majula.ID;
             LastBonfireAreaID = majula.AreaID;
-            Warp(majula.ID, false, WARPOPTIONS.WARPREST);
+            if (!IsOldPatch)
+                Warp(majula.ID, false, WARPOPTIONS.WARPREST);
+            else
+                Warp(majula.ID, false, WARPOPTIONS.WARPONLY);
         }
 
         #endregion
