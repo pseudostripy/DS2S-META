@@ -379,7 +379,7 @@ namespace DS2S_META
             ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
             UnknItemDisplayPtr = CreateChildPointer(BaseA, OC.UnknItemDisplayPtr);
 
-            PlayerBaseMisc = CreateChildPointer(PlayerName, OC.PlayerBaseMiscOffset);
+            PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
             PlayerGravity = CreateChildPointer(PlayerCtrl, OC.PlayerMapDataOffset1);

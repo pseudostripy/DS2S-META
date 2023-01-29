@@ -153,7 +153,6 @@ namespace DS2S_META.Utils.Offsets
         int GameDataManagerOffset,
         int AvailableItemBagOffset,
         int ItemGiveWindowPointer,
-        int PlayerBaseMiscOffset,
         int PlayerCtrlOffset,
         int NetSvrBloodstainManagerOffset1,
         int NetSvrBloodstainManagerOffset2,
@@ -175,7 +174,8 @@ namespace DS2S_META.Utils.Offsets
         int CameraOffset2,
         int CameraOffset3,
         int[] ItemGiveGameDataMan,
-        int[] UnknItemDisplayPtr
+        int[] UnknItemDisplayPtr,
+        int[] PlayerBaseMiscOffset
     );
 
     public record class Func

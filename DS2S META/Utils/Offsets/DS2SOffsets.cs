@@ -171,11 +171,9 @@ namespace DS2S_META.Utils.Offsets
             Core = new()
             {
                 PlayerTypeOffset = 0xB0,
-                PlayerNameOffset = 0xA8,
                 GameDataManagerOffset = 0xA8, // CAREFUL/UNCHECKED
                 AvailableItemBagOffset = 0x10,
                 ItemGiveWindowPointer = 0x22E0,
-                PlayerBaseMiscOffset = 0xC0,
                 PlayerCtrlOffset = 0xD0,
                 NetSvrBloodstainManagerOffset1 = 0x90,
                 NetSvrBloodstainManagerOffset2 = 0x28,
@@ -199,6 +197,8 @@ namespace DS2S_META.Utils.Offsets
                 //SpEfCtrl2 = UNSET,
                 ItemGiveGameDataMan = Array.Empty<int>(),
                 UnknItemDisplayPtr = Array.Empty<int>(),
+                PlayerNameOffset = 0xA8,
+                PlayerBaseMiscOffset = new int[2] { 0xA8, 0xC0 },
             };
 
             // Func AoBs:

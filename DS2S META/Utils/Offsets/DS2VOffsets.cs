@@ -21,7 +21,7 @@ namespace DS2S_META.Utils.Offsets
             PlayerName = new(0xA4);
             ForceQuit = new(0xDF1);
             PlayerCtrl = new(HP: 0xFC, HPMin: 0x100, HPMax: 0x104, HPCap: 0x108, SP: 0x140, SPMax: 0x148, SpeedModifier: 0x208);
-            PlayerBaseMisc = new(0x64, 0x68, UNSET);
+            PlayerBaseMisc = new(0xE4, 0xE8, UNSET);
             PlayerEquipment = new(0x1F8, 0x1DC, 0x1C0, 0x1A4,
                                   0xC8, 0xF4, 0x120,
                                   0x44, 0x70, 0x9C);
@@ -171,11 +171,9 @@ namespace DS2S_META.Utils.Offsets
             Core = new()
             {
                 PlayerTypeOffset = 0x90,
-                PlayerNameOffset = UNSET,
                 GameDataManagerOffset = 0x60,
                 AvailableItemBagOffset = 0x8,
                 ItemGiveWindowPointer = 0xCC4,
-                PlayerBaseMiscOffset = 0x60,
                 PlayerCtrlOffset = 0x74,
                 NetSvrBloodstainManagerOffset1 = 0x90,
                 NetSvrBloodstainManagerOffset2 = 0x28,
@@ -203,8 +201,10 @@ namespace DS2S_META.Utils.Offsets
                 //GameDataManagerOffset = 0x60,
                 //SpEfCtrl2 = 0xF8,
                 ItemGiveGameDataMan = new int[5] { 0x60, 0x10, 0x94, 0x298, 0x248 },
-                UnknItemDisplayPtr = new int[4] { 0x60, 0x10, 0x94, 0x298 }
+                UnknItemDisplayPtr = new int[4] { 0x60, 0x10, 0x94, 0x298 },
                 //UnknItemDisplayPtr = new int[6] {0x18, 0x2a8, 0x94, 0xc30, 0x698, 0x38}
+                PlayerNameOffset = 0x60,
+                PlayerBaseMiscOffset = new int[1] { 0x60 }
             };
 
             // Func AOBs
