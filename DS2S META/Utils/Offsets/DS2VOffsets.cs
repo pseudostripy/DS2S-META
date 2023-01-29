@@ -12,7 +12,7 @@ namespace DS2S_META.Utils.Offsets
         {
             // BaseA
             BaseAAob = "8B F1 8B 0D ? ? ? 01 8B 01 8B 50 28 FF D2 84 C0 74 0C";
-            BaseABabyJumpAoB = "49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E";
+            BaseABabyJumpAoB = "8b 48 6c 53 8b 58 70 8b 40 68 89 45 0c a1 f4 93 54 01 56";
             BasePtrOffset1 = 0x4;
             BasePtrOffset2 = 0x0;
 

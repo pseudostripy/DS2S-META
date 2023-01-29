@@ -137,8 +137,18 @@ namespace DS2S_META
         }
         
         // DS2 & BBJ Process Info Data
-        private const byte NOBBJBYTE = 0xF3;
-        private const byte NEWBBJBYTE = 0x49;
+        private enum BYTECODES
+        {
+            // used for sotfs differentiation:
+            NOBBJBYTE = 0xF3,
+            NEWBBJBYTE = 0x49,
+
+            // used for vanilla differentiation:
+            JUMPREL32 = 0xE9,
+            MOV_ECX_EAX = 0x8B,
+            MOV_EAX_DWORTPTR = 0x8B,
+            MOVSS = 0xF3,
+        }
         public enum DS2VER
         {
             VANILLA_V112,
@@ -252,7 +262,7 @@ namespace DS2S_META
         {
             // TODO VANILLA
             if (IsVanilla)
-                return BBJTYPE.UNKN_VANILLA;
+                return GetBBJTypeVanilla();
 
             if (isOldBbj)
                 return BBJTYPE.OLDBBJ_SOTFS;
@@ -271,15 +281,56 @@ namespace DS2S_META
             // Read a byte to see if the bbj inject is there:
             var jumpinj = CreateBasePointer(jmp_ptr);
             byte testbyte = jumpinj.ReadByte(0);
-            switch (testbyte)
+            return testbyte switch
             {
-                case NOBBJBYTE:
-                    return BBJTYPE.NOBBJ;
-                case NEWBBJBYTE:
-                    return BBJTYPE.NEWBBJ_SOTFS;
-                default:
-                    throw new Exception("Probably an issue with setting up the pointers/addresses");
-            }
+                (byte)BYTECODES.NOBBJBYTE => BBJTYPE.NOBBJ,
+                (byte)BYTECODES.NEWBBJBYTE => BBJTYPE.NEWBBJ_SOTFS,
+                _ => throw new Exception("Probably an issue with setting up the pointers/addresses"),
+            };
+        }
+        internal BBJTYPE GetBBJTypeVanilla()
+        {
+            var jmpfcn_offset = DS2Ver switch
+            {
+                DS2VER.VANILLA_V102 => 0x033A424,
+                DS2VER.VANILLA_V111 => 0x3A09C4,
+                DS2VER.VANILLA_V112 => 0x3A7364,
+                _ => throw new Exception("Shouldn't get here")
+            };
+
+            var module_addr = Process?.MainModule?.BaseAddress;
+            if (module_addr == null)
+                throw new Exception("Unknown DS2 MainModule size");
+            var jmp_ptr = IntPtr.Add((IntPtr)module_addr, jmpfcn_offset);
+
+            // Read a byte to see if the bbj inject is there:
+            var jumpinj = CreateBasePointer(jmp_ptr);
+            byte testbyte = jumpinj.ReadByte(0);
+            bool isInjected = testbyte switch
+            {
+                (byte)BYTECODES.MOV_ECX_EAX => false,
+                (byte)BYTECODES.JUMPREL32 => true,
+                _ => throw new Exception("Shouldn't happen for Vanilla?"),
+            };
+
+            // Split out easy bbj types:
+            if (!isInjected) return BBJTYPE.NOBBJ;
+            if (DS2Ver == DS2VER.VANILLA_V112) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
+            if (DS2Ver == DS2VER.VANILLA_V102) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
+
+            // Finally differentiate between V1.11 old/new bbj mods:
+            var reljump = jumpinj.ReadInt32(0x1); // read rel_jump (E9 XXXXXXXX LE)
+            var addr_inj_code = jumpinj.Resolve() + reljump + 5; // 5 for instruction length
+            var inj_code = CreateBasePointer(addr_inj_code);
+            var testbyte2 = inj_code.ReadByte(0xE); // first byte that is different between versions
+
+            // Differentiate:
+            return testbyte2 switch
+            {
+                (byte)BYTECODES.MOVSS => BBJTYPE.OLDBBJ_VANILLA,
+                (byte)BYTECODES.MOV_EAX_DWORTPTR => BBJTYPE.NEWBBJ_VANILLA,
+                _ => throw new Exception("Probably shouldn't get this, unknown bbj inject")
+            };
         }
         private string GetStringVersion()
         {
@@ -295,26 +346,27 @@ namespace DS2S_META
                 sb.Append("Vanilla");
 
             // get sub-version
+            sb.Append(' ');
             switch (DS2Ver)
             {
                 case DS2VER.SOTFS_V102:
-                    sb.Append(" V1.02");
+                    sb.Append("V1.02");
                     break;
 
                 case DS2VER.SOTFS_V103:
-                    sb.Append(" V1.03");
+                    sb.Append("V1.03");
                     break;
 
                 case DS2VER.VANILLA_V102:
-                    sb.Append(" V1.02 Old Patch");
+                    sb.Append("V1.02 Old Patch");
                     break;
 
                 case DS2VER.VANILLA_V111:
-                    sb.Append(" V1.11");
+                    sb.Append("V1.11");
                     break;
 
                 case DS2VER.VANILLA_V112:
-                    sb.Append(" V1.12");
+                    sb.Append("V1.12");
                     break;
             }
 
@@ -326,10 +378,12 @@ namespace DS2S_META
                     sb.Append("(unmodded)");
                     break;
 
+                case BBJTYPE.OLDBBJ_VANILLA:
                 case BBJTYPE.OLDBBJ_SOTFS:
                     sb.Append("(old bbj mod)");
                     break;
 
+                case BBJTYPE.NEWBBJ_VANILLA:
                 case BBJTYPE.NEWBBJ_SOTFS:
                     sb.Append("(bbj mod)");
                     break;
@@ -361,12 +415,20 @@ namespace DS2S_META
             // Attempt "normal" version:
             IntPtr bp_orig = BasePointerFromSetupPointer(BaseASetup);
             BaseA = CreateBasePointer(bp_orig);
-            isOldBbj = BaseA.Resolve() == IntPtr.Zero;
+            isOldBbj = BaseA.Resolve() == IntPtr.Zero; // cannot find standard basea AoB
             if (!isOldBbj)
+                return; // normal basea success
+
+            if (DS2Ver != DS2VER.VANILLA_V111 && DS2Ver != DS2VER.SOTFS_V102)
+            {
+                MessageBox.Show($"Cannot find BasePtr for Version: {DS2Ver}, META likely won't work");
                 return;
+            }
 
             // Old BBJ mod BasePointer adjustment:
-            BaseASetup = RegisterAbsoluteAOB(Offsets.BaseABabyJumpAoB);
+            // Get ptr to aob
+            var bytestring = Offsets.BaseABabyJumpAoB;
+            BaseASetup = RegisterAbsoluteAOB(bytestring);
             RescanAOB();
             BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
         }
@@ -427,8 +489,23 @@ namespace DS2S_META
         }
         public IntPtr BasePointerFromSetupBabyJ(PHPointer pointer)
         {
+            // Better version that isn't implemented yet:
+            //string? bytestring = Offsets?.BaseABabyJumpAoB;
+            //if (bytestring == null)
+            //    throw new Exception("Cannot look for bbj baseA because no defined AoB string");
 
-            // TODO!
+            //// Get ptr to aob
+            //BaseASetup = RegisterAbsoluteAOB(bytestring);
+            //RescanAOB();
+
+            //var aob_sz = bytestring.Trim().Split(" ").Length;
+            //var addr_basea = BaseASetup.ReadIntPtr(aob_sz - 4);
+            //return CreateBasePointer(addr_basea);
+
+            //var dbug = 1;
+
+
+            //TODO!
             return pointer.ReadIntPtr(0x0121D4D0 + (int)Offsets.BasePtrOffset2);
         }
 
@@ -750,43 +827,43 @@ namespace DS2S_META
             return warped;
         }
 
-
-        private Engine Engine;
-        private void AsmExecute(string asm)
-        {
-            //Assemble once to get the size
-            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
+        // WIP
+//        private Engine Engine;
+//        private void AsmExecute(string asm)
+//        {
+//            //Assemble once to get the size
+//            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
             
-            KeystoneError error = Engine.GetLastKeystoneError();
-            if (error != KeystoneError.KS_ERR_OK)
-                throw new("Something went wrong during assembly. Code could not be assembled.");
+//            KeystoneError error = Engine.GetLastKeystoneError();
+//            if (error != KeystoneError.KS_ERR_OK)
+//                throw new("Something went wrong during assembly. Code could not be assembled.");
 
-            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
+//            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
 
-            //Reassemble with the location of the isertPtr to support relative instructions
-            bytes = Engine.Assemble(asm, (ulong)insertPtr);
-            error = Engine.GetLastKeystoneError();
+//            //Reassemble with the location of the isertPtr to support relative instructions
+//            bytes = Engine.Assemble(asm, (ulong)insertPtr);
+//            error = Engine.GetLastKeystoneError();
 
-            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
-#if DEBUG
-            DebugPrintArray(bytes.Buffer);
-#endif
+//            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
+//#if DEBUG
+//            DebugPrintArray(bytes.Buffer);
+//#endif
 
-            Execute(insertPtr);
-            Free(insertPtr);
-        }
+//            Execute(insertPtr);
+//            Free(insertPtr);
+//        }
 
-#if DEBUG
-        private static void DebugPrintArray(byte[] bytes)
-        {
-            Debug.WriteLine("");
-            foreach (byte b in bytes)
-            {
-                Debug.Write($"{b:X2} ");
-            }
-            Debug.WriteLine("");
-        }
-#endif
+//#if DEBUG
+//        private static void DebugPrintArray(byte[] bytes)
+//        {
+//            Debug.WriteLine("");
+//            foreach (byte b in bytes)
+//            {
+//                Debug.Write($"{b:X2} ");
+//            }
+//            Debug.WriteLine("");
+//        }
+//#endif
 
         public enum SPECIAL_EFFECT
         {
