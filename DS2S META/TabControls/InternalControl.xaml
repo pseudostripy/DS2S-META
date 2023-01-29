@@ -13,82 +13,81 @@
             <Label Content="Equipment"/>
             <Border BorderBrush="Gray" BorderThickness="1" Margin="20,5,20,20" Height="160" VerticalAlignment="Top">
                 <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <Label Content="Head"/>
-                            <Label Content="Chest"/>
-                            <Label Content="Arms"/>
-                            <Label Content="Legs"/>
-                        </StackPanel >
-                        <StackPanel Grid.Column="1">
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.Head}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.Chest}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.Arms}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.Legs}"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Grid.Column="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <Label Content="R Hand 1:" />
-                            <Label Content="R Hand 2:"/>
-                            <Label Content="R Hand 3:"/>
-                            <Label Content="L Hand 1:"/>
-                            <Label Content="L Hand 2:"/>
-                            <Label Content="L Hand 3:"/>
-                        </StackPanel>
-                        <StackPanel Grid.Column="1">
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand1}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand2}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand3}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand1}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand2}"/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand3}"/>
-                        </StackPanel>
-                    </Grid>
-
+                    <Label Content="Head"/>
+                    <Label Content="Chest" Grid.Row="1"/>
+                    <Label Content="Arms" Grid.Row="2"/>
+                    <Label Content="Legs" Grid.Row="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.Head}" Grid.Column="1"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.Chest}" Grid.Row="1" Grid.Column="1"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.Arms}" Grid.Row="2" Grid.Column="1"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.Legs}" Grid.Row="3" Grid.Column="1"/>
+                    
+                    <Label Content="R Hand 1:" Grid.Column="2" />
+                    <Label Content="R Hand 2:" Grid.Column="2" Grid.Row="1"/>
+                    <Label Content="R Hand 3:" Grid.Row="2" Grid.Column="2"/>
+                    <Label Content="L Hand 1:" Grid.Row="3" Grid.Column="2"/>
+                    <Label Content="L Hand 2:" Grid.Row="4" Grid.Column="2"/>
+                    <Label Content="L Hand 3:" Grid.Row="5" Grid.Column="2"/>
+                    
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand1}" Grid.Column="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand2}" Grid.Row="1" Grid.Column="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand3}" Grid.Row="2" Grid.Column="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand1}" Grid.Row="3" Grid.Column="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand2}" Grid.Row="4" Grid.Column="3"/>
+                    <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand3}" Grid.Row="5" Grid.Column="3"/>
                 </Grid>
-
             </Border>
-            <StackPanel Margin="20,0,25,0">
-                <CheckBox Content="Individual Speed Factors" x:Name="cbxSpeeds" IsChecked="{Binding ElementName=InternalCon, Path=Hook.EnableSpeedFactors}" IsEnabled="False"/>
-                <Border BorderBrush="Gray" BorderThickness="1" Width="185" HorizontalAlignment="Left" Margin="20,5,20,20" >
-                    <StackPanel Width="170" HorizontalAlignment="Left" Margin="5" IsEnabled="{Binding ElementName=InternalCon, Path=Hook.EnableSpeedFactors}" >
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Speed Accel/Stam" Width="115"/>
-                            <wpfTool:DecimalUpDown Value="{Binding ElementName=InternalCon, Path=Hook.AccelSpeed}" Width="55" Increment=".5" FormatString="F2"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Speed Animation" Width="115"/>
 
-                            <wpfTool:DecimalUpDown Value="{Binding ElementName=InternalCon, Path=Hook.AnimSpeed}" Width="55" Increment=".5" FormatString="F2"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Speed Jump/Knock" Width="115"/>
-
-                            <wpfTool:DecimalUpDown Value="{Binding ElementName=InternalCon, Path=Hook.JumpSpeedValue}" Width="55" Increment=".5" FormatString="F2"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
-                            <Label Content="Speed Stats Effect" Width="115"/>
-
-                            <wpfTool:DecimalUpDown Value="{Binding ElementName=InternalCon, Path=Hook.BuildupSpeedValue}" Width="55" Increment=".5" FormatString="F2"/>
+            <Label Content="Bonfires" Margin="0,-10,0,0"/>
+            <StackPanel Margin="25,0,25,0">
+                <Separator Visibility="Hidden" Height="10"/>
+                <Button Content="Unlock All Bonfires" Click="UnlockBonfires_Click" Width="125" HorizontalAlignment="Center" Margin="25,-15,25,0"/>
+                <Separator Visibility="Hidden" Height="3"/>
+                <Label Content="Manage Bonfire Levels"/>
+                <Border BorderBrush="Gray" BorderThickness="1" >
+                    <StackPanel Margin="25,10,25,10">
+                        <ComboBox x:Name="cmbBonfirHub" SelectionChanged="cmbBonfirHub_SelectionChanged" />
+                        <Separator Visibility="Hidden" Height="10"/>
+                        <StackPanel x:Name="spBonfires">
                         </StackPanel>
                     </StackPanel>
-
                 </Border>
             </StackPanel>
+
+            <Label Content="Covenants" Margin="0,12,0,0"/>
+            <StackPanel Margin="25,0,25,25">
+                <Border BorderBrush="Gray" BorderThickness="1" >
+                    <StackPanel Margin="20,0,20,20">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Width="250">
+                            <Label Content="Current Covenant: "/>
+                            <Label Content="{Binding ElementName=CovenantCon, Path=Hook.CurrentCovenantName}" />
+                        </StackPanel>
+                        <Separator  Visibility="Hidden" Height="10"/>
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox x:Name="cmbCovenant" SelectionChanged="cmbCovenant_SelectionChanged" Width="280"/>
+                            <Button Content="Set" Width="35" Margin="15,0,0,0" Click="SetCovenant_Click" x:Name="btnSet"/>
+                        </StackPanel>
+                        <Separator Visibility="Hidden" Height="10"/>
+                        <StackPanel x:Name="spCovenants">
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
         </StackPanel>
         
 

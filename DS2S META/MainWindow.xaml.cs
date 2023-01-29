@@ -314,10 +314,10 @@ namespace DS2S_META
         {
             metaPlayer.EnableCtrls(enable);
             metaStats.EnableCtrls(enable);
-            metaBonfire.EnableCtrls(enable);
+            //metaBonfire.EnableCtrls(enable);
             metaInternal.EnableCtrls(enable);
             metaItems.EnableCtrls(enable);
-            metaCovenant.EnableCtrls(enable);
+            //metaCovenant.EnableCtrls(enable);
             metatabDmgCalc.EnableCtrls(enable);
         }
         private void ReloadAllTabs()
@@ -325,14 +325,14 @@ namespace DS2S_META
             metaPlayer.ReloadCtrl();
             metaStats.ReloadCtrl();
             metaItems.ReloadCtrl();
-            metaBonfire.ReloadCtrl();
+            //metaBonfire.ReloadCtrl();
             metatabDmgCalc.ReloadCtrl();
         }
         private void UpdateAllTabs()
         {
             metaPlayer.UpdateCtrl();
             metaStats.UpdateCtrl();
-            metaBonfire.UpdateCtrl();
+            //metaBonfire.UpdateCtrl();
             metaItems.UpdateCtrl();
         }
 

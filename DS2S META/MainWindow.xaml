@@ -105,7 +105,7 @@
                         <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Bonfires">
+                <!--<TabItem Header="Bonfires">
                     <Grid Background="LightGray">
                         <local:BonfireMainControl x:Name="metaBonfire" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
                     </Grid>
@@ -114,8 +114,8 @@
                     <Grid Background="LightGray">
                         <local:CovenantControl x:Name="metaCovenant" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
                     </Grid>
-                </TabItem>
-                <TabItem Header="Internal">
+                </TabItem>-->
+                <TabItem Header="Misc">
                     <Grid Background="LightGray">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="95*"/>
