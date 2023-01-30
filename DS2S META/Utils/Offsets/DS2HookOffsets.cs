@@ -41,7 +41,12 @@ namespace DS2S_META.Utils.Offsets
         public Core? Core { get; init; }
         public Func? Func { get; set; }
 
-        public PlayerType PlayerType = new(0x3C, 0x3D, 0x48);
+        public PlayerType PlayerType = new() 
+        {
+            ChrNetworkPhantomId = 0x3C,
+            TeamType = 0x3D, 
+            CharType = 0x48, 
+        };
         public NetSvrBloodstainManager NetSvrBloodstainManager = new(0x38, 0x3C, 0x40);
         public PlayerPosition PlayerPosition = new(0x20, 0x24, 0x28, 0x34, 0x38, 0x3C);
 
