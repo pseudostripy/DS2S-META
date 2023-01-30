@@ -62,6 +62,7 @@ namespace DS2S_META.Utils.Offsets
                 PilgrimsOfDarknessProgress = 0x1D0
             };
             Gravity = new(0xFC);
+            
             PlayerMapData = new()
             {
                 WarpBase = 0x120,
@@ -181,8 +182,9 @@ namespace DS2S_META.Utils.Offsets
                 PlayerParamOffset = 0x378,
                 PlayerPositionOffset1 = 0xB4,
                 PlayerPositionOffset2 = 0xA8,
-                PlayerMapDataOffset2 = 0x1B0,
-                PlayerMapDataOffset3 = 0x10,
+                PlayerDataMapOffset = new int[6] { 0x74, 0xB8, 0x8, 0x14, 0x1B0, 0x10 },
+                //PlayerMapDataOffset2 = 0x1B0,
+                //PlayerMapDataOffset3 = 0x10,
                 SpEffectCtrlOffset = 0x308,
                 CharacterFlagsOffset = 0x490,
                 EventManagerOffset = 0x44,

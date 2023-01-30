@@ -450,7 +450,7 @@ namespace DS2S_META
             PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
             PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
             SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(BaseA, OC.PlayerMapDataOffset1, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
+            PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
             EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
             BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
             WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);

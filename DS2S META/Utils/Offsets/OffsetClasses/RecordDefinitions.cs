@@ -160,9 +160,10 @@ namespace DS2S_META.Utils.Offsets
         public int PlayerParamOffset;
         public int PlayerPositionOffset1;
         public int PlayerPositionOffset2;
-        public int PlayerMapDataOffset1;
-        public int PlayerMapDataOffset2;
-        public int PlayerMapDataOffset3;
+        public int[]? PlayerDataMapOffset;
+        //public int PlayerMapDataOffset1;
+        //public int PlayerMapDataOffset2;
+        //public int PlayerMapDataOffset3;
         public int SpEffectCtrlOffset;
         public int CharacterFlagsOffset;
         public int EventManagerOffset;
