@@ -41,7 +41,31 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 
 # Change Log 
 
-### META v0.6
+### META v0.7 [Combiner]:
+#### v0.7.0.0
+* Merge DS2 META Vanilla into single program DS2S combined!
+* Variety Stability upgrades (crash fixes) on meta/ds2 open/close
+* Finish the full merge of leftover params from Hook into ParamMan
+* Rewrite the param item getter methods properly to use game defs
+* Variety front-end updates to simplify META screen where possible
+* Rewrite of all the assembly templates for equiv vanilla versions
+* Fix to make rest-after-warp actually implemented correctly (finally)
+* Add feature for "Remove Souls"
+* Rando: possible softlock prevention on fang key dude
+
+#### Fix full feature support (Sotfs v1.02 / v1.03, Vanilla v1.02 / v1.11 / v1.12) for:
+* Version identifier showing Game/BBJ mod versions
+* Unlock all bonfires
+* Item Give (normal & silent)
+* No Gravity
+* No Collision
+* ApplySpecialEffect (e.g. Restore humanity)
+* Warp to bonfire or map default
+* New Test Character
+* Give / Remove Souls
+* Stable position / Teleport
+
+### META v0.6 [.net6]
 #### v0.6.1.1
 * Hotfixes to hotkey implementation and lag
 
@@ -87,7 +111,7 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 #### v0.6.0.0
 * Upgrade Meta to C# .NET 6.0 and fix associated transitional pains
 
-### META v0.5
+### META v0.5 [Rando]
 #### Randomizer Alpha A.1
 
 * Added descriptions of all items and all keys in txt files
@@ -113,7 +137,7 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 * Added Randomizer to META (sotfs only)
 * First version of randomizer with non game-breaking bugs
 
-### META v0.4 (first stable release and pseudo takes over main development from Nord)
+### META v0.4 [Stable] (first stable release and pseudo takes over main development from Nord)
 ### Beta 0.4  
 
 * Fixed game crash when closing META  
