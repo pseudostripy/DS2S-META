@@ -199,6 +199,7 @@ namespace DS2S_META.Utils.Offsets
                 UnknItemDisplayPtr = Array.Empty<int>(),
                 PlayerNameOffset = 0xA8,
                 PlayerBaseMiscOffset = new int[2] { 0xA8, 0xC0 },
+                NoGrav = new int[2] { 0xD0, 0x100 },
             };
 
             // Func AoBs:

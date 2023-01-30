@@ -435,7 +435,9 @@ namespace DS2S_META
         internal void SetupChildPointers()
         {
             // Further pointer setup... todo?
-            Core OC = Offsets.Core; // shorthand
+            Core? OC = Offsets.Core; // shorthand
+            if (OC == null) return;
+
             PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
             AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
@@ -444,11 +446,11 @@ namespace DS2S_META
             PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
-            PlayerGravity = CreateChildPointer(PlayerCtrl, OC.PlayerMapDataOffset1);
+            PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
             PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
             PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
             SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(PlayerGravity, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
+            PlayerMapData = CreateChildPointer(BaseA, OC.PlayerMapDataOffset1, OC.PlayerMapDataOffset2, OC.PlayerMapDataOffset3);
             EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
             BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
             WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);

@@ -181,7 +181,6 @@ namespace DS2S_META.Utils.Offsets
                 PlayerParamOffset = 0x378,
                 PlayerPositionOffset1 = 0xB4,
                 PlayerPositionOffset2 = 0xA8,
-                PlayerMapDataOffset1 = 0x14,
                 PlayerMapDataOffset2 = 0x1B0,
                 PlayerMapDataOffset3 = 0x10,
                 SpEffectCtrlOffset = 0x308,
@@ -204,7 +203,8 @@ namespace DS2S_META.Utils.Offsets
                 UnknItemDisplayPtr = new int[4] { 0x60, 0x10, 0x94, 0x298 },
                 //UnknItemDisplayPtr = new int[6] {0x18, 0x2a8, 0x94, 0xc30, 0x698, 0x38}
                 PlayerNameOffset = 0x60,
-                PlayerBaseMiscOffset = new int[1] { 0x60 }
+                PlayerBaseMiscOffset = new int[1] { 0x60 },
+                NoGrav = new int[3] { 0x74, 0xB8, 0x8 } // this is really only for gravity
             };
 
             // Func AOBs

@@ -146,37 +146,38 @@ namespace DS2S_META.Utils.Offsets
         int CamZ,
         int CamY
     );
-    public readonly record struct Core
-    (
-        int PlayerTypeOffset,
-        int PlayerNameOffset,
-        int GameDataManagerOffset,
-        int AvailableItemBagOffset,
-        int ItemGiveWindowPointer,
-        int PlayerCtrlOffset,
-        int NetSvrBloodstainManagerOffset1,
-        int NetSvrBloodstainManagerOffset2,
-        int NetSvrBloodstainManagerOffset3,
-        int PlayerParamOffset,
-        int PlayerPositionOffset1,
-        int PlayerPositionOffset2,
-        int PlayerMapDataOffset1,
-        int PlayerMapDataOffset2,
-        int PlayerMapDataOffset3,
-        int SpEffectCtrlOffset,
-        int CharacterFlagsOffset,
-        int EventManagerOffset,
-        int WarpManagerOffset,
-        int BonfireLevelsOffset1,
-        int BonfireLevelsOffset2,
-        int ConnectionOffset,
-        int CameraOffset1,
-        int CameraOffset2,
-        int CameraOffset3,
-        int[] ItemGiveGameDataMan,
-        int[] UnknItemDisplayPtr,
-        int[] PlayerBaseMiscOffset
-    );
+    public record class Core
+    {
+        public int PlayerTypeOffset;
+        public int PlayerNameOffset;
+        public int GameDataManagerOffset;
+        public int AvailableItemBagOffset;
+        public int ItemGiveWindowPointer;
+        public int PlayerCtrlOffset;
+        public int NetSvrBloodstainManagerOffset1;
+        public int NetSvrBloodstainManagerOffset2;
+        public int NetSvrBloodstainManagerOffset3;
+        public int PlayerParamOffset;
+        public int PlayerPositionOffset1;
+        public int PlayerPositionOffset2;
+        public int PlayerMapDataOffset1;
+        public int PlayerMapDataOffset2;
+        public int PlayerMapDataOffset3;
+        public int SpEffectCtrlOffset;
+        public int CharacterFlagsOffset;
+        public int EventManagerOffset;
+        public int WarpManagerOffset;
+        public int BonfireLevelsOffset1;
+        public int BonfireLevelsOffset2;
+        public int ConnectionOffset;
+        public int CameraOffset1;
+        public int CameraOffset2;
+        public int CameraOffset3;
+        public int[]? ItemGiveGameDataMan;
+        public int[]? UnknItemDisplayPtr;
+        public int[]? PlayerBaseMiscOffset;
+        public int[]? NoGrav;
+    };
 
     public record class Func
     {

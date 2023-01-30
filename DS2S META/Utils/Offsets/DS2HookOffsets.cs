@@ -38,7 +38,7 @@ namespace DS2S_META.Utils.Offsets
         public BonfireLevels BonfireLevels { get; init; }
         public Connection Connection { get; init; }
         public Camera Camera { get; init; }
-        public Core Core { get; init; }
+        public Core? Core { get; init; }
         public Func? Func { get; set; }
 
         public PlayerType PlayerType = new(0x3C, 0x3D, 0x48);

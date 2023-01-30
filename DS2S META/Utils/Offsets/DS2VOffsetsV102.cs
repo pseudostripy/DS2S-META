@@ -10,10 +10,11 @@ namespace DS2S_META.Utils.Offsets
     {
         public DS2VOffsetsV102() : base()
         {
-            if (Func == null)
+            if (Func == null || Core == null)
                 return;
-            
-            //Core.SpEffectCtrlOffset
+
+            // this is correct but doesn't actually work :/
+            //Core.NoGrav = new int[5] { 0x18, 0x4c, 0xa0, 0x8, 0xfc }; 
 
             Func.ApplySpEffectAoB = "55 8b ec 8b 45 08 83 ec 10 56 8b f1";
             Func.ItemStruct2dDisplay = "55 8b ec 8b 45 08 8b 4d 14 53 8b 5d 10 56 33 f6";
