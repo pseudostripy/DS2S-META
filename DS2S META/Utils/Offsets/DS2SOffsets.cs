@@ -181,7 +181,7 @@ namespace DS2S_META.Utils.Offsets
                 PlayerParamOffset = 0x490,
                 PlayerPositionOffset1 = 0xF8,
                 PlayerPositionOffset2 = 0xF0,
-                PlayerDataMapOffset = new int[3] { 0x100, 0x320, 0x20 },
+                PlayerDataMapOffset = new int[4] { 0xD0, 0x100, 0x320, 0x20 },
                 SpEffectCtrlOffset = 0x3E0,
                 CharacterFlagsOffset = 0x490,
                 EventManagerOffset = 0x70,
