@@ -15,23 +15,21 @@ A
  Even actions not locked behind a setting are considered unsafe for online use.  
  YOU HAVE BEEN WARNED  
 
-# Known Issues  
- * Item give with the in game message box can sometimes crash the game. Turn on "Give Items Silently" in the settings menu. No sure if silent item give bans or not. 
-
 ## Requirements 
-* [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472)  
+* [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
 
 ## Installing  
 * Extract contents of zip archive to it's own folder. You may have to run as admin if DS2S META crashes  
 
 ## Thank You  
-**[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) and [Property Hook](https://github.com/JKAnderson/PropertyHook)  
-**[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor  
-**[pseudostripy](https://github.com/pseudostripy)** Tester and contributor   
+**Nordgaren/Pseudostripy** Main developers of META\
+**[Nordgaren](https://github.com/Nordgaren)** especially for helping me out on some horrible bugs!\
+**[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) and [Property Hook](https://github.com/JKAnderson/PropertyHook)\
+**[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor\
 **[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge  
 
 ## Libraries
-My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](https://github.com/JKAnderson/)  
+Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](https://github.com/JKAnderson/)  
 
 [Costura](https://github.com/Fody/Costura) by [Fody](https://github.com/Fody) team  
 
@@ -44,10 +42,53 @@ My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](
 # Change Log 
 
 ### META v0.6
+#### v0.6.1.1
+* Hotfixes to hotkey implementation and lag
 
+#### v0.6.1.0
+
+* Overhaul to hotkey implementation for full-screen DS2
+
+#### v0.6.0.8
+* Rando minor softlock and bug fixes
+
+#### v0.6.0.7
+* New Test Character feature added
+* Rando: Enemy drops randomized (and bug fixes)
+* Rando refactoring for future proofing and generlaization
+* Rando bug fixes: Rerandomization bugs / shared loot fixes
+* Rando balances: key decisions / remove over-abundances torches etc.
+
+#### v0.6.0.6
+* META compatibility with all bbj versions and newest patches
+* First label version showing active mods via META
+
+#### v0.6.0.5
+* Crash hotfixes for new DS2 patch for SOTFS
+* Extra user information and logging during auto-updater
+* Stability improvements: Variety of other META crash fixes
+
+#### v0.6.0.4
+* MVVM implementation and progress on DmgCalc tab
+* Rapier OHKO feature
+* Auto-updater ongoing fixes & robustness testing
+* Rando: Character creation now randomized
+* Rando bug fixes: Trades shops / NPC shops after move / bad pickups / sotflocks / Gesture crashes
+
+#### v0.6.0.3 & v0.6.0.2
+* META Auto-updater / config loader
+* Rando bug fixes: busted item spots / shop prices
+
+#### v0.6.0.1:
+* Implemented a Param Manager for more generalized param loading
+* Start of (incomplete/placeholder) dmg calc code based on Radai's formula
+* Randomizer performance optimizations
+
+#### v0.6.0.0
 * Upgrade Meta to C# .NET 6.0 and fix associated transitional pains
 
-### Randomizer Alpha A.1
+### META v0.5
+#### Randomizer Alpha A.1
 
 * Added descriptions of all items and all keys in txt files
 * Vanilla item-leak bug fixed on all lots/shops
@@ -69,9 +110,10 @@ My fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](
 * Fixed Soul of a Giant bug (previously only 3 placed)
 
 ### Randomizer Pre-Alpha A.0
-
+* Added Randomizer to META (sotfs only)
 * First version of randomizer with non game-breaking bugs
 
+### META v0.4 (first stable release and pseudo takes over main development from Nord)
 ### Beta 0.4  
 
 * Fixed game crash when closing META  
