@@ -315,7 +315,7 @@ namespace DS2S_META
         private void SetGameSpeed()
         {
             if (GameLoaded && Hook.Hooked)
-                Hook.SetSpeed((float)(nudSpeed.Value ?? 1));
+                Hook.SetSpeed((double)(nudSpeed.Value ?? 1));
         }
         private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
