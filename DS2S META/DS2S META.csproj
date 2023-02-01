@@ -7,7 +7,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.0.0</AssemblyVersion>	  
+	<AssemblyVersion>0.7.0.0</AssemblyVersion>
+	<Platforms>AnyCPU;x86</Platforms>	  
   </PropertyGroup>
 
   <ItemGroup>
@@ -94,6 +95,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\DLLs\x86\Speedhack.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DLLs\x86\SpeedInjector32\PropertyHook.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DLLs\x86\SpeedInjector32\SpeedInjector.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DLLs\x86\SpeedInjector32\SpeedInjector.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\DLLs\x86\SpeedInjector32\SpeedInjector.runtimeconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Equipment\Armor\Armor.txt">

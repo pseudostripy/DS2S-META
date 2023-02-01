@@ -212,12 +212,9 @@ namespace DS2S_META
             if (Hook.EnableSpeedFactors)
                 Hook.EnableSpeedFactors = false;
 
-            if (Hook.SpeedhackDllPtr != IntPtr.Zero)
-            {
-                Hook.DisableSpeedhack();
-                Hook.Free(Hook.SpeedhackDllPtr);
-            }
-            
+            Hook.ClearSpeedhackInject();
+
+
             UpdateTimer.Stop();
             SaveAllTabs();
 

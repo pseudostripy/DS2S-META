@@ -1555,6 +1555,7 @@ namespace DS2S_META
         IntPtr SetupPtr;
         IntPtr SetSpeedPtr;
         IntPtr DetachPtr;
+        public bool SpeedhackInitialised = false;
 
         internal void Speedhack(bool enable)
         {
@@ -1566,30 +1567,91 @@ namespace DS2S_META
 
         internal void ClearSpeedhackInject()
         {
+            if (!SpeedhackInitialised)
+                return;
+
+            //DetachSpeedhack(); // this is still very slow!
+            Free(SpeedhackDllPtr);
             SpeedhackDllPtr = IntPtr.Zero;
+            SpeedhackInitialised = false;
         }
 
         public void DisableSpeedhack()
         {
-            // Causes games freezes
-            // IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
-            // Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
-            if (SpeedhackDllPtr == IntPtr.Zero) return;
+            if (!SpeedhackInitialised) 
+                return;
             SetSpeed(1.0d);
         }
 
         private void EnableSpeedhack()
         {
             if (SpeedhackDllPtr == IntPtr.Zero)
-            {
-                SpeedhackDllPtr = InjectDLL(GetSpeedhackDllPath());
-                IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
-                IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
-                _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-            }
+                SpeedhackDllPtr = GetSpeedhackPtr();
 
+            if (!SpeedhackInitialised)
+                SetupSpeedhack();
+
+            // Update speed:
             SetSpeed((double)Properties.Settings.Default.SpeedValue);
         }
+        private void SetupSpeedhack()
+        {
+            // Initialise Speedhack (one-time)
+            IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
+            Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+
+            SpeedhackInitialised = true;
+        }
+        private IntPtr GetSpeedhackPtr()
+        {
+            if (Is64Bit)
+                return InjectDLL(GetSpeedhackDllPath());
+            else
+                return (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out _);
+        }
+        
+        private enum INJECTOR_ERRCODE
+        {
+            PROCESS_NOT_START = -5,
+            INCORRECT_NUMARGS = -2,
+            HOOK_FAILED = -1,
+            NONE = 0,
+        }
+        private static int Run32BitInjector(string dllfile, out INJECTOR_ERRCODE err)
+        {
+            err = INJECTOR_ERRCODE.NONE;
+            string TRIPQUOT = "\"\"\"";
+
+            // Run the above batch file in new thread
+            ProcessStartInfo PSI = new()
+            {
+                FileName = $"{ExeDir}\\Resources\\DLLs\\x86\\SpeedInjector32\\SpeedInjector.exe",
+                Arguments = $"{TRIPQUOT}{dllfile}{TRIPQUOT}",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+
+            try
+            {
+                // Start the process with the info we specified.
+                // Call WaitForExit and then the using statement will close.
+                using Process? exeProcess = Process.Start(PSI);
+                exeProcess?.WaitForExit();
+                if (exeProcess?.ExitCode == null)
+                {
+                    err = INJECTOR_ERRCODE.PROCESS_NOT_START;
+                    return 0;
+                }
+                return exeProcess.ExitCode; // -1 on null?
+            }
+            catch
+            {
+                // Log error.
+                throw new Exception("Probably cannot find .exe");
+            }
+        }
+
 
         public void SetSpeed(double value)
         {
@@ -1597,20 +1659,41 @@ namespace DS2S_META
             IntPtr valueAddress = GetPrefferedIntPtr(sizeof(double), SpeedhackDllPtr);
             Kernel32.WriteBytes(Handle, valueAddress, BitConverter.GetBytes(value));
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setSpeed, valueAddress, 0, IntPtr.Zero);
-            Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(valueAddress);
         }
+        private void DetachSpeedhack()
+        {
+            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+        }
+
+        // Currently hardcoded to avoid hassle. Shouldn't change often :/
+        private const int SpeedHack32_SetupOffset = 0x1180;
+        private const int SpeedHack32_SpeedOffset = 0x1280;
+        private const int SpeedHack32_DetachOffset = 0x1230;
 
         private void GetSpeedhackOffsets()
         {
-            var lib = Kernel32.LoadLibrary(GetSpeedhackDllPath());
-            var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
-            var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
-            var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
-            SetupPtr = (IntPtr)setupOffset;
-            SetSpeedPtr = (IntPtr)setSpeedOffset;
-            DetachPtr = (IntPtr)detachOffset;
-            Free(lib);
+            if (Is64Bit)
+            {
+                var lib = Kernel32.LoadLibrary(GetSpeedhackDllPath());
+                var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
+                var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
+                var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
+                SetupPtr = (IntPtr)setupOffset; // 0x1180
+                SetSpeedPtr = (IntPtr)setSpeedOffset; // 0x1280
+                DetachPtr = (IntPtr)detachOffset; // 0x1230
+                Free(lib);
+            }
+            else
+            {
+                SetupPtr = (IntPtr)SpeedHack32_SetupOffset;
+                SetSpeedPtr = (IntPtr)SpeedHack32_SpeedOffset;
+                DetachPtr = (IntPtr)SpeedHack32_DetachOffset;
+            }
+            
         }
 
         private string GetSpeedhackDllPath()
