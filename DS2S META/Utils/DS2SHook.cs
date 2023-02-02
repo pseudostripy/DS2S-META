@@ -204,7 +204,7 @@ namespace DS2S_META
             //    Engine = new(Keystone.Architecture.X86, Mode.X32);
             //var test = Keystone.Architecture.X86;
             //var debyg = -1;
-
+            ClearupDuplicateSpeedhacks();
 
         }
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
@@ -1571,16 +1571,44 @@ namespace DS2S_META
                 return;
 
             //DetachSpeedhack(); // this is still very slow!
-            Free(SpeedhackDllPtr);
+            //Free(SpeedhackDllPtr); // testing something
             SpeedhackDllPtr = IntPtr.Zero;
             SpeedhackInitialised = false;
         }
 
         public void DisableSpeedhack()
         {
-            if (!SpeedhackInitialised) 
+            if (!SpeedhackInitialised)
                 return;
             SetSpeed(1.0d);
+        }
+
+        public static void ClearupDuplicateSpeedhacks()
+        {
+            // Try running on startup before injects where possible
+            string dlldir = $"{ExeDir}\\Resources\\DLLs\\x86";
+            var files = Directory.GetFiles(dlldir);
+            foreach (var file in files)
+            {
+                var fname = Path.GetFileNameWithoutExtension(file);
+                bool endswithdigit = char.IsDigit(fname[fname.Length - 1]);
+                if (endswithdigit)
+                {
+                    try
+                    {
+                        var fpath = $"{dlldir}/{fname}.dll";
+                        File.Delete(fpath);
+                    }
+                    catch (IOException)
+                    {
+                        continue; // in use probably
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        continue; // probably ok too?
+                    }
+                }
+            }
         }
 
         private void EnableSpeedhack()
@@ -1590,7 +1618,7 @@ namespace DS2S_META
 
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
-
+            
             // Update speed:
             SetSpeed((double)Properties.Settings.Default.SpeedValue);
         }
@@ -1599,7 +1627,7 @@ namespace DS2S_META
             // Initialise Speedhack (one-time)
             IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
-            Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
 
             SpeedhackInitialised = true;
         }
@@ -1620,14 +1648,25 @@ namespace DS2S_META
         }
         private static int Run32BitInjector(string dllfile, out INJECTOR_ERRCODE err)
         {
+            string newpath;
+            int fid = Properties.Settings.Default.SH32FID; // get freefile()
+            Properties.Settings.Default.SH32FID++; // update it for next time
+
+            // copy dll to new file before injecting
+            string dllfilename = Path.GetFileNameWithoutExtension(dllfile);
+            string newname = $"{dllfilename}{fid}.dll";
+            newpath = $"{Path.GetDirectoryName(dllfile)}\\{newname}";
+            File.Copy(dllfile, newpath, true);
+            
+
             err = INJECTOR_ERRCODE.NONE;
             string TRIPQUOT = "\"\"\"";
-
+            
             // Run the above batch file in new thread
             ProcessStartInfo PSI = new()
             {
                 FileName = $"{ExeDir}\\Resources\\DLLs\\x86\\SpeedInjector32\\SpeedInjector.exe",
-                Arguments = $"{TRIPQUOT}{dllfile}{TRIPQUOT}",
+                Arguments = $"{TRIPQUOT}{newpath}{TRIPQUOT}",
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
@@ -1652,7 +1691,6 @@ namespace DS2S_META
             }
         }
 
-
         public void SetSpeed(double value)
         {
             IntPtr setSpeed = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetSpeedPtr.ToInt64());
@@ -1662,12 +1700,12 @@ namespace DS2S_META
             _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(valueAddress);
         }
-        private void DetachSpeedhack()
-        {
-            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
-            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
-            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-        }
+        //private void DetachSpeedhack()
+        //{
+        //    IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
+        //    IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
+        //    //_ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+        //}
 
         // Currently hardcoded to avoid hassle. Shouldn't change often :/
         private const int SpeedHack32_SetupOffset = 0x1180;
