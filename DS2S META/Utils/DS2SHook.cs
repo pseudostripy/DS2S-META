@@ -1634,7 +1634,7 @@ namespace DS2S_META
         private IntPtr GetSpeedhackPtr()
         {
             if (Is64Bit)
-                return InjectDLL(GetSpeedhackDllPath());
+                return InjectDLL(SpeedhackDllPathX64);
             else
                 return (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out _);
         }
@@ -1665,7 +1665,7 @@ namespace DS2S_META
             // Run the above batch file in new thread
             ProcessStartInfo PSI = new()
             {
-                FileName = $"{ExeDir}\\Resources\\DLLs\\x86\\SpeedInjector32\\SpeedInjector.exe",
+                FileName = $"{ExeDir}\\Resources\\Tools\\SpeedInjector32\\SpeedInjector.exe",
                 Arguments = $"{TRIPQUOT}{newpath}{TRIPQUOT}",
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -1716,7 +1716,7 @@ namespace DS2S_META
         {
             if (Is64Bit)
             {
-                var lib = Kernel32.LoadLibrary(GetSpeedhackDllPath());
+                var lib = Kernel32.LoadLibrary(SpeedhackDllPathX64);
                 var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
                 var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
                 var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
@@ -1732,11 +1732,6 @@ namespace DS2S_META
                 DetachPtr = (IntPtr)SpeedHack32_DetachOffset;
             }
             
-        }
-
-        private string GetSpeedhackDllPath()
-        {
-            return IsSOTFS ? SpeedhackDllPathX64 : SpeedhackDllPathX86;
         }
         #endregion
 

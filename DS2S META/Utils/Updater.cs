@@ -270,7 +270,7 @@ namespace DS2S_META.Utils
             // I know this is duplicated directory finding, but its cleaner to leave this method atomic
             string currexepath = Assembly.GetExecutingAssembly().Location;
             string? currdir = new FileInfo(currexepath).Directory?.FullName;
-            string zPath = $"{currdir}\\Resources\\DLLs\\7z.exe";
+            string zPath = $"{currdir}\\Resources\\Tools\\7zip\\7z.exe";
             try
             {
                 ProcessStartInfo pro = new()
