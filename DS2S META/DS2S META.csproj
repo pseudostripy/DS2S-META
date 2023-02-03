@@ -3283,6 +3283,7 @@
 	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
 	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
+	  <Exec Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
 	  <Message Text="Copied files to build folder" Importance="High" />
   </Target>
 

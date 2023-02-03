@@ -1583,20 +1583,23 @@ namespace DS2S_META
             SetSpeed(1.0d);
         }
 
+        private static readonly string TempDir = $"{ExeDir}\\Resources\\temp";
         public static void ClearupDuplicateSpeedhacks()
         {
             // Try running on startup before injects where possible
-            string dlldir = $"{ExeDir}\\Resources\\DLLs\\x86";
-            var files = Directory.GetFiles(dlldir);
+            if (!Directory.Exists(TempDir))
+                return;
+
+            var files = Directory.GetFiles(TempDir);
             foreach (var file in files)
             {
                 var fname = Path.GetFileNameWithoutExtension(file);
-                bool endswithdigit = char.IsDigit(fname[fname.Length - 1]);
+                bool endswithdigit = char.IsDigit(fname[^1]);
                 if (endswithdigit)
                 {
                     try
                     {
-                        var fpath = $"{dlldir}/{fname}.dll";
+                        var fpath = $"{TempDir}/{fname}.dll";
                         File.Delete(fpath);
                     }
                     catch (IOException)
@@ -1655,7 +1658,11 @@ namespace DS2S_META
             // copy dll to new file before injecting
             string dllfilename = Path.GetFileNameWithoutExtension(dllfile);
             string newname = $"{dllfilename}{fid}.dll";
-            newpath = $"{Path.GetDirectoryName(dllfile)}\\{newname}";
+            newpath = $"{TempDir}\\{newname}";
+            
+            if (!Directory.Exists(TempDir))
+                Directory.CreateDirectory(TempDir);
+
             File.Copy(dllfile, newpath, true);
             
 
