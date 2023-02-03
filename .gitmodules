@@ -6,3 +6,6 @@
 	url = https://github.com/Nordgaren/SoulsFormats.git
 	branch = er
 
+[submodule "SpeedInjector"]
+	path = SpeedInjector
+	url = https://github.com/pseudostripy/SpeedInjector.git
