@@ -11,7 +11,9 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using System.IO;
-
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace DS2S_META
 {
@@ -72,8 +74,29 @@ namespace DS2S_META
 
         public void GetMetaVersion()
         {
+#if DRYUPDATE
+            GetMetaVersionDry();
+            return;
+#endif
             Assembly assembly = Assembly.GetExecutingAssembly();
             MVI.ExeVersion = assembly.GetName().Version;
+        }
+        private void GetMetaVersionDry()
+        {
+            var lines = File.ReadAllLines("./dryupdate.ini");
+            var eqchr = lines[0].IndexOf('=');
+            string thisver = lines[0][(eqchr + 1)..].Trim();
+            if (thisver == string.Empty)
+                throw new Exception("Error reading this version number for dry-update");
+            MVI.ExeVersion = Version.Parse(thisver);
+
+            string filepath = lines[1][(eqchr + 1)..].Trim();
+            Regex re = new(@"DS2S\.META\.(?<ver>.*)\."); // find e.g. "a.b.c" until last ".7z/.zip"
+            var M = re.Match(filepath);
+            if (!M.Success)
+                throw new Exception("Error reading the expected file name for update file");
+            MVI.GitVersion = Version.Parse(M.Groups["ver"].ToString());
+            MVI.DryUpdateFilePath = filepath;
         }
         private void LoadSettingsAfterUpgrade()
         {
@@ -120,7 +143,7 @@ namespace DS2S_META
                 warning.ShowDialog();
             }
         }
-        private void ShowMetaUpdateWindow(Uri link, string ackverstring)
+        private static void ShowMetaUpdateWindow(Uri link, string ackverstring)
         {
             var warning = new METAUpdate(link, ackverstring)
             {
@@ -166,6 +189,7 @@ namespace DS2S_META
             public Uri? LatestReleaseURI { get; set; }
             public string MetaVersionStr => ExeVersion == null ? "Version Undefined" : ExeVersion.ToString();
             public string GitVersionStr => GitVersion == null ? string.Empty : GitVersion.ToString();
+            public string? DryUpdateFilePath { get; set; }
         }
 
         private async void VersionUpdateCheck(string repo_owner)

@@ -8,10 +8,15 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
 	<AssemblyVersion>0.7.0.0</AssemblyVersion>
-	<Platforms>AnyCPU;x86</Platforms>	  
+	<Platforms>AnyCPU;x86</Platforms>
+	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
 
-  
+	<PropertyGroup Condition="'$(Configuration)' == 'DRYUPDATE'">
+		<DefineConstants>DRYUPDATE</DefineConstants>	
+	</PropertyGroup>
+	
+	
 	<ItemGroup>
     <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
       <WrapperTool>tlbimp</WrapperTool>
@@ -160,6 +165,12 @@
 	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
 	  <Message Text="Copied files to build folder" Importance="High" />
+
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'"
+			SourceFiles ="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="$(TargetDir)"/>
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'"
+			SourceFiles ="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="@(OutputDir)"/>
+			
   </Target>
 
   <ItemGroup>
