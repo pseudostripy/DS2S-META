@@ -1570,8 +1570,7 @@ namespace DS2S_META
             if (!SpeedhackInitialised)
                 return;
 
-            //DetachSpeedhack(); // this is still very slow!
-            //Free(SpeedhackDllPtr); // testing something
+            DetachSpeedhack(); // this is still very slow!
             SpeedhackDllPtr = IntPtr.Zero;
             SpeedhackInitialised = false;
         }
@@ -1707,12 +1706,17 @@ namespace DS2S_META
             _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(valueAddress);
         }
-        //private void DetachSpeedhack()
-        //{
-        //    IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
-        //    IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
-        //    //_ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-        //}
+        private void DetachSpeedhack()
+        {
+            if (!Is64Bit)
+                return; // unattach at game close in Vanilla
+
+            // avoid sotfs Meta-reload crash:
+            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            Free(SpeedhackDllPtr);
+        }
 
         // Currently hardcoded to avoid hassle. Shouldn't change often :/
         private const int SpeedHack32_SetupOffset = 0x1180;
