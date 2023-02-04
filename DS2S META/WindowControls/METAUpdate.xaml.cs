@@ -32,7 +32,7 @@ namespace DS2S_META
             NewMetaVersion = newver;
 
             // Create hyperlink object dynamically
-            Run runtext = new Run($"{Link}");
+            Run runtext = new Run(Link.ToString());
             var hyperobj = new Hyperlink(runtext);
             hyperobj.NavigateUri = Link;
             hyperobj.RequestNavigate += link_RequestNavigate;
@@ -54,7 +54,12 @@ namespace DS2S_META
 
         private void btnUpdater_Click(object sender, RoutedEventArgs e)
         {
-            Updater.InitiateUpdate(Link, NewMetaVersion);
+            DoUpdate();
+        }
+        private void DoUpdate()
+        {
+            var task = Updater.WrapperInitiateUpdate(Link, NewMetaVersion);
+            Close();
         }
     }
 }

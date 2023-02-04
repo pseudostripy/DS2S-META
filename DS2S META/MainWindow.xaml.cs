@@ -14,6 +14,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using DS2S_META.Utils;
 
 namespace DS2S_META
 {
@@ -41,7 +42,8 @@ namespace DS2S_META
         }
         Timer UpdateTimer = new Timer();
         private bool ShowUpdateComplete { get; set; } = false;
-        
+        private bool DryUpdateMissingIni = false;
+
         //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
         public MainWindow()
@@ -51,6 +53,7 @@ namespace DS2S_META
             Settings = Properties.Settings.Default;
             HKM = new(this);
             InitializeComponent();
+            //File.Create(Path.Combine(Updater.ExeDir, "testing.txt"));
             GetMetaVersion();
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
@@ -83,7 +86,20 @@ namespace DS2S_META
         }
         private void GetMetaVersionDry()
         {
-            var lines = File.ReadAllLines("./dryupdate.ini");
+            // NOTE: !Can only get here in DryUpdate build configurations!
+            string ini_file = Path.Combine(Updater.ExeDir, "dryupdate.ini");
+
+            // Dummy data for after successful dry update:
+            DryUpdateMissingIni = !File.Exists(ini_file);
+            if (DryUpdateMissingIni)
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                MVI.ExeVersion = assembly.GetName().Version;
+                return;
+            }
+
+
+            var lines = File.ReadAllLines(ini_file);
             var eqchr = lines[0].IndexOf('=');
             string thisver = lines[0][(eqchr + 1)..].Trim();
             if (thisver == string.Empty)
@@ -117,9 +133,13 @@ namespace DS2S_META
             Settings.Save();
             ShowUpdateComplete = true;
 
-            string updaterlog = "..\\updaterlog.log";
+            string updaterlog = Updater.LogPath;
             if (!File.Exists(updaterlog))
-                throw new Exception("Cannot find expected log after update");
+            {
+                MessageBox.Show("Cannot find log file to remove.");
+                return;
+            }
+                
             using (StreamWriter logwriter = File.AppendText(updaterlog))
             {
                 logwriter.WriteLine("Update complete!");
@@ -196,18 +216,32 @@ namespace DS2S_META
         {
             try
             {
+#if !DRYUPDATE
                 // Get Repo Version:
                 GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
                 Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
                 MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-                
+#endif  
                 if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
                 {
+#if DRYUPDATE
+                    if (DryUpdateMissingIni)
+                    {
+                        MVI.GitVersion = MVI.ExeVersion;
+                        link.NavigateUri = new Uri("");
+                    }
+                    else
+                    {
+                        if (MVI.DryUpdateFilePath == null) throw new Exception("Null file path");
+                        link.NavigateUri = new Uri(MVI.DryUpdateFilePath);
+                    }
+#else
                     // Store info:
                     MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
                     MVI.LatestRelease = release;
-
                     link.NavigateUri = new Uri(release.HtmlUrl);
+#endif
+
                     lblNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
 

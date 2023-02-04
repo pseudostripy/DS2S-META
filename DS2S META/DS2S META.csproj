@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.0.0</AssemblyVersion>
+	<AssemblyVersion>0.7.0.1</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
@@ -166,10 +166,8 @@
 	  <Exec Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
 	  <Message Text="Copied files to build folder" Importance="High" />
 
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'"
-			SourceFiles ="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="$(TargetDir)"/>
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'"
-			SourceFiles ="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="@(OutputDir)"/>
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="$(TargetDir)" />
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="@(OutputDir)" />
 			
   </Target>
 
