@@ -75,9 +75,9 @@
                 <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" Grid.Row="1" Grid.Column="3" Width="150" Grid.RowSpan="2" HorizontalAlignment="Center" />
 
                 
-                <Label x:Name="labelCheckVersion" Grid.Column="2" />
+                <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2"/>
                 <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0,0,0" Visibility="Hidden">
-                    <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
+                    <Hyperlink x:Name="linkNewVersionAvail" RequestNavigate="link_RequestNavigate" >
                         New version available!
                     </Hyperlink>
                 </Label>

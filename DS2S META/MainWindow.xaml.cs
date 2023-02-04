@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using DS2S_META.Utils;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DS2S_META
 {
@@ -26,7 +28,7 @@ namespace DS2S_META
         // Eventually most of this should go into a MainWindowViewModel like in ERDebugTool
 
         // Fields/Properties
-        private MetaVersionInfo MVI = new();
+        
         private Properties.Settings Settings;
         public HotkeyManager HKM;
         DS2SHook Hook => ViewModel.Hook;
@@ -40,9 +42,9 @@ namespace DS2S_META
             get => ViewModel.Reading;
             set => ViewModel.Reading = value;
         }
-        Timer UpdateTimer = new Timer();
+        Timer UpdateTimer = new();
         private bool ShowUpdateComplete { get; set; } = false;
-        private bool DryUpdateMissingIni = false;
+        
 
         //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
@@ -53,7 +55,10 @@ namespace DS2S_META
             Settings = Properties.Settings.Default;
             HKM = new(this);
             InitializeComponent();
-            //File.Create(Path.Combine(Updater.ExeDir, "testing.txt"));
+
+
+
+
             GetMetaVersion();
             LoadSettingsAfterUpgrade();
             ShowOnlineWarning();
@@ -64,9 +69,24 @@ namespace DS2S_META
             //DmgCalcViewModel = new DmgCalcViewModel();
             //ViewModels.Add(DmgCalcViewModel);
         }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+            
+            EnableTabs(false);
+            InitAllTabs();
+
+            //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
+            VersionUpdateCheck("Pseudostripy"); // Randomizer updates
+            //lblWindowName.Content = $"META {MVI.MetaVersionStr}";
+
+            UpdateTimer.Interval = 16;
+            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Enabled = true;
+        }
 
         //ObservableCollection<ViewModelBase> ViewModels = new();
-        
+
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
@@ -77,36 +97,34 @@ namespace DS2S_META
 
         public void GetMetaVersion()
         {
-#if DRYUPDATE
-            GetMetaVersionDry();
-            return;
-#endif
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            MVI.ExeVersion = assembly.GetName().Version;
-        }
-        private void GetMetaVersionDry()
-        {
-            // NOTE: !Can only get here in DryUpdate build configurations!
-            string ini_file = Path.Combine(Updater.ExeDir, "dryupdate.ini");
-
-            // Dummy data for after successful dry update:
-            DryUpdateMissingIni = !File.Exists(ini_file);
-            if (DryUpdateMissingIni)
-            {
+            #if DRYUPDATE
+                GetVersionsDry();
+            #else
+                GetVersions()
                 Assembly assembly = Assembly.GetExecutingAssembly();
                 MVI.ExeVersion = assembly.GetName().Version;
-                return;
-            }
+            #endif
+        }
+        
+        private void GetVersions()
+        {
+            // Gets the current assembly version for Meta and the 
+            // most recent release version
+
+        }
+        private void GetVersionsDry()
+        {
+            // NOTE: !Can only get here in DryUpdate build configurations!
+            Updater.EnsureDryUpdateSettings();
+            string ini_file = Updater.DryUpdateSettingsPath;
+
+            var updateini = JsonSerializer.Deserialize<UpdateIni>(ini_file);
+            if (updateini == null) throw new Exception($"Error deserializing {Updater.DryUpdateSettingsPath}");
+
+            MVI.ExeVersion = Version.Parse(updateini.ThisVer);
+            MVI.LatestReleaseURI = new Uri(updateini.UpdatePath);
 
 
-            var lines = File.ReadAllLines(ini_file);
-            var eqchr = lines[0].IndexOf('=');
-            string thisver = lines[0][(eqchr + 1)..].Trim();
-            if (thisver == string.Empty)
-                throw new Exception("Error reading this version number for dry-update");
-            MVI.ExeVersion = Version.Parse(thisver);
-
-            string filepath = lines[1][(eqchr + 1)..].Trim();
             Regex re = new(@"DS2S\.META\.(?<ver>.*)\."); // find e.g. "a.b.c" until last ".7z/.zip"
             var M = re.Match(filepath);
             if (!M.Success)
@@ -114,6 +132,16 @@ namespace DS2S_META
             MVI.GitVersion = Version.Parse(M.Groups["ver"].ToString());
             MVI.DryUpdateFilePath = filepath;
         }
+        
+        private void GetUpdateVersion()
+        {
+            var latestRelease = GitLatestRelease("Pseudostripy").Result;
+            if (latestRelease == null) 
+                return; // default string
+
+            MVI.GitVersion = Version.Parse(latestRelease.TagName.ToLower().Replace("v", ""));
+        }
+
         private void LoadSettingsAfterUpgrade()
         {
             if (!Settings.IsUpgrading)
@@ -146,22 +174,16 @@ namespace DS2S_META
                 logwriter.WriteLine("Removing log file");
             };
 
-            #if !DEBUG
+#if !DEBUG
                 File.Delete(updaterlog);
-            #endif
+#endif
         }
+        
         private void ShowOnlineWarning()
         {
-            if (Settings.ShowWarning)
-            {
-                var warning = new METAWarning()
-                {
-                    Title = "Online Warning",
-                    Width = 350,
-                    Height = 240
-                };
-                warning.ShowDialog();
-            }
+            if (!Settings.ShowWarning) return;
+            var warning = new METAWarning("Online Warning", 350, 240);
+            warning.ShowDialog();
         }
         private static void ShowMetaUpdateWindow(Uri link, string ackverstring)
         {
@@ -181,24 +203,8 @@ namespace DS2S_META
             ShowUpdateComplete = false;
             TitleGrid.RowDefinitions[3].MaxHeight = 100;
             cbxUpdateOK.Visibility = Visibility.Visible;
-            this.Activate();
+            Activate();
         }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            EnableTabs(false);
-            InitAllTabs();
-
-            //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
-            VersionUpdateCheck("Pseudostripy"); // Randomizer updates
-            lblWindowName.Content = $"META {MVI.MetaVersionStr}";
-
-            UpdateTimer.Interval = 16;
-            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
-            UpdateTimer.Enabled = true;
-        }
-
-        
 
         
         public class MetaVersionInfo
@@ -212,42 +218,61 @@ namespace DS2S_META
             public string? DryUpdateFilePath { get; set; }
         }
 
+
+
+        private static async Task<Release?> GitLatestRelease(string repo_owner)
+        {
+            GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
+            Release? release = default;
+            try
+            {
+                release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
+            }
+            catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
+            {
+                // These are OK
+            }
+            return release;
+        }
+        
+        
+        
         private async void VersionUpdateCheck(string repo_owner)
         {
             try
             {
-#if !DRYUPDATE
-                // Get Repo Version:
-                GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
-                Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
-                MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-#endif  
+                #if !DRYUPDATE
+                    // Get Repo Version:
+                    GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
+                    Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
+                    MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
+                #endif
                 if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
                 {
-#if DRYUPDATE
-                    if (DryUpdateMissingIni)
-                    {
-                        MVI.GitVersion = MVI.ExeVersion;
-                        link.NavigateUri = new Uri("");
-                    }
-                    else
-                    {
-                        if (MVI.DryUpdateFilePath == null) throw new Exception("Null file path");
-                        link.NavigateUri = new Uri(MVI.DryUpdateFilePath);
-                    }
-#else
-                    // Store info:
-                    MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
-                    MVI.LatestRelease = release;
-                    link.NavigateUri = new Uri(release.HtmlUrl);
-#endif
+                    #if DRYUPDATE
+                        if (DryUpdateMissingIni)
+                        {
+                            MVI.GitVersion = MVI.ExeVersion;
+                            linkNewVersionAvail.NavigateUri = new Uri("");
+                        }
+                        else
+                        {
+                            if (MVI.DryUpdateFilePath == null) throw new Exception("Null file path");
+                            linkNewVersionAvail.NavigateUri = new Uri(MVI.DryUpdateFilePath);
+                        }
+                    #else
+                        // Store info:
+                        MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
+                        MVI.LatestRelease = release;
+                        link.NavigateUri = new Uri(release.HtmlUrl);
+                    #endif
 
                     lblNewVersion.Visibility = Visibility.Visible;
                     labelCheckVersion.Visibility = Visibility.Hidden;
 
                     // Only show msg again when newer version released
                     if (Properties.Settings.Default.AcknowledgeUpdateVersion != MVI.GitVersionStr)
-                        ShowMetaUpdateWindow(link.NavigateUri, MVI.GitVersionStr);
+                        ShowMetaUpdateWindow(linkNewVersionAvail.NavigateUri, MVI.GitVersionStr);
                 }
                 else if (MVI.GitVersion == MVI.ExeVersion)
                     labelCheckVersion.Content = "App up to date";

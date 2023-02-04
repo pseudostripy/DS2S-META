@@ -16,16 +16,21 @@ using System.Text.RegularExpressions;
 using DS2S_META.Properties;
 using System.CodeDom;
 using System.Reflection.Metadata;
+using System.Text.Json;
+using Octokit;
+using System.Configuration;
 
 namespace DS2S_META.Utils
 {
     public static class Updater
     {
+        // Default paths:
         public static string ExeDir => GetTxtResourceClass.ExeDir ?? string.Empty;
         public static string ExeParentDir => Directory.GetParent(ExeDir)?.FullName ?? string.Empty;
         public static string LogPath => Path.Combine(ExeParentDir, "logupdater.txt");
         public static readonly string FinalDirName = $"DS2S META"; // after update
-
+        public static string DryUpdateSettingsPath => Path.Combine(ExeDir,"dryupdate.json");
+        
         private static readonly Settings Settings = Settings.Default;
 
         public static async Task<bool> WrapperInitiateUpdate(Uri uri, string newver)
@@ -329,37 +334,6 @@ namespace DS2S_META.Utils
             Application.Current.Shutdown(); // End current process (triggers .bat takeover)
             return true; // I guess unreachable
         }
-
-        // Utility
-        private static string GetDownloadLink(string repo, string newver)
-        {
-            string temp = repo.Replace("tag", "download");
-            return $"{temp}/DS2S.META.{newver}.7z";
-        }
-        private static Process? RunBatchFile(string batfile)
-        {
-            // Run the above batch file in new thread
-            ProcessStartInfo pro = new()
-            {
-                FileName = "cmd.exe",
-                Arguments = $"/C \"\"{batfile}\" & Del \"{batfile}\"\"", // run and remove self
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            };
-            return Process.Start(pro);
-        }
-        //private static bool IsDuplicateDir(string? dirpath)
-        //{
-        //    if (!Directory.Exists(dirpath))
-        //        return false;
-            
-        //    string messageBoxText = "Cannot update since a folder with the updated name already exists in the (parent) directory";
-        //    string caption = "Meta Updater";
-        //    MessageBoxButton button = MessageBoxButton.OK;
-        //    MessageBoxImage icon = MessageBoxImage.Warning;
-        //    MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
-        //    return true;
-        //}
         public static bool Extract7zFile(string sourceArchive, string destination, int maxtimeout)
         {
             // I know this is duplicated directory finding, but its cleaner to leave this method atomic
@@ -385,49 +359,103 @@ namespace DS2S_META.Utils
                 throw new Exception(Ex.Message);
             }
         }
-        //private static string FixDirectoryName(string urldir)
-        //{
-        //    // Removing the "." characters that github adds for spaces
-        //    string pattern = @"\.\d";
-        //    Regex re = new(pattern);
-        //    Match match = re.Match(urldir);
-        //    int index = match.Index;
-        //    return "DS2S META " + urldir.Substring(index + 1);
-        //}
-        //private static bool GetDirectories(out string currdir, out string parentdir)
-        //{
-        //    string currexepath = Assembly.GetExecutingAssembly().Location;
-        //    var currdir_null = new FileInfo(currexepath).Directory?.FullName;
-        //    if (currdir_null == null) throw new NullReferenceException("Seems to be unable to find folder of current .exe");
-        //    currdir = currdir_null;
-        //    var dirpar = Directory.GetParent(currdir);
-        //    if (dirpar == null) throw new NullReferenceException("Stop installing things on root :) ");
-        //    parentdir = dirpar.ToString();
-        //    return true;
-        //}
-    }
 
-    public static class HttpHelper
-    {
-        static readonly HttpClient client = new HttpClient();
-        public static async Task AsyncDownloadFile(Uri uri, string opath)
+        private static string GetDownloadLink(string repo, string newver)
         {
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            string temp = repo.Replace("tag", "download");
+            return $"{temp}/DS2S.META.{newver}.7z";
+        }
+        private static Process? RunBatchFile(string batfile)
+        {
+            // Run the above batch file in new thread
+            ProcessStartInfo pro = new()
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/C \"\"{batfile}\" & Del \"{batfile}\"\"", // run and remove self
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+            return Process.Start(pro);
+        }
+
+        // DryUpdate stuff:
+        public static void EnsureDryUpdateSettings()
+        {
+            // Only create a default one if it doesn't exist
+            if (File.Exists(DryUpdateSettingsPath))
+                return;
+
+            // Generate a new dryupdate file exists in case of class changes:
+            var defaultDryUpdate = new UpdateIni("0.6.9.0", DryUpdateSettingsPath);
+            string jsonString = JsonSerializer.Serialize(defaultDryUpdate);
+            File.WriteAllText(DryUpdateSettingsPath, jsonString);
+        }
+        public static Version? GetExeVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            return assembly.GetName().Version;
+        }
+        public static async Task<Release?> GitLatestRelease(string repo_owner)
+        {
+            GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
+            Release? release = default;
             try
             {
-                HttpResponseMessage response = await client.GetAsync(uri);
-                response.EnsureSuccessStatusCode();
-                //string responseBody = await response.Content.ReadAsStringAsync();
-                var responseBody = await response.Content.ReadAsByteArrayAsync();
-
-                File.WriteAllBytes(opath, responseBody);
-                //Console.WriteLine(responseBody);
+                release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
             }
-            catch (HttpRequestException e)
+            catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                // These are OK
+            }
+            return release;
+        }
+
+
+
+        // After update:
+        private static void LoadSettingsAfterUpgrade()
+        {
+            if (!Settings.IsUpgrading)
+                return;
+
+            UpgradeSettings();
+            Settings.IsUpgrading = false;
+            Settings.Save();
+
+            CleanupLog();
+        }
+        public static void UpgradeSettings()
+        {
+            try
+            {
+                // Load previous settings from .config
+                Settings.Upgrade();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                // Incompatible settings, keep current
             }
         }
+        private static void CleanupLog()
+        {
+            if (!File.Exists(LogPath))
+            {
+                MessageBox.Show("Cannot find log file to remove.");
+                return;
+            }
+
+            using (StreamWriter logwriter = File.AppendText(LogPath))
+            {
+                logwriter.WriteLine("Update complete!");
+                logwriter.WriteLine("Removing log file");
+            };
+
+            #if !DEBUG
+                File.Delete(LogPath);
+            #endif
+        }
+
     }
+
+    
 }
