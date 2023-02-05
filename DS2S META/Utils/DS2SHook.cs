@@ -209,7 +209,7 @@ namespace DS2S_META
             //var test = Keystone.Architecture.X86;
             //var debyg = -1;
             ClearupDuplicateSpeedhacks();
-
+            OnPropertyChanged(nameof(Hooked));
         }
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
@@ -218,6 +218,7 @@ namespace DS2S_META
             ClearSpeedhackInject();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
+            OnPropertyChanged(nameof(Hooked));
         }
 
         // Major setup functions:
@@ -577,6 +578,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(StableY));
             OnPropertyChanged(nameof(StableZ));
             OnPropertyChanged(nameof(LastBonfireAreaID));
+            OnPropertyChanged(nameof(Hooked));
         }
         public void UpdateBonfireProperties()
         {

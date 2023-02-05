@@ -60,14 +60,15 @@ namespace DS2S_META
             nudPosStoredZ.IsEnabled = enable;
             nudHealth.IsEnabled = enable;
             nudStamina.IsEnabled = enable;
-            cbxSpeed.IsEnabled = enable || Hook.Setup;
             cbxGravity.IsEnabled = enable;
             cbxCollision.IsEnabled = enable;
             btnWarp.IsEnabled = enable && !Hook.Multiplayer;
             cbxWarpRest.IsEnabled = enable;
+            cbxSpeed.IsEnabled = enable || Hook.Hooked;
 
             if (enable)
                 cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
+            //cbxSpeed.IsEnabled = enable;
         }
         public void StorePosition()
         {
