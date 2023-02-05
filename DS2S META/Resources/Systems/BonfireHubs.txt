@@ -21,12 +21,12 @@ Grave of Saints: Harval's Resting Place - Grave Entrance
 The Gutter: Upper Gutter - Central Gutter
 Black Gulch: Black Gulch Mouth - Hidden Chamber
 Drangleic Castle: King's Gate - Forgotten Chamber - Under Castle Drangleic - Central Castle Drangleic
-Shrine of Amana: Tower of Prayer - Crumbled Ruins - Rhoy's Resting Place - Rise of the Dead
+Shrine of Amana: Tower of Prayer (Amana) - Crumbled Ruins - Rhoy's Resting Place - Rise of the Dead
 Undead Crypt: Undead Crypt Entrance - Undead Ditch
 Aldias Keep: Foregarden - Ritual Site
 Dragon Aerie: Dragon Aerie
 Dragon Shrine: Shrine Entrance
-Shulva, Sanctum City: Sanctum Walk - Tower of Prayer - Priestess' Chamber
+Shulva, Sanctum City: Sanctum Walk - Tower of Prayer (Shulva) - Priestess' Chamber
 Dragon's Sanctum: Hidden Sanctum Chamber - Lair of the Imperfect - Sanctum Interior
 Dragon's Rest: Sanctum Nadir
 Brume Tower: Throne Floor - Upper Floor - Foyer - Lowermost Floor - The Smelter Throne

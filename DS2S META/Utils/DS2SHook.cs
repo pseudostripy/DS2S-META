@@ -630,7 +630,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(UnderCastleDrangleic));
             OnPropertyChanged(nameof(ForgottenChamber));
             OnPropertyChanged(nameof(CentralCastleDrangleic));
-            OnPropertyChanged(nameof(TowerofPrayer));
+            OnPropertyChanged(nameof(TowerofPrayerAmana));
             OnPropertyChanged(nameof(CrumbledRuins));
             OnPropertyChanged(nameof(RhoysRestingPlace));
             OnPropertyChanged(nameof(RiseoftheDead));
@@ -645,7 +645,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(HiddenSanctumChamber));
             OnPropertyChanged(nameof(LairoftheImperfect));
             OnPropertyChanged(nameof(SanctumInterior));
-            OnPropertyChanged(nameof(TowerofPrayer));
+            OnPropertyChanged(nameof(TowerofPrayerAmana));
             OnPropertyChanged(nameof(SanctumNadir));
             OnPropertyChanged(nameof(ThroneFloor));
             OnPropertyChanged(nameof(UpperFloor));
@@ -3202,7 +3202,7 @@ namespace DS2S_META
                 BonfireLevels.WriteByte(Offsets.BonfireLevels.CentralCastleDrangleic, level);
             }
         }
-        public byte TowerofPrayer
+        public byte TowerofPrayerAmana
         {
             get
             {
@@ -3532,7 +3532,7 @@ namespace DS2S_META
                 BonfireLevels.WriteByte(Offsets.BonfireLevels.SanctumInterior, level);
             }
         }
-        public byte TowerofPrayerDLC
+        public byte TowerofPrayerShulva
         {
             get
             {

@@ -128,7 +128,7 @@ namespace DS2S_META
                 Binding binding = new Binding("Value")
                 {
                     Source = Hook,
-                    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", ""))
+                    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")",""))
                 };
                 bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
                 bonfireControl.nudValue.Minimum = 0;
