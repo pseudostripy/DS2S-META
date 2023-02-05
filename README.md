@@ -26,7 +26,8 @@ A
 **[Nordgaren](https://github.com/Nordgaren)** especially for helping me out on some horrible bugs!\
 **[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) and [Property Hook](https://github.com/JKAnderson/PropertyHook)\
 **[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor\
-**[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge  
+**[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge
+**[Stennis](https://github.com/StenniHub)** Contributions to the code and speedhack fixes
 
 ## Libraries
 Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](https://github.com/JKAnderson/)  
@@ -40,8 +41,16 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
-
 ### META v0.7 [Combiner]:
+#### v0.7.1.0
+* Implement a workaround for Vanilla Speedhack
+* Initial serious refactoring of ViewModels
+* "DryUpdate" functionality added for testing releases locally
+* Refactoring of MainWindow / Updater / META messages for sustainability
+* Bug Fix: Tower of Prayer bonfires (Shulva/Amana) now untangled
+* Bug Fix: Warp-rest permanently affecting all loads now fixed
+* Warp-rest implementation tidied up and separated out neatly
+
 #### v0.7.0.0
 * Merge DS2 META Vanilla into single program DS2S combined!
 * Variety Stability upgrades (crash fixes) on meta/ds2 open/close
