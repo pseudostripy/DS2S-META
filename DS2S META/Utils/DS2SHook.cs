@@ -1761,8 +1761,11 @@ namespace DS2S_META
         private void DetachSpeedhack()
         {
             if (!Is64Bit)
+            {
+                DisableSpeedhack();
                 return; // unattach at game close in Vanilla
-
+            }
+                
             // avoid sotfs Meta-reload crash:
             IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
