@@ -68,10 +68,6 @@ namespace DS2S_META
             EnableTabs(false);
             InitAllTabs();
 
-            //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
-            //VersionUpdateCheck("Pseudostripy"); // Randomizer updates
-            //lblWindowName.Content = $"META {MVI.MetaVersionStr}";
-
             UpdateTimer.Interval = 16;
             UpdateTimer.Elapsed += UpdateTimer_Elapsed;
             UpdateTimer.Enabled = true;
@@ -116,8 +112,6 @@ namespace DS2S_META
         
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            //Dispatcher.BeginInvoke(new Action(() => ViewModel.ShowUpdateCompleteWindow()));
-
             Dispatcher.Invoke(new Action(() =>
             {
                 UpdateMainProperties();
@@ -226,8 +220,6 @@ namespace DS2S_META
         {
             cbxUpdateOK.IsChecked = false;
             ViewModel.HideCbxUpdate();
-            //cbxUpdateOK.Visibility = Visibility.Hidden;
-            //TitleGrid.RowDefinitions[3].MaxHeight = 1;
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)

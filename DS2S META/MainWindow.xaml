@@ -23,7 +23,7 @@
             <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
                 <StackPanel Orientation="Horizontal">
                     <Image x:Name="imgLadderIcon" Source="Ladder.ico" Width="25"/>
-                    <Label x:Name="lblWindowName" Foreground="White"/>
+                    <Label x:Name="lblWindowName" Content="{Binding WindowName}" Foreground="White"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" 
                         Grid.Column="11"

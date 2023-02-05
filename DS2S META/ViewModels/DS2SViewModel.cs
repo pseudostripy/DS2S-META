@@ -60,6 +60,7 @@ namespace DS2S_META.ViewModels
             VersionUpdate();
         }
         
+        // Binding Variables:
         public string ContentLoaded
         {
             get
@@ -138,6 +139,7 @@ namespace DS2S_META.ViewModels
                 };
             }
         }
+        
         public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
 
@@ -254,13 +256,7 @@ namespace DS2S_META.ViewModels
         private bool ShowCbxUpdateBool { get; set; } = false;
         public int Row3MaxH => ShowCbxUpdateBool ? 100 : 1;
         public Visibility Row3Visibility => ShowCbxUpdateBool ? Visibility.Visible : Visibility.Hidden;
-        //public void UpdateCompleteCheck()
-        //{
-            
-        //    TitleGrid.RowDefinitions[3].MaxHeight = 100;
-        //    cbxUpdateOK.Visibility = Visibility.Visible;
-        //    Activate();
-        //}
+        
         public void ShowCbxUpdate()
         {
             ShowCbxUpdateBool = true;
