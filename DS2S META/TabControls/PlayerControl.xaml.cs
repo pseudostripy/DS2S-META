@@ -31,7 +31,7 @@ namespace DS2S_META
 
         private State.PlayerState PlayerState;
 
-        private List<SavedPos> Positions = new List<SavedPos>();
+        private List<SavedPos> Positions = new();
 
         public override void InitTab()
         {
@@ -47,9 +47,9 @@ namespace DS2S_META
         }
         internal override void ReloadCtrl()
         {
-            var SPEFF_REST = 110000010;
-            if (WarpRest)
-                Hook.ApplySpecialEffect(SPEFF_REST);
+            // so sneaky..
+            if (Properties.Settings.Default.AlwaysRestAfterWarp)
+                Hook.AwaitBonfireRest();
         }
         internal override void EnableCtrls(bool enable)
         {
@@ -60,14 +60,15 @@ namespace DS2S_META
             nudPosStoredZ.IsEnabled = enable;
             nudHealth.IsEnabled = enable;
             nudStamina.IsEnabled = enable;
-            cbxSpeed.IsEnabled = enable || Hook.Setup;
             cbxGravity.IsEnabled = enable;
             cbxCollision.IsEnabled = enable;
             btnWarp.IsEnabled = enable && !Hook.Multiplayer;
             cbxWarpRest.IsEnabled = enable;
+            cbxSpeed.IsEnabled = enable || Hook.Hooked;
 
             if (enable)
                 cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
+            //cbxSpeed.IsEnabled = enable;
         }
         public void StorePosition()
         {
@@ -315,7 +316,7 @@ namespace DS2S_META
         private void SetGameSpeed()
         {
             if (GameLoaded && Hook.Hooked)
-                Hook.SetSpeed((float)(nudSpeed.Value ?? 1));
+                Hook.SetSpeed((double)(nudSpeed.Value ?? 1));
         }
         private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {

@@ -16,116 +16,214 @@ using System.Text.RegularExpressions;
 using DS2S_META.Properties;
 using System.CodeDom;
 using System.Reflection.Metadata;
+using System.Text.Json;
+using Octokit;
+using System.Configuration;
 
 namespace DS2S_META.Utils
 {
     public static class Updater
     {
-        public static async void InitiateUpdate(Uri uri, string newver)
+        // Default paths:
+        public static string ExeDir => GetTxtResourceClass.ExeDir ?? string.Empty;
+        public static string ExeParentDir => Directory.GetParent(ExeDir)?.FullName ?? string.Empty;
+        public static string LogPath => Path.Combine(ExeParentDir, "logupdater.txt");
+        public static readonly string FinalDirName = $"DS2S META"; // after update
+        public static string DryUpdateSettingsPath => Path.Combine(ExeDir,"dryupdate.json");
+        
+        private static readonly Settings Settings = Settings.Default;
+
+        public static async Task<bool> WrapperInitiateUpdate(MetaVersionInfo MVI)
         {
+            if (MVI.LatestReleaseURI == null)
+                return false;
+            
             // Prog bar?
             var progbar = new METAUpdating() { Width = 350, Height = 100 };
             progbar.Show();
 
-            // File System setup
-            if (!GetDirectories(out var currdir, out var parentdir))
-                return;
+            var success = await InitiateUpdate(MVI.LatestReleaseURI, MVI.GitVersionStr);
+            if (success)
+                return true;
+
+            // Failure:
+            // Throw warning to user that update failed
+            MessageBox.Show($"Update failed, please check {LogPath}", "Update error",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+            progbar.Close();
+            return success;
+        }
+
+        public static async Task<bool> InitiateUpdate(Uri uri, string newver)
+        {
+            // Start new log:
+            File.Delete(LogPath);
 
             string batchScriptName;
-            string updaterlog = $"{parentdir}\\updaterlog.log";
-            if (File.Exists(updaterlog))
-                File.Delete(updaterlog); // start from scratch
-            using (StreamWriter logwriter = File.AppendText(updaterlog))
+            
+            using (StreamWriter logwriter = File.AppendText(LogPath))
             {
                 logwriter.WriteLine("> Log Creation");
 
-                // Download new release binary (.7z)
-                string urlpath = GetDownloadLink(uri.ToString(), newver);
-                Uri dlurl = new(urlpath);
-                logwriter.WriteLine($"File to download: \"{urlpath}\"");
-                string dlfname_ext = Path.GetFileName(dlurl.LocalPath);
-                string dlOutfile = $"{parentdir}\\{dlfname_ext}";
-                logwriter.WriteLine($"Downloading to: \"{dlOutfile}\"");
-                logwriter.WriteLine($"Download starting...");
-                await HttpHelper.AsyncDownloadFile(dlurl, dlOutfile);
-                logwriter.WriteLine("Download complete!");
-                if (!File.Exists(dlOutfile))
+                string localCopyPath;
+
+                if (uri.IsFile)
                 {
-                    logwriter.WriteLine("Downloaded file found check: fail");
-                    logwriter.WriteLine($"Download file not found at: {dlOutfile}. Exiting update.");
-                    return;
+                    // file scheme (update from local zip file)
+                    localCopyPath = Path.Combine(ExeParentDir,Path.GetFileName(uri.LocalPath));
+                    logwriter.WriteLine($"Copying source file {uri.LocalPath} to dest: {localCopyPath}");
+                    bool tempfile_already_exists = File.Exists(localCopyPath);
+                    if (tempfile_already_exists)
+                    {
+                        logwriter.WriteLine("Error, destination file already exists");
+                        return false;
+                    }
+                    File.Copy(uri.LocalPath, localCopyPath, true);
+                    bool copy_incomplete = !File.Exists(localCopyPath);
+                    if (copy_incomplete)
+                    {
+                        logwriter.WriteLine("Error in creating local file copy from source");
+                        return false; 
+                    }
                 }
-                logwriter.WriteLine("Downloaded file found check: success");
+                else 
+                {
+                    // http scheme (download release binary from github)
+                    string urlpath = GetDownloadLink(uri.ToString(), newver);
+                    Uri dlurl = new(urlpath);
+                    logwriter.WriteLine($"File to download: \"{urlpath}\"");
+                    string dlfname_ext = Path.GetFileName(dlurl.LocalPath);
+                    localCopyPath = $"{ExeParentDir}\\{dlfname_ext}";
+                    logwriter.WriteLine($"Downloading to: \"{localCopyPath}\"");
+                    logwriter.WriteLine($"Download starting...");
+                    await HttpHelper.AsyncDownloadFile(dlurl, localCopyPath);
+
+                    bool dl_file_not_found = !File.Exists(localCopyPath);
+                    if (dl_file_not_found)
+                    {
+                        logwriter.WriteLine("Downloaded file found check: fail");
+                        logwriter.WriteLine($"Download file not found at: {localCopyPath}. Exiting update.");
+                        return false;
+                    }
+                    logwriter.WriteLine("Download complete!");
+                }
+
 
                 // Unzip file contents to dir
-                string dirname_url = Path.GetFileNameWithoutExtension(dlOutfile);
-                string dirname = FixDirectoryName(dirname_url);
-                string newdir_install = $"{parentdir}\\{dirname}";
-                logwriter.WriteLine($"Checking install directory at: \"{newdir_install}\"");
-                if (IsDuplicateDir(newdir_install))
+                //string dirname_url = Path.GetFileNameWithoutExtension(localCopyPath);
+                string newdir_install = Path.Combine(ExeParentDir,"__temp_copy_ds2s_meta__");
+                if (Directory.Exists(newdir_install))
+                    Directory.Delete(newdir_install, true);
+
+                // Just delete this folder, no way anyone has anything useful in there!
+                bool install_folder_uncleanable = Directory.Exists(newdir_install);
+                if (install_folder_uncleanable)
                 {
-                    logwriter.WriteLine("Extraction directory check: fail");
-                    logwriter.WriteLine($"Cannot extract update to directory: \"{newdir_install}\" as it is not empty. Exiting update.");
-                    return; // Do not force overwrite unexpected places
+                    logwriter.WriteLine("Cannot write to install folder, likely access violation from open file");
+                    return false;
                 }
-                logwriter.WriteLine("Extraction directory check: success");
-                logwriter.WriteLine($"Extracting \"{dlOutfile}\" to \"{newdir_install}\"");
+                Directory.CreateDirectory(newdir_install); // remake it fresh
+
+                
+                //logwriter.WriteLine($"Checking install directory at: \"{newdir_install}\"");
+                //if (IsDuplicateDir(newdir_install))
+                //{
+                //    logwriter.WriteLine("Extraction directory check: fail");
+                //    logwriter.WriteLine($"Cannot extract update to directory: \"{newdir_install}\" as it is not empty. Exiting update.");
+                //    // Do not force overwrite unexpected places
+                //    return false;
+                //}
+                //logwriter.WriteLine("Extraction directory check: success");
+                logwriter.WriteLine($"Extracting \"{localCopyPath}\" to \"{newdir_install}\"");
                 var watch = new Stopwatch();
                 watch.Start();
                 int maxtimeout = 10000; // 10s
-                bool extraction_timeout = Extract7zFile(dlOutfile, parentdir, maxtimeout); // auto-unzips into newdircheck
+                bool extraction_timeout = Extract7zFile(localCopyPath, newdir_install, maxtimeout); // auto-unzips into newdircheck
                 watch.Stop();
-                bool extraction_files_found = File.Exists($"{newdir_install}\\DS2S META.exe");
+
                 if (extraction_timeout)
-                    logwriter.WriteLine($"Extraction process timeout, likely missing executable. To investigate. Exiting update.");
-                else
-                    // didn't timeout
-                    if (extraction_files_found)
-                        logwriter.WriteLine($"Extraction successful in {watch.ElapsedMilliseconds}ms"); // files copied & fast
-                    else
-                        logwriter.WriteLine($"Extraction process ended prematurely. Exiting update."); // medium case to investigate
-                if (extraction_timeout || !extraction_files_found)
-                    return;
-                logwriter.WriteLine("Removing downloaded zip file...");
-                File.Delete(dlOutfile); // remove the .7z binary
-                if (File.Exists(dlOutfile))
                 {
-                    logwriter.WriteLine($"Issue removing the download zip file at: \"{dlOutfile}\"");
+                    logwriter.WriteLine($"Extraction process timeout, likely missing executable. To investigate. Exiting update.");
+                    return false;
                 }
-                logwriter.WriteLine($"Downloaded Zip file: \"{dlOutfile}\" successfully removed");
+
+                
+                // Extraction filesystem cleanup:
+                var dirs = Directory.GetDirectories(newdir_install);
+                if (dirs.Length != 1)
+                {
+                    logwriter.WriteLine("Issue with the extraction, unexpected number of folders created");
+                    return false;
+                }
+                var extractedDirName = dirs[0];
+
+                bool extraction_files_missing = !File.Exists($"{extractedDirName}\\DS2S META.exe");
+                if (extraction_files_missing)
+                {
+                    logwriter.WriteLine($"Extraction process ended prematurely. Exiting update.");
+                    return false;
+                }
+
+                var temp_dir2 = Path.Combine(ExeParentDir, "__temp_extract_ds2_meta__"); // needs a new folder for move
+                Directory.Move(extractedDirName, temp_dir2);
+
+                bool dirmove_err = !Directory.Exists(temp_dir2);
+                if (dirmove_err)
+                {
+                    logwriter.WriteLine("Error in moving inner extracted folder into own folder in parent dir");
+                    return false;
+                }
+                Directory.Delete(newdir_install, true);
+
+                bool temp1_removal_err = Directory.Exists(newdir_install);
+                if (temp1_removal_err)
+                {
+                    logwriter.WriteLine("Error removing first temporary install folder");
+                    return false;
+                }
+                logwriter.WriteLine($"Extraction successful in {watch.ElapsedMilliseconds}ms");
+                
+                logwriter.WriteLine("Removing local copy of zip file...");
+                File.Delete(localCopyPath); // remove the .7z binary
+                bool local_copy_not_deleted = File.Exists(localCopyPath);
+
+                if (local_copy_not_deleted)
+                {
+                    logwriter.WriteLine($"Issue removing the local copy (or downloaded copy) zip file at: \"{localCopyPath}\"");
+                    return false;
+                }
+                logwriter.WriteLine($"Zip file: \"{localCopyPath}\" successfully removed");
 
 
                 // Prepare directory names for batch script:
-                string newdir_reform_name = $"DS2S META"; // cannot be path!!
-                string newdir_reform_dir = $"{parentdir}\\{newdir_reform_name}";
+                string newdir_reform_dir = $"{ExeParentDir}\\{FinalDirName}";
                 string proctitle = "DS2S META";
                 string newexepath = $"{newdir_reform_dir}\\{proctitle}.exe";
 
                 // Save config stuff (to be loaded by new version)
                 logwriter.WriteLine("Saving user settings .config file");
-                Settings Settings = Properties.Settings.Default;
                 Settings.IsUpgrading = true;
                 logwriter.WriteLine("Meta flag set for isUpdating.");
                 Settings.Save();
                 logwriter.WriteLine("Settings saved successfully.");
-                string srcsettings = $"{currdir}\\DS2S META.config";
-                string destsettings_tmp = $"{parentdir}\\_tmpsave.config"; // destination dir doesn't exist yet
+                string srcsettings = $"{ExeDir}\\DS2S META.config";
+                string destsettings_tmp = $"{ExeParentDir}\\_tmpsave.config"; // destination dir doesn't exist yet
                 logwriter.WriteLine($"Copying saved settings file to temporary location: \"{destsettings_tmp}\"");
                 File.Copy(srcsettings, destsettings_tmp);
                 if (!File.Exists(destsettings_tmp))
                 {
                     logwriter.WriteLine($"Issue copying settings file to \"{destsettings_tmp}\". Exiting update.");
-                    return;
+                    return false;
                 }
                 logwriter.WriteLine($"Settings file copied successfully to \"{destsettings_tmp}\"");
 
                 // Batch file cretion (be careful with this stuff)!
                 int currprocid = Environment.ProcessId;
-                batchScriptName = $"{parentdir}\\tmpMetaUpdater.bat";
+                batchScriptName = $"{ExeParentDir}\\tmpMetaUpdater.bat";
                 logwriter.WriteLine($"Checking for batch file from corrupted update");
 
                 // write to this in the batch file whilst normal log is locked by this thread
-                string updaterlog2 = $"{parentdir}\\updaterlog2.log"; 
+                string updaterlog2 = $"{ExeParentDir}\\updaterlog2.log"; 
 
                 // Safety check:
                 if (File.Exists(batchScriptName))
@@ -135,7 +233,7 @@ namespace DS2S_META.Utils
                     if (File.Exists(batchScriptName))
                     {
                         logwriter.WriteLine($"Error removing old batch file at \"{batchScriptName}\". Exiting update.");
-                            return;
+                            return false;
                     }
                     logwriter.WriteLine($"Old batch file successfully removed. Continuing update.");
                 }
@@ -145,7 +243,7 @@ namespace DS2S_META.Utils
                 using (StreamWriter writer = File.AppendText(batchScriptName))
                 {
                     // Wait for current process to end
-                    writer.WriteLine($"SET logfile=\"{updaterlog}\""); // setup variable
+                    writer.WriteLine($"SET logfile=\"{LogPath}\""); // setup variable
                     writer.WriteLine($"SET logfiletwo=\"{updaterlog2}\""); // setup variable
                     writer.WriteLine("ECHO Batch file execution started successfully. >> %logfiletwo%"); // >> = append
                     writer.WriteLine("ECHO Waiting for previous DS2S META version process to end >> %logfiletwo%");
@@ -166,7 +264,7 @@ namespace DS2S_META.Utils
 
                     // Now the file is definitely unlocked:
                     writer.WriteLine($"ECHO Transferring messages from logupdater2.log >> %logfile%");
-                    writer.WriteLine($"type \"{updaterlog2}\" >> \"{updaterlog}\"");
+                    writer.WriteLine($"type \"{updaterlog2}\" >> \"{LogPath}\"");
                     
                     // Continue as normal:
                     writer.WriteLine("ECHO Old DS2S META process ended successfully >> %logfile%");
@@ -176,9 +274,9 @@ namespace DS2S_META.Utils
 #endif
                     writer.WriteLine($"ECHO logupdater2.log removed succesfully >> %logfile%");
                     writer.WriteLine($"ECHO Removing old running folder >> %logfile%");
-                    writer.WriteLine($"rmdir /s /Q \"{currdir}\"");    // silently remove dir & subfolders
-                    writer.WriteLine($"ECHO Copying directory: {newdir_install} to: {newdir_reform_dir} >> %logfile%");
-                    writer.WriteLine($"ren \"{newdir_install}\" \"{newdir_reform_name}\"");     // Rename new folder to DS2S META
+                    writer.WriteLine($"rmdir /s /Q \"{ExeDir}\"");    // silently remove dir & subfolders
+                    writer.WriteLine($"ECHO Renaming directory: {temp_dir2} to: {newdir_reform_dir} >> %logfile%");
+                    writer.WriteLine($"ren \"{temp_dir2}\" \"{FinalDirName}\"");     // Rename new folder to DS2S META
                     writer.WriteLine($"ECHO Copying temp settings file to {newdir_reform_dir}\\DS2S META.config >> %logfile%");
                     writer.WriteLine($"copy \"{destsettings_tmp}\" \"{newdir_reform_dir}\\DS2S META.config");
                     writer.WriteLine($"ECHO Removing temp settings file >> %logfile%");
@@ -194,6 +292,7 @@ namespace DS2S_META.Utils
                 if (!File.Exists(batchScriptName))
                 {
                     logwriter.WriteLine($"Error creating batch script file at: \"{batchScriptName}\". Exiting update.");
+                    return false;
                 }
                 logwriter.WriteLine($"Batch script created successfully at: \"{batchScriptName}\"");
                 
@@ -203,7 +302,7 @@ namespace DS2S_META.Utils
                 if (batchproc == null)
                 {
                     logwriter.WriteLine("Batch file is a null process. Exiting update.");
-                    return;
+                    return false;
                 }
                 int batchprocid = batchproc.Id;
 
@@ -220,57 +319,30 @@ namespace DS2S_META.Utils
                     if (batchprocfound)
                         break;
                 }
-                
-                if (batchprocfound)
-                    logwriter.WriteLine($"Batch script started successfully with PID {batchprocid}");
-                else
+
+
+                if (!batchprocfound)
                 {
-                    logwriter.WriteLine($"Batch script process failed to start within {customtimeout_ms}ms, probably something more fundamentally wrong. Exiting update.");
-                    return;
+                    logwriter.WriteLine($"Batch script process failed to start within {customtimeout_ms}ms, " +
+                                        $"probably something more fundamentally wrong. Exiting update.");
+                    return false;
                 }
+
+
+                logwriter.WriteLine($"Batch script started successfully with PID {batchprocid}");
                 logwriter.WriteLine("Ending old meta execution and passing over to batch script");
             }
 
             // wait until batch file process has started before killing this one.
-            Application.Current.Shutdown(); // End current process (triggers .bat takeover)
-        }
-
-        // Utility
-        private static string GetDownloadLink(string repo, string newver)
-        {
-            string temp = repo.Replace("tag", "download");
-            return $"{temp}/DS2S.META.{newver}.7z";
-        }
-        private static Process? RunBatchFile(string batfile)
-        {
-            // Run the above batch file in new thread
-            ProcessStartInfo pro = new()
-            {
-                FileName = "cmd.exe",
-                Arguments = $"/C \"\"{batfile}\" & Del \"{batfile}\"\"", // run and remove self
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            };
-            return Process.Start(pro);
-        }
-        private static bool IsDuplicateDir(string? dirpath)
-        {
-            if (!Directory.Exists(dirpath))
-                return false;
-            
-            string messageBoxText = "Cannot update since a folder with the updated name already exists in the (parent) directory";
-            string caption = "Meta Updater";
-            MessageBoxButton button = MessageBoxButton.OK;
-            MessageBoxImage icon = MessageBoxImage.Warning;
-            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
-            return true;
+            System.Windows.Application.Current.Shutdown(); // End current process (triggers .bat takeover)
+            return true; // I guess unreachable
         }
         public static bool Extract7zFile(string sourceArchive, string destination, int maxtimeout)
         {
             // I know this is duplicated directory finding, but its cleaner to leave this method atomic
             string currexepath = Assembly.GetExecutingAssembly().Location;
             string? currdir = new FileInfo(currexepath).Directory?.FullName;
-            string zPath = $"{currdir}\\Resources\\DLLs\\7z.exe";
+            string zPath = $"{currdir}\\Resources\\Tools\\7zip\\7z.exe";
             try
             {
                 ProcessStartInfo pro = new()
@@ -290,49 +362,108 @@ namespace DS2S_META.Utils
                 throw new Exception(Ex.Message);
             }
         }
-        private static string FixDirectoryName(string urldir)
-        {
-            // Removing the "." characters that github adds for spaces
-            string pattern = @"\.\d";
-            Regex re = new(pattern);
-            Match match = re.Match(urldir);
-            int index = match.Index;
-            return "DS2S META " + urldir.Substring(index + 1);
-        }
-        private static bool GetDirectories(out string currdir, out string parentdir)
-        {
-            string currexepath = Assembly.GetExecutingAssembly().Location;
-            var currdir_null = new FileInfo(currexepath).Directory?.FullName;
-            if (currdir_null == null) throw new NullReferenceException("Seems to be unable to find folder of current .exe");
-            currdir = currdir_null;
-            var dirpar = Directory.GetParent(currdir);
-            if (dirpar == null) throw new NullReferenceException("Stop installing things on root :) ");
-            parentdir = dirpar.ToString();
-            return true;
-        }
-    }
 
-    public static class HttpHelper
-    {
-        static readonly HttpClient client = new HttpClient();
-        public static async Task AsyncDownloadFile(Uri uri, string opath)
+        private static string GetDownloadLink(string repo, string newver)
         {
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            string temp = repo.Replace("tag", "download");
+            return $"{temp}/DS2S.META.{newver}.7z";
+        }
+        private static Process? RunBatchFile(string batfile)
+        {
+            // Run the above batch file in new thread
+            ProcessStartInfo pro = new()
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/C \"\"{batfile}\" & Del \"{batfile}\"\"", // run and remove self
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+            return Process.Start(pro);
+        }
+
+        // DryUpdate stuff:
+        public static void EnsureDryUpdateSettings()
+        {
+            // Only create a default one if it doesn't exist
+            if (File.Exists(DryUpdateSettingsPath))
+                return;
+
+            // Generate a new dryupdate file exists in case of class changes:
+            var defaultDryUpdate = new UpdateIni("0.6.9.0", DryUpdateSettingsPath);
+            string jsonString = JsonSerializer.Serialize(defaultDryUpdate);
+            File.WriteAllText(DryUpdateSettingsPath, jsonString);
+        }
+        public static Version? GetExeVersion()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            return assembly.GetName().Version;
+        }
+        public static async Task<Release?> GitLatestRelease(string repo_owner)
+        {
+            GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
+            Release? release = default;
             try
             {
-                HttpResponseMessage response = await client.GetAsync(uri);
-                response.EnsureSuccessStatusCode();
-                //string responseBody = await response.Content.ReadAsStringAsync();
-                var responseBody = await response.Content.ReadAsByteArrayAsync();
-
-                File.WriteAllBytes(opath, responseBody);
-                //Console.WriteLine(responseBody);
+                release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
             }
-            catch (HttpRequestException e)
+            catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                // These are OK
+            }
+            return release;
+        }
+
+        public static async Task<Release?> Test()
+        {
+            await Task.Delay(3000);
+            return default;
+        }
+
+
+        // After update:
+        public static void LoadSettingsAfterUpgrade()
+        {
+            if (!Settings.IsUpgrading)
+                return;
+
+            UpgradeSettings();
+            Settings.IsUpgrading = false;
+            Settings.Save();
+
+            CleanupLog();
+        }
+        public static void UpgradeSettings()
+        {
+            try
+            {
+                // Load previous settings from .config
+                Settings.Upgrade();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                // Incompatible settings, keep current
             }
         }
+        private static void CleanupLog()
+        {
+            if (!File.Exists(LogPath))
+            {
+                MessageBox.Show("Cannot find log file to remove.");
+                return;
+            }
+
+            using (StreamWriter logwriter = File.AppendText(LogPath))
+            {
+                logwriter.WriteLine("Update complete!");
+                logwriter.WriteLine("Removing log file");
+            };
+
+            #if !DEBUG
+                File.Delete(LogPath);
+            #endif
+        }
+
     }
+
+    
 }

@@ -23,7 +23,7 @@
             <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
                 <StackPanel Orientation="Horizontal">
                     <Image x:Name="imgLadderIcon" Source="Ladder.ico" Width="25"/>
-                    <Label x:Name="lblWindowName" Foreground="White"/>
+                    <Label x:Name="lblWindowName" Content="{Binding WindowName}" Foreground="White"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" 
                         Grid.Column="11"
@@ -60,13 +60,13 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto" MaxHeight="1"/>
+                    <RowDefinition Height="auto" MaxHeight="{Binding Row3MaxH}"/>
                 </Grid.RowDefinitions>
                 <Label Content="Process:" />
                 <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}" Grid.Column="1" Margin="5,0,0,0"/>
 
                 <Label Content="Loaded:" Grid.Row="1" />
-                <Label Name="lblLoaded" Content="{Binding ContentLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
+                <Label Name="lblLoaded" Content="{Binding GameLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
 
                 <Label Content="Online:" Grid.Row="2" />
                 <Label Content="{Binding ContentOnline}" Margin="5,0,0,0" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1"/>
@@ -75,14 +75,14 @@
                 <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" Grid.Row="1" Grid.Column="3" Width="150" Grid.RowSpan="2" HorizontalAlignment="Center" />
 
                 
-                <Label x:Name="labelCheckVersion" Grid.Column="2" />
-                <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0,0,0" Visibility="Hidden">
-                    <Hyperlink x:Name="link" RequestNavigate="link_RequestNavigate" >
+                <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}"/>
+                <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0,0,0" Visibility="{Binding NewVerVis}">
+                    <Hyperlink x:Name="linkNewVersionAvail" Click="link_NewUpdate_Click" >
                         New version available!
                     </Hyperlink>
                 </Label>
 
-                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="Hidden"/>
+                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}"/>
             </Grid>
             <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450" MinHeight="650">
                 <TabControl.ItemsPanel>

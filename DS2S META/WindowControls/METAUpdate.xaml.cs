@@ -23,18 +23,20 @@ namespace DS2S_META
     /// </summary>
     public partial class METAUpdate : Window
     {
-        private Uri Link;
-        private string NewMetaVersion;
-        public METAUpdate(Uri link, string newver)
+        private readonly MetaVersionInfo MVI ;
+        public METAUpdate(MetaVersionInfo mvi)
         {
             InitializeComponent();
-            Link = link;
-            NewMetaVersion = newver;
+            MVI = mvi;
+            if (MVI.LatestReleaseURI == null)
+                return;
 
             // Create hyperlink object dynamically
-            Run runtext = new Run($"{Link}");
-            var hyperobj = new Hyperlink(runtext);
-            hyperobj.NavigateUri = Link;
+            Run runtext = new(MVI.LatestReleaseURI.ToString());
+            var hyperobj = new Hyperlink(runtext)
+            {
+                NavigateUri = MVI.LatestReleaseURI
+            };
             hyperobj.RequestNavigate += link_RequestNavigate;
 
             // Update UI
@@ -44,7 +46,7 @@ namespace DS2S_META
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (cbxStopUpdateNotification.IsChecked == true)
-                Properties.Settings.Default.AcknowledgeUpdateVersion = NewMetaVersion;
+                Properties.Settings.Default.AcknowledgeUpdateVersion = MVI.GitVersionStr;
         }
 
         private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -54,7 +56,12 @@ namespace DS2S_META
 
         private void btnUpdater_Click(object sender, RoutedEventArgs e)
         {
-            Updater.InitiateUpdate(Link, NewMetaVersion);
+            DoUpdate();
+        }
+        private void DoUpdate()
+        {
+            _ = Updater.WrapperInitiateUpdate(MVI);
+            Close();
         }
     }
 }

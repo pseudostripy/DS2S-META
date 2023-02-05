@@ -17,6 +17,8 @@ namespace DS2S_META.Utils.Offsets
             BasePtrOffset1 = 0x3;
             BasePtrOffset2 = 0x7;
 
+            LoadingState = new int[] { 0x80, 0x8, 0xBB4 };
+
             // Records:
             ForceQuit = new (0x24B1);
             PlayerName = new(0x114);

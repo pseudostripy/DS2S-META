@@ -11,7 +11,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using System.IO;
-
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using DS2S_META.Utils;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DS2S_META
 {
@@ -23,7 +28,7 @@ namespace DS2S_META
         // Eventually most of this should go into a MainWindowViewModel like in ERDebugTool
 
         // Fields/Properties
-        private MetaVersionInfo MVI = new();
+        
         private Properties.Settings Settings;
         public HotkeyManager HKM;
         DS2SHook Hook => ViewModel.Hook;
@@ -37,8 +42,7 @@ namespace DS2S_META
             get => ViewModel.Reading;
             set => ViewModel.Reading = value;
         }
-        Timer UpdateTimer = new Timer();
-        private bool ShowUpdateComplete { get; set; } = false;
+        Timer UpdateTimer = new();
         
         //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
@@ -49,9 +53,9 @@ namespace DS2S_META
             Settings = Properties.Settings.Default;
             HKM = new(this);
             InitializeComponent();
-            GetMetaVersion();
-            LoadSettingsAfterUpgrade();
-            ShowOnlineWarning();
+
+            //LoadSettingsAfterUpgrade();
+            //ShowOnlineWarning();
             Hook.OnHooked += Hook_OnHooked;
             Hook.MW = this;
 
@@ -59,9 +63,18 @@ namespace DS2S_META
             //DmgCalcViewModel = new DmgCalcViewModel();
             //ViewModels.Add(DmgCalcViewModel);
         }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            EnableTabs(false);
+            InitAllTabs();
+
+            UpdateTimer.Interval = 16;
+            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Enabled = true;
+        }
 
         //ObservableCollection<ViewModelBase> ViewModels = new();
-        
+
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
@@ -70,154 +83,14 @@ namespace DS2S_META
             }));
         }
 
-        public void GetMetaVersion()
-        {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            MVI.ExeVersion = assembly.GetName().Version;
-        }
-        private void LoadSettingsAfterUpgrade()
-        {
-            if (!Settings.IsUpgrading)
-                return;
-
-            try
-            {
-                // Load previous settings from .config
-                Settings.Upgrade();
-            }
-            catch (ConfigurationErrorsException)
-            {
-                // Incompatible settings, keep current
-            }
-
-            Settings.IsUpgrading = false;
-            Settings.Save();
-            ShowUpdateComplete = true;
-
-            string updaterlog = "..\\updaterlog.log";
-            if (!File.Exists(updaterlog))
-                throw new Exception("Cannot find expected log after update");
-            using (StreamWriter logwriter = File.AppendText(updaterlog))
-            {
-                logwriter.WriteLine("Update complete!");
-                logwriter.WriteLine("Removing log file");
-            };
-
-            #if !DEBUG
-                File.Delete(updaterlog);
-            #endif
-        }
-        private void ShowOnlineWarning()
-        {
-            if (Settings.ShowWarning)
-            {
-                var warning = new METAWarning()
-                {
-                    Title = "Online Warning",
-                    Width = 350,
-                    Height = 240
-                };
-                warning.ShowDialog();
-            }
-        }
-        private void ShowMetaUpdateWindow(Uri link, string ackverstring)
-        {
-            var warning = new METAUpdate(link, ackverstring)
-            {
-                Title = "New Update Available",
-                Width = 450,
-                Height = 280
-            };
-            warning.ShowDialog();
-        }
-        private void ShowUpdateCompleteWindow()
-        {
-            if (!ShowUpdateComplete)
-                return;
-
-            ShowUpdateComplete = false;
-            TitleGrid.RowDefinitions[3].MaxHeight = 100;
-            cbxUpdateOK.Visibility = Visibility.Visible;
-            this.Activate();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            EnableTabs(false);
-            InitAllTabs();
-
-            //VersionUpdateCheck("Nordgaren"); // Race condition bug :/
-            VersionUpdateCheck("Pseudostripy"); // Randomizer updates
-            lblWindowName.Content = $"META {MVI.MetaVersionStr}";
-
-            UpdateTimer.Interval = 16;
-            UpdateTimer.Elapsed += UpdateTimer_Elapsed;
-            UpdateTimer.Enabled = true;
-        }
-
-        
-
-        
-        public class MetaVersionInfo
-        {
-            public Version? GitVersion { get; set; }
-            public Version? ExeVersion { get; set; }
-            public Release? LatestRelease { get; set; }
-            public Uri? LatestReleaseURI { get; set; }
-            public string MetaVersionStr => ExeVersion == null ? "Version Undefined" : ExeVersion.ToString();
-            public string GitVersionStr => GitVersion == null ? string.Empty : GitVersion.ToString();
-        }
-
-        private async void VersionUpdateCheck(string repo_owner)
-        {
-            try
-            {
-                // Get Repo Version:
-                GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
-                Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
-                MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-                
-                if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
-                {
-                    // Store info:
-                    MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
-                    MVI.LatestRelease = release;
-
-                    link.NavigateUri = new Uri(release.HtmlUrl);
-                    lblNewVersion.Visibility = Visibility.Visible;
-                    labelCheckVersion.Visibility = Visibility.Hidden;
-
-                    // Only show msg again when newer version released
-                    if (Properties.Settings.Default.AcknowledgeUpdateVersion != MVI.GitVersionStr)
-                        ShowMetaUpdateWindow(link.NavigateUri, MVI.GitVersionStr);
-                }
-                else if (MVI.GitVersion == MVI.ExeVersion)
-                    labelCheckVersion.Content = "App up to date";
-                else
-                    labelCheckVersion.Content = "In-development version.";
-            }
-            catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
-            {
-                labelCheckVersion.Content = "Current app version unknown";
-            }
-            catch (Exception ex)
-            {
-                labelCheckVersion.Content = "Something is very broke, contact DS2 META repo owner";
-                MessageBox.Show(ex.Message);
-            }
-        }
-        
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Hook.EnableSpeedFactors)
                 Hook.EnableSpeedFactors = false;
 
-            if (Hook.SpeedhackDllPtr != IntPtr.Zero)
-            {
-                Hook.DisableSpeedhack();
-                Hook.Free(Hook.SpeedhackDllPtr);
-            }
-            
+            Hook.ClearSpeedhackInject();
+
+
             UpdateTimer.Stop();
             SaveAllTabs();
 
@@ -237,12 +110,8 @@ namespace DS2S_META
         }
 
         
-
-
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() => ShowUpdateCompleteWindow()));
-
             Dispatcher.Invoke(new Action(() =>
             {
                 UpdateMainProperties();
@@ -314,10 +183,8 @@ namespace DS2S_META
         {
             metaPlayer.EnableCtrls(enable);
             metaStats.EnableCtrls(enable);
-            //metaBonfire.EnableCtrls(enable);
             metaInternal.EnableCtrls(enable);
             metaItems.EnableCtrls(enable);
-            //metaCovenant.EnableCtrls(enable);
             metatabDmgCalc.EnableCtrls(enable);
         }
         private void ReloadAllTabs()
@@ -325,24 +192,16 @@ namespace DS2S_META
             metaPlayer.ReloadCtrl();
             metaStats.ReloadCtrl();
             metaItems.ReloadCtrl();
-            //metaBonfire.ReloadCtrl();
             metatabDmgCalc.ReloadCtrl();
         }
         private void UpdateAllTabs()
         {
             metaPlayer.UpdateCtrl();
             metaStats.UpdateCtrl();
-            //metaBonfire.UpdateCtrl();
             metaItems.UpdateCtrl();
         }
 
-        
 
-        private void link_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            if (MVI.LatestReleaseURI == null) return;
-            ShowMetaUpdateWindow(MVI.LatestReleaseURI, MVI.GitVersionStr);
-        }
         private void SaveAllTabs()
         {
             //HKM.SaveHotkeys();
@@ -360,8 +219,7 @@ namespace DS2S_META
         private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
         {
             cbxUpdateOK.IsChecked = false;
-            cbxUpdateOK.Visibility = Visibility.Hidden;
-            TitleGrid.RowDefinitions[3].MaxHeight = 1;
+            ViewModel.HideCbxUpdate();
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -373,5 +231,9 @@ namespace DS2S_META
             Close();
         }
 
+        private void link_NewUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ShowMetaUpdateWindow();
+        }
     }
 }

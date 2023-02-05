@@ -13,6 +13,8 @@ using System.Reflection;
 using DS2S_META.Utils.Offsets;
 using Xceed.Wpf.Toolkit;
 using Keystone;
+using System.Threading.Tasks;
+using static DS2S_META.Utils.ItemRow;
 
 namespace DS2S_META
 {
@@ -48,7 +50,7 @@ namespace DS2S_META
         internal DS2HookOffsets Offsets;
 
         public static bool Reading { get; set; }
-
+        public bool IsLoading => LoadingState != null && Offsets.LoadingState != null && LoadingState.ReadBoolean(Offsets.LoadingState[^1]);
 
         public List<ItemRow> Items = new();
 
@@ -99,6 +101,8 @@ namespace DS2S_META
         private PHPointer SpeedFactorAnim;
         private PHPointer SpeedFactorJump;
         private PHPointer SpeedFactorBuildup;
+
+        public PHPointer LoadingState;
 
         public bool Loaded => PlayerCtrl != null && PlayerCtrl.Resolve() != IntPtr.Zero;
         public bool Setup = false;
@@ -193,7 +197,7 @@ namespace DS2S_META
             GetLevelRequirements();
 
             UpdateStatsProperties();
-            GetSpeedhackOffsets(SpeedhackDllPath);
+            GetSpeedhackOffsets();
             Version = GetStringVersion();
             Setup = true;
 
@@ -204,8 +208,8 @@ namespace DS2S_META
             //    Engine = new(Keystone.Architecture.X86, Mode.X32);
             //var test = Keystone.Architecture.X86;
             //var debyg = -1;
-
-
+            ClearupDuplicateSpeedhacks();
+            OnPropertyChanged(nameof(Hooked));
         }
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
@@ -214,6 +218,7 @@ namespace DS2S_META
             ClearSpeedhackInject();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
+            OnPropertyChanged(nameof(Hooked));
         }
 
         // Major setup functions:
@@ -468,6 +473,17 @@ namespace DS2S_META
 
             if (Offsets.PlayerStatsOffsets != null)
                 SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
+            if (Offsets.LoadingState != null)
+            {
+                var test = Offsets.LoadingState[0..^1];
+                var test2 = Offsets.LoadingState[^1];
+                var temp = CreateChildPointer(BaseA, 0x80);
+                var temp2 = CreateChildPointer(BaseA, 0x80, 0x8);
+                var temp3 = CreateChildPointer(temp2, 0xbb4);
+                var tempbool = temp2.ReadBoolean(0xbb4);
+                var tempbool3 = temp3.ReadBoolean(0);
+                LoadingState = CreateChildPointer(BaseA, Offsets.LoadingState[0..^1]);
+            }
         }
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
@@ -562,6 +578,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(StableY));
             OnPropertyChanged(nameof(StableZ));
             OnPropertyChanged(nameof(LastBonfireAreaID));
+            OnPropertyChanged(nameof(Hooked));
         }
         public void UpdateBonfireProperties()
         {
@@ -613,7 +630,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(UnderCastleDrangleic));
             OnPropertyChanged(nameof(ForgottenChamber));
             OnPropertyChanged(nameof(CentralCastleDrangleic));
-            OnPropertyChanged(nameof(TowerofPrayer));
+            OnPropertyChanged(nameof(TowerofPrayerAmana));
             OnPropertyChanged(nameof(CrumbledRuins));
             OnPropertyChanged(nameof(RhoysRestingPlace));
             OnPropertyChanged(nameof(RiseoftheDead));
@@ -628,7 +645,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(HiddenSanctumChamber));
             OnPropertyChanged(nameof(LairoftheImperfect));
             OnPropertyChanged(nameof(SanctumInterior));
-            OnPropertyChanged(nameof(TowerofPrayer));
+            OnPropertyChanged(nameof(TowerofPrayerAmana));
             OnPropertyChanged(nameof(SanctumNadir));
             OnPropertyChanged(nameof(ThroneFloor));
             OnPropertyChanged(nameof(UpperFloor));
@@ -756,7 +773,7 @@ namespace DS2S_META
                 _ => throw new Exception("Unexpected flag for Silent Item switch")
             };
             if (do_rest)
-                BonfireRest();
+                AwaitBonfireRest();
             return true;
         }
         internal bool Warp64(ushort id, bool areadefault = false)
@@ -876,6 +893,43 @@ namespace DS2S_META
         internal void RestoreHumanity()
         {
             ApplySpecialEffect((int)SPECIAL_EFFECT.RESTOREHUMANITY);
+        }
+        internal async void AwaitBonfireRest()
+        {
+            // This is useful to ensure you're at full hp
+            // after a load, so that things like lifering+3
+            // effects are accounted for before healing
+
+            bool finishedload = await NextLoadComplete();
+            if (!finishedload)
+                return; // timeout issue
+            
+            // Apply bonfire rest in non-loadscreen
+            BonfireRest();
+        }
+        internal async Task<bool> NextLoadComplete()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            int loadingTimeout_ms = 15000;
+            int dlay = 10;
+            
+            // wait for start of load
+            while (!IsLoading)
+            {
+                await Task.Delay(dlay);
+                if (sw.ElapsedMilliseconds > loadingTimeout_ms)
+                    return false;
+            }
+
+            // Now its loading, wait for it to finish:
+            while (IsLoading)
+            {
+                await Task.Delay(dlay);
+                if (sw.ElapsedMilliseconds > loadingTimeout_ms)
+                    return false;
+            }
+            return true;
+
         }
         internal void BonfireRest()
         {
@@ -1549,11 +1603,14 @@ namespace DS2S_META
         #endregion
 
         #region Speedhack
-        static string SpeedhackDllPath = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/Speedhack.dll";
+        static string SpeedhackDllPathX64 = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/x64/Speedhack.dll";
+        static string SpeedhackDllPathX86 = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/x86/Speedhack.dll";
         public IntPtr SpeedhackDllPtr;
         IntPtr SetupPtr;
         IntPtr SetSpeedPtr;
         IntPtr DetachPtr;
+        public bool SpeedhackInitialised = false;
+
         internal void Speedhack(bool enable)
         {
             if (enable)
@@ -1561,47 +1618,188 @@ namespace DS2S_META
             else
                 DisableSpeedhack();
         }
+
         internal void ClearSpeedhackInject()
         {
+            if (!SpeedhackInitialised)
+                return;
+
+            DetachSpeedhack(); // this is still very slow!
             SpeedhackDllPtr = IntPtr.Zero;
+            SpeedhackInitialised = false;
         }
+
         public void DisableSpeedhack()
         {
-            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
-            Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
+            if (!SpeedhackInitialised)
+                return;
+            SetSpeed(1.0d);
         }
+
+        private static readonly string TempDir = $"{ExeDir}\\Resources\\temp";
+        public static void ClearupDuplicateSpeedhacks()
+        {
+            // Try running on startup before injects where possible
+            if (!Directory.Exists(TempDir))
+                return;
+
+            var files = Directory.GetFiles(TempDir);
+            foreach (var file in files)
+            {
+                var fname = Path.GetFileNameWithoutExtension(file);
+                bool endswithdigit = char.IsDigit(fname[^1]);
+                if (endswithdigit)
+                {
+                    try
+                    {
+                        var fpath = $"{TempDir}/{fname}.dll";
+                        File.Delete(fpath);
+                    }
+                    catch (IOException)
+                    {
+                        continue; // in use probably
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        continue; // probably ok too?
+                    }
+                }
+            }
+        }
+
         private void EnableSpeedhack()
         {
-            IntPtr thread = IntPtr.Zero;
             if (SpeedhackDllPtr == IntPtr.Zero)
-            {
-                SpeedhackDllPtr = InjectDLL(SpeedhackDllPath);
-            }
+                SpeedhackDllPtr = GetSpeedhackPtr();
 
-            IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
-            thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
-            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-            SetSpeed((float)Properties.Settings.Default.SpeedValue);
+            if (!SpeedhackInitialised)
+                SetupSpeedhack();
+            
+            // Update speed:
+            SetSpeed((double)Properties.Settings.Default.SpeedValue);
         }
-        public void SetSpeed(float value)
+        private void SetupSpeedhack()
+        {
+            // Initialise Speedhack (one-time)
+            IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+
+            SpeedhackInitialised = true;
+        }
+        private IntPtr GetSpeedhackPtr()
+        {
+            if (Is64Bit)
+                return InjectDLL(SpeedhackDllPathX64);
+            else
+                return (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out _);
+        }
+        
+        private enum INJECTOR_ERRCODE
+        {
+            PROCESS_NOT_START = -5,
+            INCORRECT_NUMARGS = -2,
+            HOOK_FAILED = -1,
+            NONE = 0,
+        }
+        private static int Run32BitInjector(string dllfile, out INJECTOR_ERRCODE err)
+        {
+            string newpath;
+            int fid = Properties.Settings.Default.SH32FID; // get freefile()
+            Properties.Settings.Default.SH32FID++; // update it for next time
+
+            // copy dll to new file before injecting
+            string dllfilename = Path.GetFileNameWithoutExtension(dllfile);
+            string newname = $"{dllfilename}{fid}.dll";
+            newpath = $"{TempDir}\\{newname}";
+            
+            if (!Directory.Exists(TempDir))
+                Directory.CreateDirectory(TempDir);
+
+            File.Copy(dllfile, newpath, true);
+            
+
+            err = INJECTOR_ERRCODE.NONE;
+            string TRIPQUOT = "\"\"\"";
+            
+            // Run the above batch file in new thread
+            ProcessStartInfo PSI = new()
+            {
+                FileName = $"{ExeDir}\\Resources\\Tools\\SpeedInjector32\\SpeedInjector.exe",
+                Arguments = $"{TRIPQUOT}{newpath}{TRIPQUOT}",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            };
+
+            try
+            {
+                // Start the process with the info we specified.
+                // Call WaitForExit and then the using statement will close.
+                using Process? exeProcess = Process.Start(PSI);
+                exeProcess?.WaitForExit();
+                if (exeProcess?.ExitCode == null)
+                {
+                    err = INJECTOR_ERRCODE.PROCESS_NOT_START;
+                    return 0;
+                }
+                return exeProcess.ExitCode; // -1 on null?
+            }
+            catch
+            {
+                // Log error.
+                throw new Exception("Probably cannot find .exe");
+            }
+        }
+
+        public void SetSpeed(double value)
         {
             IntPtr setSpeed = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetSpeedPtr.ToInt64());
-            IntPtr valueAddress = GetPrefferedIntPtr(sizeof(float), SpeedhackDllPtr);
+            IntPtr valueAddress = GetPrefferedIntPtr(sizeof(double), SpeedhackDllPtr);
             Kernel32.WriteBytes(Handle, valueAddress, BitConverter.GetBytes(value));
-            var thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setSpeed, valueAddress, 0, IntPtr.Zero);
-            Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setSpeed, valueAddress, 0, IntPtr.Zero);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(valueAddress);
         }
-        private void GetSpeedhackOffsets(string path)
+        private void DetachSpeedhack()
         {
-            var lib = Kernel32.LoadLibrary(path);
-            var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
-            var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
-            var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
-            SetupPtr = (IntPtr)setupOffset;
-            SetSpeedPtr = (IntPtr)setSpeedOffset;
-            DetachPtr = (IntPtr)detachOffset;
-            Free(lib);
+            if (!Is64Bit)
+            {
+                DisableSpeedhack();
+                return; // unattach at game close in Vanilla
+            }
+                
+            // avoid sotfs Meta-reload crash:
+            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
+            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
+            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
+            Free(SpeedhackDllPtr);
+        }
+
+        // Currently hardcoded to avoid hassle. Shouldn't change often :/
+        private const int SpeedHack32_SetupOffset = 0x1180;
+        private const int SpeedHack32_SpeedOffset = 0x1280;
+        private const int SpeedHack32_DetachOffset = 0x1230;
+
+        private void GetSpeedhackOffsets()
+        {
+            if (Is64Bit)
+            {
+                var lib = Kernel32.LoadLibrary(SpeedhackDllPathX64);
+                var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
+                var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
+                var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
+                SetupPtr = (IntPtr)setupOffset; // 0x1180
+                SetSpeedPtr = (IntPtr)setSpeedOffset; // 0x1280
+                DetachPtr = (IntPtr)detachOffset; // 0x1230
+                Free(lib);
+            }
+            else
+            {
+                SetupPtr = (IntPtr)SpeedHack32_SetupOffset;
+                SetSpeedPtr = (IntPtr)SpeedHack32_SpeedOffset;
+                DetachPtr = (IntPtr)SpeedHack32_DetachOffset;
+            }
+            
         }
         #endregion
 
@@ -3004,7 +3202,7 @@ namespace DS2S_META
                 BonfireLevels.WriteByte(Offsets.BonfireLevels.CentralCastleDrangleic, level);
             }
         }
-        public byte TowerofPrayer
+        public byte TowerofPrayerAmana
         {
             get
             {
@@ -3334,7 +3532,7 @@ namespace DS2S_META
                 BonfireLevels.WriteByte(Offsets.BonfireLevels.SanctumInterior, level);
             }
         }
-        public byte TowerofPrayerDLC
+        public byte TowerofPrayerShulva
         {
             get
             {

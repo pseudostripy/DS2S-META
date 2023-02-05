@@ -24,6 +24,13 @@ namespace DS2S_META
         {
             InitializeComponent();
         }
+        public METAWarning(string title, int width, int height)
+        {
+            InitializeComponent();
+            Title = title;
+            Width = width;
+            Height = height;
+        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
