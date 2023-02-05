@@ -405,7 +405,6 @@ namespace DS2S_META.Utils
             try
             {
                 release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
-                //await Task.Delay(30);
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
             {

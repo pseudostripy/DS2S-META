@@ -52,5 +52,6 @@ namespace DS2S_META.Utils.Offsets
 
         // Misc
         public int[]? PlayerStatsOffsets;
+        public int[]? LoadingState;
     }
 }

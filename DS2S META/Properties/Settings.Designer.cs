@@ -394,5 +394,17 @@ namespace DS2S_META.Properties {
                 this["SH32FID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AlwaysRestAfterWarp {
+            get {
+                return ((bool)(this["AlwaysRestAfterWarp"]));
+            }
+            set {
+                this["AlwaysRestAfterWarp"] = value;
+            }
+        }
     }
 }

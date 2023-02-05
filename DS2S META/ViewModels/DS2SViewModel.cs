@@ -31,14 +31,15 @@ namespace DS2S_META.ViewModels
             get => DS2SHook.Reading;
             set => DS2SHook.Reading = value;
         }
-        
+        public bool DS2Loading => Hook.IsLoading;
+
         private MetaVersionInfo MVI = new();
 
         public string WindowName => $"META {MVI.MetaVersionStr}";
 
         public static bool DesignMode
         {
-            get { return DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()); }
+            get { return DesignerProperties.GetIsInDesignMode(new DependencyObject()); }
         }
 
         public DS2SViewModel()
@@ -155,6 +156,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ForegroundOnline));
             OnPropertyChanged(nameof(ForegroundVersion));
             OnPropertyChanged(nameof(GameLoaded));
+            OnPropertyChanged(nameof(DS2Loading)); // not used yet
 
             DmgCalcViewModel.UpdateViewModel();
         }

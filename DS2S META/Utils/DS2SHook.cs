@@ -13,6 +13,8 @@ using System.Reflection;
 using DS2S_META.Utils.Offsets;
 using Xceed.Wpf.Toolkit;
 using Keystone;
+using System.Threading.Tasks;
+using static DS2S_META.Utils.ItemRow;
 
 namespace DS2S_META
 {
@@ -48,7 +50,7 @@ namespace DS2S_META
         internal DS2HookOffsets Offsets;
 
         public static bool Reading { get; set; }
-
+        public bool IsLoading => LoadingState != null && Offsets.LoadingState != null && LoadingState.ReadBoolean(Offsets.LoadingState[^1]);
 
         public List<ItemRow> Items = new();
 
@@ -99,6 +101,8 @@ namespace DS2S_META
         private PHPointer SpeedFactorAnim;
         private PHPointer SpeedFactorJump;
         private PHPointer SpeedFactorBuildup;
+
+        public PHPointer LoadingState;
 
         public bool Loaded => PlayerCtrl != null && PlayerCtrl.Resolve() != IntPtr.Zero;
         public bool Setup = false;
@@ -468,6 +472,17 @@ namespace DS2S_META
 
             if (Offsets.PlayerStatsOffsets != null)
                 SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
+            if (Offsets.LoadingState != null)
+            {
+                var test = Offsets.LoadingState[0..^1];
+                var test2 = Offsets.LoadingState[^1];
+                var temp = CreateChildPointer(BaseA, 0x80);
+                var temp2 = CreateChildPointer(BaseA, 0x80, 0x8);
+                var temp3 = CreateChildPointer(temp2, 0xbb4);
+                var tempbool = temp2.ReadBoolean(0xbb4);
+                var tempbool3 = temp3.ReadBoolean(0);
+                LoadingState = CreateChildPointer(BaseA, Offsets.LoadingState[0..^1]);
+            }
         }
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
@@ -756,7 +771,7 @@ namespace DS2S_META
                 _ => throw new Exception("Unexpected flag for Silent Item switch")
             };
             if (do_rest)
-                BonfireRest();
+                AwaitBonfireRest();
             return true;
         }
         internal bool Warp64(ushort id, bool areadefault = false)
@@ -876,6 +891,43 @@ namespace DS2S_META
         internal void RestoreHumanity()
         {
             ApplySpecialEffect((int)SPECIAL_EFFECT.RESTOREHUMANITY);
+        }
+        internal async void AwaitBonfireRest()
+        {
+            // This is useful to ensure you're at full hp
+            // after a load, so that things like lifering+3
+            // effects are accounted for before healing
+
+            bool finishedload = await NextLoadComplete();
+            if (!finishedload)
+                return; // timeout issue
+            
+            // Apply bonfire rest in non-loadscreen
+            BonfireRest();
+        }
+        internal async Task<bool> NextLoadComplete()
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            int loadingTimeout_ms = 15000;
+            int dlay = 10;
+            
+            // wait for start of load
+            while (!IsLoading)
+            {
+                await Task.Delay(dlay);
+                if (sw.ElapsedMilliseconds > loadingTimeout_ms)
+                    return false;
+            }
+
+            // Now its loading, wait for it to finish:
+            while (IsLoading)
+            {
+                await Task.Delay(dlay);
+                if (sw.ElapsedMilliseconds > loadingTimeout_ms)
+                    return false;
+            }
+            return true;
+
         }
         internal void BonfireRest()
         {

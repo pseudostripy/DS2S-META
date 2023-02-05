@@ -12,7 +12,7 @@ namespace DS2S_META.Utils.Offsets
         {
             // V1.03
             PlayerStatsOffsets = new int[] { 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170 };
-
+            
             if (Func == null)
                 return;
 

@@ -10,8 +10,7 @@ namespace DS2S_META.Utils.Offsets
     {
         public DS2VOffsetsV111() : base()
         {
-            //// V1.02
-            //PlayerStatsOffsets = new int[] { 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718 };
+            LoadingState = new int[] { 0x24, 0x14, 0x2fc, 0x54, 0x870 };
 
             if (Func == null)
                 return;

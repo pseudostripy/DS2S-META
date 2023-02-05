@@ -47,9 +47,9 @@ namespace DS2S_META
         }
         internal override void ReloadCtrl()
         {
-            var SPEFF_REST = 110000010;
-            if (WarpRest)
-                Hook.ApplySpecialEffect(SPEFF_REST);
+            // so sneaky..
+            if (Properties.Settings.Default.AlwaysRestAfterWarp)
+                Hook.AwaitBonfireRest();
         }
         internal override void EnableCtrls(bool enable)
         {
