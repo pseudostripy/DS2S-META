@@ -33,13 +33,16 @@ namespace DS2S_META.Utils
         
         private static readonly Settings Settings = Settings.Default;
 
-        public static async Task<bool> WrapperInitiateUpdate(Uri uri, string newver)
+        public static async Task<bool> WrapperInitiateUpdate(MetaVersionInfo MVI)
         {
+            if (MVI.LatestReleaseURI == null)
+                return false;
+            
             // Prog bar?
             var progbar = new METAUpdating() { Width = 350, Height = 100 };
             progbar.Show();
 
-            var success = await InitiateUpdate(uri, newver);
+            var success = await InitiateUpdate(MVI.LatestReleaseURI, MVI.GitVersionStr);
             if (success)
                 return true;
 
@@ -331,7 +334,7 @@ namespace DS2S_META.Utils
             }
 
             // wait until batch file process has started before killing this one.
-            Application.Current.Shutdown(); // End current process (triggers .bat takeover)
+            System.Windows.Application.Current.Shutdown(); // End current process (triggers .bat takeover)
             return true; // I guess unreachable
         }
         public static bool Extract7zFile(string sourceArchive, string destination, int maxtimeout)
@@ -413,7 +416,7 @@ namespace DS2S_META.Utils
 
 
         // After update:
-        private static void LoadSettingsAfterUpgrade()
+        public static void LoadSettingsAfterUpgrade()
         {
             if (!Settings.IsUpgrading)
                 return;

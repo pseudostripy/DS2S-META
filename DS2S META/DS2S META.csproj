@@ -166,8 +166,8 @@
 	  <Exec Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
 	  <Message Text="Copied files to build folder" Importance="High" />
 
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="$(TargetDir)" />
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.ini" DestinationFolder="@(OutputDir)" />
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
+	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
 			
   </Target>
 

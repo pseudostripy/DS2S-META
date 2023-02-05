@@ -23,7 +23,7 @@ namespace DS2S_META.ViewModels
 {
     internal class DS2SViewModel : ObservableObject
     {
-        private Settings Settings;
+        private Settings Settings = Settings.Default;
         public DS2SHook Hook { get; private set; }
         public bool GameLoaded { get; set; }
         public bool Reading
@@ -31,7 +31,7 @@ namespace DS2S_META.ViewModels
             get => DS2SHook.Reading;
             set => DS2SHook.Reading = value;
         }
-
+        
         private MetaVersionInfo MVI = new();
 
         public string WindowName => $"META {MVI.MetaVersionStr}";
@@ -55,19 +55,11 @@ namespace DS2S_META.ViewModels
             DmgCalcViewModel = new DmgCalcViewModel();
             ViewModels.Add(DmgCalcViewModel);
 
+            ShowOnlineWarning();
             GetVersions();
             VersionUpdate();
         }
         
-        public Brush ForegroundID
-        {
-            get
-            {
-                if (Hook.ID != "Not Hooked")
-                    return Brushes.GreenYellow;
-                return Brushes.IndianRed;
-            }
-        }
         public string ContentLoaded
         {
             get
@@ -75,15 +67,6 @@ namespace DS2S_META.ViewModels
                 if (Hook.Loaded)
                     return "Yes";
                 return "No";
-            }
-        }
-        public Brush ForegroundLoaded
-        {
-            get
-            {
-                if (Hook.Loaded)
-                    return Brushes.GreenYellow;
-                return Brushes.IndianRed;
             }
         }
         public string ContentOnline
@@ -96,6 +79,24 @@ namespace DS2S_META.ViewModels
                 if (Hook.Online)
                     return "Yes";
                 return "No";
+            }
+        }
+        public Brush ForegroundID
+        {
+            get
+            {
+                if (Hook.ID != "Not Hooked")
+                    return Brushes.GreenYellow;
+                return Brushes.IndianRed;
+            }
+        }
+        public Brush ForegroundLoaded
+        {
+            get
+            {
+                if (Hook.Loaded)
+                    return Brushes.GreenYellow;
+                return Brushes.IndianRed;
             }
         }
         public Brush ForegroundOnline
@@ -137,7 +138,8 @@ namespace DS2S_META.ViewModels
                 };
             }
         }
-
+        public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
+        public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
 
         ObservableCollection<ViewModelBase> ViewModels = new();
         public DmgCalcViewModel DmgCalcViewModel { get; set; }
@@ -164,8 +166,6 @@ namespace DS2S_META.ViewModels
         }
 
 
-
-
         private void GetVersions()
         {
             // Gets the current assembly version for Meta and the 
@@ -180,21 +180,14 @@ namespace DS2S_META.ViewModels
         {
             // NOTE: !Can only get here in DryUpdate build configurations!
             Updater.EnsureDryUpdateSettings();
-            string ini_file = Updater.DryUpdateSettingsPath;
-
-            var updateini = JsonSerializer.Deserialize<UpdateIni>(ini_file);
+            
+            var jsonstring = File.ReadAllText(Updater.DryUpdateSettingsPath);
+            var updateini = JsonSerializer.Deserialize<UpdateIni>(jsonstring);
             if (updateini == null) throw new Exception($"Error deserializing {Updater.DryUpdateSettingsPath}");
 
             MVI.ExeVersion = Version.Parse(updateini.ThisVer);
             MVI.LatestReleaseURI = new Uri(updateini.UpdatePath);
-
-
-            //Regex re = new(@"DS2S\.META\.(?<ver>.*)\."); // find e.g. "a.b.c" until last ".7z/.zip"
-            //var M = re.Match(filepath);
-            //if (!M.Success)
-            //    throw new Exception("Error reading the expected file name for update file");
-            //MVI.GitVersion = Version.Parse(M.Groups["ver"].ToString());
-            //MVI.DryUpdateFilePath = filepath;
+            MVI.GitVersion = ParseUpdateFilename(MVI);            
         }
         private void GetVersionsStandard()
         {
@@ -206,21 +199,37 @@ namespace DS2S_META.ViewModels
             MVI.GitVersion = Version.Parse(latestRel.TagName.ToLower().Replace("v", ""));
             MVI.LatestReleaseURI = new Uri(latestRel.HtmlUrl);
         }
+        private static Version? ParseUpdateFilename(MetaVersionInfo MVI)
+        {
+            if (MVI.LatestReleaseURI == null) return default;
+
+            // e.g. 0.7.0.1 from "C:/fol/DS2S_META_v0.7.0.1.zip"
+            Regex re = new(@"DS2S.?META.?v?(?<ver>\d.*)(.zip|.7z)", RegexOptions.IgnoreCase); 
+
+            var M = re.Match(MVI.LatestReleaseURI.ToString());
+            if (M.Success)
+                return Version.Parse(M.Groups["ver"].ToString());
+            
+            MessageBox.Show("Error parsing update file name");
+            return default;
+        }
 
         private void VersionUpdate()
         {
-            
-            
-            if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
-            {
-                lblNewVersion.Visibility = Visibility.Visible;
-                labelCheckVersion.Visibility = Visibility.Hidden;
+            if (MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE)
+                return;
 
-                // Only show msg again when newer version released
-                if (Settings.Default.AcknowledgeUpdateVersion != MVI.GitVersionStr)
-                    ShowMetaUpdateWindow(linkNewVersionAvail.NavigateUri, MVI.GitVersionStr);
+            // Only show msg again when newer version released
+            if (!MVI.IsAcknowledged)
+                ShowMetaUpdateWindow();
+
+            if (Settings.IsUpgrading)
+            {
+                Updater.LoadSettingsAfterUpgrade();
+                ShowCbxUpdate();
             }
         }
+
         
 
         
@@ -231,9 +240,9 @@ namespace DS2S_META.ViewModels
             var warning = new METAWarning("Online Warning", 350, 240);
             warning.ShowDialog();
         }
-        public static void ShowMetaUpdateWindow(Uri link, string ackverstring)
+        public void ShowMetaUpdateWindow()
         {
-            var warning = new METAUpdate(link, ackverstring)
+            var warning = new METAUpdate(MVI)
             {
                 Title = "New Update Available",
                 Width = 450,
@@ -241,77 +250,28 @@ namespace DS2S_META.ViewModels
             };
             warning.ShowDialog();
         }
-        public void ShowUpdateCompleteWindow()
-        {
-            if (!ShowUpdateComplete)
-                return;
 
-            ShowUpdateComplete = false;
-            TitleGrid.RowDefinitions[3].MaxHeight = 100;
-            cbxUpdateOK.Visibility = Visibility.Visible;
-            Activate();
+        private bool ShowCbxUpdateBool { get; set; } = false;
+        public int Row3MaxH => ShowCbxUpdateBool ? 100 : 1;
+        public Visibility Row3Visibility => ShowCbxUpdateBool ? Visibility.Visible : Visibility.Hidden;
+        //public void UpdateCompleteCheck()
+        //{
+            
+        //    TitleGrid.RowDefinitions[3].MaxHeight = 100;
+        //    cbxUpdateOK.Visibility = Visibility.Visible;
+        //    Activate();
+        //}
+        public void ShowCbxUpdate()
+        {
+            ShowCbxUpdateBool = true;
+            OnPropertyChanged(nameof(Row3MaxH));
+            OnPropertyChanged(nameof(Row3Visibility));
         }
-
-
-        
-
-
-
-        
-
-
-
-        private async void VersionUpdateCheck(string repo_owner)
+        public void HideCbxUpdate()
         {
-            try
-            {
-#if !DRYUPDATE
-                    // Get Repo Version:
-                    GitHubClient gitHubClient = new(new ProductHeaderValue("DS2S-META"));
-                    Release release = await gitHubClient.Repository.Release.GetLatest(repo_owner, "DS2S-META");
-                    MVI.GitVersion = Version.Parse(release.TagName.ToLower().Replace("v", ""));
-#endif
-                if (MVI.GitVersion > MVI.ExeVersion) //Compare latest version to current version
-                {
-#if DRYUPDATE
-                    if (DryUpdateMissingIni)
-                    {
-                        MVI.GitVersion = MVI.ExeVersion;
-                        linkNewVersionAvail.NavigateUri = new Uri("");
-                    }
-                    else
-                    {
-                        if (MVI.DryUpdateFilePath == null) throw new Exception("Null file path");
-                        linkNewVersionAvail.NavigateUri = new Uri(MVI.DryUpdateFilePath);
-                    }
-#else
-                        // Store info:
-                        MVI.LatestReleaseURI = new Uri(release.HtmlUrl);
-                        MVI.LatestRelease = release;
-                        link.NavigateUri = new Uri(release.HtmlUrl);
-#endif
-
-                    lblNewVersion.Visibility = Visibility.Visible;
-                    labelCheckVersion.Visibility = Visibility.Hidden;
-
-                    // Only show msg again when newer version released
-                    if (Properties.Settings.Default.AcknowledgeUpdateVersion != MVI.GitVersionStr)
-                        ShowMetaUpdateWindow(linkNewVersionAvail.NavigateUri, MVI.GitVersionStr);
-                }
-                else if (MVI.GitVersion == MVI.ExeVersion)
-                    labelCheckVersion.Content = "App up to date";
-                else
-                    labelCheckVersion.Content = "In-development version.";
-            }
-            catch (Exception ex) when (ex is HttpRequestException || ex is ApiException || ex is ArgumentException)
-            {
-                labelCheckVersion.Content = "Current app version unknown";
-            }
-            catch (Exception ex)
-            {
-                labelCheckVersion.Content = "Something is very broke, contact DS2 META repo owner";
-                MessageBox.Show(ex.Message);
-            }
+            ShowCbxUpdateBool = false;
+            OnPropertyChanged(nameof(Row3MaxH));
+            OnPropertyChanged(nameof(Row3Visibility));
         }
 
     }
