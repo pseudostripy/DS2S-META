@@ -189,15 +189,16 @@ namespace DS2S_META.ViewModels
             MVI.LatestReleaseURI = new Uri(updateini.UpdatePath);
             MVI.GitVersion = ParseUpdateFilename(MVI);            
         }
-        private void GetVersionsStandard()
+        private async void GetVersionsStandard()
         {
             MVI.ExeVersion = Updater.GetExeVersion();
 
-            var latestRel = Updater.GitLatestRelease("Pseudostripy").Result;
+            var latestRel = await Updater.GitLatestRelease("Pseudostripy");
             if (latestRel == null) return;
 
             MVI.GitVersion = Version.Parse(latestRel.TagName.ToLower().Replace("v", ""));
             MVI.LatestReleaseURI = new Uri(latestRel.HtmlUrl);
+            OnPropertyChanged(nameof(CheckVer)); // required because async
         }
         private static Version? ParseUpdateFilename(MetaVersionInfo MVI)
         {
