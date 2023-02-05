@@ -49,7 +49,8 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 * Refactoring of MainWindow / Updater / META messages for sustainability
 * Bug Fix: Tower of Prayer bonfires (Shulva/Amana) now untangled
 * Bug Fix: Warp-rest permanently affecting all loads now fixed
-* Warp-rest implementation tidied up and separated out neatly
+* Warp-rest improved to restore full hp (applied after max hp boosting effects)
+* Added IsLoading flag for all Versions enabling more robust future code
 
 #### v0.7.0.0
 * Merge DS2 META Vanilla into single program DS2S combined!
