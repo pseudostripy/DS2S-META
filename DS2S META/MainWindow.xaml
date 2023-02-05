@@ -82,7 +82,7 @@
                     </Hyperlink>
                 </Label>
 
-                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="Hidden"/>
+                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}"/>
             </Grid>
             <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450" MinHeight="650">
                 <TabControl.ItemsPanel>

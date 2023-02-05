@@ -31,7 +31,7 @@ namespace DS2S_META
 
         private State.PlayerState PlayerState;
 
-        private List<SavedPos> Positions = new List<SavedPos>();
+        private List<SavedPos> Positions = new();
 
         public override void InitTab()
         {

@@ -65,8 +65,6 @@ namespace DS2S_META
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
-            
             EnableTabs(false);
             InitAllTabs();
 
@@ -227,8 +225,9 @@ namespace DS2S_META
         private void cbxUpdateOK_Checked(object sender, RoutedEventArgs e)
         {
             cbxUpdateOK.IsChecked = false;
-            cbxUpdateOK.Visibility = Visibility.Hidden;
-            TitleGrid.RowDefinitions[3].MaxHeight = 1;
+            ViewModel.HideCbxUpdate();
+            //cbxUpdateOK.Visibility = Visibility.Hidden;
+            //TitleGrid.RowDefinitions[3].MaxHeight = 1;
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)

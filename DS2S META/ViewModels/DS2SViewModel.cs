@@ -156,7 +156,6 @@ namespace DS2S_META.ViewModels
 
             DmgCalcViewModel.UpdateViewModel();
         }
-
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
         }
@@ -217,18 +216,18 @@ namespace DS2S_META.ViewModels
 
         private void VersionUpdate()
         {
+            if (Settings.IsUpgrading)
+            {
+                Updater.LoadSettingsAfterUpgrade();
+                ShowCbxUpdate();
+            }
+
             if (MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE)
                 return;
 
             // Only show msg again when newer version released
             if (!MVI.IsAcknowledged)
                 ShowMetaUpdateWindow();
-
-            if (Settings.IsUpgrading)
-            {
-                Updater.LoadSettingsAfterUpgrade();
-                ShowCbxUpdate();
-            }
         }
 
         
