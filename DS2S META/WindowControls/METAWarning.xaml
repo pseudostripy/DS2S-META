@@ -20,7 +20,7 @@
                 This tool has not been tested online. 
             </TextBlock>
             <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center">
-                The tool is intended for offline use, and any negative consequences of using this tool online are not the fault of this tool or it's author. You have been warned.
+                The tool is intended for offline use, and any negative consequences of using this tool online are not the fault of this tool or its author. You have been warned.
             </TextBlock>
             <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center">
                 Delete any characters made with this tool before going online.
