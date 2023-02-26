@@ -134,6 +134,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\ParamFiles\" />
+    <Folder Include="Resources\Tools\SpeedInjector32\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -163,7 +164,15 @@
 	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
 	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
-	  <Exec Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
+	  <Exec Condition="" Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
+
+	  <!-- copy speedinjector -->
+	  <Exec Command="if not exist &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot; md &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot;" />
+	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\PropertyHook.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;" />
+	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;" />
+	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.exe&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;" />
+	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.runtimeconfig.json&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;" />
+	  
 	  <Message Text="Copied files to build folder" Importance="High" />
 
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
