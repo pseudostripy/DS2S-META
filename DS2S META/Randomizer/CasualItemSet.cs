@@ -493,16 +493,16 @@ namespace DS2S_META.Randomizer
             Dold.Add(619100, BossInfo("[Chariot] Executioner's Chariot drop", KEYID.ROTUNDA));
             Dold.Add(619101, BossNGPlusInfo("[Chariot] Executioner's Chariot drop in NG+", KEYID.ROTUNDA));
             Dold.Add(2003000, CovFineInfo("[Chariot] Brotherhood of Blood join", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
-            Dold.Add(2003011, CovInfo("[Chariot] Brotherhood of Blood 1st rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
-            Dold.Add(2003012, CovInfo("[Chariot] Brotherhood of Blood 2nd rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
-            Dold.Add(2003013, CovInfo("[Chariot] Brotherhood of Blood 3rd rank price", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
-            Dold.Add(1783040, CovInfo("[Chariot] Gift from Titchy Gren after getting to 3rd rank in Brotherhood of Blood", KEYID.ROTUNDA));
+            Dold.Add(2003011, CovInfo("[Chariot] Brotherhood of Blood 1st rank reward", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            Dold.Add(2003012, CovInfo("[Chariot] Brotherhood of Blood 2nd rank reward", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            Dold.Add(2003013, CovInfo("[Chariot] Brotherhood of Blood 3rd rank reward", KSO(KEYID.ROTUNDA, KEYID.TOKENOFSPITE)));
+            Dold.Add(1783040, CovInfo("[Chariot] Gift from Titchy Gren after Brotherhood of Blood Rank 3", KEYID.ROTUNDA));
             Dold.Add(10236010, SafeInfo("[Chariot] Above the stairs leading to the bonfire", KEYID.ROTUNDA));
-            Dold.Add(10236180, SafeInfo("[Chariot] First corpse in the chariot arena", KEYID.ROTUNDA));
-            Dold.Add(10236190, SafeInfo("[Chariot] Second corpse in the chariot arena", KEYID.ROTUNDA));
-            Dold.Add(10236200, SafeInfo("[Chariot] Third corpse in the chariot arena", KEYID.ROTUNDA));
-            Dold.Add(10236210, SafeInfo("[Chariot] Fourth corpse in the chariot arena", KEYID.ROTUNDA));
-            Dold.Add(10236220, SafeInfo("[Chariot] Fifth corpse in the chariot arena", KEYID.ROTUNDA));
+            Dold.Add(10236180, SafeInfo("[Chariot] First corpse in the Chariot arena", KEYID.ROTUNDA));
+            Dold.Add(10236190, SafeInfo("[Chariot] Second corpse in the Chariot arena", KEYID.ROTUNDA));
+            Dold.Add(10236200, SafeInfo("[Chariot] Third corpse in the Chariot arena", KEYID.ROTUNDA));
+            Dold.Add(10236210, SafeInfo("[Chariot] Fourth corpse in the Chariot arena", KEYID.ROTUNDA));
+            Dold.Add(10236220, SafeInfo("[Chariot] Fifth corpse in the Chariot arena", KEYID.ROTUNDA));
 
             // Harvest Valley:
             Dold.Add(2007000, CovFineInfo("[HarvestValley] Heirs of the Sun join", KEYID.ROTUNDA));
@@ -599,9 +599,9 @@ namespace DS2S_META.Randomizer
             Dold.Add(607001, BossNGPlusInfo("[IronKeep] Old Iron King drop in NG+", KEYID.ROTUNDA));
             Dold.Add(1772000, NpcInfo("[IronKeep] Gift from Magerold after spending 16000 souls", KEYID.ROTUNDA));
             Dold.Add(2008000, CovFineInfo("[IronKeep] Dragon Remnants join", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
-            Dold.Add(2008011, CovInfo("[IronKeep] Dragon Remnants 1st rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
-            Dold.Add(2008012, CovInfo("[IronKeep] Dragon Remnants 2nd rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
-            Dold.Add(2008013, CovInfo("[IronKeep] Dragon Remnants 3rd rank price", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
+            Dold.Add(2008011, CovInfo("[IronKeep] Dragon Remnants 1st rank reward", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
+            Dold.Add(2008012, CovInfo("[IronKeep] Dragon Remnants 2nd rank reward", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
+            Dold.Add(2008013, CovInfo("[IronKeep] Dragon Remnants 3rd rank reward", KSO(KEYID.ROTUNDA, KEYID.PETRIFIEDEGG)));
             Dold.Add(10195000, WChestInfo("[IronKeep] Wooden chest at upper level of the room with changing platforms", KEYID.ROTUNDA));
             Dold.Add(10195001, WChestNGPlusInfo("[IronKeep] Wooden chest at upper level of the room with changing platforms in NG+", KEYID.ROTUNDA));
             Dold.Add(10195030, MChestInfo("[IronKeep] Metal chest next to Pharros contraption after Dull ember jump, in the first big lava room", KEYID.ROTUNDA));

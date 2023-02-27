@@ -205,7 +205,7 @@ namespace DS2S_META.Utils
                 return SpellID;
             if (GestureID != -1)
                 return GestureID;
-            return IconID; // consumables are here I think
+            return ID; // consumables are here I think
         }
         public List<DS2SInfusion> GetInfusionList()
         {
