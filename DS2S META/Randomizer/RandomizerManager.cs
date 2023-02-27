@@ -844,8 +844,8 @@ namespace DS2S_META.Randomizer
             RemoveFirstIfPresent(0x0308D330); // Ashen Mist
             RemoveFirstIfPresent(0x03B39220); // Token of Fidelity
             RemoveFirstIfPresent(0x03B3B930); // Token of Spite
-            LimitNumberOfItem(0x0399EFA0, 15); // 15xX Torch pickups in game
-            LimitNumberOfItem(0x0395D4D8, 30); // 30 Effigy pickups in game
+            LimitNumberOfItem(0x0399EFA0, 25); // 25x Torch pickups in game
+            LimitNumberOfItem(0x0395D4D8, 50); // 50x Effigy pickups in game
         }
         private List<DropInfo> RemoveExtraTorches(List<DropInfo> too_many_torches)
         {
