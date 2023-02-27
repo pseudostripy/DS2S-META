@@ -283,12 +283,15 @@ namespace DS2S_META.Randomizer
             var classrows = ParamMan.PlayerStatusClassParam?.Rows.Where(row => classids.Contains(row.ID))
                                                             .OfType<PlayerStatusClassRow>();
             if (classrows == null) throw new Exception("Failed to find classes in param");
-            
+
             // Setup lists to draw from randomly:
+            var bannedItems = (new ITEMID[]{ ITEMID.ESTUS, ITEMID.ESTUSEMPTY }).Cast<int>();
             var all_items = ParamMan.ItemParam?.Rows.OfType<ItemRow>();
             var all_consumables = all_items?.Where(it => it.ItemType == eItemType.CONSUMABLE)
                                             .Where(it => it.ItemUsageID != ITEMUSAGEKEY && it.ItemUsageID != BOSSSOULUSAGE)
-                                            .Where(it => it.MetaItemName != String.Empty).ToList();
+                                            .Where(it => it.MetaItemName != String.Empty)
+                                            .Where(it => bannedItems.Contains(it.ItemID))
+                                            .ToList();
             if (all_consumables == null) throw new Exception("Items not loaded from Param table");
             //
             var all_rings = all_items?.Where(it => it.ItemType == eItemType.RING)
