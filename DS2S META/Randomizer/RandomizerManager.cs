@@ -348,7 +348,7 @@ namespace DS2S_META.Randomizer
 
                 // Class Rings 15% chance:
                 int ringnum = 0;
-                while (RNG.Next(100) > 85 && ringnum < 4)
+                while (RNG.Next(100) < 15 && ringnum < 4)
                 {
                     var randring = all_rings[RNG.Next(all_rings.Count)];
                     classrow.WriteAtRingArray(ringnum, randring.IconID); // if you allow +1 rings etc you don't get an icon!
