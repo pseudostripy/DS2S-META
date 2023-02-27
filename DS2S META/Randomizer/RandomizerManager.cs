@@ -13,6 +13,7 @@ using static SoulsFormats.MSBD;
 using System.Transactions;
 using System.Windows.Controls;
 using Octokit;
+using static DS2S_META.Randomizer.RandomizerManager;
 
 namespace DS2S_META.Randomizer
 {
@@ -260,6 +261,7 @@ namespace DS2S_META.Randomizer
             ParamMan.ItemLotOtherParam?.RestoreParam();
             ParamMan.ItemParam?.RestoreParam();
             ParamMan.PlayerStatusClassParam?.RestoreParam();
+            ParamMan.PlayerStatusItemParam?.RestoreParam();
             ParamMan.ItemLotChrParam?.RestoreParam();
 
             // Force an area reload.
@@ -275,22 +277,23 @@ namespace DS2S_META.Randomizer
         // Core Logic
         internal void RandomizeStartingClasses()
         {
-            int BOSSSOULUSAGE = 2000;
-            int ITEMUSAGEKEY = 2700;
-            int SOULUSAGE = 1900;
-
             var classids = new List<int>() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
             var classrows = ParamMan.PlayerStatusClassParam?.Rows.Where(row => classids.Contains(row.ID))
                                                             .OfType<PlayerStatusClassRow>();
             if (classrows == null) throw new Exception("Failed to find classes in param");
 
             // Setup lists to draw from randomly:
-            var bannedItems = (new ITEMID[]{ ITEMID.ESTUS, ITEMID.ESTUSEMPTY }).Cast<int>();
+            var bannedItems = (new ITEMID[]{    ITEMID.ESTUS, 
+                                                ITEMID.ESTUSEMPTY,
+                                                ITEMID.DARKSIGN,
+                                                ITEMID.BONEOFORDER,
+                                                ITEMID.BLACKSEPARATIONCRYSTAL }).Cast<int>();
             var all_items = ParamMan.ItemParam?.Rows.OfType<ItemRow>();
             var all_consumables = all_items?.Where(it => it.ItemType == eItemType.CONSUMABLE)
-                                            .Where(it => it.ItemUsageID != ITEMUSAGEKEY && it.ItemUsageID != BOSSSOULUSAGE)
+                                            .Where(it => it.ItemUsageID != (int)ITEMUSAGE.ITEMUSAGEKEY 
+                                                        && it.ItemUsageID != (int)ITEMUSAGE.BOSSSOULUSAGE)
                                             .Where(it => it.MetaItemName != String.Empty)
-                                            .Where(it => bannedItems.Contains(it.ItemID))
+                                            .Where(it => !bannedItems.Contains(it.ItemID))
                                             .ToList();
             if (all_consumables == null) throw new Exception("Items not loaded from Param table");
             //
@@ -333,20 +336,11 @@ namespace DS2S_META.Randomizer
                 var numItems = RandomGammaInt(2, 1);
                 numItems = Math.Min(numItems, 7);
 
-                for (int i= 0; i < numItems; i++)
+                for (int i = 0; i < numItems; i++)
                 {
-                    var randitem = all_consumables[RNG.Next(all_consumables.Count)];
-                    classrow.WriteAtItemArray(i, randitem.ItemID);
-                    if (randitem.ItemUsageID == SOULUSAGE)
-                        classrow.WriteAtItemQuantArray(i, 1);
-                    else
-                    {
-                        var quant = RNG.Next(5);
-                        if (quant == 0)
-                            quant = 1;
-                        classrow.WriteAtItemQuantArray(i, (short)quant);
-                    }
-                        
+                    var idquant = DrawItem(all_consumables);
+                    classrow.WriteAtItemArray(i, idquant.ID);
+                    classrow.WriteAtItemQuantArray(i, idquant.Quant);
                 }
 
                 // Class Rings 15% chance:
@@ -432,7 +426,52 @@ namespace DS2S_META.Randomizer
                 classrow.WriteRow();
             }
 
+            // Starting Gifts:
+            var itemrows = ParamMan.PlayerStatusClassParam?.Rows
+                                  .OfType<PlayerStatusClassRow>()
+                                  .Where(row => row.ID > 400 & row.ID < 1000)
+                                  .ToList();
+            if (itemrows == null) throw new Exception("can't find items in param");
+
+            const int NGIFTITEMS = 2;
+            foreach (var gift in itemrows)
+            {
+                // Delete the defaults:
+                var numtoset = gift.CountItems();
+                gift.Wipe();
+
+                for (int i = 0; i < NGIFTITEMS; i++)
+                {
+                    var idquant = DrawItem(all_consumables);
+                    gift.WriteAtItemArray(i, idquant.ID);
+                    gift.WriteAtItemQuantArray(i, idquant.Quant);
+                }
+
+                // Commit all changes to memory
+                gift.WriteRow();
+            }
         }
+        internal readonly struct IDQUANT
+        {
+            internal readonly int ID;
+            internal readonly short Quant;
+
+            internal IDQUANT(int id, int quant)
+            {
+                ID = id;
+                Quant = (short)quant;
+            }
+        }
+        private static IDQUANT DrawItem(List<ItemRow>? drawpool)
+        {
+            if (drawpool == null) throw new Exception("No items in list to draw from");
+            
+            var randitem = drawpool[RNG.Next(drawpool.Count)];
+
+            var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : RNG.Next(5);
+            return new IDQUANT(randitem.ItemID, quant);
+        }
+        
         internal void GetLootToRandomize()
         {
             // Start with AllP
