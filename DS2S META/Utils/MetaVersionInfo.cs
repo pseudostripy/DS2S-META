@@ -27,9 +27,9 @@ namespace DS2S_META.Utils
         public string GitVersionStr => GitVersion == null ? string.Empty : GitVersion.ToString();
         
         public bool IsAcknowledged => Settings.Default.AcknowledgeUpdateVersion == GitVersionStr;
-        public UPDATE_STATUS UpdateStatus => GetUpdateStatus();
 
-        private UPDATE_STATUS GetUpdateStatus()
+        public UPDATE_STATUS UpdateStatus { get; set; }
+        public UPDATE_STATUS SyncUpdateStatus()
         {
             if (GitVersion == null)
                 return UPDATE_STATUS.UNCHECKABLE;

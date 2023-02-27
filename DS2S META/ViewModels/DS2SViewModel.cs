@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -57,10 +58,9 @@ namespace DS2S_META.ViewModels
             ViewModels.Add(DmgCalcViewModel);
 
             ShowOnlineWarning();
-            GetVersions();
-            VersionUpdate();
+            Versioning();
         }
-        
+
         // Binding Variables:
         public string ContentLoaded
         {
@@ -168,15 +168,24 @@ namespace DS2S_META.ViewModels
 
         }
 
+        private async void Versioning()
+        {
+            await GetVersions();
+            VersionUpdate();
+            MVI.UpdateStatus = MVI.SyncUpdateStatus();
+            OnPropertyChanged(nameof(CheckVer));
+            OnPropertyChanged(nameof(CheckVerVis));
+            OnPropertyChanged(nameof(NewVerVis));
+        }
 
-        private void GetVersions()
+        private async Task GetVersions()
         {
             // Gets the current assembly version for Meta and the 
             // most recent release version
             #if DRYUPDATE
                 GetVersionsDry();
             #else
-                GetVersionsStandard();
+                await GetVersionsStandard();
             #endif
         }
         private void GetVersionsDry()
@@ -192,16 +201,18 @@ namespace DS2S_META.ViewModels
             MVI.LatestReleaseURI = new Uri(updateini.UpdatePath);
             MVI.GitVersion = ParseUpdateFilename(MVI);            
         }
-        private async void GetVersionsStandard()
+        private async Task GetVersionsStandard()
         {
             MVI.ExeVersion = Updater.GetExeVersion();
 
             var latestRel = await Updater.GitLatestRelease("Pseudostripy");
-            if (latestRel == null) return;
+            if (latestRel == null) return; 
 
             MVI.GitVersion = Version.Parse(latestRel.TagName.ToLower().Replace("v", ""));
             MVI.LatestReleaseURI = new Uri(latestRel.HtmlUrl);
             OnPropertyChanged(nameof(CheckVer)); // required because async
+
+            MVI.UpdateStatus = MVI.SyncUpdateStatus();
         }
         private static Version? ParseUpdateFilename(MetaVersionInfo MVI)
         {
@@ -228,6 +239,7 @@ namespace DS2S_META.ViewModels
 
             if (MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE)
                 return;
+                
 
             // Only show msg again when newer version released
             if (!MVI.IsAcknowledged)
