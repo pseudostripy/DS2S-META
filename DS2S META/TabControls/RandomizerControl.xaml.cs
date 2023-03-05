@@ -10,6 +10,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
+using Octokit;
+using System.ComponentModel;
 using DS2S_META.Properties;
  
 namespace DS2S_META
@@ -19,6 +23,110 @@ namespace DS2S_META
     /// </summary>
     public partial class RandomizerControl : METAControl
     {
+        public class ItemPlacementRestrictionSettings : INotifyPropertyChanged
+        {
+            public static Dictionary<ItemRestrictionType, string> TypeComboItems { get; set; } = new() {
+                { ItemRestrictionType.Anywhere, "Anywhere" },
+                { ItemRestrictionType.Vanilla , "Vanilla" },
+                { ItemRestrictionType.AreaDistance , "Distance from area" }
+            };
+
+            public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = new()
+            {
+                {MapArea.ThingsBetwixt , "Things Betwixt"},
+                {MapArea.Majula, "Majula"},
+                {MapArea.ForestOfFallenGiants, "Forest of Fallen Giants"},
+                {MapArea.HeidesTowerOfFlame, "Heide's Tower of Flame"},
+                {MapArea.CathedralOfBlue, "Cathedral of Blue"},
+                {MapArea.NoMansWharf, "No-man's Wharf"},
+                {MapArea.TheLostBastille, "The Lost Bastille"},
+                {MapArea.BelfryLuna, "Belfry Luna"},
+                {MapArea.SinnersRise, "Sinner's Rise"},
+                {MapArea.HuntsmansCopse, "Huntsman's Copse"},
+                {MapArea.UndeadPurgatory, "Undead Purgatory"},
+                {MapArea.HarvestValley, "Harvest Valley"},
+                {MapArea.EarthenPeak, "Earthen Peak"},
+                {MapArea.IronKeep, "Iron Keep"},
+                {MapArea.BelfrySol, "Belfry Sol"},
+                {MapArea.ShadedWoods, "Shaded Woods"},
+                {MapArea.DoorsOfPharros, "Doors of Pharros"},
+                {MapArea.BrightstoneCoveTseldora, "Brightstone Cove Tseldora"},
+                // {MapArea.LordsPrivateChamber, "LordsPrivateChamber"},
+                {MapArea.ThePit, "The Pit"},
+                {MapArea.GraveOfSaints, "Grave of Saints"},
+                {MapArea.TheGutter, "The Gutter"},
+                {MapArea.BlackGulch, "Black Gulch"},
+                {MapArea.ShrineOfWinter, "Shrine of Winter"},
+                {MapArea.DrangleicCastle, "Drangleic Castle"},
+                {MapArea.KingsPassage, "King's Passage"},
+                {MapArea.ShrineOfAmana, "Shrine of Amana"},
+                {MapArea.UndeadCrypt, "Undead Crypt"},
+                {MapArea.ThroneOfWant, "Throne of Want"},
+                {MapArea.AldiasKeep, "Aldia's Keep"},
+                {MapArea.DragonAerie, "Dragon Aerie"},
+                {MapArea.DragonShrine, "Dragon Shrine"},
+                // {MapArea.DarkChasmOfOld, "DarkChasmOfOld"},
+                {MapArea.MemoryOfJeigh, "Memory of Jeigh"},
+                {MapArea.MemoryOfOrro, "Memory of Orro"},
+                {MapArea.MemoryOfVammar, "Memory of Vammar"},
+                {MapArea.DragonMemories, "Dragon Memories"},
+                // {MapArea.MemoryOfTheKing, "MemoryOfTheKing"},
+                {MapArea.ShulvaSanctumCity, "Shulva Sanctum City"},
+                {MapArea.DragonsSanctum, "Dragon's Sanctum"},
+                {MapArea.DragonsRest, "Dragon's Rest"},
+                {MapArea.CaveOfTheDead, "Cave of the Dead"},
+                {MapArea.BrumeTower, "Brume Tower"},
+                {MapArea.IronPassage, "Iron Passage"},
+                {MapArea.MemoryOfTheOldIronKing, "Memory of the Old Iron King"},
+                {MapArea.FrozenEleumLoyce, "Frozen Eleum Loyce"},
+                {MapArea.GrandCathedral, "Grand Cathedral"},
+                {MapArea.TheOldChaos, "The Old Chaos"},
+                {MapArea.FrigidOutskirts, "Frigid Outskirts" }
+            };
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+
+            public static KeyValuePair<ItemRestrictionType, string> GetTypeComboItem(ItemRestrictionType defaultType)
+            {
+                return TypeComboItems.Single(e => e.Key == defaultType);
+            }
+            public static KeyValuePair<MapArea, string> GetAreaComboItem(MapArea area)
+            {
+                return MapAreaComboItems.Single(e => e.Key == area);
+            }
+
+            private Visibility _areaSelectionVisible = Visibility.Collapsed;
+            public Visibility AreaSelectionVisible
+            {
+                get => _areaSelectionVisible; set
+                {
+                    _areaSelectionVisible = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AreaSelectionVisible)));
+                }
+            }
+
+            public int ItemID { get; set; }
+
+            public KeyValuePair<ItemRestrictionType, string> Type { get; set; } = GetTypeComboItem(ItemRestrictionType.Anywhere);
+
+            public string Name { get; set; }
+
+            public KeyValuePair<MapArea, string> Area { get; set; } = GetAreaComboItem(MapArea.Majula);
+            public int AreaDistanceLowerBound { get; set; } = 0;
+            public int AreaDistanceUpperBound { get; set; } = 0;
+
+            public ItemPlacementRestrictionSettings(string name, int itemId, ItemRestrictionType defaultType = ItemRestrictionType.Anywhere, MapArea area = MapArea.Majula, int minDist = 0, int maxDist = 0)
+            {
+                ItemID = itemId;
+                Name = name;
+                Type = GetTypeComboItem(defaultType);
+                Area = GetAreaComboItem(area);
+                AreaDistanceLowerBound = minDist;
+                AreaDistanceUpperBound = maxDist;
+                AreaSelectionVisible = defaultType == ItemRestrictionType.AreaDistance ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
         // Fields:
         private Color PURPLE = Color.FromArgb(0xFF, 0xB1, 0x59, 0xCC);
         private Color LIGHTPURPLE = Color.FromArgb(0xFF, 0xCE, 0x73, 0xF1); // #FFCE73F1
@@ -28,6 +136,19 @@ namespace DS2S_META
         public static bool IsRandomized = false;
         private int Seed => Convert.ToInt32(txtSeed.Text);
 
+        public static ObservableCollection<ItemPlacementRestrictionSettings> ItemRestrictions { get; set; } = new()
+        {
+            new ItemPlacementRestrictionSettings("Estus Flask", 60155000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Ring of Binding", 40410000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Silvercat Ring", 40420000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Pyromancy Flame", 05400000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Dull Ember", 50990000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Rotunda Lockstone", 50890000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Lennigrast's Key", 50870000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("King's Ring", 40510000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Ashen Mist Heart", 50910000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Aged Feather", 60355000, ItemRestrictionType.Anywhere),
+        };
 
         // FrontEnd:
         public RandomizerControl()
@@ -65,6 +186,7 @@ namespace DS2S_META
         private async void rando_core_process(RANDOPROCTYPE rpt)
         {
             randomizerSetup();
+            CreateItemRestrictions();
 
             // Inform user of progress..
             btnRandomize.IsEnabled = false;
@@ -103,6 +225,27 @@ namespace DS2S_META
             // Restore after completion:
             lblWorking.Visibility = Visibility.Hidden;
             btnRandomize.IsEnabled = true;
+        }
+
+        private void CreateItemRestrictions()
+        {
+            RM.Restrictions.Clear();
+            foreach (var restriction in ItemRestrictions)
+            {
+                switch (restriction.Type.Key)
+                {
+                    case ItemRestrictionType.Anywhere:
+                        // No reason to create a dummy filter
+                        // RM.Restrictions.Add(restriction.ItemID, new NoPlacementRestriction());
+                        break;
+                    case ItemRestrictionType.Vanilla:
+                        RM.Restrictions.Add(restriction.ItemID, new VanillaPlacementRestriction(restriction.ItemID));
+                        break;
+                    case ItemRestrictionType.AreaDistance:
+                        RM.Restrictions.Add(restriction.ItemID, new AreaDistancePlacementRestriction(restriction.ItemID, restriction.Area.Key, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
+                        break;
+                }
+            }
         }
 
         private bool randomizerSetup()
@@ -159,6 +302,18 @@ namespace DS2S_META
             // Window warning to user:
             MsgMissingDS2();
             return false;
+        }
+
+        //private void boxRandomizeEstus_Click(object sender, RoutedEventArgs e)
+        //{
+        //    RM.EstusRandomized = boxRandomizeEstus.IsChecked ?? true;
+        //}
+
+        private void RestrictionTypeSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var box = sender as ComboBox;
+            var context = box.DataContext as ItemPlacementRestrictionSettings;
+            context.AreaSelectionVisible = context.Type.Key == ItemRestrictionType.AreaDistance ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }
