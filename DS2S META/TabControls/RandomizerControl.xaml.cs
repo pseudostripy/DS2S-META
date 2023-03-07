@@ -10,7 +10,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
+using DS2S_META.Properties;
+ 
 namespace DS2S_META
 {
     /// <summary>
@@ -32,6 +33,7 @@ namespace DS2S_META
         public RandomizerControl()
         {
             InitializeComponent();
+            txtSeed.Text = Settings.Default.LastRandomizerSeed;
         }
         private void FixSeedVisibility()
         {
@@ -45,6 +47,7 @@ namespace DS2S_META
         private void txtSeed_TextChanged(object sender, TextChangedEventArgs e)
         {
             FixSeedVisibility();
+            Settings.Default.LastRandomizerSeed = txtSeed.Text;
         }
         private void btnRerandomize_Click(object sender, RoutedEventArgs e)
         {

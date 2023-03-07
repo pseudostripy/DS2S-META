@@ -406,5 +406,17 @@ namespace DS2S_META.Properties {
                 this["AlwaysRestAfterWarp"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastRandomizerSeed {
+            get {
+                return ((string)(this["LastRandomizerSeed"]));
+            }
+            set {
+                this["LastRandomizerSeed"] = value;
+            }
+        }
     }
 }
