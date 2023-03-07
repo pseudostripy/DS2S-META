@@ -236,6 +236,8 @@ namespace DS2S_META.Randomizer
 
                     if (Restrictions.ContainsKey(itemId))
                     {
+                        // We could also make an intersection of both filters' eligible locations and if it's not empty, we could replace the existing filter with a new one, which satisfies criteria of both filters
+                        // That would require a bunch of stuff, though - restriction for a set of locations, or set of areas and methods for area/item set intersections
                         idList.RemoveAt(index);
                         continue;
                     }
@@ -248,7 +250,7 @@ namespace DS2S_META.Randomizer
                             ((VanillaPlacementRestriction)Restrictions[itemId]).ItemID = itemId;
                         }
 
-                        return;
+                        break;
                     }
                 }
 
@@ -293,8 +295,13 @@ namespace DS2S_META.Randomizer
                 PlaceItemOfUnknownType(restriction.Key);
 
             // This is here just to increase odds of items being placed in their correct areas
-            foreach (var restriction in Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction))
-                PlaceItemOfUnknownType(restriction.Key);
+            var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
+            while (areaRestrictions.Any())
+            {
+                int index = RNG.Next(areaRestrictions.Count);
+                PlaceItemOfUnknownType(areaRestrictions[index].Key);
+                areaRestrictions.RemoveAt(index);
+            }
 
             //var test = AllPTR.OfType<DropRdz>().ToList();
 

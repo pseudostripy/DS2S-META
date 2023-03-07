@@ -233,7 +233,7 @@ namespace DS2S_META
 
         private void CreateItemRestrictions()
         {
-            RM.Restrictions.Clear();
+            RM.OneFromItemSetRestrictions.Clear();
             foreach (var restriction in ItemRestrictions)
             {
                 switch (restriction.Type.Key)
