@@ -35,14 +35,10 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
-        // internal bool EstusRandomized = true;
 
         internal AreaDistanceCalculator Calculator = new();
-        internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new()
-        {
-            //[60155000] = new VanillaPlacementRestriction(60155000),
-            //[05400000] = new AreaDistancePlacementRestriction(05400000, MapArea.Majula, 4, 4)
-        };
+        internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // The restriction shall be applied to a randomly selected item out of the set 
+        internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
         // 
         internal List<DropInfo> ldkeys = new();
         internal List<DropInfo> ldreqs = new();
@@ -218,6 +214,69 @@ namespace DS2S_META.Randomizer
             return;
         }
 
+        internal void GenerateRestrictions()
+        {
+            Restrictions.Clear();
+
+            // Single-item sets have no alternatives, if a restriction was already assigned to that item
+            // In order to minimize unapplied restrictions, we must go from the more restrictive sets to the less restrictive
+            var sortedRestrictions = OneFromItemSetRestrictions.ToList();
+            sortedRestrictions.Sort((l1, l2) => l1.Key.Count.CompareTo(l2.Key.Count));
+
+            foreach (var setRestriction in sortedRestrictions)
+            {
+                if (setRestriction.Value is NoPlacementRestriction)
+                    continue;
+
+                var idList = setRestriction.Key;
+                while (idList.Count > 0)
+                {
+                    int index = RNG.Next(idList.Count);
+                    int itemId = idList[index];
+
+                    if (Restrictions.ContainsKey(itemId))
+                    {
+                        idList.RemoveAt(index);
+                        continue;
+                    }
+                    else
+                    {
+                        Restrictions[itemId] = setRestriction.Value;
+
+                        if (setRestriction.Value is VanillaPlacementRestriction)
+                        {
+                            ((VanillaPlacementRestriction)Restrictions[itemId]).ItemID = itemId;
+                        }
+
+                        return;
+                    }
+                }
+
+                // Issue a warning that no item from a set could have had its restriction assigned?
+            }
+        }
+
+        internal void PlaceItemOfUnknownType(int id)
+        {
+            int index = ldkeys.FindIndex(di => di.ItemID == id);
+            if (index != -1)
+            {
+                PlaceItem(ldkeys[index], SetType.Keys);
+                ldkeys.RemoveAt(index);
+            }
+            else if ((index = ldreqs.FindIndex(di => di.ItemID == id)) != -1)
+            {
+                PlaceItem(ldreqs[index], SetType.Reqs);
+                ldreqs.RemoveAt(index);
+            }
+            else
+            {
+                index = ldgens.FindIndex(di => di.ItemID == id);
+                PlaceItem(ldgens[index], SetType.Gens);
+                ldgens.RemoveAt(index);
+            }
+        }
+
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -227,42 +286,15 @@ namespace DS2S_META.Randomizer
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
 
-            //if (!EstusRandomized)
-            //{
-            //    int heraldLocIndex = AllPTR.FindIndex(rdz => rdz.ParamID == 1700000);
-            //    int estusIndex = ldreqs.FindIndex(di => di.ItemID == 60155000);
+            GenerateRestrictions();
 
-            //    AllPTR[heraldLocIndex].AddShuffledItem(ldreqs[estusIndex]);
-            //    AllPTR[heraldLocIndex].MarkHandled();
+            // Need to be placed first, in order for other items to not take their place
+            foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
+                PlaceItemOfUnknownType(restriction.Key);
 
-            //    Unfilled.RemoveAt(heraldLocIndex);
-            //    ldreqs.RemoveAt(estusIndex);
-            //}
-
-            foreach (var restriction in Restrictions)
-            {
-                // Need to be placed first, in order for other items to not take their place
-                if (restriction.Value is VanillaPlacementRestriction)
-                {
-                    int index = ldkeys.FindIndex(di => di.ItemID == restriction.Key);
-                    if (index != -1)
-                    {
-                        PlaceItem(ldkeys[index], SetType.Keys);
-                        ldkeys.RemoveAt(index);
-                    }
-                    else if ((index = ldreqs.FindIndex(di => di.ItemID == restriction.Key)) != -1)
-                    {
-                        PlaceItem(ldreqs[index], SetType.Reqs);
-                        ldreqs.RemoveAt(index);
-                    }
-                    else
-                    {
-                        index = ldgens.FindIndex(di => di.ItemID == restriction.Key);
-                        PlaceItem(ldgens[index], SetType.Gens);
-                        ldgens.RemoveAt(index);
-                    }
-                }
-            }
+            // This is here just to increase odds of items being placed in their correct areas
+            foreach (var restriction in Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction))
+                PlaceItemOfUnknownType(restriction.Key);
 
             //var test = AllPTR.OfType<DropRdz>().ToList();
 
@@ -974,16 +1006,17 @@ namespace DS2S_META.Randomizer
                 int elnum = availableLocations[pindex];
                 var rdz = AllPTR.ElementAt(elnum);
 
-                // Ignore restrictions for Vanilla locations, since that's the place Yui intended
+                // Ignore restrictions for Vanilla locations, since some Vanilla locations would be inelligible for that item's placement under current rules
                 if (restriction is VanillaPlacementRestriction)
                 {
                     rdz.AddShuffledItem(di);
+                    availableLocations.RemoveAt(pindex);
                     if (rdz.IsSaturated())
                     {
                         rdz.MarkHandled();
                         Unfilled.Remove(elnum);
                     }
-                    return;
+                    continue;
                 }
 
                 // Check pickup type conditions:
@@ -1055,7 +1088,11 @@ namespace DS2S_META.Randomizer
                 }
                 return;
             }
-            throw new Exception("True Softlock, please investigate");
+
+            if (restriction is not VanillaPlacementRestriction)
+            {
+                throw new Exception("True Softlock, please investigate");
+            }
         }
 
         private void FillLeftovers()

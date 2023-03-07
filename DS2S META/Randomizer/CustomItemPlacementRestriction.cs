@@ -15,8 +15,6 @@ namespace DS2S_META.Randomizer
 
     internal abstract class CustomItemPlacementRestriction
     {
-        internal int ItemID;
-
         internal abstract List<int> GetFeasibleLocations(in List<int> unfilledLocations, in List<Randomization> AllPTR);
 
         internal abstract bool ArePlacementLocationsExpendable();
@@ -43,30 +41,29 @@ namespace DS2S_META.Randomizer
     // Allows only the item's vanilla location
     internal class VanillaPlacementRestriction : CustomItemPlacementRestriction
     {
-        internal VanillaPlacementRestriction(int itemID)
+        internal int ItemID;
+        internal VanillaPlacementRestriction(int itemID = 0)
         {
             ItemID = itemID;
         }
 
         internal override List<int> GetFeasibleLocations(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
-            //for (int index = 0; index < unfilledLocations.Count; index++)
-            //{
-            //    if (AllPTR[unfilledLocations[index]].HasVannilaItemID(ItemID))
-            //    {
-            //        return new List<int> { unfilledLocations[index] };
-            //    }
-            //}
-
+            List<int> indices = new();
             foreach (int index in unfilledLocations)
             {
                 if (AllPTR[index].HasVannilaItemID(ItemID))
                 {
-                    return new() { index };
+                    indices.Add(index);
                 }
             }
 
-            throw new Exception("Vanilla location wasn't provided among unfilled locations - probably error in logic");
+            if (indices.Count > 0)
+            {
+                return indices;
+            }
+
+            throw new Exception("Vanilla location wasn't present among unfilled locations - probably error in logic (order of item placement)");
         }
 
         internal override bool ArePlacementLocationsExpendable() { return false; }
@@ -88,10 +85,9 @@ namespace DS2S_META.Randomizer
         int LowerDistanceArrayIndex = 0;
         int UpperDistanceArrayIndex = 0;
 
-        internal AreaDistancePlacementRestriction(int itemId, MapArea area, int lowerBound, int upperBound)
+        internal AreaDistancePlacementRestriction(MapArea area, int lowerBound, int upperBound)
         {
             Area = area;
-            ItemID = itemId;
 
             LowerBound = lowerBound;
             UpperBound = upperBound;
@@ -107,7 +103,7 @@ namespace DS2S_META.Randomizer
             var areasWithinBounds = new ArraySegment<KeyValuePair<int, MapArea>>(AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area], LowerDistanceArrayIndex, UpperDistanceArrayIndex - LowerDistanceArrayIndex + 1)
                 .Select(DistanceToArea => DistanceToArea.Value);
 
-             List<int> locations = new();
+            List<int> locations = new();
 
             foreach (var index in unfilledLocations)
             {
@@ -131,7 +127,7 @@ namespace DS2S_META.Randomizer
             {
                 return new();
             }
-             
+
             // Distances from bounds to closest areas, which haven't been used yet
             int closerAreaDistance = LowerDistanceArrayIndex == 0 ? int.MaxValue : LowerBound - distances[LowerDistanceArrayIndex - 1].Key;
             int furtherAreaDistance = UpperDistanceArrayIndex == distances.Count - 1 ? int.MaxValue : distances[UpperDistanceArrayIndex + 1].Key - UpperBound;

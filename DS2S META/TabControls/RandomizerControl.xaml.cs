@@ -105,7 +105,7 @@ namespace DS2S_META
                 }
             }
 
-            public int ItemID { get; set; }
+            public List<int> ItemIDs { get; set; }
 
             public KeyValuePair<ItemRestrictionType, string> Type { get; set; } = GetTypeComboItem(ItemRestrictionType.Anywhere);
 
@@ -115,9 +115,9 @@ namespace DS2S_META
             public int AreaDistanceLowerBound { get; set; } = 0;
             public int AreaDistanceUpperBound { get; set; } = 0;
 
-            public ItemPlacementRestrictionSettings(string name, int itemId, ItemRestrictionType defaultType = ItemRestrictionType.Anywhere, MapArea area = MapArea.Majula, int minDist = 0, int maxDist = 0)
+            public ItemPlacementRestrictionSettings(string name, List<int> itemIds, ItemRestrictionType defaultType = ItemRestrictionType.Anywhere, MapArea area = MapArea.Majula, int minDist = 0, int maxDist = 0)
             {
-                ItemID = itemId;
+                ItemIDs = itemIds;
                 Name = name;
                 Type = GetTypeComboItem(defaultType);
                 Area = GetAreaComboItem(area);
@@ -138,16 +138,20 @@ namespace DS2S_META
 
         public static ObservableCollection<ItemPlacementRestrictionSettings> ItemRestrictions { get; set; } = new()
         {
-            new ItemPlacementRestrictionSettings("Estus Flask", 60155000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Ring of Binding", 40410000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Silvercat Ring", 40420000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Pyromancy Flame", 05400000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Dull Ember", 50990000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Rotunda Lockstone", 50890000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Lennigrast's Key", 50870000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("King's Ring", 40510000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Ashen Mist Heart", 50910000, ItemRestrictionType.Anywhere),
-            new ItemPlacementRestrictionSettings("Aged Feather", 60355000, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Estus Flask", new(){60155000}, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Ring of Binding", new(){ 40410000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Silvercat Ring", new(){ 40420000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Aged Feather", new(){ 60355000 }, ItemRestrictionType.Anywhere),
+
+            new ItemPlacementRestrictionSettings("Any Pyromancy Flame", new(){ 05400000, 05410000 }, ItemRestrictionType.Anywhere),
+
+            new ItemPlacementRestrictionSettings("Dull Ember", new(){ 50990000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Lenigrast's Key", new(){ 50870000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Any Blacksmith Key", new(){ 50850000, 50870000, 50990000 }, ItemRestrictionType.Anywhere),
+
+            new ItemPlacementRestrictionSettings("Rotunda Lockstone", new(){ 50890000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("King's Ring", new(){ 40510000 }, ItemRestrictionType.Anywhere),
+            new ItemPlacementRestrictionSettings("Ashen Mist Heart", new(){ 50910000 }, ItemRestrictionType.Anywhere),
         };
 
         // FrontEnd:
@@ -236,13 +240,13 @@ namespace DS2S_META
                 {
                     case ItemRestrictionType.Anywhere:
                         // No reason to create a dummy filter
-                        // RM.Restrictions.Add(restriction.ItemID, new NoPlacementRestriction());
+                        //RM.ItemSetRestrictions.Add(restriction.ItemIDs, new NoPlacementRestriction());
                         break;
                     case ItemRestrictionType.Vanilla:
-                        RM.Restrictions.Add(restriction.ItemID, new VanillaPlacementRestriction(restriction.ItemID));
+                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
                         break;
                     case ItemRestrictionType.AreaDistance:
-                        RM.Restrictions.Add(restriction.ItemID, new AreaDistancePlacementRestriction(restriction.ItemID, restriction.Area.Key, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
+                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area.Key, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
                         break;
                 }
             }
@@ -303,11 +307,6 @@ namespace DS2S_META
             MsgMissingDS2();
             return false;
         }
-
-        //private void boxRandomizeEstus_Click(object sender, RoutedEventArgs e)
-        //{
-        //    RM.EstusRandomized = boxRandomizeEstus.IsChecked ?? true;
-        //}
 
         private void RestrictionTypeSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

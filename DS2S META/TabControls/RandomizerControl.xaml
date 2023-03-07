@@ -33,28 +33,6 @@
                 <Image x:Name="imgGenerate" MouseLeftButtonDown="imgGenerate_MouseLeftButtonDown" RenderTransformOrigin="6.739,0.92" Stretch="Uniform" StretchDirection="Both" Grid.Column="1" Margin="192,2,4,1" Height="27" Grid.Row="1" ToolTip="Generate New Seed" Source="/Resources/Images/regenerate_icon.png"/>
                 <Label x:Name="lblWorking" Content="Working...." Grid.Column="1" Grid.Row="4" HorizontalContentAlignment="Center" FontWeight="Bold" Visibility="Hidden"/>
             </Grid>
-            <!--<Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="8"/>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="8"/>
-                </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" Text="Randomize Estus Flask?" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Normal" FontSize="14"/>
-                <CheckBox x:Name="boxRandomizeEstus" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="True" RenderTransformOrigin="0.6,0.6" Click="boxRandomizeEstus_Click">
-                    <CheckBox.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-                            <SkewTransform/>
-                            <RotateTransform/>
-                            <TranslateTransform X="0.319" Y="0.302"/>
-                        </TransformGroup>
-                    </CheckBox.RenderTransform>
-                </CheckBox>
-            </Grid>-->
             <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Specific Item Restrictions</TextBlock>
             <ListView x:Name="listItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerControl}}, Path=ItemRestrictions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
                 <ListView.ItemTemplate>
