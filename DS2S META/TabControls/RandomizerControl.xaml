@@ -33,45 +33,7 @@
                 <Image x:Name="imgGenerate" MouseLeftButtonDown="imgGenerate_MouseLeftButtonDown" RenderTransformOrigin="6.739,0.92" Stretch="Uniform" StretchDirection="Both" Grid.Column="1" Margin="192,2,4,1" Height="27" Grid.Row="1" ToolTip="Generate New Seed" Source="/Resources/Images/regenerate_icon.png"/>
                 <Label x:Name="lblWorking" Content="Working...." Grid.Column="1" Grid.Row="4" HorizontalContentAlignment="Center" FontWeight="Bold" Visibility="Hidden"/>
             </Grid>
-            <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Specific Item Restrictions</TextBlock>
-            <ListView x:Name="listItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerControl}}, Path=ItemRestrictions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock TextWrapping="Wrap" Text="{Binding Path=Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
-                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedItem="{Binding Type, Mode=TwoWay}" ItemsSource="{Binding Path=TypeComboItems}" SelectionChanged="RestrictionTypeSelection_SelectionChanged"/>
-                            <Grid Visibility="{Binding Path=AreaSelectionVisible}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <Border BorderBrush="LightGray" BorderThickness="1" Grid.RowSpan="2" Grid.ColumnSpan="5"/>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Area:"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="4" DisplayMemberPath="Value" SelectedItem="{Binding Area, Mode=TwoWay}" ItemsSource="{Binding Path=MapAreaComboItems}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Minimal distance:"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceLowerBound}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Maximal distance:"/>
-                                <TextBox Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceUpperBound}"/>
-                            </Grid>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <local:RandomizerSettings x:Name="randoSettings"/>
         </StackPanel>
     </Grid>
 </local:METAControl>

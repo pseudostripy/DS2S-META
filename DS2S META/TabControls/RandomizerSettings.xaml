@@ -1,0 +1,52 @@
+﻿<local:METAControl  x:Class="DS2S_META.RandomizerSettings"
+                    x:Name="RandoSettings"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                    xmlns:local="clr-namespace:DS2S_META"
+                    mc:Ignorable="d" 
+                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+
+    <StackPanel>
+        <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Specific Item Restrictions</TextBlock>
+        <ListView x:Name="listItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Path=Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
+                        <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedItem="{Binding Type, Mode=TwoWay}" ItemsSource="{Binding Path=TypeComboItems}" SelectionChanged="RestrictionTypeSelection_SelectionChanged"/>
+                        <Grid Visibility="{Binding Path=AreaSelectionVisible}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border BorderBrush="LightGray" BorderThickness="1" Grid.RowSpan="2" Grid.ColumnSpan="5"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Area:"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="4" DisplayMemberPath="Value" SelectedItem="{Binding Area, Mode=TwoWay}" ItemsSource="{Binding Path=MapAreaComboItems}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Minimal distance:"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceLowerBound}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Maximal distance:"/>
+                            <TextBox Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceUpperBound}"/>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackPanel>
+</local:METAControl>
