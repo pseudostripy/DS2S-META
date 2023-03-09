@@ -96,12 +96,21 @@ namespace DS2S_META.Randomizer
         // Gets locations within the distance boundaries
         internal override List<int> GetFeasibleLocations(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
+            var areasSortedByDistance = AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area];
 
-            LowerDistanceArrayIndex = AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area].ToList().FindIndex(kvp => kvp.Key >= LowerBound);
-            UpperDistanceArrayIndex = AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area].ToList().FindLastIndex(kvp => kvp.Key <= UpperBound);
+            LowerDistanceArrayIndex = areasSortedByDistance.ToList().FindIndex(kvp => kvp.Key >= LowerBound);
+            UpperDistanceArrayIndex = areasSortedByDistance.ToList().FindLastIndex(kvp => kvp.Key <= UpperBound);
 
-            var areasWithinBounds = new ArraySegment<KeyValuePair<int, MapArea>>(AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area], LowerDistanceArrayIndex, UpperDistanceArrayIndex - LowerDistanceArrayIndex + 1)
-                .Select(DistanceToArea => DistanceToArea.Value);
+            // Lower bound is bigger than any distance in the vector
+            if (LowerDistanceArrayIndex == -1)
+            {
+                LowerDistanceArrayIndex = areasSortedByDistance.Length;
+            }
+
+            var areasWithinUpperBounds = new ArraySegment<KeyValuePair<int, MapArea>>(areasSortedByDistance, 0, UpperDistanceArrayIndex + 1).Select(DistanceToArea => DistanceToArea.Value);
+            var areasWithinLowerBounds = new ArraySegment<KeyValuePair<int, MapArea>>(areasSortedByDistance, LowerDistanceArrayIndex, areasSortedByDistance.Length - LowerDistanceArrayIndex).Select(DistanceToArea => DistanceToArea.Value);
+
+            IEnumerable<MapArea> areasWithinBounds = LowerBound > UpperBound ? areasWithinLowerBounds.Union(areasWithinUpperBounds) : areasWithinLowerBounds.Intersect(areasWithinUpperBounds);
 
             List<int> locations = new();
 
@@ -123,7 +132,8 @@ namespace DS2S_META.Randomizer
             var distances = AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area].ToList();
 
             // Can't expand anymore
-            if (LowerDistanceArrayIndex == 0 && UpperDistanceArrayIndex == distances.Count - 1)
+            if (LowerBound <= UpperBound && LowerDistanceArrayIndex == 0 && UpperDistanceArrayIndex == distances.Count - 1
+                || LowerBound > UpperBound && LowerDistanceArrayIndex - UpperDistanceArrayIndex <= 1)
             {
                 return new();
             }
