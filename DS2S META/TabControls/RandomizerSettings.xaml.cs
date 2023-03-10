@@ -142,12 +142,18 @@ namespace DS2S_META
                 Area = GetAreaComboItem(RawAreaValue);
             }
 
+            public void UpdateVisibility()
+            {
+                AreaSelectionVisible = Type.Key == ItemRestrictionType.AreaDistance ? Visibility.Visible : Visibility.Collapsed;
+            }
+
             // Those don't need to fire PropertyChangedEvents, since those cannot be changed in UI
             public List<int> ItemIDs { get; set; }
             public string Name { get; set; }
 
             // Used for hiding the section for area selection and min/max distance
             private Visibility _areaSelectionVisible = Visibility.Collapsed;
+            [XmlIgnore]
             public Visibility AreaSelectionVisible
             {
                 get => _areaSelectionVisible; set
@@ -157,7 +163,7 @@ namespace DS2S_META
                 }
             }
 
-            
+
             // ComboBox selection for item restriction type
             private KeyValuePair<ItemRestrictionType, string> type = GetTypeComboItem(ItemRestrictionType.Anywhere);
             [XmlIgnore]
@@ -223,7 +229,7 @@ namespace DS2S_META
                 Area = GetAreaComboItem(area);
                 AreaDistanceLowerBound = minDist;
                 AreaDistanceUpperBound = maxDist;
-                AreaSelectionVisible = defaultType == ItemRestrictionType.AreaDistance ? Visibility.Visible : Visibility.Collapsed;
+                UpdateVisibility();
             }
         }
 
@@ -260,7 +266,11 @@ namespace DS2S_META
                 };
             }
 
-            foreach (var restriction in ItemRestrictions) restriction.PropertyChanged += SaveRandomizerSettings;
+            foreach (var restriction in ItemRestrictions)
+            {
+                restriction.PropertyChanged += SaveRandomizerSettings;
+                restriction.UpdateVisibility();
+            }
         }
 
         private void RestrictionTypeSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
