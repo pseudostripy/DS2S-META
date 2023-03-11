@@ -130,41 +130,44 @@ namespace DS2S_META.Randomizer
         internal override List<int> ExpandPlacements(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
             var distances = AreaDistanceCalculator.SortedAreasByDistanceMatrix[(int)Area].ToList();
-
-            // Can't expand anymore
-            if (LowerBound <= UpperBound && LowerDistanceArrayIndex == 0 && UpperDistanceArrayIndex == distances.Count - 1
-                || LowerBound > UpperBound && LowerDistanceArrayIndex - UpperDistanceArrayIndex <= 1)
-            {
-                return new();
-            }
-
-            // Distances from bounds to closest areas, which haven't been used yet
-            int closerAreaDistance = LowerDistanceArrayIndex == 0 ? int.MaxValue : LowerBound - distances[LowerDistanceArrayIndex - 1].Key;
-            int furtherAreaDistance = UpperDistanceArrayIndex == distances.Count - 1 ? int.MaxValue : distances[UpperDistanceArrayIndex + 1].Key - UpperBound;
-
-            // Get list of yet unused areas, which are closest to the bounds
-            List<MapArea> closestAreas = new();
-
-            if (closerAreaDistance <= furtherAreaDistance)
-            {
-                closestAreas.AddRange(distances.Where(a => a.Key == LowerBound - closerAreaDistance).Select((value, index) => value.Value));
-                LowerDistanceArrayIndex = distances.FindIndex(distance => distance.Key == LowerBound - closerAreaDistance);
-            }
-
-            if (closerAreaDistance >= furtherAreaDistance)
-            {
-                closestAreas.AddRange(distances.Where(a => a.Key == UpperBound + furtherAreaDistance).Select((value, index) => value.Value));
-                UpperDistanceArrayIndex = distances.FindLastIndex(distance => distance.Key == UpperBound + furtherAreaDistance);
-            }
-
-            // Get locations in those areas
             List<int> locations = new();
 
-            foreach (var index in unfilledLocations)
+            // Cycle is necessary in case the closest area(s) don't have any available locations
+            while (!locations.Any())
             {
-                if (AreaDistanceCalculator.IsLocationInAreas(AllPTR[index].ParamID, closestAreas))
+                // Can't expand anymore
+                if (LowerBound <= UpperBound && LowerDistanceArrayIndex == 0 && UpperDistanceArrayIndex == distances.Count - 1
+                    || LowerBound > UpperBound && LowerDistanceArrayIndex - UpperDistanceArrayIndex <= 1)
                 {
-                    locations.Add(index);
+                    return new();
+                }
+
+                // Distances from bounds to closest areas, which haven't been used yet
+                int closerAreaDistance = LowerDistanceArrayIndex == 0 ? int.MaxValue : LowerBound - distances[LowerDistanceArrayIndex - 1].Key;
+                int furtherAreaDistance = UpperDistanceArrayIndex == distances.Count - 1 ? int.MaxValue : distances[UpperDistanceArrayIndex + 1].Key - UpperBound;
+
+                // Get list of yet unused areas, which are closest to the bounds
+                List<MapArea> closestAreas = new();
+
+                if (closerAreaDistance <= furtherAreaDistance)
+                {
+                    closestAreas.AddRange(distances.Where(a => a.Key == LowerBound - closerAreaDistance).Select((value, index) => value.Value));
+                    LowerDistanceArrayIndex = distances.FindIndex(distance => distance.Key == LowerBound - closerAreaDistance);
+                }
+
+                if (closerAreaDistance >= furtherAreaDistance)
+                {
+                    closestAreas.AddRange(distances.Where(a => a.Key == UpperBound + furtherAreaDistance).Select((value, index) => value.Value));
+                    UpperDistanceArrayIndex = distances.FindLastIndex(distance => distance.Key == UpperBound + furtherAreaDistance);
+                }
+
+                // Get locations in those areas
+                foreach (var index in unfilledLocations)
+                {
+                    if (AreaDistanceCalculator.IsLocationInAreas(AllPTR[index].ParamID, closestAreas))
+                    {
+                        locations.Add(index);
+                    }
                 }
             }
 
