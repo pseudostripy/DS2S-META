@@ -207,7 +207,7 @@ namespace DS2S_META.Randomizer
                 Array.Fill<int>(DistanceMatrix[areaID], int.MaxValue, 0, AreaCount);
                 DistanceMatrix[areaID][areaID] = 0;
 
-                var areasToExpand = ConnectedAreaDistances[area].ToList();
+                var areasToExpand = GetConnectedAreaDistancesList(area);
                 while (areasToExpand.Count() > 0)
                 {
                     var expandedArea = areasToExpand.First().Key;
@@ -216,7 +216,7 @@ namespace DS2S_META.Randomizer
                     if (currentPrice < DistanceMatrix[areaID][(int)expandedArea])
                     {
                         DistanceMatrix[areaID][(int)expandedArea] = currentPrice;
-                        foreach (var kvp in ConnectedAreaDistances[expandedArea].ToList())
+                        foreach (var kvp in GetConnectedAreaDistancesList(expandedArea))
                         {
                             if (kvp.Key == area)
                             {
@@ -266,6 +266,16 @@ namespace DS2S_META.Randomizer
         internal static bool HasConnectedAreas(MapArea area)
         {
             return ConnectedAreaDistances.ContainsKey(area) && ConnectedAreaDistances[area].Any();
+        }
+
+        internal static List<KeyValuePair<MapArea, int>> GetConnectedAreaDistancesList(MapArea area)
+        {
+            if (HasConnectedAreas(area))
+            {
+                return ConnectedAreaDistances[area].ToList();
+            }
+
+            return new();
         }
     }
 }
