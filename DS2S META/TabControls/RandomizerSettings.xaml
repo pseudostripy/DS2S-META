@@ -14,7 +14,7 @@
             <Expander.Header>
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Item Placement Restrictions</TextBlock>
             </Expander.Header>
-            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" HorizontalContentAlignment="Stretch">
+            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions}" HorizontalContentAlignment="Stretch">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -27,7 +27,7 @@
                                 <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock TextWrapping="Wrap" Text="{Binding Path=Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
-                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding Type, Mode=TwoWay}" ItemsSource="{Binding Path=TypeComboItems}" SelectionChanged="RestrictionTypeSelection_SelectionChanged"/>
+                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding Type}" ItemsSource="{Binding Path=TypeComboItems}" SelectionChanged="RestrictionTypeSelection_SelectionChanged"/>
                             <Grid Visibility="{Binding Path=AreaSelectionVisible}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
@@ -42,7 +42,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Border BorderBrush="LightGray" BorderThickness="1" Grid.RowSpan="2" Grid.ColumnSpan="5"/>
                                 <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Area:"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="4" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Area, Mode=TwoWay}" ItemsSource="{Binding Source={x:Static local:RandomizerSettings.MapAreaComboItems}}"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="4" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Area}" ItemsSource="{Binding Source={x:Static local:RandomizerSettings.MapAreaComboItems}}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Minimal distance:"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceLowerBound}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Maximal distance:"/>
@@ -68,8 +68,8 @@
                     <ColumnDefinition Width="4*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" TextAlignment="Right" FontSize="14" Text="From:" Margin="0,0,0,4"/>
-                <ComboBox x:Name="connectedAreaDistanceComboBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" DisplayMemberPath="Value" FontSize="14" ItemsSource="{Binding Source={x:Static rando:MapAreas.toString}}" SelectionChanged="ConnectedAreaDistanceComboBox_SelectionChanged"/>
-                <ListView x:Name="listViewConnectedAreasDistances" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ConnectedAreaDistanceListItems, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Visibility="Collapsed">
+                <ComboBox x:Name="connectedAreaDistanceComboBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" DisplayMemberPath="Value" FontSize="14" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=AreasWithConnectedAreasComboItems}" SelectionChanged="ConnectedAreaDistanceComboBox_SelectionChanged"/>
+                <ListView x:Name="listViewConnectedAreasDistances" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ConnectedAreaDistanceListItems}" Visibility="Collapsed">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>

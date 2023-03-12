@@ -233,6 +233,7 @@ namespace DS2S_META
 
         private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.LordsPrivateChamber, MapArea.MemoryOfTheKing, MapArea.DarkChasmOfOld };
         public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = MapAreas.toString.Where(area => !AreasExcludedFromComboBox.Contains(area.Key)).ToDictionary(a => a.Key, a => a.Value);
+        public static Dictionary<MapArea, string> AreasWithConnectedAreasComboItems { get; set; } = new();
 
         public static ObservableCollection<ItemPlacementRestrictionSettings> ItemRestrictions { get; set; } = new();
         public static ObservableCollection<KeyValueStruct<KeyValueStruct<MapArea, string>, int>> ConnectedAreaDistanceListItems { get; set; } = new();
@@ -265,6 +266,8 @@ namespace DS2S_META
                 };
             }
 
+            UpdateAreasWithConnectedAreasComboItems();
+
             foreach (var restriction in ItemRestrictions)
             {
                 restriction.PropertyChanged += RestrictionPropertiesChanged;
@@ -282,10 +285,17 @@ namespace DS2S_META
             SaveRandomizerSettings();
         }
 
+        public static void UpdateAreasWithConnectedAreasComboItems()
+        {
+            AreasWithConnectedAreasComboItems = MapAreas.toString.Where(area => AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area.Key) && AreaDistanceCalculator.ConnectedAreaDistances[area.Key].Any()).ToDictionary(a => a.Key, a => a.Value);
+        }
+
         private void UpdateConnectedAreaDistanceListItems(MapArea area)
         {
             ConnectedAreaDistanceListItems.Clear();
-            if (!AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area))
+
+            // Shouldn't ever occur, if combobox entries are properly updated based on the dictionary entries
+            if (!AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area) || !AreaDistanceCalculator.ConnectedAreaDistances[area].Any())
             {
                 listViewConnectedAreasDistances.Visibility = Visibility.Collapsed;
                 return;
