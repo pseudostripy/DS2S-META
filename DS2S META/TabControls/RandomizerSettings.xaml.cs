@@ -231,7 +231,7 @@ namespace DS2S_META
         }
 
 
-        private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.LordsPrivateChamber, MapArea.MemoryOfTheKing, MapArea.DarkChasmOfOld };
+        private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.LordsPrivateChamber, /*MapArea.MemoryOfTheKing,*/ MapArea.DarkChasmOfOld };
         public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = MapAreas.toString.Where(area => !AreasExcludedFromComboBox.Contains(area.Key)).ToDictionary(a => a.Key, a => a.Value);
         public static Dictionary<MapArea, string> AreasWithConnectedAreasComboItems { get; set; } = new();
 

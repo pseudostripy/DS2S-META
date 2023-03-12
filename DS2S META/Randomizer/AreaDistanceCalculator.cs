@@ -117,7 +117,7 @@ namespace DS2S_META.Randomizer
             },
             [MapArea.KingsPassage] = new() { [MapArea.DrangleicCastle] = 1, [MapArea.ShrineOfAmana] = 1 },
             [MapArea.ShrineOfAmana] = new() { [MapArea.KingsPassage] = 1, [MapArea.UndeadCrypt] = 1 },
-            [MapArea.UndeadCrypt] = new() { [MapArea.ShrineOfAmana] = 1, [MapArea.MemoryOfTheKing] = 1 },
+            [MapArea.UndeadCrypt] = new() { [MapArea.ShrineOfAmana] = 1, /*[MapArea.MemoryOfTheKing] = 1*/ },
             [MapArea.ThroneOfWant] = new() { [MapArea.DrangleicCastle] = 1 },
             [MapArea.AldiasKeep] = new() { [MapArea.ShadedWoods] = 1, [MapArea.DragonAerie] = 1 },
             [MapArea.DragonAerie] = new() { [MapArea.AldiasKeep] = 1, [MapArea.DragonShrine] = 1 },
@@ -132,7 +132,7 @@ namespace DS2S_META.Randomizer
             [MapArea.MemoryOfOrro] = new() { [MapArea.ForestOfFallenGiants] = 1 },
             [MapArea.MemoryOfVammar] = new() { [MapArea.ForestOfFallenGiants] = 1 },
             [MapArea.DragonMemories] = new() { [MapArea.BrightstoneCoveTseldora] = 1 },
-            [MapArea.MemoryOfTheKing] = new() { [MapArea.UndeadCrypt] = 1 },
+            //[MapArea.MemoryOfTheKing] = new() { [MapArea.UndeadCrypt] = 1 },
             [MapArea.ShulvaSanctumCity] = new()
             {
                 [MapArea.BlackGulch] = 1,
