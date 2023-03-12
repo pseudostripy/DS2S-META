@@ -345,6 +345,14 @@ namespace DS2S_META
         private void UpdateConnectedAreaDistanceListItems(MapArea area)
         {
             ConnectedAreaDistanceListItems.Clear();
+            if (!AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area))
+            {
+                listViewConnectedAreasDistances.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            listViewConnectedAreasDistances.Visibility = Visibility.Visible;
+
             foreach (var a in AreaDistanceCalculator.ConnectedAreaDistances[area])
                 ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreaToString[a.Key]), a.Value));
         }
@@ -353,8 +361,6 @@ namespace DS2S_META
         {
             if (listViewConnectedAreasDistances == null)
                 return;
-
-            listViewConnectedAreasDistances.Visibility = Visibility.Visible;
 
             var selectedArea = ((KeyValuePair<MapArea, string>)((ComboBox)sender).SelectedValue).Key;
             UpdateConnectedAreaDistanceListItems(selectedArea);
