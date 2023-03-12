@@ -92,68 +92,38 @@ namespace DS2S_META
             return dict;
         }
 
-
-        public static Dictionary<MapArea, string> MapAreaToString = new()
+        internal static void SaveRandomizerSettings()
         {
-            [MapArea.ThingsBetwixt] = "Things Betwixt",
-            [MapArea.Majula] = "Majula",
-            [MapArea.ForestOfFallenGiants] = "Forest of Fallen Giants",
-            [MapArea.HeidesTowerOfFlame] = "Heide's Tower of Flame",
-            [MapArea.CathedralOfBlue] = "Cathedral of Blue",
-            [MapArea.NoMansWharf] = "No-man's Wharf",
-            [MapArea.TheLostBastille] = "The Lost Bastille",
-            [MapArea.BelfryLuna] = "Belfry Luna",
-            [MapArea.SinnersRise] = "Sinner's Rise",
-            [MapArea.HuntsmansCopse] = "Huntsman's Copse",
-            [MapArea.UndeadPurgatory] = "Undead Purgatory",
-            [MapArea.HarvestValley] = "Harvest Valley",
-            [MapArea.EarthenPeak] = "Earthen Peak",
-            [MapArea.IronKeep] = "Iron Keep",
-            [MapArea.BelfrySol] = "Belfry Sol",
-            [MapArea.ShadedWoods] = "Shaded Woods",
-            [MapArea.DoorsOfPharros] = "Doors of Pharros",
-            [MapArea.BrightstoneCoveTseldora] = "Brightstone Cove Tseldora",
-            [MapArea.LordsPrivateChamber] = "Lord's Private Chamber",
-            [MapArea.ThePit] = "The Pit",
-            [MapArea.GraveOfSaints] = "Grave of Saints",
-            [MapArea.TheGutter] = "The Gutter",
-            [MapArea.BlackGulch] = "Black Gulch",
-            [MapArea.ShrineOfWinter] = "Shrine of Winter",
-            [MapArea.DrangleicCastle] = "Drangleic Castle",
-            [MapArea.KingsPassage] = "King's Passage",
-            [MapArea.ShrineOfAmana] = "Shrine of Amana",
-            [MapArea.UndeadCrypt] = "Undead Crypt",
-            [MapArea.ThroneOfWant] = "Throne of Want",
-            [MapArea.AldiasKeep] = "Aldia's Keep",
-            [MapArea.DragonAerie] = "Dragon Aerie",
-            [MapArea.DragonShrine] = "Dragon Shrine",
-            [MapArea.DarkChasmOfOld] = "Dark Chasm of Old",
-            [MapArea.MemoryOfJeigh] = "Memory of Jeigh",
-            [MapArea.MemoryOfOrro] = "Memory of Orro",
-            [MapArea.MemoryOfVammar] = "Memory of Vammar",
-            [MapArea.DragonMemories] = "Dragon Memories",
-            [MapArea.MemoryOfTheKing] = "Memory of the King",
-            [MapArea.ShulvaSanctumCity] = "Shulva Sanctum City",
-            [MapArea.DragonsSanctum] = "Dragon's Sanctum",
-            [MapArea.DragonsRest] = "Dragon's Rest",
-            [MapArea.CaveOfTheDead] = "Cave of the Dead",
-            [MapArea.BrumeTower] = "Brume Tower",
-            [MapArea.IronPassage] = "Iron Passage",
-            [MapArea.MemoryOfTheOldIronKing] = "Memory of the Old Iron King",
-            [MapArea.FrozenEleumLoyce] = "Frozen Eleum Loyce",
-            [MapArea.GrandCathedral] = "Grand Cathedral",
-            [MapArea.TheOldChaos] = "The Old Chaos",
-            [MapArea.FrigidOutskirts] = "Frigid Outskirts"
-        };
-
-        public static KeyValuePair<MapArea, string> GetAreaWithStringPair(MapArea area)
-        {
-            return new KeyValuePair<MapArea, string>(area, MapAreaToString[area]);
+            TextWriter writer = null;
+            try
+            {
+                writer = new StreamWriter(SettingsFilePath, false);
+                var serializable = new ValueTuple<IPRSList, SerializableCAD>(ItemRestrictions, DictionaryToKeyValueStructList(AreaDistanceCalculator.ConnectedAreaDistances));
+                new XmlSerializer(serializable.GetType()).Serialize(writer, serializable);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
         }
 
-        private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.Majula, MapArea.LordsPrivateChamber, MapArea.MemoryOfTheKing, MapArea.DarkChasmOfOld };
-
-        public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = MapAreaToString.Where(area => !AreasExcludedFromComboBox.Contains(area.Key)).ToDictionary(a => a.Key, a => a.Value);
+        internal static void LoadRandomizerSettings()
+        {
+            TextReader reader = null;
+            try
+            {
+                reader = new StreamReader(SettingsFilePath);
+                var deserialized = (ValueTuple<IPRSList, SerializableCAD>)new XmlSerializer(typeof(ValueTuple<IPRSList, SerializableCAD>)).Deserialize(reader);
+                ItemRestrictions = deserialized.Item1;
+                AreaDistanceCalculator.ConnectedAreaDistances = KeyValueStructListToDictionary(deserialized.Item2);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
 
 
         public class ItemPlacementRestrictionSettings : INotifyPropertyChanged
@@ -261,6 +231,9 @@ namespace DS2S_META
         }
 
 
+        private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.LordsPrivateChamber, MapArea.MemoryOfTheKing, MapArea.DarkChasmOfOld };
+        public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = MapAreas.toString.Where(area => !AreasExcludedFromComboBox.Contains(area.Key)).ToDictionary(a => a.Key, a => a.Value);
+
         public static ObservableCollection<ItemPlacementRestrictionSettings> ItemRestrictions { get; set; } = new();
         public static ObservableCollection<KeyValueStruct<KeyValueStruct<MapArea, string>, int>> ConnectedAreaDistanceListItems { get; set; } = new();
 
@@ -304,39 +277,6 @@ namespace DS2S_META
             ((sender as ComboBox)?.DataContext as ItemPlacementRestrictionSettings)?.UpdateVisibility();
         }
 
-        private void SaveRandomizerSettings()
-        {
-            TextWriter writer = null;
-            try
-            {
-                writer = new StreamWriter(SettingsFilePath, false);
-                var serializable = new ValueTuple<IPRSList, SerializableCAD>(ItemRestrictions, DictionaryToKeyValueStructList(AreaDistanceCalculator.ConnectedAreaDistances));
-                new XmlSerializer(serializable.GetType()).Serialize(writer, serializable);
-            }
-            finally
-            {
-                if (writer != null)
-                    writer.Close();
-            }
-        }
-
-        private void LoadRandomizerSettings()
-        {
-            TextReader reader = null;
-            try
-            {
-                reader = new StreamReader(SettingsFilePath);
-                var deserialized = (ValueTuple<IPRSList, SerializableCAD>)new XmlSerializer(typeof(ValueTuple<IPRSList, SerializableCAD>)).Deserialize(reader);
-                ItemRestrictions = deserialized.Item1;
-                AreaDistanceCalculator.ConnectedAreaDistances = KeyValueStructListToDictionary(deserialized.Item2);
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
-        }
-
         private void RestrictionPropertiesChanged(object? sender, PropertyChangedEventArgs e)
         {
             SaveRandomizerSettings();
@@ -354,7 +294,7 @@ namespace DS2S_META
             listViewConnectedAreasDistances.Visibility = Visibility.Visible;
 
             foreach (var a in AreaDistanceCalculator.ConnectedAreaDistances[area])
-                ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreaToString[a.Key]), a.Value));
+                ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreas.toString[a.Key]), a.Value));
         }
 
         private void ConnectedAreaDistanceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

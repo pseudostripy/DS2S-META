@@ -174,5 +174,4 @@ namespace DS2S_META.Randomizer
             return locations;
         }
     }
-
 }

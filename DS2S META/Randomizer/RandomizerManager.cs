@@ -13,7 +13,6 @@ using static SoulsFormats.MSBD;
 using System.Transactions;
 using System.Windows.Controls;
 using Octokit;
-using static DS2S_META.Randomizer.RandomizerManager;
 
 namespace DS2S_META.Randomizer
 {
