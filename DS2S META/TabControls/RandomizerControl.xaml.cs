@@ -15,7 +15,7 @@ using System.Windows.Data;
 using Octokit;
 using System.ComponentModel;
 using DS2S_META.Properties;
- 
+
 namespace DS2S_META
 {
     /// <summary>
@@ -114,7 +114,7 @@ namespace DS2S_META
             RM.OneFromItemSetRestrictions.Clear();
             foreach (var restriction in RandomizerSettings.ItemRestrictions)
             {
-                switch (restriction.Type.Key)
+                switch (restriction.Type)
                 {
                     case ItemRestrictionType.Anywhere:
                         // No reason to create a dummy filter
@@ -124,7 +124,7 @@ namespace DS2S_META
                         RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
                         break;
                     case ItemRestrictionType.AreaDistance:
-                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area.Key, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
+                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
                         break;
                 }
             }

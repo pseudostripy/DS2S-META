@@ -36,7 +36,6 @@ namespace DS2S_META.Randomizer
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
-        internal AreaDistanceCalculator Calculator = new();
         internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // The restriction shall be applied to a randomly selected item out of the set 
         internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
         // 
@@ -288,6 +287,7 @@ namespace DS2S_META.Randomizer
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
 
+            AreaDistanceCalculator.CalculateDistanceMatrix();
             GenerateRestrictions();
 
             // Need to be placed first, in order for other items to not take their place
@@ -295,6 +295,7 @@ namespace DS2S_META.Randomizer
                 PlaceItemOfUnknownType(restriction.Key);
 
             // This is here just to increase odds of items being placed in their correct areas
+            // To be more precise, just a single item with the specified ID will be placed preferentially
             var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
             while (areaRestrictions.Any())
             {

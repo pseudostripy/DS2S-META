@@ -219,12 +219,6 @@ namespace DS2S_META.Randomizer
         internal static int[][] DistanceMatrix = new int[AreaCount][];
         internal static KeyValuePair<int, MapArea>[][] SortedAreasByDistanceMatrix = new KeyValuePair<int, MapArea>[AreaCount][];
 
-        internal AreaDistanceCalculator()
-        {
-            CalculateDistanceMatrix();
-            CreateSortedDistanceMatrix();
-        }
-
         internal static void CalculateDistanceMatrix()
         {
             for (int areaID = 0; areaID < AreaCount; areaID++)
@@ -266,6 +260,8 @@ namespace DS2S_META.Randomizer
                 // At that point, all transitions traversable only in one-way could be considered (eg. Pit/Grave->Gutter, Gutter->Gulch, Wharf/FoFG->Bastille, Copse->Valley
                 // Then distance matrix would contain the price of traversing between areas, instead of distance of areas (and probably there
             }
+
+            CreateSortedDistanceMatrix();
         }
 
         internal static void CreateSortedDistanceMatrix()
