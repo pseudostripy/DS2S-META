@@ -230,12 +230,8 @@ namespace DS2S_META
             }
         }
 
-
-        private static List<MapArea> AreasExcludedFromComboBox = new() { MapArea.LordsPrivateChamber, /*MapArea.MemoryOfTheKing,*/ MapArea.DarkChasmOfOld };
-        public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = MapAreas.toString.Where(area => !AreasExcludedFromComboBox.Contains(area.Key)).ToDictionary(a => a.Key, a => a.Value);
-        public static Dictionary<MapArea, string> AreasWithConnectedAreasComboItems { get; set; } = new();
-
-        public static ObservableCollection<ItemPlacementRestrictionSettings> ItemRestrictions { get; set; } = new();
+        public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = new();
+        public static IPRSList ItemRestrictions { get; set; } = new();
         public static ObservableCollection<KeyValueStruct<KeyValueStruct<MapArea, string>, int>> ConnectedAreaDistanceListItems { get; set; } = new();
 
 
@@ -266,7 +262,7 @@ namespace DS2S_META
                 };
             }
 
-            UpdateAreasWithConnectedAreasComboItems();
+            UpdateMapAreaComboItems();
 
             foreach (var restriction in ItemRestrictions)
             {
@@ -285,9 +281,9 @@ namespace DS2S_META
             SaveRandomizerSettings();
         }
 
-        public static void UpdateAreasWithConnectedAreasComboItems()
+        public static void UpdateMapAreaComboItems()
         {
-            AreasWithConnectedAreasComboItems = MapAreas.toString.Where(area => AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area.Key) && AreaDistanceCalculator.ConnectedAreaDistances[area.Key].Any()).ToDictionary(a => a.Key, a => a.Value);
+            MapAreaComboItems = MapAreas.toString.Where(area => AreaDistanceCalculator.HasConnectedAreas(area.Key)).ToDictionary(a => a.Key, a => a.Value);
         }
 
         private void UpdateConnectedAreaDistanceListItems(MapArea area)
@@ -295,7 +291,7 @@ namespace DS2S_META
             ConnectedAreaDistanceListItems.Clear();
 
             // Shouldn't ever occur, if combobox entries are properly updated based on the dictionary entries
-            if (!AreaDistanceCalculator.ConnectedAreaDistances.ContainsKey(area) || !AreaDistanceCalculator.ConnectedAreaDistances[area].Any())
+            if (!AreaDistanceCalculator.HasConnectedAreas(area))
             {
                 listViewConnectedAreasDistances.Visibility = Visibility.Collapsed;
                 return;
@@ -304,7 +300,8 @@ namespace DS2S_META
             listViewConnectedAreasDistances.Visibility = Visibility.Visible;
 
             foreach (var a in AreaDistanceCalculator.ConnectedAreaDistances[area])
-                ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreas.toString[a.Key]), a.Value));
+                if (AreaDistanceCalculator.HasConnectedAreas(a.Key)) // Hides NPC/covenant pseudoareas
+                    ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreas.toString[a.Key]), a.Value));
         }
 
         private void ConnectedAreaDistanceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
