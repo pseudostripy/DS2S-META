@@ -140,7 +140,7 @@ namespace DS2S_META.Randomizer
             MaterialID      = VanShop.MaterialID;
             DuplicateItemID = VanShop.DuplicateItemID;
             //
-            PriceRate = pricerate + 1e-6f;
+            PriceRate = pricerate;
         }
         internal List<DropInfo> ConvertToDropInfo()
         {

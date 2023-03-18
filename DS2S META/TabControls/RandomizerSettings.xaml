@@ -14,7 +14,7 @@
             <Expander.Header>
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Item Placement Restrictions</TextBlock>
             </Expander.Header>
-            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions}" HorizontalContentAlignment="Stretch">
+            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions}" HorizontalContentAlignment="Stretch" MaxHeight="500">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

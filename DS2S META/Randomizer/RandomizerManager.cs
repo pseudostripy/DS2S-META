@@ -277,6 +277,74 @@ namespace DS2S_META.Randomizer
             }
         }
 
+        internal void PlaceItemsInVanillaLocations(int itemId)
+        {
+            var locations = Restrictions[itemId].GetFeasibleLocations(Unfilled, AllPTR);
+            foreach (var locationIndex in locations)
+            {
+                var location = AllPTR[locationIndex];
+
+                if (location is GLotRdz rdz)
+                {
+                    var vanillaLot = rdz.VanillaLot;
+                    int vlotId = vanillaLot.GetLotIndex(itemId);
+                    var dropInfo = new DropInfo(vanillaLot.Items[vlotId], vanillaLot.Quantities[vlotId], vanillaLot.Reinforcements[vlotId], vanillaLot.Infusions[vlotId]);
+                    location.AddShuffledItem(dropInfo);
+                }
+                else if (location is ShopRdz shopRdz)
+                {
+                    var shopVanilla = shopRdz.VanillaShop;
+                    var dropInfo = new DropInfo(shopVanilla.ItemID, shopVanilla.Quantity);
+
+                    // This will update quantity and price; cloning Vanilla shop, or calling ShuffledShop.SetValues() would avoid it - but it's probably undesirable
+                    shopRdz.AddShuffledItem(dropInfo);
+
+                    // Price re-randomization - without it, for example Cat Ring would be really cheap and just setting the pricerate to lowest rate is boring
+                    // On the other hand - especially for Cat Ring - this can crank up the price really high
+                    float rerolledPriceFactor = (float)RandomGammaInt(shopVanilla.VanillaBasePrice) / shopVanilla.VanillaBasePrice;
+                    shopRdz.ShuffledShop.PriceRate = Math.Max(rerolledPriceFactor, (float)Randomization.lowestPriceRate);
+                }
+                else
+                {
+                    throw new Exception("Unknown Randomization type encountered in Vanilla item placement!");
+                }
+
+                if (location.IsSaturated())
+                {
+                    location.MarkHandled();
+                    Unfilled.Remove(locationIndex);
+                }
+            }
+
+            // All instances of the item should've been placed by now, so we can safely remove them from the item pools
+            ldkeys.RemoveAll(di => di.ItemID == itemId);
+            ldreqs.RemoveAll(di => di.ItemID == itemId);
+            ldgens.RemoveAll(di => di.ItemID == itemId);
+        }
+
+        internal void PerformItemRestrictionPrePlacementTasks()
+        {
+            AreaDistanceCalculator.CalculateDistanceMatrix();
+            GenerateRestrictions();
+
+            // Vanilla placements need to be processed first, in order for other items to not take their place
+            foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
+            {
+                PlaceItemsInVanillaLocations(restriction.Key);
+            }
+
+            // This is here to maximize odds of items being placed in their correct areas
+            // To be more precise, just a single item with the specified ID will be placed in advance
+            // Other possible instances of that item will be placed along with other items (placement will still attempt to fulfill the restriction as much as possible)
+            var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
+            while (areaRestrictions.Any())
+            {
+                int index = RNG.Next(areaRestrictions.Count);
+                PlaceItemOfUnknownType(areaRestrictions[index].Key);
+                areaRestrictions.RemoveAt(index);
+            }
+        }
+
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -286,22 +354,7 @@ namespace DS2S_META.Randomizer
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
 
-            AreaDistanceCalculator.CalculateDistanceMatrix();
-            GenerateRestrictions();
-
-            // Need to be placed first, in order for other items to not take their place
-            foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
-                PlaceItemOfUnknownType(restriction.Key);
-
-            // This is here just to increase odds of items being placed in their correct areas
-            // To be more precise, just a single item with the specified ID will be placed preferentially
-            var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
-            while (areaRestrictions.Any())
-            {
-                int index = RNG.Next(areaRestrictions.Count);
-                PlaceItemOfUnknownType(areaRestrictions[index].Key);
-                areaRestrictions.RemoveAt(index);
-            }
+            PerformItemRestrictionPrePlacementTasks();
 
             //var test = AllPTR.OfType<DropRdz>().ToList();
 
@@ -1005,26 +1058,20 @@ namespace DS2S_META.Randomizer
             var restriction = Restrictions.ContainsKey(di.ItemID) ? Restrictions[di.ItemID] : new NoPlacementRestriction();
             var availableLocations = restriction.GetFeasibleLocations(Unfilled, AllPTR);
 
+            // Ignore restrictions for Vanilla locations, since some Vanilla locations would be ineligible for that item's placement under usual rules
+            if (restriction is VanillaPlacementRestriction)
+            {
+                // Also, since Vanilla placements should occur before any randomized placements, this branch shouldn't ever get executed
+                PlaceItemsInVanillaLocations(di.ItemID);
+            }
+
             while (availableLocations.Count > 0 ||
-                restriction.ArePlacementLocationsExpendable() && (availableLocations = restriction.ExpandPlacements(Unfilled, AllPTR)).Count > 0)
+                restriction.ArePlacementLocationsExpandable() && (availableLocations = restriction.ExpandPlacements(Unfilled, AllPTR)).Count > 0)
             {
                 // Choose random rdz for item:
                 int pindex = RNG.Next(availableLocations.Count);
                 int elnum = availableLocations[pindex];
                 var rdz = AllPTR.ElementAt(elnum);
-
-                // Ignore restrictions for Vanilla locations, since some Vanilla locations would be inelligible for that item's placement under current rules
-                if (restriction is VanillaPlacementRestriction)
-                {
-                    rdz.AddShuffledItem(di);
-                    availableLocations.RemoveAt(pindex);
-                    if (rdz.IsSaturated())
-                    {
-                        rdz.MarkHandled();
-                        Unfilled.Remove(elnum);
-                    }
-                    continue;
-                }
 
                 // Check pickup type conditions:
                 switch (stype)
@@ -1096,10 +1143,7 @@ namespace DS2S_META.Randomizer
                 return;
             }
 
-            if (restriction is not VanillaPlacementRestriction)
-            {
-                throw new Exception("True Softlock, please investigate");
-            }
+            throw new Exception("True Softlock, please investigate");
         }
 
         private void FillLeftovers()

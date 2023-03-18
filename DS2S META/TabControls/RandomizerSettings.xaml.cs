@@ -242,23 +242,27 @@ namespace DS2S_META
             {
                 LoadRandomizerSettings();
             }
-            catch (Exception) // If the settings file is broken, FileNotFoundException won't help - just recreate the settings
+            catch (Exception) // If the settings file is broken, FileNotFoundException won't help - just recreate the settings...?
             {
                 ItemRestrictions = new() {
-                    new ItemPlacementRestrictionSettings("Estus Flask", new(){60155000}, ItemRestrictionType.Anywhere),
+                    new ItemPlacementRestrictionSettings("Estus Flask", new(){ 60155000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("Ring of Binding", new(){ 40410000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("Silvercat Ring", new(){ 40420000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("Aged Feather", new(){ 60355000 }, ItemRestrictionType.Anywhere),
-
-                    new ItemPlacementRestrictionSettings("Any Pyromancy Flame", new(){ 05400000, 05410000 }, ItemRestrictionType.Anywhere),
+                    new ItemPlacementRestrictionSettings("Eye of the Priestess", new(){ 53600000 }, ItemRestrictionType.Anywhere),
 
                     new ItemPlacementRestrictionSettings("Dull Ember", new(){ 50990000 }, ItemRestrictionType.Anywhere),
-                    new ItemPlacementRestrictionSettings("Lenigrast's Key", new(){ 50870000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("Any Blacksmith Key", new(){ 50850000, 50870000, 50990000 }, ItemRestrictionType.Anywhere),
 
                     new ItemPlacementRestrictionSettings("Rotunda Lockstone", new(){ 50890000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("King's Ring", new(){ 40510000 }, ItemRestrictionType.Anywhere),
                     new ItemPlacementRestrictionSettings("Ashen Mist Heart", new(){ 50910000 }, ItemRestrictionType.Anywhere),
+
+                    new ItemPlacementRestrictionSettings("Any Pyromancy Flame", new(){ 05400000, 05410000 }, ItemRestrictionType.Anywhere),
+                    new ItemPlacementRestrictionSettings("Any Staff", new(){ 1280000, 3800000, 3810000, 3820000, 3830000, 3850000, 3860000, 3870000,
+                        3880000, 3890000, 3900000, 3910000, 3930000, 3940000, 4150000, 5370000, 5540000, 11150000 }, ItemRestrictionType.Anywhere),
+                    new ItemPlacementRestrictionSettings("Any Chime", new(){ 2470000, 4010000, 4020000, 4030000, 4040000, 4050000, 4060000, 4080000,
+                        4090000, 4100000, 4110000, 4120000, 4150000, 11150000 }, ItemRestrictionType.Anywhere),
                 };
             }
 

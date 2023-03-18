@@ -17,7 +17,7 @@ namespace DS2S_META.Randomizer
     {
         internal abstract List<int> GetFeasibleLocations(in List<int> unfilledLocations, in List<Randomization> AllPTR);
 
-        internal abstract bool ArePlacementLocationsExpendable();
+        internal abstract bool ArePlacementLocationsExpandable();
 
         internal abstract List<int> ExpandPlacements(in List<int> unfilledLocations, in List<Randomization> AllPTR);
     }
@@ -30,7 +30,7 @@ namespace DS2S_META.Randomizer
             return unfilledLocations;
         }
 
-        internal override bool ArePlacementLocationsExpendable() { return false; }
+        internal override bool ArePlacementLocationsExpandable() { return false; }
 
         internal override List<int> ExpandPlacements(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
@@ -66,7 +66,7 @@ namespace DS2S_META.Randomizer
             throw new Exception("Vanilla location wasn't present among unfilled locations - probably error in logic (order of item placement)");
         }
 
-        internal override bool ArePlacementLocationsExpendable() { return false; }
+        internal override bool ArePlacementLocationsExpandable() { return false; }
 
         internal override List<int> ExpandPlacements(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
@@ -78,9 +78,9 @@ namespace DS2S_META.Randomizer
     // If no places in the selected areas would allow the placement of the item, new areas can be iteratively added, from the ones closest to the bounds.
     internal class AreaDistancePlacementRestriction : CustomItemPlacementRestriction
     {
-        MapArea Area;
-        int LowerBound = 0;
-        int UpperBound = int.MaxValue;
+        readonly MapArea Area;
+        readonly int LowerBound = 0;
+        readonly int UpperBound = int.MaxValue;
 
         int LowerDistanceArrayIndex = 0;
         int UpperDistanceArrayIndex = 0;
@@ -125,7 +125,7 @@ namespace DS2S_META.Randomizer
             return locations;
         }
 
-        internal override bool ArePlacementLocationsExpendable() { return true; }
+        internal override bool ArePlacementLocationsExpandable() { return true; }
 
         internal override List<int> ExpandPlacements(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
@@ -139,7 +139,8 @@ namespace DS2S_META.Randomizer
                 if (LowerBound <= UpperBound && LowerDistanceArrayIndex == 0 && UpperDistanceArrayIndex == distances.Count - 1
                     || LowerBound > UpperBound && LowerDistanceArrayIndex - UpperDistanceArrayIndex <= 1)
                 {
-                    return new();
+                    // This returns all yet unfilled locations uncovered by areas - mostly enemy drops
+                    return unfilledLocations;
                 }
 
                 // Distances from bounds to closest areas, which haven't been used yet
