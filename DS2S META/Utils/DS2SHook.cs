@@ -15,6 +15,7 @@ using Xceed.Wpf.Toolkit;
 using Keystone;
 using System.Threading.Tasks;
 using static DS2S_META.Utils.ItemRow;
+using DS2S_META.Randomizer;
 
 namespace DS2S_META
 {
@@ -1811,6 +1812,11 @@ namespace DS2S_META
         {
             if (!ParamMan.IsLoaded)
                 return 0;
+
+            // Until we figure out more about the internal params:
+            if (item.ItemID == (int)ITEMID.BINOCULARS || item.ItemID == (int)ITEMID.KEYTOEMBEDDED)
+                return 0;
+
 
             int? upgr;
             switch (item.ItemType)

@@ -14,6 +14,8 @@ namespace DS2S_META.Randomizer
         DARKSIGN = 0x03990540,
         BONEOFORDER = 0x03B259A0,
         BLACKSEPARATIONCRYSTAL = 0x03B47C80,
+        KEYTOEMBEDDED = 0x001E3660,
+        BINOCULARS = 0x005D1420
     }
     public enum ITEMUSAGE
     {
