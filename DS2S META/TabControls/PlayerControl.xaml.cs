@@ -290,6 +290,10 @@ namespace DS2S_META
         public void DeltaHeight(float delta)
         {
             Hook.PosZ += delta;
+
+            // QOL: AutoTurn off gravity
+            if (cbxGravity.IsChecked == true)
+                cbxGravity.IsChecked = false;
         }
         public void FastQuit()
         {
