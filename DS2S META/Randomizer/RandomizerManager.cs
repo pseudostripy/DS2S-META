@@ -605,7 +605,7 @@ namespace DS2S_META.Randomizer
 
             var randitem = drawpool[RNG.Next(drawpool.Count)];
 
-            var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : RNG.Next(5);
+            var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : (1 + RNG.Next(4));
             return new IDQUANT(randitem.ItemID, quant);
         }
 

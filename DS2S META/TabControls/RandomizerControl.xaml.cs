@@ -28,7 +28,7 @@ namespace DS2S_META
         private Color LIGHTPURPLE = Color.FromArgb(0xFF, 0xCE, 0x73, 0xF1); // #FFCE73F1
         private Color LIGHTRED = Color.FromArgb(0xFF, 0xDA, 0x4D, 0x4D);
         private Color LIGHTGREEN = Color.FromArgb(0xFF, 0x87, 0xCC, 0x59);
-        internal RandomizerManager RM = new RandomizerManager();
+        internal RandomizerManager RM = new();
         public static bool IsRandomized = false;
         private int Seed => Convert.ToInt32(txtSeed.Text);
 
@@ -40,7 +40,7 @@ namespace DS2S_META
         }
         private void FixSeedVisibility()
         {
-            //Handles the "Seeed..." label on the text box
+            //Handles the "Seed..." label on the text box
             if (txtSeed.Text == "")
                 lblSeed.Visibility = Visibility.Visible;
             else
@@ -132,14 +132,14 @@ namespace DS2S_META
 
         private bool randomizerSetup()
         {
-            if (!ensureHooked())
+            if (!EnsureHooked())
                 return false;
 
             if (!RM.IsInitialized)
                 RM.Initalize(Hook);
 
             // Warn user about the incoming warp
-            if (Properties.Settings.Default.ShowWarnRandowarp)
+            if (Settings.Default.ShowWarnRandowarp)
             {
                 var randowarning = new RandoWarpWarning()
                 {
@@ -175,9 +175,8 @@ namespace DS2S_META
             int seed = RandomizerManager.GetRandom();
             txtSeed.Text = ZeroPadString(seed); // 10 is max value of digits of int32 in decimal
         }
-        private bool ensureHooked()
+        private bool EnsureHooked()
         {
-            // Want to try to Hook in DS2 to change the wooden chest above cardinal tower to metal chest items:
             if (Hook.Hooked)
                 return true;
 
