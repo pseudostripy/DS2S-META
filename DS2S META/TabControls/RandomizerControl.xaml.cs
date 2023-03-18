@@ -35,7 +35,7 @@ namespace DS2S_META
         }
         private void FixSeedVisibility()
         {
-            //Handles the "Seeed..." label on the text box
+            //Handles the "Seed..." label on the text box
             if (txtSeed.Text == "")
                 lblSeed.Visibility = Visibility.Visible;
             else
