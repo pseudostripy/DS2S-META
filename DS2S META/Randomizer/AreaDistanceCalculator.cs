@@ -22,12 +22,7 @@ namespace DS2S_META.Randomizer
                 [MapArea.HeidesTowerOfFlame] = 1,
                 [MapArea.HuntsmansCopse] = 1,
                 [MapArea.ShadedWoods] = 1,
-                [MapArea.ThePit] = 1,
-                [MapArea.MerchantHagMelentia] = 0,
-                [MapArea.LiciaOfLindeldt] = 0,
-                [MapArea.CarhillionOfTheFold] = 0,
-                [MapArea.StoneTraderChloanne] = 0,
-                [MapArea.LaddersmithGilligan] = 0
+                [MapArea.ThePit] = 1
             },
             [MapArea.ForestOfFallenGiants] = new()
             {
@@ -35,34 +30,28 @@ namespace DS2S_META.Randomizer
                 [MapArea.TheLostBastille] = 1,
                 [MapArea.MemoryOfOrro] = 1,
                 [MapArea.MemoryOfJeigh] = 1,
-                [MapArea.MemoryOfVammar] = 1,
-                [MapArea.MerchantHagMelentia] = 0
+                [MapArea.MemoryOfVammar] = 1
             },
             [MapArea.HeidesTowerOfFlame] = new()
             {
                 [MapArea.Majula] = 1,
                 [MapArea.CathedralOfBlue] = 1,
-                [MapArea.NoMansWharf] = 1,
-                [MapArea.LiciaOfLindeldt] = 0
+                [MapArea.NoMansWharf] = 1
             },
             [MapArea.CathedralOfBlue] = new() { [MapArea.HeidesTowerOfFlame] = 1 },
             [MapArea.NoMansWharf] = new()
             {
                 [MapArea.HeidesTowerOfFlame] = 1,
-                [MapArea.TheLostBastille] = 1,
-                [MapArea.LucatielOfMirrah] = 0,
-                [MapArea.LonesomeGavlan] = 0,
-                [MapArea.CarhillionOfTheFold] = 0
+                [MapArea.TheLostBastille] = 1
             },
             [MapArea.TheLostBastille] = new()
             {
                 [MapArea.ForestOfFallenGiants] = 1,
                 [MapArea.NoMansWharf] = 1,
                 [MapArea.BelfryLuna] = 1,
-                [MapArea.SinnersRise] = 1,
-                [MapArea.LucatielOfMirrah] = 0
+                [MapArea.SinnersRise] = 1
             },
-            [MapArea.BelfryLuna] = new() { [MapArea.TheLostBastille] = 1, [MapArea.BellKeepers] = 0 },
+            [MapArea.BelfryLuna] = new() { [MapArea.TheLostBastille] = 1, /*[MapArea.BellKeepers] = 0*/ },
             [MapArea.SinnersRise] = new() { [MapArea.TheLostBastille] = 1, [MapArea.Majula] = 1 },
             [MapArea.HuntsmansCopse] = new()
             {
@@ -74,15 +63,12 @@ namespace DS2S_META.Randomizer
             [MapArea.HarvestValley] = new()
             {
                 [MapArea.HuntsmansCopse] = 1,
-                [MapArea.EarthenPeak] = 1,
-                [MapArea.StoneTraderChloanne] = 0,
-                [MapArea.LonesomeGavlan] = 0
+                [MapArea.EarthenPeak] = 1
             },
             [MapArea.EarthenPeak] = new()
             {
                 [MapArea.HarvestValley] = 1,
-                [MapArea.IronKeep] = 1,
-                [MapArea.LaddersmithGilligan] = 0
+                [MapArea.IronKeep] = 1
             },
             [MapArea.IronKeep] = new()
             {
@@ -91,21 +77,20 @@ namespace DS2S_META.Randomizer
                 [MapArea.BrumeTower] = 1,
                 [MapArea.Majula] = 1
             },
-            [MapArea.BelfrySol] = new() { [MapArea.IronKeep] = 1, [MapArea.BellKeepers] = 0 },
+            [MapArea.BelfrySol] = new() { [MapArea.IronKeep] = 1, /*[MapArea.BellKeepers] = 0*/ },
             [MapArea.ShadedWoods] = new()
             {
                 [MapArea.Majula] = 1,
                 [MapArea.DoorsOfPharros] = 1,
                 [MapArea.ShrineOfWinter] = 1,
                 [MapArea.AldiasKeep] = 1,
-                [MapArea.PilgrimsOfDark] = 0
+                //[MapArea.PilgrimsOfDark] = 0
             },
             [MapArea.DoorsOfPharros] = new()
             {
                 [MapArea.ShadedWoods] = 1,
                 [MapArea.BrightstoneCoveTseldora] = 1,
-                [MapArea.RatKingCovenant] = 0,
-                [MapArea.LonesomeGavlan] = 0
+                //[MapArea.RatKingCovenant] = 0
             },
             [MapArea.BrightstoneCoveTseldora] = new()
             {
@@ -124,7 +109,7 @@ namespace DS2S_META.Randomizer
             {
                 [MapArea.ThePit] = 1,
                 [MapArea.TheGutter] = 1,
-                [MapArea.RatKingCovenant] = 0
+                //[MapArea.RatKingCovenant] = 0
             },
             [MapArea.TheGutter] = new()
             {
@@ -137,8 +122,7 @@ namespace DS2S_META.Randomizer
                 [MapArea.TheGutter] = 1,
                 [MapArea.ShulvaSanctumCity] = 1,
                 [MapArea.Majula] = 1,
-                [MapArea.PilgrimsOfDark] = 0,
-                [MapArea.LucatielOfMirrah] = 0
+                //[MapArea.PilgrimsOfDark] = 0
             },
             [MapArea.ShrineOfWinter] = new()
             {
@@ -151,11 +135,11 @@ namespace DS2S_META.Randomizer
                 [MapArea.ShrineOfWinter] = 1,
                 [MapArea.ThroneOfWant] = 1,
                 [MapArea.KingsPassage] = 1,
-                [MapArea.PilgrimsOfDark] = 0
+                //[MapArea.PilgrimsOfDark] = 0
             },
             [MapArea.KingsPassage] = new() { [MapArea.DrangleicCastle] = 1, [MapArea.ShrineOfAmana] = 1 },
             [MapArea.ShrineOfAmana] = new() { [MapArea.KingsPassage] = 1, [MapArea.UndeadCrypt] = 1 },
-            [MapArea.UndeadCrypt] = new() { [MapArea.ShrineOfAmana] = 1, /*[MapArea.MemoryOfTheKing] = 1*/ },
+            [MapArea.UndeadCrypt] = new() { [MapArea.ShrineOfAmana] = 1 },
             [MapArea.ThroneOfWant] = new() { [MapArea.DrangleicCastle] = 1 },
             [MapArea.AldiasKeep] = new() { [MapArea.ShadedWoods] = 1, [MapArea.DragonAerie] = 1 },
             [MapArea.DragonAerie] = new() { [MapArea.AldiasKeep] = 1, [MapArea.DragonShrine] = 1 },
@@ -164,7 +148,6 @@ namespace DS2S_META.Randomizer
             [MapArea.MemoryOfOrro] = new() { [MapArea.ForestOfFallenGiants] = 1 },
             [MapArea.MemoryOfVammar] = new() { [MapArea.ForestOfFallenGiants] = 1 },
             [MapArea.DragonMemories] = new() { [MapArea.BrightstoneCoveTseldora] = 1 },
-            //[MapArea.MemoryOfTheKing] = new() { [MapArea.UndeadCrypt] = 1 },
             [MapArea.ShulvaSanctumCity] = new()
             {
                 [MapArea.BlackGulch] = 1,
