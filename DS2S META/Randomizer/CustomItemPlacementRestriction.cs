@@ -27,7 +27,7 @@ namespace DS2S_META.Randomizer
     {
         internal override List<int> GetFeasibleLocations(in List<int> unfilledLocations, in List<Randomization> AllPTR)
         {
-            return unfilledLocations;
+            return new List<int>(unfilledLocations);
         }
 
         internal override bool ArePlacementLocationsExpandable() { return false; }
