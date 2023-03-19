@@ -10,8 +10,12 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.Windows.Data;
+using Octokit;
+using System.ComponentModel;
 using DS2S_META.Properties;
- 
+
 namespace DS2S_META
 {
     /// <summary>
@@ -27,7 +31,6 @@ namespace DS2S_META
         internal RandomizerManager RM = new();
         public static bool IsRandomized = false;
         private int Seed => Convert.ToInt32(txtSeed.Text);
-
 
         // FrontEnd:
         public RandomizerControl()
@@ -65,6 +68,7 @@ namespace DS2S_META
         private async void rando_core_process(RANDOPROCTYPE rpt)
         {
             randomizerSetup();
+            CreateItemRestrictions();
 
             // Inform user of progress..
             btnRandomize.IsEnabled = false;
@@ -103,6 +107,27 @@ namespace DS2S_META
             // Restore after completion:
             lblWorking.Visibility = Visibility.Hidden;
             btnRandomize.IsEnabled = true;
+        }
+
+        private void CreateItemRestrictions()
+        {
+            RM.OneFromItemSetRestrictions.Clear();
+            foreach (var restriction in RandomizerSettings.ItemRestrictions)
+            {
+                switch (restriction.Type)
+                {
+                    case ItemRestrictionType.Anywhere:
+                        // No reason to create a dummy filter
+                        //RM.ItemSetRestrictions.Add(restriction.ItemIDs, new NoPlacementRestriction());
+                        break;
+                    case ItemRestrictionType.Vanilla:
+                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
+                        break;
+                    case ItemRestrictionType.AreaDistance:
+                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
+                        break;
+                }
+            }
         }
 
         private bool randomizerSetup()

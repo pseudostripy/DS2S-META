@@ -33,6 +33,7 @@
                 <Image x:Name="imgGenerate" MouseLeftButtonDown="imgGenerate_MouseLeftButtonDown" RenderTransformOrigin="6.739,0.92" Stretch="Uniform" StretchDirection="Both" Grid.Column="1" Margin="192,2,4,1" Height="27" Grid.Row="1" ToolTip="Generate New Seed" Source="/Resources/Images/regenerate_icon.png"/>
                 <Label x:Name="lblWorking" Content="Working...." Grid.Column="1" Grid.Row="4" HorizontalContentAlignment="Center" FontWeight="Bold" Visibility="Hidden"/>
             </Grid>
+            <local:RandomizerSettings x:Name="randoSettings"/>
         </StackPanel>
     </Grid>
 </local:METAControl>

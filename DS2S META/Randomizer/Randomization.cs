@@ -29,6 +29,8 @@ namespace DS2S_META.Randomizer
     /// </summary>
     internal abstract class Randomization
     {
+        public static double lowestPriceRate = 0.9;
+
         // Fields
         internal int ParamID;
         internal abstract List<DropInfo> Flatlist { get; }
@@ -56,7 +58,7 @@ namespace DS2S_META.Randomizer
         internal abstract void AdjustQuantity(DropInfo di);
         internal abstract void ResetShuffled();
         internal abstract int UniqueParamID { get; }
-        
+
         // Common Methods:
 
         // Wrappers to RandoInfo
@@ -100,7 +102,7 @@ namespace DS2S_META.Randomizer
             {
                 var souls = ItemSetBase.SoulPriceList[itemid];
                 var ranval = RandomizerManager.RandomGammaInt(souls, 50);
-                return (int)Math.Max(ranval, 0.9 * souls); // Limit to 10% off best sale
+                return (int)Math.Max(ranval, lowestPriceRate * souls); // Limit to 10% off best sale
             }
 
             var lowtier = new List<int>() { 60010000, 60040000, 60595000, 60070000 }; // lifegem, amber herb, dung pie, poison moss
@@ -187,12 +189,12 @@ namespace DS2S_META.Randomizer
         internal override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
-            
+
             // Display empty lots
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
-                return sb.Append("\tEMPTY").ToString();    
-            
-            for(int i = 0; i < ShuffledLot.NumDrops; i++)
+                return sb.Append("\tEMPTY").ToString();
+
+            for (int i = 0; i < ShuffledLot.NumDrops; i++)
             {
                 sb.Append($"\t{GetItemName(ShuffledLot.Items[i])}");
                 sb.Append($" x{ShuffledLot.Quantities[i]}");
@@ -200,7 +202,7 @@ namespace DS2S_META.Randomizer
             }
 
             // Remove final newline:
-            return sb.ToString().TrimEnd('\r','\n');
+            return sb.ToString().TrimEnd('\r', '\n');
         }
         internal override void AdjustQuantity(DropInfo di)
         {
@@ -295,8 +297,8 @@ namespace DS2S_META.Randomizer
             // Remove final newline:
             return sb.ToString().TrimEnd('\r', '\n');
         }
-        internal bool IsGuaranteedDrop 
-        { 
+        internal bool IsGuaranteedDrop
+        {
             get
             {
                 if (VanillaLot == null)
@@ -307,7 +309,7 @@ namespace DS2S_META.Randomizer
                         return false;
                 }
                 return true;
-            } 
+            }
         }
     }
 
@@ -360,10 +362,14 @@ namespace DS2S_META.Randomizer
                 item.BaseBuyPrice = 12000;
                 item.StoreRow();
             }
-                
+
 
             int pricenew = GetTypeRandomPrice(di.ItemID);
             float pricerate = (float)pricenew / item.BaseBuyPrice;
+
+            // "Supermarket price" fix - small enough to not increase the price unintenionally, big enough to cause the price to be fixed
+            pricerate += 1e-6f;
+            // This abomination would do the job more precisely, but would require compiling with /unsafe: unsafe { ++*(int*)&pricerate; }
 
             // Update:
             ShuffledShop.SetValues(di, VanillaShop, pricerate);

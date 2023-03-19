@@ -13,7 +13,6 @@ using static SoulsFormats.MSBD;
 using System.Transactions;
 using System.Windows.Controls;
 using Octokit;
-using static DS2S_META.Randomizer.RandomizerManager;
 
 namespace DS2S_META.Randomizer
 {
@@ -35,6 +34,9 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
+
+        internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // The restriction shall be applied to a randomly selected item out of the set 
+        internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
         // 
         internal List<DropInfo> ldkeys = new();
         internal List<DropInfo> ldreqs = new();
@@ -83,7 +85,7 @@ namespace DS2S_META.Randomizer
             }
         }
         //
-        
+
         // Enums:
         internal enum SetType : byte { Keys, Reqs, Gens }
 
@@ -105,7 +107,7 @@ namespace DS2S_META.Randomizer
             GetVanillaDrops();
             GetVanillaShops();
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
-            
+
             SetupAllPTF();
             FixLogicDictionary();
             GetLootToRandomize(); // set LTR_Flatlist field
@@ -123,10 +125,10 @@ namespace DS2S_META.Randomizer
 
                 var prows_nonzero = prows.Where(row => row.ItemLotID != 0).ToList();
                 var direct_lots = prows_nonzero.Select(prow => prow.ItemLot).ToList();
-                
+
                 // Store info:
-                var indirect_nil = prows_zero.Select(row => 
-                                new NamedItemLot(row.Name, 
+                var indirect_nil = prows_zero.Select(row =>
+                                new NamedItemLot(row.Name,
                                                  row.GeneratorRegist?.Enemy?.ItemLot,
                                                  row.GeneratorRegist?.Enemy?.ItemLotID));
                 var direct_nil = prows_nonzero.Select(row => new NamedItemLot(row.Name, row.ItemLot, row.ItemLotID));
@@ -135,8 +137,8 @@ namespace DS2S_META.Randomizer
             }
 
             // Add associated NG plus tables as they might not be linked directly:
-            List<NamedItemLot?>ngpList = new();
-            foreach(var nil in genplist)
+            List<NamedItemLot?> ngpList = new();
+            foreach (var nil in genplist)
             {
                 int? ilotID = nil?.RawID;
                 if (ilotID == null) throw new Exception("Shouldn't be possible");
@@ -210,6 +212,139 @@ namespace DS2S_META.Randomizer
             return;
         }
 
+        internal void GenerateRestrictions()
+        {
+            Restrictions.Clear();
+
+            // Single-item sets have no alternatives, if a restriction was already assigned to that item
+            // In order to minimize unapplied restrictions, we must go from the more restrictive sets to the less restrictive
+            var sortedRestrictions = OneFromItemSetRestrictions.ToList();
+            sortedRestrictions.Sort((l1, l2) => l1.Key.Count.CompareTo(l2.Key.Count));
+
+            foreach (var setRestriction in sortedRestrictions)
+            {
+                if (setRestriction.Value is NoPlacementRestriction)
+                    continue;
+
+                var idList = setRestriction.Key;
+                while (idList.Count > 0)
+                {
+                    int index = RNG.Next(idList.Count);
+                    int itemId = idList[index];
+
+                    if (Restrictions.ContainsKey(itemId))
+                    {
+                        // We could also make an intersection of both filters' eligible locations and if it's not empty, we could replace the existing filter with a new one, which satisfies criteria of both filters
+                        // That would require a bunch of stuff, though - restriction for a set of locations, or set of areas and methods for area/item set intersections
+                        idList.RemoveAt(index);
+                        continue;
+                    }
+                    else
+                    {
+                        Restrictions[itemId] = setRestriction.Value;
+
+                        if (setRestriction.Value is VanillaPlacementRestriction)
+                        {
+                            ((VanillaPlacementRestriction)Restrictions[itemId]).ItemID = itemId;
+                        }
+
+                        break;
+                    }
+                }
+
+                // Issue a warning that no item from a set could have had its restriction assigned?
+            }
+        }
+
+        internal void PlaceItemOfUnknownType(int id)
+        {
+            int index = ldkeys.FindIndex(di => di.ItemID == id);
+            if (index != -1)
+            {
+                PlaceItem(ldkeys[index], SetType.Keys);
+                ldkeys.RemoveAt(index);
+            }
+            else if ((index = ldreqs.FindIndex(di => di.ItemID == id)) != -1)
+            {
+                PlaceItem(ldreqs[index], SetType.Reqs);
+                ldreqs.RemoveAt(index);
+            }
+            else
+            {
+                index = ldgens.FindIndex(di => di.ItemID == id);
+                PlaceItem(ldgens[index], SetType.Gens);
+                ldgens.RemoveAt(index);
+            }
+        }
+
+        internal void PlaceItemsInVanillaLocations(int itemId)
+        {
+            var locations = Restrictions[itemId].GetFeasibleLocations(Unfilled, AllPTR);
+            foreach (var locationIndex in locations)
+            {
+                var location = AllPTR[locationIndex];
+
+                if (location is GLotRdz rdz)
+                {
+                    var vanillaLot = rdz.VanillaLot;
+                    int vlotId = vanillaLot.GetLotIndex(itemId);
+                    var dropInfo = new DropInfo(vanillaLot.Items[vlotId], vanillaLot.Quantities[vlotId], vanillaLot.Reinforcements[vlotId], vanillaLot.Infusions[vlotId]);
+                    location.AddShuffledItem(dropInfo);
+                }
+                else if (location is ShopRdz shopRdz)
+                {
+                    var shopVanilla = shopRdz.VanillaShop;
+                    var dropInfo = new DropInfo(shopVanilla.ItemID, shopVanilla.Quantity);
+
+                    // This will update quantity and price; cloning Vanilla shop, or calling ShuffledShop.SetValues() would avoid it - but it's probably undesirable
+                    shopRdz.AddShuffledItem(dropInfo);
+
+                    // Price re-randomization - without it, for example Cat Ring would be really cheap and just setting the pricerate to lowest rate is boring
+                    // On the other hand - especially for Cat Ring - this can crank up the price really high
+                    float rerolledPriceFactor = (float)RandomGammaInt(shopVanilla.VanillaBasePrice) / shopVanilla.VanillaBasePrice;
+                    shopRdz.ShuffledShop.PriceRate = Math.Max(rerolledPriceFactor, (float)Randomization.lowestPriceRate);
+                }
+                else
+                {
+                    throw new Exception("Unknown Randomization type encountered in Vanilla item placement!");
+                }
+
+                if (location.IsSaturated())
+                {
+                    location.MarkHandled();
+                    Unfilled.Remove(locationIndex);
+                }
+            }
+
+            // All instances of the item should've been placed by now, so we can safely remove them from the item pools
+            ldkeys.RemoveAll(di => di.ItemID == itemId);
+            ldreqs.RemoveAll(di => di.ItemID == itemId);
+            ldgens.RemoveAll(di => di.ItemID == itemId);
+        }
+
+        internal void PerformItemRestrictionPrePlacementTasks()
+        {
+            AreaDistanceCalculator.CalculateDistanceMatrix();
+            GenerateRestrictions();
+
+            // Vanilla placements need to be processed first, in order for other items to not take their place
+            foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
+            {
+                PlaceItemsInVanillaLocations(restriction.Key);
+            }
+
+            // This is here to maximize odds of items being placed in their correct areas
+            // To be more precise, just a single item with the specified ID will be placed in advance
+            // Other possible instances of that item will be placed along with other items (placement will still attempt to fulfill the restriction as much as possible)
+            var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
+            while (areaRestrictions.Any())
+            {
+                int index = RNG.Next(areaRestrictions.Count);
+                PlaceItemOfUnknownType(areaRestrictions[index].Key);
+                areaRestrictions.RemoveAt(index);
+            }
+        }
+
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -218,6 +353,8 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
+
+            PerformItemRestrictionPrePlacementTasks();
 
             //var test = AllPTR.OfType<DropRdz>().ToList();
 
@@ -283,14 +420,14 @@ namespace DS2S_META.Randomizer
             if (classrows == null) throw new Exception("Failed to find classes in param");
 
             // Setup lists to draw from randomly:
-            var bannedItems = (new ITEMID[]{    ITEMID.ESTUS, 
+            var bannedItems = (new ITEMID[]{    ITEMID.ESTUS,
                                                 ITEMID.ESTUSEMPTY,
                                                 ITEMID.DARKSIGN,
                                                 ITEMID.BONEOFORDER,
                                                 ITEMID.BLACKSEPARATIONCRYSTAL }).Cast<int>();
             var all_items = ParamMan.ItemParam?.Rows.OfType<ItemRow>();
             var all_consumables = all_items?.Where(it => it.ItemType == eItemType.CONSUMABLE)
-                                            .Where(it => it.ItemUsageID != (int)ITEMUSAGE.ITEMUSAGEKEY 
+                                            .Where(it => it.ItemUsageID != (int)ITEMUSAGE.ITEMUSAGEKEY
                                                         && it.ItemUsageID != (int)ITEMUSAGE.BOSSSOULUSAGE)
                                             .Where(it => it.MetaItemName != String.Empty)
                                             .Where(it => !bannedItems.Contains(it.ItemID))
@@ -361,7 +498,7 @@ namespace DS2S_META.Randomizer
                     classrow.WriteAtRHWepReinforceArray(rhwepnum, GetRandomReinforce());
                     rhwepnum++;
                 };
-                
+
                 // Class Left-hand weapons 40% chance:
                 int lhwepnum = 0;
                 while (RNG.Next(100) < 40 && lhwepnum < 3)
@@ -421,7 +558,7 @@ namespace DS2S_META.Randomizer
                     classrow.Vigor += (short)(diff_to_fix + 1);
                     classrow.SetSoulLevel();
                 }
-                
+
                 // Commit all changes to memory
                 classrow.WriteRow();
             }
@@ -465,13 +602,13 @@ namespace DS2S_META.Randomizer
         private static IDQUANT DrawItem(List<ItemRow>? drawpool)
         {
             if (drawpool == null) throw new Exception("No items in list to draw from");
-            
+
             var randitem = drawpool[RNG.Next(drawpool.Count)];
 
             var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : (1 + RNG.Next(4));
             return new IDQUANT(randitem.ItemID, quant);
         }
-        
+
         internal void GetLootToRandomize()
         {
             // Start with AllP
@@ -493,7 +630,7 @@ namespace DS2S_META.Randomizer
             // Collapse droplists and sort out uniqueness balacing:
             var LTR_flatlist_dropsonly = droplists.SelectMany(di => di).ToList();
             List<DropInfo> drop_flatlist_balanced = new();
-            foreach(var di in LTR_flatlist_dropsonly)
+            foreach (var di in LTR_flatlist_dropsonly)
             {
                 if (!TryGetItem(di.ItemID, out var item))
                     continue;
@@ -511,7 +648,7 @@ namespace DS2S_META.Randomizer
                 if (!isAlreadyDone)
                     drop_flatlist_balanced.Add(di);
             }
-            
+
 
 
             // testing
@@ -521,7 +658,7 @@ namespace DS2S_META.Randomizer
 
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
-                                .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD 
+                                .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD
                                         || srdz.Status == RDZ_STATUS.MAKEFREE
                                         || srdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
             foreach (var shop in okShops)
@@ -533,19 +670,20 @@ namespace DS2S_META.Randomizer
             foreach (var lot in normal_lots)
                 shoplotlists.Add(lot.Flatlist);
 
-            
+
             // Special Lots (NGplus things):
             var ngplus_lots = stage1_lots.Where(lrdz => lrdz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.NGPLUS }));
             List<int>? manualNGplusIDs = Logic.LinkedNGs.Select(lng => lng.ngplusID).ToList();
             int linkedorigID;
-            
+
             foreach (var lrdz in ngplus_lots)
             {
                 if (!manualNGplusIDs.Contains(lrdz.UniqueParamID))
                 {
                     // Type 1 (99% of cases)
                     linkedorigID = lrdz.UniqueParamID / 10 * 10; // Round down to nearest 10
-                } else
+                }
+                else
                 {
                     // Type 2 (currently only applies to Fume Knight)
                     var link = Logic.LinkedNGs.FirstOrDefault(lng => lng.ngplusID == lrdz.UniqueParamID);
@@ -564,7 +702,7 @@ namespace DS2S_META.Randomizer
                 shoplotlists.Add(ufl);
             }
 
-            
+
             // Collapse all droplists into one droplist:
             var LTR_flatlist_lotshops = shoplotlists.SelectMany(di => di).ToList();
             LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
@@ -576,18 +714,18 @@ namespace DS2S_META.Randomizer
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
         }
-        
+
         private void ResetForRerandomization()
         {
             // Reset required arrays for the randomizer to work:
-            
+
             // Empty the shuffled places in preparation:
             foreach (var rdz in AllP)
                 rdz.ResetShuffled();
-            
+
             KeysPlacedSoFar = new List<int>();
             Unfilled = Enumerable.Range(0, AllPTR.Count).ToList();
-            
+
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
         }
@@ -664,7 +802,7 @@ namespace DS2S_META.Randomizer
             var slavelots = all_lots.Where(ldz => ldz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.LINKEDSLAVE })).ToList();
             foreach (var ldz in slavelots)
                 ldz.Status = RDZ_STATUS.FILL_BY_COPY;
-            
+
             //foreach (var kvp in Logic.WhereHasType(PICKUPTYPE.LINKEDSLAVE))
             //{
             //    var slavelot = all_lots.FirstOrDefault(ldz => ldz.UniqueParamID == kvp.Key);
@@ -704,7 +842,7 @@ namespace DS2S_META.Randomizer
                 ldz.RandoDesc = assoc_nil.Name;
                 ldz.Status = RDZ_STATUS.STANDARD;
             }
-            
+
             // Output
             return all_drops.Cast<Randomization>();
         }
@@ -730,7 +868,7 @@ namespace DS2S_META.Randomizer
             var shopnormcopies = shoprdzs.Join(inner: LE_normal_copies,
                                                outerKeySelector: srdz => srdz.UniqueParamID,
                                                innerKeySelector: LEc => LEc.FillByCopy,
-                                               resultSelector: (srdz,lec) => srdz);
+                                               resultSelector: (srdz, lec) => srdz);
             foreach (var srdz in shopnormcopies)
                 srdz.Status = RDZ_STATUS.FILL_BY_COPY;
 
@@ -870,7 +1008,7 @@ namespace DS2S_META.Randomizer
             var di = LTR_flatlist.Where(di => di.ItemID == itemid).FirstOrDefault();
             if (di == null)
                 return;
-            LTR_flatlist.Remove(di); 
+            LTR_flatlist.Remove(di);
         }
         private void LimitNumberOfItem(int itemid, int maxlim)
         {
@@ -912,17 +1050,27 @@ namespace DS2S_META.Randomizer
             }
 
             // Must have ran out of space to place things:
-            if (ld.Count > 0 && flag != SetType.Gens) 
+            if (ld.Count > 0 && flag != SetType.Gens)
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
         private void PlaceItem(DropInfo di, SetType stype)
         {
-            var localunfilled = new List<int>(Unfilled); // local clone of spots available for placement
-            while (localunfilled.Count > 0)
+            var restriction = Restrictions.ContainsKey(di.ItemID) ? Restrictions[di.ItemID] : new NoPlacementRestriction();
+            var availableLocations = restriction.GetFeasibleLocations(Unfilled, AllPTR);
+
+            // Ignore restrictions for Vanilla locations, since some Vanilla locations would be ineligible for that item's placement under usual rules
+            if (restriction is VanillaPlacementRestriction)
+            {
+                // Also, since Vanilla placements should occur before any randomized placements, this branch shouldn't ever get executed
+                PlaceItemsInVanillaLocations(di.ItemID);
+            }
+
+            while (availableLocations.Count > 0 ||
+                restriction.ArePlacementLocationsExpandable() && (availableLocations = restriction.ExpandPlacements(Unfilled, AllPTR)).Count > 0)
             {
                 // Choose random rdz for item:
-                int pindex = RNG.Next(localunfilled.Count);
-                int elnum = localunfilled[pindex];
+                int pindex = RNG.Next(availableLocations.Count);
+                int elnum = availableLocations[pindex];
                 var rdz = AllPTR.ElementAt(elnum);
 
                 // Check pickup type conditions:
@@ -932,7 +1080,7 @@ namespace DS2S_META.Randomizer
                     case SetType.Gens:
                         if (rdz.HasType(BannedTypeList[stype]))
                         {
-                            localunfilled.RemoveAt(pindex);
+                            availableLocations.RemoveAt(pindex);
                             continue;
                         }
                         break;
@@ -941,19 +1089,19 @@ namespace DS2S_META.Randomizer
 
                         // (handled separately, below)
                         if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
-                            break; 
+                            break;
 
 
                         // Get allowable placements by item type:
                         var item = ParamMan.GetItemFromID(di.ItemID);
                         if (item == null)
                         {
-                            localunfilled.RemoveAt(pindex);
+                            availableLocations.RemoveAt(pindex);
                             continue;
                         }
                         if (!rdz.ContainsOnlyTypes(ItemSetBase.ItemAllowTypes[item.ItemType]))
                         {
-                            localunfilled.RemoveAt(pindex);
+                            availableLocations.RemoveAt(pindex);
                             continue;
                         }
                         break;
@@ -964,16 +1112,16 @@ namespace DS2S_META.Randomizer
                 {
                     if (!rdz.ContainsOnlyTypes(mantypes))
                     {
-                        localunfilled.RemoveAt(pindex);
+                        availableLocations.RemoveAt(pindex);
                         continue;
                     }
                 }
-                
+
 
                 // Check key-softlock conditions:
                 if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
                 {
-                    localunfilled.RemoveAt(pindex);
+                    availableLocations.RemoveAt(pindex);
                     continue;
                 }
 
@@ -994,8 +1142,10 @@ namespace DS2S_META.Randomizer
                 }
                 return;
             }
+
             throw new Exception("True Softlock, please investigate");
         }
+
         private void FillLeftovers()
         {
             // ld: list of DropInfos
@@ -1011,7 +1161,7 @@ namespace DS2S_META.Randomizer
                 rdz.MarkHandled();
             }
         }
-        
+
         private void FixInfusion(DropInfo di)
         {
             var item = ParamMan.GetItemFromID(di.ItemID);
@@ -1095,7 +1245,7 @@ namespace DS2S_META.Randomizer
             var shuffledshops = AllP.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             WriteAllShops(shuffledshops);
         }
-        
+
         // Utility:
         internal static Dictionary<int, string> ReadShopNames()
         {
@@ -1177,7 +1327,7 @@ namespace DS2S_META.Randomizer
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
-        
+
         // Miscellaneous post-processing
         internal void FixShopCopies()
         {
@@ -1282,7 +1432,7 @@ namespace DS2S_META.Randomizer
             foreach (var lot in fillbycopy)
             {
                 var LD = Logic.LinkedDrops.FirstOrDefault(ld => ld.SlaveIDs.Contains(lot.UniqueParamID));
-                if (LD == null) 
+                if (LD == null)
                     throw new Exception("Cannot find LinkedDrop as expected");
 
                 // Get Randomized ItemLot to copy from:
