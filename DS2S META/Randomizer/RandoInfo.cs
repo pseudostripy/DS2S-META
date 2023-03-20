@@ -96,30 +96,53 @@ namespace DS2S_META.Randomizer
         REMOVED,    // Lost content
         CRAMMED,    // Meme stuff regarding edge cases when you're crammed
         UNRESOLVED,
-        SHOP,
+        SHOP,       //
         CROWS,
         LINKEDSLAVE, // Rules are defined by some other drop that was defined and linked
     }
 
     internal class RandoInfo
     {
+        internal MapArea Area;
         internal string? Description;
         internal PICKUPTYPE[] Types;
         internal KeySet[] KeySet;
+        internal RDZ_STATUS RandoHandleType;
         
         // Main class constructor
-        internal RandoInfo(string? desc, PICKUPTYPE type, params KeySet[] reqkeys)
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, params KeySet[] reqkeys)
         {
+            Area = area;
             Description = desc;
             Types = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
+            RandoHandleType = RDZ_STATUS.STANDARD;
         }
-        internal RandoInfo(string desc, PICKUPTYPE[] types, params KeySet[] reqkeys)
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, params KeySet[] reqkeys)
         {
+            Area = area;
             Description = desc;
             Types = types;
             KeySet = reqkeys;
+            RandoHandleType= RDZ_STATUS.STANDARD;
         }
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, params KeySet[] reqkeys)
+        {
+            Area = area;
+            Description = desc;
+            Types = new PICKUPTYPE[] { type };
+            KeySet = reqkeys;
+            RandoHandleType = handletype;
+        }
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_STATUS handletype, params KeySet[] reqkeys)
+        {
+            Area = area;
+            Description = desc;
+            Types = types;
+            KeySet = reqkeys;
+            RandoHandleType = handletype;
+        }
+
 
         internal bool HasType(List<PICKUPTYPE> checklist)
         {

@@ -357,152 +357,160 @@ namespace DS2S_META.Randomizer
         }
 
         // Overloads for quick construction, single or no key requirements:
-        internal RandoInfo NpcInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo ShopInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NPC, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, new KeySet(reqkey));
         }
-        internal RandoInfo NpcSafeInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo ShopRemoveInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPREMOVE, new KeySet(reqkey));
         }
-        internal RandoInfo CovInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo NpcInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.COVENANTHARD, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.NPC, new KeySet(reqkey));
         }
-        internal RandoInfo CovFineInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo NpcSafeInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.COVENANTEASY, new KeySet(reqkey));
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), new KeySet(reqkey));
         }
-        internal RandoInfo WChestInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo CovInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.WOODCHEST, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.COVENANTHARD, new KeySet(reqkey));
         }
-        internal RandoInfo MChestInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo CovFineInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.METALCHEST, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.COVENANTEASY, new KeySet(reqkey));
         }
-        internal RandoInfo NGPlusInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo WChestInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NGPLUS, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.WOODCHEST, new KeySet(reqkey));
         }
-        internal RandoInfo WChestNGPlusInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo MChestInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.METALCHEST, new KeySet(reqkey));
         }
-        internal RandoInfo MChestNGPlusInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo NGPlusInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.NGPLUS, new KeySet(reqkey));
         }
-        internal RandoInfo SafeInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo WChestNGPlusInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NONVOLATILE, new KeySet(reqkey));
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
         }
-        internal RandoInfo VolInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo MChestNGPlusInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.VOLATILE, new KeySet(reqkey));
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
         }
-        internal RandoInfo CrowsInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo SafeInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.CROWS, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.NONVOLATILE, new KeySet(reqkey));
         }
-        internal RandoInfo UnresolvedInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo VolInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.UNRESOLVED, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.VOLATILE, new KeySet(reqkey));
         }
-        internal RandoInfo ExoticInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo CrowsInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.EXOTIC, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, new KeySet(reqkey));
         }
-        internal RandoInfo CrammedInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo UnresolvedInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.CRAMMED, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.UNRESOLVED, new KeySet(reqkey));
         }
-        internal RandoInfo RemovedInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo ExoticInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(desc, PICKUPTYPE.REMOVED, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.EXOTIC, new KeySet(reqkey));
         }
-        internal RandoInfo BossInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo CrammedInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(area, desc, PICKUPTYPE.CRAMMED, new KeySet(reqkey));
+        }
+        internal RandoInfo RemovedInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(area, desc, PICKUPTYPE.REMOVED, new KeySet(reqkey));
+        }
+        internal RandoInfo BossInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
-            return new RandoInfo(desc, PICKUPTYPE.BOSS, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.BOSS, new KeySet(reqkey));
         }
-        internal RandoInfo BossVolInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo BossVolInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), new KeySet(reqkey));
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), new KeySet(reqkey));
         }
-        internal RandoInfo BossNGPlusInfo(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo BossNGPlusInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), new KeySet(reqkey));
         }
-        internal RandoInfo LinkedSlave(string desc, KEYID reqkey = KEYID.NONE)
+        internal RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, int toCopyID, KEYID reqkey = KEYID.NONE)
         {
             // This is essentially a flag on top of safeinfo
-            return new RandoInfo(desc, PICKUPTYPE.LINKEDSLAVE, new KeySet(reqkey));
+            return new RandoInfo(area, desc, pickuptype, new KeySet(reqkey));
         }
 
         // Overloads for multiple key options:
-        internal RandoInfo NpcInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo NpcInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NPC, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.NPC, keysets);
         }
-        internal RandoInfo NpcSafeInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo NpcSafeInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), keysets);
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), keysets);
         }
-        internal RandoInfo CovInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo CovInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.COVENANTHARD, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.COVENANTHARD, keysets);
         }
-        internal RandoInfo CovFineInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo CovFineInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.COVENANTEASY, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.COVENANTEASY, keysets);
         }
-        internal RandoInfo WChestInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo WChestInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.WOODCHEST, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.WOODCHEST, keysets);
         }
-        internal RandoInfo MChestInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo MChestInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.METALCHEST, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.METALCHEST, keysets);
         }
-        internal RandoInfo NGPlusInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo NGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NGPLUS, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.NGPLUS, keysets);
         }
-        internal RandoInfo WChestNGPlusInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo WChestNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), keysets);
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), keysets);
         }
-        internal RandoInfo MChestNGPlusInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo MChestNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), keysets);
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), keysets);
         }
-        internal RandoInfo SafeInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo SafeInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.NONVOLATILE, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.NONVOLATILE, keysets);
         }
-        internal RandoInfo ExoticInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo ExoticInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.EXOTIC, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.EXOTIC, keysets);
         }
-        internal RandoInfo CrammedInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo CrammedInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.CRAMMED, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.CRAMMED, keysets);
         }
-        internal RandoInfo VolInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo VolInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, PICKUPTYPE.VOLATILE, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.VOLATILE, keysets);
         }
-        internal RandoInfo BossInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo BossInfo(MapArea area, string desc, params KeySet[] keysets)
         {
             // This is essentially a flag on top of safeinfo
-            return new RandoInfo(desc, PICKUPTYPE.BOSS, keysets);
+            return new RandoInfo(area, desc, PICKUPTYPE.BOSS, keysets);
         }
-        internal RandoInfo BossNGPlusInfo(string desc, params KeySet[] keysets)
+        internal RandoInfo BossNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
         {
-            return new RandoInfo(desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), keysets);
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), keysets);
         }
 
         // Utility shorthand methods (for common purposes):
