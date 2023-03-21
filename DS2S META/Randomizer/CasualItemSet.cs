@@ -192,7 +192,6 @@ namespace DS2S_META.Randomizer
             Dold.Add(75400300, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Soul Arrow"));
             Dold.Add(75400301, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Heal"));
             Dold.Add(75400500, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Lenigrast's Key"));
-            Dold.Add(75400600, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Lifegem"));
             Dold.Add(75400602, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Radiant Lifegem"));
             Dold.Add(75400603, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Amber Herb"));
             Dold.Add(75400604, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Throwing Knife"));
@@ -201,8 +200,9 @@ namespace DS2S_META.Randomizer
             Dold.Add(75400607, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Human Effigy"));
             Dold.Add(75400608, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Pharros' Lockstone"));
             Dold.Add(75400615, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Fragrant Branch of Yore"));
+            Dold.Add(75400600, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Lifegem"));
+            Dold.Add(75400609, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug"));
             Dold.Add(75400601, ShopRemoveInfo(MapArea.FOFG, "Melentia - Lifegems after LG"));
-            Dold.Add(75400609, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug"));
             Dold.Add(75400610, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug"));
             Dold.Add(75400611, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug"));
             Dold.Add(75400612, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug"));
@@ -284,9 +284,6 @@ namespace DS2S_META.Randomizer
 
             Dold.Add(76200300, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Soul Appease", KEYID.CHLOANNE));
             Dold.Add(76200301, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Dead Again", KEYID.CHLOANNE));
-            Dold.Add(76200600, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Titanite shards", KEYID.CHLOANNE));
-            Dold.Add(76200602, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Large Shards after OIK", KEYID.IRONKEEP));
-            Dold.Add(76200604, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Chunks after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200606, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Slab after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200607, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Twinklings after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200608, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 PDB after Velstadt", KEYID.UNDEADCRYPT));
@@ -300,6 +297,9 @@ namespace DS2S_META.Randomizer
             Dold.Add(76200616, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Magic stones after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200617, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Old Mundane stones after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200618, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Bonfire Ascetic"));
+            Dold.Add(76200600, ShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Titanite shards", KEYID.CHLOANNE));
+            Dold.Add(76200602, ShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Large Shards after OIK", KEYID.IRONKEEP));
+            Dold.Add(76200604, ShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Chunks after Velstadt", KEYID.UNDEADCRYPT));
             Dold.Add(76200601, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Titanite shards after OIK", KEYID.CHLOANNE));
             Dold.Add(76200603, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Large Shards after Mirror Knight", KEYID.MIRRORKNIGHTEVENT));
             Dold.Add(76200605, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Chunks after Nash", KEYID.CREDITS));
@@ -333,14 +333,6 @@ namespace DS2S_META.Randomizer
             Dold.Add(76400604, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Titanite Shard", KEYID.BLACKSMITH));
             Dold.Add(76400605, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Repair Powder", KEYID.BLACKSMITH));
 
-            Dold.Add(76430000, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Royal Kite Shield", KEYID.MCDUFF));
-            Dold.Add(76430001, ShopInfo(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KEYID.MCDUFF));
-            Dold.Add(76430002, ShopInfo(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KEYID.MCDUFF));
-            Dold.Add(76430003, ShopInfo(MapArea.TheLostBastille, "[EX Blacksmith] Winged Spear", KEYID.MCDUFF));
-            Dold.Add(76430004, ShopInfo(MapArea.TheLostBastille, "[EX blacksmith] size", KEYID.MCDUFF));
-            Dold.Add(76430005, ShopInfo(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KEYID.MCDUFF));
-            Dold.Add(76430006, ShopInfo(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KEYID.MCDUFF));
-            Dold.Add(76430100, ShopInfo(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KEYID.MCDUFF));
             Dold.Add(76430600, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Arrow", KEYID.MCDUFF));
             Dold.Add(76430601, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Arrow", KEYID.MCDUFF));
             Dold.Add(76430602, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Bolt", KEYID.MCDUFF));
@@ -348,6 +340,14 @@ namespace DS2S_META.Randomizer
             Dold.Add(76430604, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Greatarrow", KEYID.MCDUFF));
             Dold.Add(76430605, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Repair Powder", KEYID.MCDUFF));
             Dold.Add(76430606, ShopInfo(MapArea.TheLostBastille, "[EX blacksmith] light powder of repair", KEYID.MCDUFF));
+            Dold.Add(76430000, ShopSustain(MapArea.TheLostBastille, "[Steady Hand McDuff] Royal Kite Shield", KEYID.MCDUFF));
+            Dold.Add(76430001, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KEYID.MCDUFF));
+            Dold.Add(76430002, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KEYID.MCDUFF));
+            Dold.Add(76430003, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Winged Spear", KEYID.MCDUFF));
+            Dold.Add(76430004, ShopSustain(MapArea.TheLostBastille, "[EX blacksmith] size", KEYID.MCDUFF));
+            Dold.Add(76430005, ShopSustain(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KEYID.MCDUFF));
+            Dold.Add(76430006, ShopSustain(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KEYID.MCDUFF));
+            Dold.Add(76430100, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KEYID.MCDUFF));
             Dold.Add(76430007, ShopRemoveInfo(MapArea.TheLostBastille, "[EX blacksmith] sword", KEYID.MCDUFF));
             Dold.Add(76430008, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KEYID.MCDUFF));
             Dold.Add(76430009, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KEYID.MCDUFF));
@@ -460,6 +460,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(76801306, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KEYID.STRAID));
 
             Dold.Add(76900000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Cleric's Sacred Chime"));
+            Dold.Add(76900400, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Ring of Prayer"));
             Dold.Add(76900300, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Heal"));
             Dold.Add(76900301, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Med Heal"));
             Dold.Add(76900302, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Great Heal Excerpt"));
@@ -480,7 +481,6 @@ namespace DS2S_META.Randomizer
             Dold.Add(76900317, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Lightning Spear", KEYID.SHRINEOFWINTER));
             Dold.Add(76900318, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Homeward", KEYID.SHRINEOFWINTER));
             Dold.Add(76900319, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Guidance", KEYID.SHRINEOFWINTER));
-            Dold.Add(76900400, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Ring of Prayer"));
 
             Dold.Add(77000000, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Staff", KEYID.ROTUNDA));
             Dold.Add(77000001, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Chime", KEYID.ROTUNDA));
@@ -697,10 +697,10 @@ namespace DS2S_META.Randomizer
             Dold.Add(77700402, ShopInfo(MapArea.Majula, "[Cat] Name-engraved ring"));
             Dold.Add(77700403, ShopInfo(MapArea.Majula, "[Cat] Ring of Whispers"));
             Dold.Add(77700404, ShopInfo(MapArea.Majula, "[Cat] Ring of the Evil Eye"));
-            Dold.Add(77700600, ShopInfo(MapArea.Majula, "[Cat] Prism stone"));
-            Dold.Add(77700601, ShopInfo(MapArea.Majula, "[Cat] Alluring skull"));
-            Dold.Add(77700602, ShopInfo(MapArea.Majula, "[Cat] Lloyd's talisman"));
-            Dold.Add(77700603, ShopInfo(MapArea.Majula, "[Cat] Homeward bones"));
+            Dold.Add(77700600, ShopSustain(MapArea.Majula, "[Cat] Prism stone"));
+            Dold.Add(77700601, ShopSustain(MapArea.Majula, "[Cat] Alluring skull"));
+            Dold.Add(77700602, ShopSustain(MapArea.Majula, "[Cat] Lloyd's talisman"));
+            Dold.Add(77700603, ShopSustain(MapArea.Majula, "[Cat] Homeward bones"));
             Dold.Add(77700604, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Prism Stones after Shrine of Winter", KEYID.SHRINEOFWINTER));
             Dold.Add(77700605, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Alluring skulls after Shrine of Winter", KEYID.SHRINEOFWINTER));
             Dold.Add(77700606, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Lloyd's Amulet after Shrine of Winter", KEYID.SHRINEOFWINTER));
@@ -730,18 +730,18 @@ namespace DS2S_META.Randomizer
             Dold.Add(78400201, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Robe", KEYID.BRANCH));
             Dold.Add(78400202, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Gloves", KEYID.BRANCH));
             Dold.Add(78400203, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Skirt", KEYID.BRANCH));
-            Dold.Add(78400300, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KEYID.BRANCH));
-            Dold.Add(78400301, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KEYID.BRANCH));
-            Dold.Add(78400302, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KEYID.BRANCH));
-            Dold.Add(78400303, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KEYID.BRANCH));
-            Dold.Add(78400304, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KEYID.BRANCH));
-            Dold.Add(78400305, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KEYID.BRANCH));
-            Dold.Add(78400306, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KEYID.BRANCH));
-            Dold.Add(78400307, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KEYID.BRANCH));
             Dold.Add(78400400, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Poisonbite Ring", KEYID.BRANCH));
             Dold.Add(78400401, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Bloodbite Ring", KEYID.BRANCH));
             Dold.Add(78400402, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Cursebite Ring", KEYID.BRANCH));
             Dold.Add(78400600, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Dark Troches", KEYID.BRANCH));
+            Dold.Add(78400300, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KEYID.BRANCH));
+            Dold.Add(78400301, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KEYID.BRANCH));
+            Dold.Add(78400302, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KEYID.BRANCH));
+            Dold.Add(78400303, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KEYID.BRANCH));
+            Dold.Add(78400304, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KEYID.BRANCH));
+            Dold.Add(78400305, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KEYID.BRANCH));
+            Dold.Add(78400306, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KEYID.BRANCH));
+            Dold.Add(78400307, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KEYID.BRANCH));
             // unsure what event causes these right now
             Dold.Add(78400308, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KEYID.BRANCH));
             Dold.Add(78400309, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KEYID.BRANCH));
