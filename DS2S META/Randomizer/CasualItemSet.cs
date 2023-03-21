@@ -358,20 +358,19 @@ namespace DS2S_META.Randomizer
             Dold.Add(76430102, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KEYID.MCDUFF));
 
             Dold.Add(76600000, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Sorcerer's Staff"));
-            Dold.Add(76600300, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Arrow"));
-            Dold.Add(76600301, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Soul Arrow"));
-            Dold.Add(76600302, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Heavy Soul Arrow"));
-            Dold.Add(76600303, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Heavy Soul Arrow"));
-            Dold.Add(76600304, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Shockwave"));
-            Dold.Add(76600305, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Spear Barrage"));
-            Dold.Add(76600306, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Magic Weapon"));
-            Dold.Add(76600307, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Yearn"));
-            Dold.Add(76600315, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Yearn", KEYID.SHRINEOFWINTER));
             Dold.Add(76600400, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Spell Quartz Ring"));
             Dold.Add(76600401, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Clear Bluestone Ring"));
             Dold.Add(76600600, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Amber Herb"));
             Dold.Add(76600601, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Twilight Herb"));
             Dold.Add(76600602, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Simpleton's Spice"));
+            Dold.Add(76600300, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Arrow"));
+            Dold.Add(76600301, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Soul Arrow"));
+            Dold.Add(76600302, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Heavy Soul Arrow"));
+            Dold.Add(76600303, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Heavy Soul Arrow"));
+            Dold.Add(76600304, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Shockwave"));
+            Dold.Add(76600305, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Spear Barrage"));
+            Dold.Add(76600306, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Magic Weapon"));
+            Dold.Add(76600307, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Yearn"));
             Dold.Add(76600308, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Arrow", KEYID.SHRINEOFWINTER));
             Dold.Add(76600309, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Great Soul Arrow", KEYID.SHRINEOFWINTER));
             Dold.Add(76600310, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Heavy Soul Arrow", KEYID.SHRINEOFWINTER));
@@ -379,6 +378,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(76600312, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Shockwave", KEYID.SHRINEOFWINTER));
             Dold.Add(76600313, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Spear Barrage", KEYID.SHRINEOFWINTER));
             Dold.Add(76600314, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Magic Weapon", KEYID.SHRINEOFWINTER));
+            Dold.Add(76600315, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Yearn", KEYID.SHRINEOFWINTER));
 
             Dold.Add(76800000, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Greatsword of the Forlorn", KEYID.STRAID));
             Dold.Add(76800001, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Scythe of the Forlorn", KEYID.STRAID));

@@ -15,6 +15,7 @@ namespace DS2S_META.Randomizer
         UNDEFINED,
         EXCLUDED,
         SHOPREMOVE,
+        SHOPSUSTAIN,
         STANDARD,
         CROWS,
         COMPLETE,

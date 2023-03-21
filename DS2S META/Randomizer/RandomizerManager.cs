@@ -732,6 +732,7 @@ namespace DS2S_META.Randomizer
         {
             FixShopCopies();
             FixNormalTrade();
+            FixShopSustains();
             FixShopTradeCopies();
             FixFreeTrade(); // needs to be after FixShopTradeCopies()
             FixShopsToRemove();
@@ -759,11 +760,8 @@ namespace DS2S_META.Randomizer
                     .Concat(dropptfs).ToList();
 
             // Places to fill with "Ordinary Randomization"
-            AllPTF = AllP.Where(rdz => rdz.Type == RDZ_STATUS.STANDARD ||
-                                       rdz.Type == RDZ_STATUS.FREETRADE ||
-                                       rdz.Type == RDZ_STATUS.UNLOCKTRADE).ToList();
-
-            int test = 1;
+            var legitRandomizeTypes = new RDZ_STATUS[] { RDZ_STATUS.STANDARD, RDZ_STATUS.UNLOCKTRADE, RDZ_STATUS.FREETRADE, RDZ_STATUS.SHOPSUSTAIN };
+            AllPTF = AllP.Where(rdz => legitRandomizeTypes.Contains(rdz.Type)).ToList();
         }
         internal IEnumerable<Randomization> SetLotPTFTypes()
         {
@@ -1349,6 +1347,17 @@ namespace DS2S_META.Randomizer
             {
                 shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
                 shp.ShuffledShop.DisableFlag = -1;
+                shp.MarkHandled();
+            }
+        }
+        internal void FixShopSustains()
+        {
+            // Don't allow these events to be disabled
+            var sustain_shops = AllPTF.OfType<ShopRdz>()
+                                 .Where(rdz => rdz.Type == RDZ_STATUS.SHOPSUSTAIN).ToList();
+            foreach (var shp in sustain_shops)
+            {
+                shp.ShuffledShop.DisableFlag = -1; // Never disable
                 shp.MarkHandled();
             }
         }
