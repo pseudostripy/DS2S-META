@@ -57,7 +57,7 @@ namespace DS2S_META.Randomizer
 
         internal static List<LinkedShopEvent> GetLinkedEvents() 
         {
-            List<LinkedShopEvent> LinkedEvents = new List<LinkedShopEvent>()
+            List<LinkedShopEvent> LinkedEvents = new()
             {
                 // Maughlin:
                 ShopCopy(76100211, 76100219), // Maughlin royal sodlier helm

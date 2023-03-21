@@ -18,8 +18,9 @@ namespace DS2S_META.Randomizer
         CROWS,
         COMPLETE,
         FILL_BY_COPY,
+        SUSTAINSHOP, // never disable
         UNLOCKTRADE, // enable immediately
-        MAKEFREE,
+        FREETRADE,
         TRADE_SHOP_COPY,
         INITIALIZING,
     }

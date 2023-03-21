@@ -361,9 +361,27 @@ namespace DS2S_META.Randomizer
         {
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, new KeySet(reqkey));
         }
+        internal RandoInfo TradeShopInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.UNLOCKTRADE, new KeySet(reqkey));
+        }
+        internal RandoInfo FreeTradeShopInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
+        {
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.FREETRADE, new KeySet(reqkey));
+        }
+        internal RandoInfo TradeShopCopy(MapArea area, string desc, int refid, KEYID reqkey = KEYID.NONE)
+        {
+            // awkward Ornifex things
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.TRADE_SHOP_COPY, refid, new KeySet(reqkey));
+        }
         internal RandoInfo ShopRemoveInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPREMOVE, new KeySet(reqkey));
+        }
+        internal RandoInfo ShopCopy(MapArea area, string desc, int refid, KEYID reqkey = KEYID.NONE)
+        {
+            // not randomized, just copied from copyfromID
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.FILL_BY_COPY, refid, new KeySet(reqkey));
         }
         internal RandoInfo NpcInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
@@ -451,6 +469,10 @@ namespace DS2S_META.Randomizer
         }
 
         // Overloads for multiple key options:
+        internal RandoInfo ShopInfo(MapArea area, string desc, params KeySet[] keysets)
+        {
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, keysets);
+        }
         internal RandoInfo NpcInfo(MapArea area, string desc, params KeySet[] keysets)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.NPC, keysets);

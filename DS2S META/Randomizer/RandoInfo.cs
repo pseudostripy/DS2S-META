@@ -10,33 +10,52 @@ namespace DS2S_META.Randomizer
     {
         // Area shorthands:
         NONE = 0x0,                 // default
-        BELFRYLUNA      = 0xBB0,    // Shorthand: Branch && Pharros
-        SINNERSRISE     = 0xBB1,    // Shorthand: Branch || Antiquated 
-        DRANGLEIC       = 0xBB2,    // Shorthand: All conditions for drangleic
-        AMANA           = 0xBB3,    // Shorthand: Drangleic + King's passage
-        ALDIASKEEP      = 0xBB4,    // Shorthand: Branch + King's Ring
-        MEMORYJEIGH     = 0xBB5,    // Shorthand: King's Ring + Ashen Mist
-        GANKSQUAD       = 0xBB6,    // Shorthand: DLC1 + Eternal Sanctum
-        PUZZLINGSWORD   = 0xBB7,    // Shorthand TO CONSIDER: Might need range
-        ELANA           = 0xBB8,    // Shorthand: DLC1 + Dragon Stone
-        FUME            = 0xBB9,    // Shorthand: DLC2 + Scorching Sceptor
-        BLUESMELTER     = 0xBBA,    // Shorthand: DLC2 + Tower Key
-        ALONNE          = 0xBBB,    // Shorthand: DLC2 + Tower Key + Scorching Scepter + Ashen Mist
-        DLC3            = 0xBBC,    // Shorthand: DLC3 + Drangleic
-        FRIGIDOUTSKIRTS = 0xBBD,    // Shorthand: DLC3 + Garrison Ward Key
-        CREDITS         = 0xBBE,    // Shorthand: Everything required to beat Nash
-        VENDRICK        = 0xBBF,    // Shorthand: Amana && SoaG x3
-        BELFRYSOL       = 0xBC0,    // Shorthand: Rotunda && BigPharros
-        DARKLURKER      = 0xBC1,    // Shorthand: Forgotten && Drangleic && Torch && Butterfly x3
-        DLC2            = 0xBC2,    // Shorthand: DLC2 key + Rotunda
-        MEMORYORRO      = 0xBC3,    // Shorthand: Soldier Key & Ashen Mist
-
-        BRANCH          = 0xAA0,    // Shorthand: Require at least 3 branches
-        PHARROS         = 0xAA1,    // Shorthand: Enough Pharros Lockstones available
-        NADALIA         = 0xAA2,    // Shorthand: DLC2 + enough Smelter Wedges 
-        TENBRANCHLOCK   = 0xAA4,    // Shorthand: Require at least 10 branches
-        BIGPHARROS      = 0xAA5,    // Shorthand: Require at least two lockstones
+        BELFRYLUNA      = 0xBB0,    // Branch && Pharros
+        SINNERSRISE     = 0xBB1,    // Branch || Antiquated 
+        DRANGLEIC       = 0xBB2,    // All conditions for drangleic
+        AMANA           = 0xBB3,    // Drangleic + King's passage
+        ALDIASKEEP      = 0xBB4,    // Branch + King's Ring
+        MEMORYJEIGH     = 0xBB5,    // King's Ring + Ashen Mist
+        GANKSQUAD       = 0xBB6,    // DLC1 + Eternal Sanctum
+        PUZZLINGSWORD   = 0xBB7,    // TO CONSIDER: Might need range
+        ELANA           = 0xBB8,    // DLC1 + Dragon Stone
+        FUME            = 0xBB9,    // DLC2 + Scorching Sceptor
+        BLUESMELTER     = 0xBBA,    // DLC2 + Tower Key
+        ALONNE          = 0xBBB,    // DLC2 + Tower Key + Scorching Scepter + Ashen Mist
+        DLC3            = 0xBBC,    // DLC3 + Drangleic
+        FRIGIDOUTSKIRTS = 0xBBD,    // DLC3 + Garrison Ward Key
+        CREDITS         = 0xBBE,    // Everything required to beat Nash
+        VENDRICK        = 0xBBF,    // Amana && SoaG x3
+        BELFRYSOL       = 0xBC0,    // Rotunda && BigPharros
+        DARKLURKER      = 0xBC1,    // Forgotten && Drangleic && Torch && Butterfly x3
+        DLC2            = 0xBC2,    // DLC2 key + Rotunda
+        MEMORYORRO      = 0xBC3,    // Soldier Key & Ashen Mist
+        EARTHERNPEAK    = 0xBC4,    // Rotunda
+        IRONKEEP        = 0xBC5,    // Rotunda
+        UNDEADCRYPT     = 0xBC6,    // Drangleic + King's passage [see amana]
+        THRONEWANT      = 0xBC7,    // Drangleic + King's ring [Duo only]
         
+        BRANCH          = 0xAA0,    // Require at least 3 branches
+        PHARROS         = 0xAA1,    // Enough Pharros Lockstones available
+        NADALIA         = 0xAA2,    // DLC2 + enough Smelter Wedges 
+        TENBRANCHLOCK   = 0xAA4,    // Require at least 10 branches
+        BIGPHARROS      = 0xAA5,    // Require at least two lockstones
+        MIRRORKNIGHTEVENT = 0xAA6,  // Drangleic & King's passage [see also Amana]
+        SHRINEOFWINTER  = 0xAA7,    // SinnersRise & IronKeep & Tseldora
+
+        // NPC shorthands:
+        HEADVENGARL     = 0xCC0,    // [Currently] FragrantBranch
+        AGDAYNE         = 0xCC1,    // Drangleic
+        GILLIGAN        = 0xCC2,    // Earthern Peak
+        WELLAGER        = 0xCC3,    // Drangleic
+        GAVLAN          = 0xCC4,    // NO REQUIREMENT
+        CREIGHTON       = 0xCC5,    // Rotunda & UndeadLockaway
+        STRAID          = 0xCC6,    // [Currently] see SinnerRise
+        CHLOANNE        = 0xCC7,    // Rotunda
+        MCDUFF          = 0xCC8,    // DullEmber (currently only)
+        ORNIFEX         = 0xCC9,    // Branch & FangKey
+        TITCHY          = 0xCCA,    // Rotunda & TokenOfSpite
+
         // Actual Key Item IDs:
         SOLDIER         = 50600000,
         FORGOTTEN       = 50820000,
@@ -108,6 +127,7 @@ namespace DS2S_META.Randomizer
         internal PICKUPTYPE[] Types;
         internal KeySet[] KeySet;
         internal RDZ_STATUS RandoHandleType;
+        internal int RefInfoID = 0;
         
         // Main class constructor
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, params KeySet[] reqkeys)
@@ -133,6 +153,15 @@ namespace DS2S_META.Randomizer
             Types = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
             RandoHandleType = handletype;
+        }
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, int refID, params KeySet[] reqkeys)
+        {
+            Area = area;
+            Description = desc;
+            Types = new PICKUPTYPE[] { type };
+            KeySet = reqkeys;
+            RandoHandleType = handletype;
+            RefInfoID = refID;
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_STATUS handletype, params KeySet[] reqkeys)
         {

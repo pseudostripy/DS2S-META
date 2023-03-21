@@ -659,7 +659,7 @@ namespace DS2S_META.Randomizer
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Status == RDZ_STATUS.STANDARD
-                                        || srdz.Status == RDZ_STATUS.MAKEFREE
+                                        || srdz.Status == RDZ_STATUS.FREETRADE
                                         || srdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
             foreach (var shop in okShops)
                 shoplotlists.Add(shop.Flatlist);
@@ -772,7 +772,7 @@ namespace DS2S_META.Randomizer
 
             // Places to fill with "Ordinary Randomization"
             AllPTR = AllP.Where(rdz => rdz.Status == RDZ_STATUS.STANDARD ||
-                                       rdz.Status == RDZ_STATUS.MAKEFREE ||
+                                       rdz.Status == RDZ_STATUS.FREETRADE ||
                                        rdz.Status == RDZ_STATUS.UNLOCKTRADE).ToList();
         }
         internal IEnumerable<Randomization> SetLotPTFTypes()
@@ -902,7 +902,7 @@ namespace DS2S_META.Randomizer
                                          innerKeySelector: lev => lev.KeepID,
                                          resultSelector: (srdz, lev) => srdz);
             foreach (var srdz in shopsft)
-                srdz.Status = RDZ_STATUS.MAKEFREE;
+                srdz.Status = RDZ_STATUS.FREETRADE;
 
             // The TradeShopCopy ones DO NOT go through "ordinary randomization"
             // they instead, just copy the above ones, and then change price
@@ -1404,7 +1404,7 @@ namespace DS2S_META.Randomizer
             // This is just a Normal Trade Fix but where we additionally 0 the price
             // Ornifex First Trade (ensure free)
             var shops_makefree = AllPTR.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Status == RDZ_STATUS.MAKEFREE);
+                                 .Where(rdz => rdz.Status == RDZ_STATUS.FREETRADE);
             foreach (var shp in shops_makefree)
             {
                 shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
