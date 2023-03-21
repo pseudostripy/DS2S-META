@@ -460,16 +460,16 @@ namespace DS2S_META.Randomizer
             Dold.Add(76801306, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KEYID.STRAID));
 
             Dold.Add(76900000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Cleric's Sacred Chime"));
-            Dold.Add(76900300, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Heal"));
-            Dold.Add(76900301, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Med Heal"));
-            Dold.Add(76900302, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Great Heal Excerpt"));
-            Dold.Add(76900303, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Replenishment"));
-            Dold.Add(76900304, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Resplendent Life"));
-            Dold.Add(76900305, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Caressing Prayer"));
-            Dold.Add(76900306, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Force"));
-            Dold.Add(76900307, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Lightning Spear"));
-            Dold.Add(76900308, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Homeward"));
-            Dold.Add(76900309, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Guidance"));
+            Dold.Add(76900300, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Heal"));
+            Dold.Add(76900301, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Med Heal"));
+            Dold.Add(76900302, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Great Heal Excerpt"));
+            Dold.Add(76900303, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Replenishment"));
+            Dold.Add(76900304, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Resplendent Life"));
+            Dold.Add(76900305, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Caressing Prayer"));
+            Dold.Add(76900306, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Force"));
+            Dold.Add(76900307, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Lightning Spear"));
+            Dold.Add(76900308, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Homeward"));
+            Dold.Add(76900309, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Guidance"));
             Dold.Add(76900310, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Heal", KEYID.SHRINEOFWINTER));
             Dold.Add(76900311, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Med Heal", KEYID.SHRINEOFWINTER));
             Dold.Add(76900312, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Great Heal Excerpt", KEYID.SHRINEOFWINTER));
