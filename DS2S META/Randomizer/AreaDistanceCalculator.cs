@@ -18,13 +18,13 @@ namespace DS2S_META.Randomizer
             [MapArea.Majula] = new()
             {
                 [MapArea.ThingsBetwixt] = 1,
-                [MapArea.ForestOfFallenGiants] = 1,
+                [MapArea.FOFG] = 1,
                 [MapArea.HeidesTowerOfFlame] = 1,
                 [MapArea.HuntsmansCopse] = 1,
                 [MapArea.ShadedWoods] = 1,
                 [MapArea.ThePit] = 1
             },
-            [MapArea.ForestOfFallenGiants] = new()
+            [MapArea.FOFG] = new()
             {
                 [MapArea.Majula] = 1,
                 [MapArea.TheLostBastille] = 1,
@@ -46,7 +46,7 @@ namespace DS2S_META.Randomizer
             },
             [MapArea.TheLostBastille] = new()
             {
-                [MapArea.ForestOfFallenGiants] = 1,
+                [MapArea.FOFG] = 1,
                 [MapArea.NoMansWharf] = 1,
                 [MapArea.BelfryLuna] = 1,
                 [MapArea.SinnersRise] = 1
@@ -89,16 +89,16 @@ namespace DS2S_META.Randomizer
             [MapArea.DoorsOfPharros] = new()
             {
                 [MapArea.ShadedWoods] = 1,
-                [MapArea.BrightstoneCoveTseldora] = 1,
+                [MapArea.Tseldora] = 1,
                 //[MapArea.RatKingCovenant] = 0
             },
-            [MapArea.BrightstoneCoveTseldora] = new()
+            [MapArea.Tseldora] = new()
             {
                 [MapArea.DoorsOfPharros] = 1,
                 [MapArea.DragonMemories] = 1,
                 [MapArea.LordsPrivateChamber] = 1
             },
-            [MapArea.LordsPrivateChamber] = new() { [MapArea.BrightstoneCoveTseldora] = 1, [MapArea.Majula] = 1 },
+            [MapArea.LordsPrivateChamber] = new() { [MapArea.Tseldora] = 1, [MapArea.Majula] = 1 },
             [MapArea.ThePit] = new()
             {
                 [MapArea.Majula] = 1,
@@ -144,10 +144,10 @@ namespace DS2S_META.Randomizer
             [MapArea.AldiasKeep] = new() { [MapArea.ShadedWoods] = 1, [MapArea.DragonAerie] = 1 },
             [MapArea.DragonAerie] = new() { [MapArea.AldiasKeep] = 1, [MapArea.DragonShrine] = 1 },
             [MapArea.DragonShrine] = new() { [MapArea.DragonAerie] = 1 },
-            [MapArea.MemoryOfJeigh] = new() { [MapArea.ForestOfFallenGiants] = 1 },
-            [MapArea.MemoryOfOrro] = new() { [MapArea.ForestOfFallenGiants] = 1 },
-            [MapArea.MemoryOfVammar] = new() { [MapArea.ForestOfFallenGiants] = 1 },
-            [MapArea.DragonMemories] = new() { [MapArea.BrightstoneCoveTseldora] = 1 },
+            [MapArea.MemoryOfJeigh] = new() { [MapArea.FOFG] = 1 },
+            [MapArea.MemoryOfOrro] = new() { [MapArea.FOFG] = 1 },
+            [MapArea.MemoryOfVammar] = new() { [MapArea.FOFG] = 1 },
+            [MapArea.DragonMemories] = new() { [MapArea.Tseldora] = 1 },
             [MapArea.ShulvaSanctumCity] = new()
             {
                 [MapArea.BlackGulch] = 1,

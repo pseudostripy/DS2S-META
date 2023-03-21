@@ -12,6 +12,7 @@ namespace DS2S_META.Randomizer
     internal enum RDZ_STATUS
     {
         // Enum used to denote required further post-processing situations
+        UNDEFINED,
         EXCLUDED,
         SHOPREMOVE,
         STANDARD,
@@ -35,21 +36,26 @@ namespace DS2S_META.Randomizer
         // Fields
         internal int ParamID;
         internal abstract List<DropInfo> Flatlist { get; }
-        internal RDZ_STATUS Status = RDZ_STATUS.INITIALIZING;
+        internal RDZ_STATUS Type // HandlingType for RandoMan
+        {
+            get => RandoInfo.RandoHandleType;
+            set { RandoInfo.RandoHandleType = value; }
+        }
         internal bool IsHandled = false;
         internal string RandoDesc = string.Empty;
         internal string GUID;
-        internal RandoInfo? RandoInfo;
+        internal RandoInfo RandoInfo;
 
         // Constructors:
         internal Randomization(int pid)
         {
             GUID = Guid.NewGuid().ToString();
             ParamID = pid;
+            RandoInfo = new(); // default
         }
 
         // Abstract Methods:
-        internal abstract string printdata();
+        internal abstract string PrintData();
         internal abstract bool IsSaturated();
         internal abstract void AddShuffledItem(DropInfo item);
         internal abstract bool HasShuffledItemID(int itemID);
@@ -63,7 +69,7 @@ namespace DS2S_META.Randomizer
         // Common Methods:
 
         // Wrappers to RandoInfo
-        internal bool HasType(List<PICKUPTYPE> bannedtypes)
+        internal bool HasPickupType(List<PICKUPTYPE> bannedtypes)
         {
             //if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set"); // TODO?
             if (RandoInfo == null) return false; // TODO?
@@ -122,6 +128,8 @@ namespace DS2S_META.Randomizer
 
             return item.MetaItemName;
         }
+        internal bool IsStandardHT => Type == RDZ_STATUS.STANDARD;
+        internal bool IsExcludedHT => Type == RDZ_STATUS.EXCLUDED;
         internal void MarkHandled()
         {
             IsHandled = true;
@@ -234,7 +242,7 @@ namespace DS2S_META.Randomizer
                     return;
             }
         }
-        internal override string printdata()
+        internal override string PrintData()
         {
             throw new NotImplementedException();
         }
@@ -330,7 +338,7 @@ namespace DS2S_META.Randomizer
 
         // Methods:
         internal override bool IsSaturated() => ShuffledShop != null && ShuffledShop.ItemID != 0;
-        internal override string printdata()
+        internal override string PrintData()
         {
             if (VanillaShop == null)
                 return "BLANK";

@@ -429,7 +429,7 @@ namespace DS2S_META.Randomizer
         }
         internal RandoInfo CrowsInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, new KeySet(reqkey));
+            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_STATUS.CROWS, new KeySet(reqkey));
         }
         internal RandoInfo UnresolvedInfo(MapArea area, string desc, KEYID reqkey = KEYID.NONE)
         {
@@ -554,111 +554,54 @@ namespace DS2S_META.Randomizer
         internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
             // Function to handle different checks depending on KeyTypes I guess:
-            switch (kid)
+            return kid switch
             {
-                case KEYID.NONE:
-                    // no condition required:
-                    return true;
-
-                case KEYID.BELFRYLUNA:
-                    // Branch && Pharros Lockstone x2
-                    return condLuna();
-
-                case KEYID.SINNERSRISE:
-                    // Branch || Antiquated
-                    return condSinner();
-
-                case KEYID.DRANGLEIC:
-                    // Branch && Rotunda && Sinner's Rise
-                    return condDrangleic();
-
-                case KEYID.AMANA:
-                    // Drangleic && King's passage
-                    return condAmana();
-
-                case KEYID.ALDIASKEEP:
-                    // Branch && King's Ring
-                    return condAldias();
-
-                case KEYID.MEMORYJEIGH:
-                    // King's Ring && Ashen Mist
-                    return condJeigh();
-
-                case KEYID.GANKSQUAD:
-                    // DLC1 && Eternal Sanctum
-                    return condGankSquad();
-
-                case KEYID.PUZZLINGSWORD:
-                    // DLC1 (TODO Bow/Arrow as keys)
-                    return condDLC1();
-
-                case KEYID.ELANA:
-                    // DLC1 && Dragon Stone
-                    return condElana();
-
-                case KEYID.FUME:
-                    // DLC2 && Scorching Sceptor
-                    return condFume();
-
-                case KEYID.BLUESMELTER:
-                    // DLC2 && Tower Key
-                    return condBlueSmelter();
-
-                case KEYID.ALONNE:
-                    // DLC2 && Tower Key && Scorching Scepter && Ashen Mist
-                    return condAlonne();
-
-                case KEYID.DLC3:
-                    // DLC3key && Drangleic
-                    return condDLC3();
-
-                case KEYID.FRIGIDOUTSKIRTS:
-                    // DLC3 && Garrison Ward Key
-                    return condFrigid();
-
-                case KEYID.CREDITS:
-                    // Drangleic & Memory of Jeigh
-                    return condCredits();
-
-                case KEYID.VENDRICK:
-                    // Amana + SoaG x3
-                    return condVendrick();
-
-                case KEYID.BRANCH:
-                    // Three branches available
-                    return condBranch();
-
-                case KEYID.TENBRANCHLOCK:
-                    // Ten branches available
-                    return condTenBranch();
-
-                case KEYID.NADALIA:
-                    // DLC2 && Scepter && Tower Key && 12x Smelter Wedge
-                    return condNadalia();
-
-                case KEYID.PHARROS:
-                    // Eight Pharros lockstones available
-                    return condPharros();
-
-                case KEYID.BELFRYSOL:
-                    // Rotunda Lockstone && Pharros Lockstone x2
-                    return condSol();
-
-                case KEYID.DARKLURKER:
-                    // Drangleic && Forgotten key && Torch && Butterfly x3
-                    return condDarklurker();
-
-                case KEYID.DLC2:
-                    // Rotunda Lockstone && DLC2 key
-                    return condDLC2();
-
-                case KEYID.MEMORYORRO:
-                    // Soldier Key && Ashen Mist
-                    return condOrro();
-
-                default:
-                    return condKey(kid); // Simple Key check
-            }
+                KEYID.NONE => true,// no condition required:
+                KEYID.BELFRYLUNA => condLuna(),// Branch && Pharros Lockstone x2
+                KEYID.SINNERSRISE => condSinner(),// Branch || Antiquated
+                KEYID.DRANGLEIC => condDrangleic(),// Branch && Rotunda && Sinner's Rise
+                KEYID.AMANA => condAmana(),// Drangleic && King's passage
+                KEYID.ALDIASKEEP => condAldias(),// Branch && King's Ring
+                KEYID.MEMORYJEIGH => condJeigh(),// King's Ring && Ashen Mist
+                KEYID.GANKSQUAD => condGankSquad(),// DLC1 && Eternal Sanctum
+                KEYID.PUZZLINGSWORD => condDLC1(),// DLC1 (TODO Bow/Arrow as keys)
+                KEYID.ELANA => condElana(),// DLC1 && Dragon Stone
+                KEYID.FUME => condFume(),// DLC2 && Scorching Sceptor
+                KEYID.BLUESMELTER => condBlueSmelter(),// DLC2 && Tower Key
+                KEYID.ALONNE => condAlonne(),// DLC2 && Tower Key && Scorching Scepter && Ashen Mist
+                KEYID.DLC3 => condDLC3(),// DLC3key && Drangleic
+                KEYID.FRIGIDOUTSKIRTS => condFrigid(),// DLC3 && Garrison Ward Key
+                KEYID.CREDITS => condCredits(),// Drangleic & Memory of Jeigh
+                KEYID.VENDRICK => condVendrick(),// Amana + SoaG x3
+                KEYID.BRANCH => condBranch(),// Three branches available
+                KEYID.TENBRANCHLOCK => condTenBranch(),// Ten branches available
+                KEYID.NADALIA => condNadalia(),// DLC2 && Scepter && Tower Key && 12x Smelter Wedge
+                KEYID.PHARROS => condPharros(),// Eight Pharros lockstones available
+                KEYID.BELFRYSOL => condSol(),// Rotunda Lockstone && Pharros Lockstone x2
+                KEYID.DARKLURKER => condDarklurker(),// Drangleic && Forgotten key && Torch && Butterfly x3
+                KEYID.DLC2 => condDLC2(),// Rotunda Lockstone && DLC2 key
+                KEYID.MEMORYORRO => condOrro(),// Soldier Key && Ashen Mist
+                
+                // Simple Key checks: [unsure how to write it in switch expr format with when modified with contains]
+                KEYID.EARTHERNPEAK or KEYID.IRONKEEP or KEYID.UNDEADCRYPT or 
+                KEYID.THRONEWANT or KEYID.BIGPHARROS or KEYID.MIRRORKNIGHTEVENT or 
+                KEYID.SHRINEOFWINTER or KEYID.HEADVENGARL or KEYID.AGDAYNE or 
+                KEYID.GILLIGAN or KEYID.WELLAGER or KEYID.GAVLAN or 
+                KEYID.CREIGHTON or KEYID.STRAID or KEYID.CHLOANNE or KEYID.MCDUFF or 
+                KEYID.ORNIFEX or KEYID.TITCHY or KEYID.SOLDIER or KEYID.FORGOTTEN or 
+                KEYID.TOWER or KEYID.KINSHIP or KEYID.ASHENMIST or KEYID.GARRISONWARD or 
+                KEYID.ALDIASKEY or KEYID.SCEPTER or KEYID.KINGSRING or KEYID.DRAGONSTONE or 
+                KEYID.DLC1 or KEYID.DLC2KEY or KEYID.DLC3KEY or KEYID.EMBEDDED or 
+                KEYID.KINGSPASSAGE or KEYID.ETERNALSANCTUM or KEYID.UNDEADLOCKAWAY or 
+                KEYID.BASTILLEKEY or KEYID.IRON or KEYID.ANTIQUATED or KEYID.MANSION or 
+                KEYID.BRIGHTSTONE or KEYID.FANG or KEYID.ROTUNDA or KEYID.TSELDORADEN or 
+                KEYID.BLACKSMITH or KEYID.DULLEMBER or KEYID.TORCH or KEYID.PHARROSLOCKSTONE or 
+                KEYID.FRAGRANTBRANCH or KEYID.PETRIFIEDEGG or KEYID.WHISPERS or KEYID.SOULOFAGIANT or 
+                KEYID.CRUSHEDEYEORB or KEYID.SMELTERWEDGE or KEYID.NADALIAFRAGMENT or 
+                KEYID.TOKENOFFIDELITY or KEYID.TOKENOFSPITE or KEYID.FLAMEBUTTERFLY 
+                    => condKey(kid),// Simple Key checkthrow new Exception("Unhandled"),
+                _ => throw new Exception("Unhandled")
+            };
 
             // Conditions wrappers:
             int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();

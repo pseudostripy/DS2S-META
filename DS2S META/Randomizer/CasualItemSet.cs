@@ -36,11 +36,12 @@ namespace DS2S_META.Randomizer
 
         internal override void SetupItemSet()
         {
-            setupLootInfoDictionary();
+            SetupLootInfoDictionary();  // add Lots
+            SetupShopsDictionary();     // add Shops
         }
         
         
-        internal void setupShopsDictionary()
+        internal void SetupShopsDictionary()
         {
             Dold.Add(1, ShopRemoveInfo(MapArea.Undefined, "UNKNOWN"));
             Dold.Add(30700000, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Claymore", KEYID.HEADVENGARL));
@@ -130,8 +131,8 @@ namespace DS2S_META.Randomizer
             Dold.Add(72600601, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Rotten Pine Resin", KEYID.GAVLAN));
             Dold.Add(72600602, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Throwing Knife", KEYID.GAVLAN));
             Dold.Add(72600603, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Arrow", KEYID.GAVLAN));
-            Dold.Add(72600401, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Harvest Valley] Ring of Giants", 72600401, KEYID.GAVLAN));
-            Dold.Add(72600402, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Ring of Giants", 72600402, KEYID.GAVLAN));
+            Dold.Add(72600401, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Harvest Valley] Ring of Giants", 72600400, KEYID.GAVLAN));
+            Dold.Add(72600402, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Ring of Giants", 72600400, KEYID.GAVLAN));
             Dold.Add(72600604, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Moss", 72600600, KEYID.GAVLAN));
             Dold.Add(72600605, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Rotten Pine Resin", 72600601, KEYID.GAVLAN));
             Dold.Add(72600606, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Throwing Knife", 72600602, KEYID.GAVLAN));
@@ -401,6 +402,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(76800400, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Ring of Knowledge", KEYID.STRAID));
             Dold.Add(76800401, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Lingering Dragoncrest Ring", KEYID.STRAID));
             Dold.Add(76800600, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Rouge Water", KEYID.STRAID));
+            Dold.Add(76800402, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Forlorn related", KEYID.STRAID));
             Dold.Add(76801000, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Ultra Greatsword", KEYID.STRAID));
             Dold.Add(76801001, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Greatshield", KEYID.STRAID));
             Dold.Add(76801002, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Last Giant] Giant Stone Axe", KEYID.STRAID));
@@ -714,14 +716,15 @@ namespace DS2S_META.Randomizer
             Dold.Add(78300205, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Armor", KSO(KEYID.TITCHY, KEYID.SHRINEOFWINTER)));
             Dold.Add(78300206, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Gauntlets", KSO(KEYID.TITCHY, KEYID.SHRINEOFWINTER)));
             Dold.Add(78300207, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Leggings", KSO(KEYID.TITCHY, KEYID.SHRINEOFWINTER)));
-            Dold.Add(78300300, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Firestorm"));
-            Dold.Add(78300301, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Combustion"));
-            Dold.Add(78300302, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Fire Whip"));
-            Dold.Add(78300400, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Delicate String"));
-            Dold.Add(78300600, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Red Sign Soapstone"));
-            Dold.Add(78300601, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Silver Talisman"));
-            Dold.Add(78300602, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Hexing Urn"));
-            Dold.Add(78300603, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Cracked Red Eye Orb"));
+            Dold.Add(78300300, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Firestorm", KEYID.TITCHY));
+            Dold.Add(78300301, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Combustion", KEYID.TITCHY));
+            Dold.Add(78300302, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Fire Whip", KEYID.TITCHY));
+            Dold.Add(78300400, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Delicate String", KEYID.TITCHY));
+            Dold.Add(78300600, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Red Sign Soapstone", KEYID.TITCHY));
+            Dold.Add(78300601, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Silver Talisman", KEYID.TITCHY));
+            Dold.Add(78300602, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Hexing Urn", KEYID.TITCHY));
+            Dold.Add(78300603, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Cracked Red Eye Orb", KEYID.TITCHY));
+            Dold.Add(78300604, ShopCopy(MapArea.UndeadPurgatory, "[Titchy Gren] Inf Cracked Red Eye Orb in NG+", 78300603, KEYID.TITCHY));
 
             Dold.Add(78400200, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Headpiece", KEYID.BRANCH));
             Dold.Add(78400201, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Robe", KEYID.BRANCH));
@@ -761,7 +764,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Main info setup (no skips):
-        internal void setupLootInfoDictionary()
+        internal void SetupLootInfoDictionary()
         {
             // Misc:
             Dold.Add(1726000, NpcInfo(MapArea.Quantum, "[Misc] Gift from Gavlan after spending 16000 souls"));

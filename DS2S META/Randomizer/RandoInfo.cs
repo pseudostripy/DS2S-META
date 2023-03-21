@@ -124,17 +124,26 @@ namespace DS2S_META.Randomizer
     {
         internal MapArea Area;
         internal string? Description;
-        internal PICKUPTYPE[] Types;
+        internal PICKUPTYPE[] PickupTypes;
         internal KeySet[] KeySet;
-        internal RDZ_STATUS RandoHandleType;
+        internal RDZ_STATUS RandoHandleType { get; set; }
         internal int RefInfoID = 0;
-        
+
         // Main class constructor
+        internal RandoInfo()
+        {
+            // Default "Empty" RandoInfo
+            Area = MapArea.Undefined;
+            Description = "<EmptyRandoInfoDefaultString>";
+            KeySet = Array.Empty<KeySet>();
+            PickupTypes = Array.Empty<PICKUPTYPE>();
+            RandoHandleType = RDZ_STATUS.UNDEFINED;
+        }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
-            Types = new PICKUPTYPE[] { type };
+            PickupTypes = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
             RandoHandleType = RDZ_STATUS.STANDARD;
         }
@@ -142,15 +151,15 @@ namespace DS2S_META.Randomizer
         {
             Area = area;
             Description = desc;
-            Types = types;
+            PickupTypes = types;
             KeySet = reqkeys;
-            RandoHandleType= RDZ_STATUS.STANDARD;
+            RandoHandleType = RDZ_STATUS.STANDARD;
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
-            Types = new PICKUPTYPE[] { type };
+            PickupTypes = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
             RandoHandleType = handletype;
         }
@@ -158,7 +167,7 @@ namespace DS2S_META.Randomizer
         {
             Area = area;
             Description = desc;
-            Types = new PICKUPTYPE[] { type };
+            PickupTypes = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
             RandoHandleType = handletype;
             RefInfoID = refID;
@@ -167,7 +176,7 @@ namespace DS2S_META.Randomizer
         {
             Area = area;
             Description = desc;
-            Types = types;
+            PickupTypes = types;
             KeySet = reqkeys;
             RandoHandleType = handletype;
         }
@@ -175,7 +184,7 @@ namespace DS2S_META.Randomizer
 
         internal bool HasType(List<PICKUPTYPE> checklist)
         {
-            return Types.Any(checklist.Contains);
+            return PickupTypes.Any(checklist.Contains);
         }
         internal bool AvoidsType(PICKUPTYPE bantype)
         {
@@ -187,11 +196,11 @@ namespace DS2S_META.Randomizer
         }
         internal bool HasType(PICKUPTYPE checktype)
         {
-            return Types.Any(pt => pt == checktype);
+            return PickupTypes.Any(pt => pt == checktype);
         }
         internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytypes)
         {
-            return Types.All(onlytypes.Contains);
+            return PickupTypes.All(onlytypes.Contains);
         }
 
         internal bool IsSoftlockPlacement(List<int> placedSoFar)
