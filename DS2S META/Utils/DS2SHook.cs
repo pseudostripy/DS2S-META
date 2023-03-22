@@ -104,6 +104,7 @@ namespace DS2S_META
         private PHPointer SpeedFactorBuildup;
 
         public PHPointer LoadingState;
+        public PHPointer phDisableAI; // pointer head (missing final offset)
 
         public bool Loaded => PlayerCtrl != null && PlayerCtrl.Resolve() != IntPtr.Zero;
         public bool Setup = false;
@@ -476,14 +477,18 @@ namespace DS2S_META
                 SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
             if (Offsets.LoadingState != null)
             {
-                var test = Offsets.LoadingState[0..^1];
-                var test2 = Offsets.LoadingState[^1];
-                var temp = CreateChildPointer(BaseA, 0x80);
-                var temp2 = CreateChildPointer(BaseA, 0x80, 0x8);
-                var temp3 = CreateChildPointer(temp2, 0xbb4);
-                var tempbool = temp2.ReadBoolean(0xbb4);
-                var tempbool3 = temp3.ReadBoolean(0);
+                //var test = Offsets.LoadingState[0..^1];
+                //var test2 = Offsets.LoadingState[^1];
+                //var temp = CreateChildPointer(BaseA, 0x80);
+                //var temp2 = CreateChildPointer(BaseA, 0x80, 0x8);
+                //var temp3 = CreateChildPointer(temp2, 0xbb4);
+                //var tempbool = temp2.ReadBoolean(0xbb4);
+                //var tempbool3 = temp3.ReadBoolean(0);
                 LoadingState = CreateChildPointer(BaseA, Offsets.LoadingState[0..^1]);
+            }
+            if (Offsets.DisableAI != null)
+            {
+                phDisableAI = CreateChildPointer(BaseA, Offsets.DisableAI[0..^1]);
             }
         }
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
@@ -1942,6 +1947,16 @@ namespace DS2S_META
             set
             {
                 BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
+            }
+        }
+        public byte DisableAI
+        {
+            get => Loaded && (Offsets.DisableAI != null) ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
+            set
+            {
+                if (Reading || !Loaded) return;
+                if (Offsets.DisableAI == null) return;
+                phDisableAI.WriteByte(Offsets.DisableAI[^1], value);
             }
         }
         public int Health

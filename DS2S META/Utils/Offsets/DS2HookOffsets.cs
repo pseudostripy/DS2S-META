@@ -27,6 +27,7 @@ namespace DS2S_META.Utils.Offsets
         public PlayerCtrlOffsets PlayerCtrl { get; init; }
         public PlayerName PlayerName { get; init; }
         public ForceQuit ForceQuit { get; init; }
+        //public DisableAI
         public PlayerBaseMisc PlayerBaseMisc { get; init; }
         public PlayerEquipment PlayerEquipment { get; init; }
         public PlayerParam PlayerParam { get; init; }
@@ -40,6 +41,9 @@ namespace DS2S_META.Utils.Offsets
         public Camera Camera { get; init; }
         public Core? Core { get; init; }
         public Func? Func { get; set; }
+        
+        // Towards better version-specific functionality:
+        public int[]? DisableAI;
 
         public PlayerType PlayerType = new() 
         {

@@ -151,6 +151,7 @@ namespace DS2S_META.Utils.Offsets
         int CamZ,
         int CamY
     );
+    // offsets from BaseA?
     public record class Core
     {
         public int PlayerTypeOffset;

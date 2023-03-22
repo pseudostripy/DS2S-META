@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils;
+﻿using DS2S_META.Randomizer;
+using DS2S_META.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,6 +66,8 @@ namespace DS2S_META
             btnWarp.IsEnabled = enable && !Hook.Multiplayer;
             cbxWarpRest.IsEnabled = enable;
             cbxSpeed.IsEnabled = enable || Hook.Hooked;
+
+            cbxDisableAI.IsEnabled = enable && (Hook.Offsets.DisableAI != null);
 
             if (enable)
                 cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
@@ -267,6 +270,10 @@ namespace DS2S_META
         {
             cbxSpeed.IsChecked = !cbxSpeed.IsChecked;
         }
+        public void ToggleAI()
+        {
+            cbxDisableAI.IsChecked = !cbxDisableAI.IsChecked;
+        }
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
             if (!Hook.Hooked)
@@ -279,9 +286,7 @@ namespace DS2S_META
                 dmgmod = 1;
 
             // Write to memory
-            var rapierrow = ParamMan.WeaponParam?.Rows.FirstOrDefault(r => r.ID == 1500000) as WeaponRow; // Rapier
-            if (rapierrow == null)
-                throw new NullReferenceException("Pretty sure the rapier should be there!");
+            var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
             var F = rapierrow.Param.Fields[34];
             byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
             Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
