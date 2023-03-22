@@ -69,6 +69,8 @@ namespace DS2S_META
                 "Create Item" => () => MW.metaItems.CreateItem(),
                 "Fast Quit" => () => MW.metaPlayer.FastQuit(),
                 "Give 17k" => () => MW.metaCheats.Give17kReward(),
+                "Toggle AI" => () => MW.metaPlayer.ToggleAI(),
+                "Toggle OHKO" => () => MW.metaPlayer.ToggleOHKO(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };
         }

@@ -274,6 +274,10 @@ namespace DS2S_META
         {
             cbxDisableAI.IsChecked = !cbxDisableAI.IsChecked;
         }
+        public void ToggleOHKO()
+        {
+            cbxOHKO.IsChecked = !cbxOHKO.IsChecked;
+        }
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
             if (!Hook.Hooked)
