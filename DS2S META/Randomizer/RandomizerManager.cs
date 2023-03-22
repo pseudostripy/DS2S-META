@@ -13,6 +13,8 @@ using static SoulsFormats.MSBD;
 using System.Transactions;
 using System.Windows.Controls;
 using Octokit;
+using System.Runtime.Intrinsics.Arm;
+using System.Reflection;
 
 namespace DS2S_META.Randomizer
 {
@@ -42,7 +44,7 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> ldreqs = new();
         internal List<DropInfo> ldgens = new();
         //
-        private List<int> Unfilled = new();
+        private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new(); // to tidy
         internal int CurrSeed;
         //
@@ -274,7 +276,7 @@ namespace DS2S_META.Randomizer
         }
         internal void PlaceItemsInVanillaLocations(int itemId)
         {
-            var locations = Restrictions[itemId].GetFeasibleLocations(Unfilled, AllPTF);
+            var locations = Restrictions[itemId].GetFeasibleLocations(UnfilledRdzs, AllPTF);
             foreach (var locationIndex in locations)
             {
                 var location = AllPTF[locationIndex];
@@ -307,7 +309,7 @@ namespace DS2S_META.Randomizer
                 if (location.IsSaturated())
                 {
                     location.MarkHandled();
-                    Unfilled.Remove(locationIndex);
+                    UnfilledRdzs.Remove(locationIndex);
                 }
             }
 
@@ -701,7 +703,6 @@ namespace DS2S_META.Randomizer
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
         }
-
         private void ResetForRerandomization()
         {
             // Reset required arrays for the randomizer to work:
@@ -711,7 +712,7 @@ namespace DS2S_META.Randomizer
                 rdz.ResetShuffled();
 
             KeysPlacedSoFar = new List<int>();
-            Unfilled = Enumerable.Range(0, AllPTF.Count).ToList();
+            UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
@@ -839,6 +840,12 @@ namespace DS2S_META.Randomizer
             var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
             ldkeys = RemoveExtraTorches(too_many_torches);
 
+            // -- Sort Vanilla keys to end --
+            // Keys placed in Vanilla Locations need to be placed last across
+            // all keys to ensure softlock avoidance in certain situations
+
+
+
             var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
             ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType).ToList();                // Reqs
 
@@ -874,7 +881,7 @@ namespace DS2S_META.Randomizer
             for (int i = 0; i < too_many_torches.Count; i++)
             {
                 var di = too_many_torches[i];
-                if (di.ItemID == 0x0399EFA0)
+                if (di.ItemID == (int)ITEMID.TORCH)
                 {
                     if (torch_keys_placed >= min_torches)
                         continue;
@@ -921,7 +928,7 @@ namespace DS2S_META.Randomizer
             // ld: list of DropInfos
             while (ld.Count > 0)
             {
-                if (Unfilled.Count == 0)
+                if (UnfilledRdzs.Count == 0)
                     break;
 
                 int keyindex = RNG.Next(ld.Count);
@@ -934,97 +941,101 @@ namespace DS2S_META.Randomizer
             if (ld.Count > 0 && flag != SetType.Gens)
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
-        private void PlaceItem(DropInfo di, SetType stype)
+        private Randomization FindElligibleRdz(DropInfo di, SetType stype)
         {
-            var restriction = Restrictions.ContainsKey(di.ItemID) ? Restrictions[di.ItemID] : new NoPlacementRestriction();
-            var availableLocations = restriction.GetFeasibleLocations(Unfilled, AllPTF);
+            // Find an Rdz (at random) satisfying all constraints.
 
-            // Ignore restrictions for Vanilla locations, since some Vanilla locations would be ineligible for that item's placement under usual rules
-            if (restriction is VanillaPlacementRestriction)
-            {
-                // Also, since Vanilla placements should occur before any randomized placements, this branch shouldn't ever get executed
-                PlaceItemsInVanillaLocations(di.ItemID);
-            }
+            // List of remaining spots to search through
+            var availRdzs = new List<Randomization>(UnfilledRdzs);
 
-            while (availableLocations.Count > 0 ||
-                restriction.ArePlacementLocationsExpandable() && (availableLocations = restriction.ExpandPlacements(Unfilled, AllPTF)).Count > 0)
+            while (availRdzs.Count > 0)
             {
                 // Choose random rdz for item:
-                int pindex = RNG.Next(availableLocations.Count);
-                int elnum = availableLocations[pindex];
-                var rdz = AllPTF.ElementAt(elnum);
+                var rdz = availRdzs[RNG.Next(availRdzs.Count)];
 
-                // Check pickup type conditions:
-                switch (stype)
-                {
-                    case SetType.Keys:
-                    case SetType.Gens:
-                        if (rdz.HasPickupType(BannedTypeList[stype]))
-                        {
-                            availableLocations.RemoveAt(pindex);
-                            continue;
-                        }
-                        break;
-                    case SetType.Reqs:
-                        // Now extra rules for specific stuff:
+                // Check our chosen rdz
+                if (PassedPlacementConds(rdz, di, stype))
+                    return rdz;
 
-                        // (handled separately, below)
-                        if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
-                            break;
-
-
-                        // Get allowable placements by item type:
-                        var item = ParamMan.GetItemFromID(di.ItemID);
-                        if (item == null)
-                        {
-                            availableLocations.RemoveAt(pindex);
-                            continue;
-                        }
-                        if (!rdz.ContainsOnlyTypes(ItemSetBase.ItemAllowTypes[item.ItemType]))
-                        {
-                            availableLocations.RemoveAt(pindex);
-                            continue;
-                        }
-                        break;
-                }
-
-                // Now extra rules for specific stuff:
-                if (ItemSetBase.ManuallyRequiredItemsTypeRules.TryGetValue(di.ItemID, out var mantypes))
-                {
-                    if (!rdz.ContainsOnlyTypes(mantypes))
-                    {
-                        availableLocations.RemoveAt(pindex);
-                        continue;
-                    }
-                }
-
-
-                // Check key-softlock conditions:
-                if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
-                {
-                    availableLocations.RemoveAt(pindex);
-                    continue;
-                }
-
-
-                // Accept solution:
-                if (stype == SetType.Keys)
-                    KeysPlacedSoFar.Add(di.ItemID);
-
-                // This is preliminary code if you want to randomize reinforcement/infusion
-                FixReinforcement(di);
-                FixInfusion(di);
-
-                rdz.AddShuffledItem(di);
-                if (rdz.IsSaturated())
-                {
-                    rdz.MarkHandled();
-                    Unfilled.Remove(elnum); // now filled!
-                }
-                return;
+                // Failed: remove it from available options
+                availRdzs.Remove(rdz);
             }
 
+            // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
+        }
+        
+        private void PlaceItem(DropInfo di, SetType stype)
+        {
+            // Placement logic:
+            var rdz = FindElligibleRdz(di, stype);
+
+            // Place Item:
+            AddToRdz(rdz, di);
+            if (stype == SetType.Keys)
+                KeysPlacedSoFar.Add(di.ItemID);
+
+            // Handle saturation
+            if (!rdz.IsSaturated())
+                return;
+
+            rdz.MarkHandled();
+            UnfilledRdzs.Remove(rdz); // now filled!
+        }
+        private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType stype)
+        {
+            // ReservedForVanilla check:
+            
+            // Check pickup type conditions:
+            switch (stype)
+            {
+                case SetType.Keys:
+                case SetType.Gens:
+                    if (rdz.HasPickupType(BannedTypeList[stype]))
+                        return false;
+                    break;
+
+                case SetType.Reqs:
+                    // Now extra rules for specific stuff:
+
+                    // (handled separately, below)
+                    if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
+                        break;
+
+
+                    // Get allowable placements by item type:
+                    var item = ParamMan.GetItemFromID(di.ItemID);
+                    if (item == null)
+                        return false;
+                    
+                    if (!rdz.ContainsOnlyTypes(ItemSetBase.ItemAllowTypes[item.ItemType]))
+                        return false;
+                    break;
+            }
+
+            // Some Manual checks TODO
+            // Now extra rules for specific stuff:
+            if (ItemSetBase.ManuallyRequiredItemsTypeRules.TryGetValue(di.ItemID, out var mantypes))
+            {
+                if (!rdz.ContainsOnlyTypes(mantypes))
+                    return false;
+            }
+
+            // Softlock logic?
+            // Check key-softlock conditions:
+            if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
+                return false;
+
+            // Passed gauntlet
+            return true;
+        }
+        private void AddToRdz(Randomization rdz, DropInfo di)
+        {
+            // This is preliminary code if you want to randomize reinforcement/infusion
+            FixReinforcement(di);
+            FixInfusion(di);
+
+            rdz.AddShuffledItem(di);
         }
 
         private void FillLeftovers()

@@ -17,6 +17,7 @@ namespace DS2S_META.Randomizer
         KEYTOEMBEDDED = 0x001E3660,
         BINOCULARS = 0x005D1420,
         RAPIER = 0x16E360,
+        TORCH = 0x0399EFA0,
     }
     public enum ITEMUSAGE
     {
