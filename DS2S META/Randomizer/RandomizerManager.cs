@@ -205,11 +205,10 @@ namespace DS2S_META.Randomizer
         {
             var vanshops = (ParamMan.ShopLineupParam?.Rows.OfType<ShopRow>().ToList()) ?? throw new NullReferenceException();
             VanillaShops = vanshops;
-
-            //AddShopsToLogic(); // defined in logic now?
             return;
         }
 
+        // RestrictionStuff
         internal void GenerateRestrictions()
         {
             Restrictions.Clear();
@@ -253,7 +252,6 @@ namespace DS2S_META.Randomizer
                 // Issue a warning that no item from a set could have had its restriction assigned?
             }
         }
-
         internal void PlaceItemOfUnknownType(int id)
         {
             int index = ldkeys.FindIndex(di => di.ItemID == id);
@@ -274,7 +272,6 @@ namespace DS2S_META.Randomizer
                 ldgens.RemoveAt(index);
             }
         }
-
         internal void PlaceItemsInVanillaLocations(int itemId)
         {
             var locations = Restrictions[itemId].GetFeasibleLocations(Unfilled, AllPTF);
@@ -319,7 +316,6 @@ namespace DS2S_META.Randomizer
             ldreqs.RemoveAll(di => di.ItemID == itemId);
             ldgens.RemoveAll(di => di.ItemID == itemId);
         }
-
         internal void PerformItemRestrictionPrePlacementTasks()
         {
             AreaDistanceCalculator.CalculateDistanceMatrix();
@@ -343,6 +339,7 @@ namespace DS2S_META.Randomizer
             }
         }
 
+        // Core:
         internal async Task Randomize(int seed)
         {
             if (Hook == null)
@@ -770,40 +767,12 @@ namespace DS2S_META.Randomizer
             Logic.TransformToUID(all_lots.Cast<Randomization>().ToList());     // FixLogic: PT1, Transform lots
 
             // Define exclusions (not placed)
-            //var excl = all_lots.Where(ldz => ldz.IsEmpty ||
-            //                            Logic.HasTypes(ldz, Logic.BanFromBeingRandomized) ||
-            //                            Logic.CrowDuplicates.Contains(ldz.UniqueParamID));
             var excl = all_lots.Where(ldz => ldz.IsEmpty ||
                                         ldz.HasPickupType(Logic.BanFromBeingRandomized) ||
                                         Logic.CrowDuplicates.Contains(ldz.UniqueParamID));
-
             foreach (var ldz in excl)
                 ldz.RandoInfo.RandoHandleType = RDZ_STATUS.EXCLUDED; // Override definition
             
-
-            // Special Cases: Crows [done in itemSet]
-            //var crows = all_lots.Where(ldz => ldz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.CROWS })).ToList();
-            //foreach (var ldz in crows)
-            //    ldz.Status = RDZ_STATUS.CROWS;
-
-
-            // Special Cases: LinkedLots [done in itemSet]
-            //var slavelots = all_lots.Where(ldz => ldz.HasType(new List<PICKUPTYPE>() { PICKUPTYPE.LINKEDSLAVE })).ToList();
-            //foreach (var ldz in slavelots)
-            //    ldz.Status = RDZ_STATUS.FILL_BY_COPY;
-
-            //foreach (var kvp in Logic.WhereHasType(PICKUPTYPE.LINKEDSLAVE))
-            //{
-            //    var slavelot = all_lots.FirstOrDefault(ldz => ldz.UniqueParamID == kvp.Key);
-            //    if (slavelot == null) throw new Exception("LinkedSlave Lot not found in Vanilla table definition");
-            //    slavelot.Status = RDZ_STATUS.FILL_BY_COPY;
-            //}
-
-            // All the other shops should be good for "Ordinary Randomization" [done in itemset]
-            //var normal_lots = all_lots.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
-            //foreach (var rdz in normal_lots)
-            //    rdz.Status = RDZ_STATUS.STANDARD;
-
             // Output
             return all_lots.Cast<Randomization>();
         }
@@ -843,86 +812,11 @@ namespace DS2S_META.Randomizer
             var shoprdzs = VanillaShops.Select(SR => new ShopRdz(SR)).ToList(); // ToList IS required
             Logic.TransformToUID(shoprdzs.Cast<Randomization>().ToList());      // FixLogic PT2: Transform shops
 
-            /// Should be handled in itemset now!?
-
-            //// Remove exclusions from list
-            //foreach (var exclid in ShopRules.Exclusions)
-            //    GetRdzWithID(shoprdzs, exclid).Status = RDZ_STATUS.EXCLUDED;
-
-            //// Define shops that need handling:
-            //var LEvents = ShopRules.GetLinkedEvents();
-
-            //// -------------------------------------------- //
-            //// "Find shops with IDs that match (the ID of) non-trade,copy LEvents; return the shops"
-            //var LE_normal_copies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
-            //var shopnormcopies = shoprdzs.Join(inner: LE_normal_copies,
-            //                                   outerKeySelector: srdz => srdz.UniqueParamID,
-            //                                   innerKeySelector: LEc => LEc.FillByCopy,
-            //                                   resultSelector: (srdz, lec) => srdz);
-            //foreach (var srdz in shopnormcopies)
-            //    srdz.Status = RDZ_STATUS.FILL_BY_COPY;
-
-            //// -------------------------------------------- //
-            //// Deal with things that need removing:
-            //var remIDs = LEvents.SelectMany(selector: LE => LE.RemoveIDs ?? new List<int>());
-            //var shopsrem = shoprdzs.Join(inner: remIDs,
-            //                        outerKeySelector: srdz => srdz.UniqueParamID,
-            //                        innerKeySelector: remid => remid,
-            //                        resultSelector: (srdz, remid) => srdz);
-            //foreach (var srdz in shopsrem)
-            //    srdz.Status = RDZ_STATUS.SHOPREMOVE;
-
-            //// -------------------------------------------- //
-            //// Trade shops:
-
-            //// "Ordinary TradeShop" has nothing special to handle (aka Straid)
-            //var normtrades = LEvents.Where(lev => lev.IsTrade && !lev.IsCopy);
-            //var shopsnt = shoprdzs.Join(inner: normtrades,
-            //                             outerKeySelector: srdz => srdz.UniqueParamID,
-            //                             innerKeySelector: lev => lev.KeepID,
-            //                             resultSelector: (srdz, lev) => srdz);
-            //foreach (var srdz in shopsnt)
-            //    srdz.Status = RDZ_STATUS.UNLOCKTRADE;
-
-            //// Ornifex FreeTrades need a flag setting to zeroise pricerate after creation
-            //// Note, these IDs still go through the "usual" randomization process first!
-            //var ft = LEvents.Where(lev => lev.FreeTrade);
-            //var shopsft = shoprdzs.Join(inner: ft,
-            //                             outerKeySelector: srdz => srdz.UniqueParamID,
-            //                             innerKeySelector: lev => lev.KeepID,
-            //                             resultSelector: (srdz, lev) => srdz);
-            //foreach (var srdz in shopsft)
-            //    srdz.Status = RDZ_STATUS.FREETRADE;
-
-            //// The TradeShopCopy ones DO NOT go through "ordinary randomization"
-            //// they instead, just copy the above ones, and then change price
-            //var tsc = LEvents.Where(lev => lev.IsTrade && lev.IsCopy);
-            //var shopstsc = shoprdzs.Join(inner: tsc,
-            //                             outerKeySelector: srdz => srdz.UniqueParamID,
-            //                             innerKeySelector: lev => lev.FillByCopy,
-            //                             resultSelector: (srdz, lev) => srdz);
-
-            //foreach (var srdz in shopstsc)
-            //    srdz.Status = RDZ_STATUS.TRADE_SHOP_COPY;
-
-            //// All the other shops should be good for "Ordinary Randomization"
-            //var normal_shops = shoprdzs.Where(rdz => rdz.Status == RDZ_STATUS.INITIALIZING);
-            //foreach (var rdz in normal_shops)
-            //    rdz.Status = RDZ_STATUS.STANDARD;
-
             // Output
             return shoprdzs.Cast<Randomization>();
         }
 
-        //internal void AddShopsToLogic()
-        //{
-        //    foreach (var sr in VanillaShops)
-        //    {
-        //        // Append:
-        //        RandoInfo RI = new(sr.ParamDesc, PICKUPTYPE.SHOP);
-        //        Logic.AppendKvp(new KeyValuePair<int, RandoInfo>(sr.ID, RI));
-        //    }
-        //}
+        
         internal void AddDropsToLogic()
         {
             var active_drops = AllP.OfType<DropRdz>();
@@ -1189,16 +1083,6 @@ namespace DS2S_META.Randomizer
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotChrParam?.WriteModifiedParam();
         }
-        //internal static void WriteSomeLots(List<ItemLotRow> somelots)
-        //{
-        //    // Method used for just writing a few rows out of the Param
-        //    somelots.ForEach(lot => lot.WriteRow());
-        //}
-        //internal static void WriteSomeShops(List<ShopRow> shops)
-        //{
-        //    // Method used for just writing a few rows out of the Param
-        //    shops.ForEach(SR => SR.WriteRow());
-        //}
         internal static void WriteAllShops(List<ShopRow> all_shops)
         {
             all_shops.ForEach(SR => SR.StoreRow());
@@ -1364,8 +1248,6 @@ namespace DS2S_META.Randomizer
         internal void FixShopTradeCopies()
         {
             // Ornifex (non-free)
-            //var updateshops = new List<ShopRow>();
-
             var fillbycopy = AllP.OfType<ShopRdz>()
                                  .Where(rdz => rdz.Type == RDZ_STATUS.TRADE_SHOP_COPY).ToList();
             var filled_shops = AllPTF.OfType<ShopRdz>();
@@ -1491,7 +1373,7 @@ namespace DS2S_META.Randomizer
             double RVgamma = S / scaleB;
             return RVgamma;
         }
-        internal int GetRandomReinforce()
+        internal static int GetRandomReinforce()
         {
             var tmp = RNG.Next(100);
             if (tmp < 60) return 0;
@@ -1500,7 +1382,7 @@ namespace DS2S_META.Randomizer
             if (tmp < 99) return 3;
             return 4;
         }
-        internal short GetRandomLevel()
+        internal static short GetRandomLevel()
         {
             int lvlmean = 7;
             //var randlvl = (short)RandomGammaInt(lvlmean, 1);
