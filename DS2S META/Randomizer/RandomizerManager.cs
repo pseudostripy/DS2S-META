@@ -1189,16 +1189,16 @@ namespace DS2S_META.Randomizer
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotChrParam?.WriteModifiedParam();
         }
-        internal static void WriteSomeLots(List<ItemLotRow> somelots)
-        {
-            // Method used for just writing a few rows out of the Param
-            somelots.ForEach(lot => lot.WriteRow());
-        }
-        internal static void WriteSomeShops(List<ShopRow> shops)
-        {
-            // Method used for just writing a few rows out of the Param
-            shops.ForEach(SR => SR.WriteRow());
-        }
+        //internal static void WriteSomeLots(List<ItemLotRow> somelots)
+        //{
+        //    // Method used for just writing a few rows out of the Param
+        //    somelots.ForEach(lot => lot.WriteRow());
+        //}
+        //internal static void WriteSomeShops(List<ShopRow> shops)
+        //{
+        //    // Method used for just writing a few rows out of the Param
+        //    shops.ForEach(SR => SR.WriteRow());
+        //}
         internal static void WriteAllShops(List<ShopRow> all_shops)
         {
             all_shops.ForEach(SR => SR.StoreRow());

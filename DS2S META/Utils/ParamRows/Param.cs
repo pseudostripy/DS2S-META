@@ -237,6 +237,11 @@ namespace DS2S_META
         }
         public void WriteModifiedParam()
         {
+            // On the offchance no data has been stored at all, just replace as is:
+            if (Bytes == null) throw new Exception("Param Bytes are not set, cannot be modified");
+            NewBytes ??= (byte[])Bytes.Clone();
+
+            // Memory write
             Pointer?.WriteBytes(0, NewBytes);
         }
         private void BuildCells()
