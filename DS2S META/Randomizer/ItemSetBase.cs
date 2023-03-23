@@ -54,7 +54,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CROWS,
         };
 
-        internal static List<PICKUPTYPE> FullySafe = new()
+        internal static List<PICKUPTYPE> FullySafeFlags = new()
         {
            PICKUPTYPE.NONVOLATILE,
            PICKUPTYPE.BOSS,
@@ -78,13 +78,13 @@ namespace DS2S_META.Randomizer
         internal static Dictionary<int, List<PICKUPTYPE>> ManuallyRequiredItemsTypeRules = new()
         {
             // Add here / refactor as required.
-            { 60155000, FullySafe },    // Estus Flask
-            { 0x039B89C8, FullySafe },  // Estus Flask Shard
-            { 0x039B8DB0, FullySafe },  // Sublime Bone Dust
-            { 05400000, FullySafe },    // Pyromancy Flame
-            { 05410000, FullySafe },    // Dark Pyromancy Flame 
-            { 60355000, FullySafe },    // Aged Feather
-            { 40420000, FullySafe },    // Silvercat Ring
+            { 60155000, FullySafeFlags },    // Estus Flask
+            { 0x039B89C8, FullySafeFlags },  // Estus Flask Shard
+            { 0x039B8DB0, FullySafeFlags },  // Sublime Bone Dust
+            { 05400000, FullySafeFlags },    // Pyromancy Flame
+            { 05410000, FullySafeFlags },    // Dark Pyromancy Flame 
+            { 60355000, FullySafeFlags },    // Aged Feather
+            { 40420000, FullySafeFlags },    // Silvercat Ring
         };
 
 

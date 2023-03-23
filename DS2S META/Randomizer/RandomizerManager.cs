@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using Octokit;
 using System.Runtime.Intrinsics.Arm;
 using System.Reflection;
+using System.Data.SqlTypes;
 
 namespace DS2S_META.Randomizer
 {
@@ -37,8 +38,9 @@ namespace DS2S_META.Randomizer
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
-        internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // The restriction shall be applied to a randomly selected item out of the set 
+        internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // e.g. select random blacksmith key for restriction
         internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
+        internal Dictionary<Randomization, int> ReservedRdzs = new(); // to populate
         // 
         internal List<DropInfo> ldkeys = new();
         internal List<DropInfo> ldreqs = new();
@@ -102,6 +104,10 @@ namespace DS2S_META.Randomizer
         internal void Initalize(DS2SHook hook)
         {
             Hook = hook; // Required for reading game params in memory
+
+            // One-time speedup
+            CreateAllowedKeyTypes();
+            CreateAllowedGenTypes();
 
             // Param collecting:
             Logic = new CasualItemSet();
@@ -211,135 +217,135 @@ namespace DS2S_META.Randomizer
         }
 
         // RestrictionStuff
-        internal void GenerateRestrictions()
-        {
-            Restrictions.Clear();
+        //internal void GenerateRestrictions()
+        //{
+        //    Restrictions.Clear();
 
-            // Single-item sets have no alternatives, if a restriction was already assigned to that item
-            // In order to minimize unapplied restrictions, we must go from the more restrictive sets to the less restrictive
-            var sortedRestrictions = OneFromItemSetRestrictions.ToList();
-            sortedRestrictions.Sort((l1, l2) => l1.Key.Count.CompareTo(l2.Key.Count));
+        //    // Single-item sets have no alternatives, if a restriction was already assigned to that item
+        //    // In order to minimize unapplied restrictions, we must go from the more restrictive sets to the less restrictive
+        //    var sortedRestrictions = OneFromItemSetRestrictions.ToList();
+        //    sortedRestrictions.Sort((l1, l2) => l1.Key.Count.CompareTo(l2.Key.Count));
 
-            foreach (var setRestriction in sortedRestrictions)
-            {
-                if (setRestriction.Value is NoPlacementRestriction)
-                    continue;
+        //    foreach (var setRestriction in sortedRestrictions)
+        //    {
+        //        if (setRestriction.Value is NoPlacementRestriction)
+        //            continue;
 
-                var idList = setRestriction.Key;
-                while (idList.Count > 0)
-                {
-                    int index = RNG.Next(idList.Count);
-                    int itemId = idList[index];
+        //        var idList = setRestriction.Key;
+        //        while (idList.Count > 0)
+        //        {
+        //            int index = RNG.Next(idList.Count);
+        //            int itemId = idList[index];
 
-                    if (Restrictions.ContainsKey(itemId))
-                    {
-                        // We could also make an intersection of both filters' eligible locations and if it's not empty, we could replace the existing filter with a new one, which satisfies criteria of both filters
-                        // That would require a bunch of stuff, though - restriction for a set of locations, or set of areas and methods for area/item set intersections
-                        idList.RemoveAt(index);
-                        continue;
-                    }
-                    else
-                    {
-                        Restrictions[itemId] = setRestriction.Value;
+        //            if (Restrictions.ContainsKey(itemId))
+        //            {
+        //                // We could also make an intersection of both filters' eligible locations and if it's not empty, we could replace the existing filter with a new one, which satisfies criteria of both filters
+        //                // That would require a bunch of stuff, though - restriction for a set of locations, or set of areas and methods for area/item set intersections
+        //                idList.RemoveAt(index);
+        //                continue;
+        //            }
+        //            else
+        //            {
+        //                Restrictions[itemId] = setRestriction.Value;
 
-                        if (setRestriction.Value is VanillaPlacementRestriction)
-                        {
-                            ((VanillaPlacementRestriction)Restrictions[itemId]).ItemID = itemId;
-                        }
+        //                if (setRestriction.Value is VanillaPlacementRestriction)
+        //                {
+        //                    ((VanillaPlacementRestriction)Restrictions[itemId]).ItemID = itemId;
+        //                }
 
-                        break;
-                    }
-                }
+        //                break;
+        //            }
+        //        }
 
-                // Issue a warning that no item from a set could have had its restriction assigned?
-            }
-        }
-        internal void PlaceItemOfUnknownType(int id)
-        {
-            int index = ldkeys.FindIndex(di => di.ItemID == id);
-            if (index != -1)
-            {
-                PlaceItem(ldkeys[index], SetType.Keys);
-                ldkeys.RemoveAt(index);
-            }
-            else if ((index = ldreqs.FindIndex(di => di.ItemID == id)) != -1)
-            {
-                PlaceItem(ldreqs[index], SetType.Reqs);
-                ldreqs.RemoveAt(index);
-            }
-            else
-            {
-                index = ldgens.FindIndex(di => di.ItemID == id);
-                PlaceItem(ldgens[index], SetType.Gens);
-                ldgens.RemoveAt(index);
-            }
-        }
-        internal void PlaceItemsInVanillaLocations(int itemId)
-        {
-            var locations = Restrictions[itemId].GetFeasibleLocations(UnfilledRdzs, AllPTF);
-            foreach (var locationIndex in locations)
-            {
-                var location = AllPTF[locationIndex];
+        //        // Issue a warning that no item from a set could have had its restriction assigned?
+        //    }
+        //}
+        //internal void PlaceItemOfUnknownType(int id)
+        //{
+        //    int index = ldkeys.FindIndex(di => di.ItemID == id);
+        //    if (index != -1)
+        //    {
+        //        PlaceItem(ldkeys[index], SetType.Keys);
+        //        ldkeys.RemoveAt(index);
+        //    }
+        //    else if ((index = ldreqs.FindIndex(di => di.ItemID == id)) != -1)
+        //    {
+        //        PlaceItem(ldreqs[index], SetType.Reqs);
+        //        ldreqs.RemoveAt(index);
+        //    }
+        //    else
+        //    {
+        //        index = ldgens.FindIndex(di => di.ItemID == id);
+        //        PlaceItem(ldgens[index], SetType.Gens);
+        //        ldgens.RemoveAt(index);
+        //    }
+        //}
+        //internal void PlaceItemsInVanillaLocations(int itemId)
+        //{
+        //    var locations = Restrictions[itemId].GetFeasibleLocations(UnfilledRdzs, AllPTF);
+        //    foreach (var locationIndex in locations)
+        //    {
+        //        var location = AllPTF[locationIndex];
 
-                if (location is GLotRdz rdz)
-                {
-                    var vanillaLot = rdz.VanillaLot;
-                    int vlotId = vanillaLot.GetLotIndex(itemId);
-                    var dropInfo = new DropInfo(vanillaLot.Items[vlotId], vanillaLot.Quantities[vlotId], vanillaLot.Reinforcements[vlotId], vanillaLot.Infusions[vlotId]);
-                    location.AddShuffledItem(dropInfo);
-                }
-                else if (location is ShopRdz shopRdz)
-                {
-                    var shopVanilla = shopRdz.VanillaShop;
-                    var dropInfo = new DropInfo(shopVanilla.ItemID, shopVanilla.Quantity);
+        //        if (location is GLotRdz rdz)
+        //        {
+        //            var vanillaLot = rdz.VanillaLot;
+        //            int vlotId = vanillaLot.GetLotIndex(itemId);
+        //            var dropInfo = new DropInfo(vanillaLot.Items[vlotId], vanillaLot.Quantities[vlotId], vanillaLot.Reinforcements[vlotId], vanillaLot.Infusions[vlotId]);
+        //            location.AddShuffledItem(dropInfo);
+        //        }
+        //        else if (location is ShopRdz shopRdz)
+        //        {
+        //            var shopVanilla = shopRdz.VanillaShop;
+        //            var dropInfo = new DropInfo(shopVanilla.ItemID, shopVanilla.Quantity);
 
-                    // This will update quantity and price; cloning Vanilla shop, or calling ShuffledShop.SetValues() would avoid it - but it's probably undesirable
-                    shopRdz.AddShuffledItem(dropInfo);
+        //            // This will update quantity and price; cloning Vanilla shop, or calling ShuffledShop.SetValues() would avoid it - but it's probably undesirable
+        //            shopRdz.AddShuffledItem(dropInfo);
 
-                    // Price re-randomization - without it, for example Cat Ring would be really cheap and just setting the pricerate to lowest rate is boring
-                    // On the other hand - especially for Cat Ring - this can crank up the price really high
-                    float rerolledPriceFactor = (float)RandomGammaInt(shopVanilla.VanillaBasePrice) / shopVanilla.VanillaBasePrice;
-                    shopRdz.ShuffledShop.PriceRate = Math.Max(rerolledPriceFactor, (float)Randomization.lowestPriceRate);
-                }
-                else
-                {
-                    throw new Exception("Unknown Randomization type encountered in Vanilla item placement!");
-                }
+        //            // Price re-randomization - without it, for example Cat Ring would be really cheap and just setting the pricerate to lowest rate is boring
+        //            // On the other hand - especially for Cat Ring - this can crank up the price really high
+        //            float rerolledPriceFactor = (float)RandomGammaInt(shopVanilla.VanillaBasePrice) / shopVanilla.VanillaBasePrice;
+        //            shopRdz.ShuffledShop.PriceRate = Math.Max(rerolledPriceFactor, (float)Randomization.lowestPriceRate);
+        //        }
+        //        else
+        //        {
+        //            throw new Exception("Unknown Randomization type encountered in Vanilla item placement!");
+        //        }
 
-                if (location.IsSaturated())
-                {
-                    location.MarkHandled();
-                    UnfilledRdzs.Remove(locationIndex);
-                }
-            }
+        //        if (location.IsSaturated())
+        //        {
+        //            location.MarkHandled();
+        //            UnfilledRdzs.Remove(locationIndex);
+        //        }
+        //    }
 
-            // All instances of the item should've been placed by now, so we can safely remove them from the item pools
-            ldkeys.RemoveAll(di => di.ItemID == itemId);
-            ldreqs.RemoveAll(di => di.ItemID == itemId);
-            ldgens.RemoveAll(di => di.ItemID == itemId);
-        }
-        internal void PerformItemRestrictionPrePlacementTasks()
-        {
-            AreaDistanceCalculator.CalculateDistanceMatrix();
-            GenerateRestrictions();
+        //    // All instances of the item should've been placed by now, so we can safely remove them from the item pools
+        //    ldkeys.RemoveAll(di => di.ItemID == itemId);
+        //    ldreqs.RemoveAll(di => di.ItemID == itemId);
+        //    ldgens.RemoveAll(di => di.ItemID == itemId);
+        //}
+        //internal void PerformItemRestrictionPrePlacementTasks()
+        //{
+        //    AreaDistanceCalculator.CalculateDistanceMatrix();
+        //    GenerateRestrictions();
 
-            // Vanilla placements need to be processed first, in order for other items to not take their place
-            foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
-            {
-                PlaceItemsInVanillaLocations(restriction.Key);
-            }
+        //    // Vanilla placements need to be processed first, in order for other items to not take their place
+        //    foreach (var restriction in Restrictions.Where(r => r.Value is VanillaPlacementRestriction))
+        //    {
+        //        PlaceItemsInVanillaLocations(restriction.Key);
+        //    }
 
-            // This is here to maximize odds of items being placed in their correct areas
-            // To be more precise, just a single item with the specified ID will be placed in advance
-            // Other possible instances of that item will be placed along with other items (placement will still attempt to fulfill the restriction as much as possible)
-            var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
-            while (areaRestrictions.Any())
-            {
-                int index = RNG.Next(areaRestrictions.Count);
-                PlaceItemOfUnknownType(areaRestrictions[index].Key);
-                areaRestrictions.RemoveAt(index);
-            }
-        }
+        //    // This is here to maximize odds of items being placed in their correct areas
+        //    // To be more precise, just a single item with the specified ID will be placed in advance
+        //    // Other possible instances of that item will be placed along with other items (placement will still attempt to fulfill the restriction as much as possible)
+        //    var areaRestrictions = Restrictions.Where(r => r.Value is AreaDistancePlacementRestriction).ToList();
+        //    while (areaRestrictions.Any())
+        //    {
+        //        int index = RNG.Next(areaRestrictions.Count);
+        //        PlaceItemOfUnknownType(areaRestrictions[index].Key);
+        //        areaRestrictions.RemoveAt(index);
+        //    }
+        //}
 
         // Core:
         internal async Task Randomize(int seed)
@@ -351,7 +357,7 @@ namespace DS2S_META.Randomizer
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
 
-            PerformItemRestrictionPrePlacementTasks();
+            //PerformItemRestrictionPrePlacementTasks();
 
             //var test = AllPTR.OfType<DropRdz>().ToList();
 
@@ -923,6 +929,42 @@ namespace DS2S_META.Randomizer
             {SetType.Keys, ItemSetBase.BanKeyTypes},
             {SetType.Gens, ItemSetBase.BanGeneralTypes}
         };
+        internal static List<PICKUPTYPE> AllowedKeyTypes = new();
+        internal static List<PICKUPTYPE> AllowedGenTypes = new();
+
+        internal static List<PICKUPTYPE> GetAllowedFromBanned(SetType settype)
+        {
+            // Simple wrapper so that we can define things in terms of banned types
+            // rather than having to always specify all allowed ones:
+            var bantypes = BannedTypeList[settype];
+            var allowtypes = new List<PICKUPTYPE>();
+
+            foreach (var putype in Enum.GetValues(typeof(PICKUPTYPE)).Cast<PICKUPTYPE>())
+            {
+                if (!bantypes.Contains(putype))
+                    allowtypes.Add(putype);
+            }
+            return allowtypes;
+        }
+        
+        // Create as static list since they're called so often
+        internal static void CreateAllowedGenTypes()
+        {
+            AllowedGenTypes = GetAllowedFromBanned(SetType.Gens);
+        }
+        internal static void CreateAllowedKeyTypes()
+        {
+            AllowedKeyTypes =  GetAllowedFromBanned(SetType.Keys);
+        }
+        internal static List<PICKUPTYPE> GetAllowedReqTypes(DropInfo di)
+        {
+            // Item of interest
+            if (!TryGetItem(di.ItemID, out var item)) throw new Exception("Unexpected itemID");
+            if (item == null) throw new NullReferenceException();
+
+            return ItemSetBase.ItemAllowTypes[item.ItemType];
+        }
+
         internal void PlaceSet(List<DropInfo> ld, SetType flag)
         {
             // ld: list of DropInfos
@@ -982,53 +1024,99 @@ namespace DS2S_META.Randomizer
             rdz.MarkHandled();
             UnfilledRdzs.Remove(rdz); // now filled!
         }
-        private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType stype)
+        private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
         {
-            // ReservedForVanilla check:
-            
-            // Check pickup type conditions:
-            switch (stype)
-            {
-                case SetType.Keys:
-                case SetType.Gens:
-                    if (rdz.HasPickupType(BannedTypeList[stype]))
-                        return false;
-                    break;
+            // Must pass all filters:
+            if (!PassedReservedCond(rdz, di))
+                return false;
 
-                case SetType.Reqs:
-                    // Now extra rules for specific stuff:
+            if (!PassedPickupTypeCond(rdz, di, settype))
+                return false;
 
-                    // (handled separately, below)
-                    if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
-                        break;
+            if (!PassedSoftlockLogic(rdz, settype))
+                return false;
 
-
-                    // Get allowable placements by item type:
-                    var item = ParamMan.GetItemFromID(di.ItemID);
-                    if (item == null)
-                        return false;
-                    
-                    if (!rdz.ContainsOnlyTypes(ItemSetBase.ItemAllowTypes[item.ItemType]))
-                        return false;
-                    break;
-            }
-
-            // Some Manual checks TODO
-            // Now extra rules for specific stuff:
-            if (ItemSetBase.ManuallyRequiredItemsTypeRules.TryGetValue(di.ItemID, out var mantypes))
-            {
-                if (!rdz.ContainsOnlyTypes(mantypes))
-                    return false;
-            }
-
-            // Softlock logic?
-            // Check key-softlock conditions:
-            if (stype == SetType.Keys && rdz.IsSoftlockPlacement(KeysPlacedSoFar))
+            if (!PassedDistanceCond(rdz, di))
                 return false;
 
             // Passed gauntlet
             return true;
         }
+
+        // Placement Logic Filters:
+        private bool PassedReservedCond(Randomization rdz, DropInfo di)
+        {
+            // This condition passes if:
+            // - Rdz has no reservation, itemID has no restriction
+            // - Rdz has reservedID that has already been successfully filled,
+            //      and itemID has no restriction
+            // - Rdz has reservedID that matches itemID restriction
+            
+            if (!ReservedRdzs.TryGetValue(rdz, out int resItemID))
+            {
+                // Rdz has no reservedID
+                if (ReservedRdzs.ContainsValue(di.ItemID))
+                    return false; // item is reserved for a different Rdz
+                else
+                    return true; // [case 1]: neither restricted
+            }
+
+            // Get here if Rdz is reserved for *some* ID
+            if (rdz.HasShuffledItemID(resItemID))
+                return true; // [case 2]: Rdz pre-filled; safe to add secondary drops
+
+            if (di.ItemID == resItemID)
+                return true; // [case 3]: reserved for me!
+            return false;
+        }
+        private bool PassedSoftlockLogic(Randomization rdz, SetType settype)
+        {
+            // This condition passes if:
+            // - settype is not keys (keys are all placed already so we're safe)
+            // - settype is keys, but all required keys for this specific Rdz 
+            //      location are already placed, so this is admissible.
+
+            if (settype != SetType.Keys)
+                return true; // logic already solved
+
+            if (!rdz.IsSoftlockPlacement(KeysPlacedSoFar))
+                return true;
+            return false;
+        }
+        private bool PassedPickupTypeCond(Randomization rdz, DropInfo di, SetType settype)
+        {
+            // This condition passes if:
+            // - Rdz pickuptype flags have no contradictions with the 
+            //   associated category requirements for this item-type.
+            //
+            // The list of allowed pickuptypes is set by the item that we are
+            // placing, where the item is categorized as the first bullet
+            // that applies starting from the top (highest priority):
+            //    - Category: CustomManuallyAdjustable [UI-customisable item restrictions]
+            //    - Category: KeyItems                  
+            //    - Category: RequiredItems             
+            //    - Category: GeneralItems
+
+            // Get list of allowed pickuptypes flags (PUF) for this item-type:
+            List<PICKUPTYPE> allowedPUF;
+            if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
+                allowedPUF = ItemSetBase.FullySafeFlags; // to generalize with front-end
+            else if (settype == SetType.Keys)
+                allowedPUF = AllowedKeyTypes;
+            else if (settype == SetType.Reqs)
+                allowedPUF = GetAllowedReqTypes(di);
+            else
+                allowedPUF = AllowedGenTypes;
+
+            // Check types:
+            return rdz.ContainsOnlyTypes(allowedPUF);
+        }
+        private bool PassedDistanceCond(Randomization rdz, DropInfo di)
+        {
+            // TODO
+            return true; 
+        }
+
         private void AddToRdz(Randomization rdz, DropInfo di)
         {
             // This is preliminary code if you want to randomize reinforcement/infusion

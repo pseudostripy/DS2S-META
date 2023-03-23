@@ -83,7 +83,8 @@ namespace DS2S_META.Randomizer
         }
         internal bool IsSoftlockPlacement(List<int> placedSoFar)
         {
-            if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set");
+            // Wrapper
+            if (RandoInfo == null) throw new Exception();
             return RandoInfo.IsSoftlockPlacement(placedSoFar);
         }
         protected static int RoundUpNearestMultiple(int val, int m)
