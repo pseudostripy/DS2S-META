@@ -881,17 +881,18 @@ namespace DS2S_META.Randomizer
         }
         private static List<DropInfo> RemoveExtraTorches(List<DropInfo> too_many_torches)
         {
-            int min_torches = 6;
-            int torch_keys_placed = 0;
+            // 15 independent pickup spots of undetermined quantity
+            int min_torches = 15; 
+            int indepTorchPickupsPlaced = 0;
             List<DropInfo> ldkeys_out = new();
             for (int i = 0; i < too_many_torches.Count; i++)
             {
                 var di = too_many_torches[i];
                 if (di.ItemID == (int)ITEMID.TORCH)
                 {
-                    if (torch_keys_placed >= min_torches)
+                    if (indepTorchPickupsPlaced >= min_torches)
                         continue;
-                    torch_keys_placed += di.Quantity;
+                    indepTorchPickupsPlaced++;
                 }
                 ldkeys_out.Add(di); // ok to keep as key
             }
