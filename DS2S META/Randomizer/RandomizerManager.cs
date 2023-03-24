@@ -38,9 +38,12 @@ namespace DS2S_META.Randomizer
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
+        
+
         internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // e.g. select random blacksmith key for restriction
         internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
-        internal Dictionary<Randomization, int> ReservedRdzs = new(); // to populate
+        internal Dictionary<Randomization, int> ReservedRdzs = new(); // to populate w/ frontend
+        internal Dictionary<int,MinMax>  DistanceRestrictedIDs = new(); // to populate w/ frontend
         // 
         internal List<DropInfo> ldkeys = new();
         internal List<DropInfo> ldreqs = new();
@@ -48,7 +51,11 @@ namespace DS2S_META.Randomizer
         //
         private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new(); // to tidy
+        internal Dictionary<NodeKey,Node> Nodes = new();
+        internal static Dictionary<MapArea, int> Map2Id = new();
+        internal static Dictionary<int, MapArea> Id2Map = new();
         internal int CurrSeed;
+        internal int[,] RandoGraph;
         //
         internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -108,6 +115,7 @@ namespace DS2S_META.Randomizer
             // One-time speedup
             CreateAllowedKeyTypes();
             CreateAllowedGenTypes();
+            SetupAreasGraph();
 
             // Param collecting:
             Logic = new CasualItemSet();
@@ -356,10 +364,6 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
             ResetForRerandomization();
-
-            //PerformItemRestrictionPrePlacementTasks();
-
-            //var test = AllPTR.OfType<DropRdz>().ToList();
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
@@ -719,6 +723,7 @@ namespace DS2S_META.Randomizer
 
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
+            Nodes = new();
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
@@ -984,6 +989,23 @@ namespace DS2S_META.Randomizer
             if (ld.Count > 0 && flag != SetType.Gens)
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
+        private void PlaceItem(DropInfo di, SetType stype)
+        {
+            // Placement logic:
+            var rdz = FindElligibleRdz(di, stype);
+
+            // Place Item:
+            AddToRdz(rdz, di);
+            if (stype == SetType.Keys)
+                KeysPlacedSoFar.Add(di.ItemID);
+
+            // Handle saturation
+            if (!rdz.IsSaturated())
+                return;
+
+            rdz.MarkHandled();
+            UnfilledRdzs.Remove(rdz); // now filled!
+        }
         private Randomization FindElligibleRdz(DropInfo di, SetType stype)
         {
             // Find an Rdz (at random) satisfying all constraints.
@@ -1006,24 +1028,6 @@ namespace DS2S_META.Randomizer
 
             // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
-        }
-        
-        private void PlaceItem(DropInfo di, SetType stype)
-        {
-            // Placement logic:
-            var rdz = FindElligibleRdz(di, stype);
-
-            // Place Item:
-            AddToRdz(rdz, di);
-            if (stype == SetType.Keys)
-                KeysPlacedSoFar.Add(di.ItemID);
-
-            // Handle saturation
-            if (!rdz.IsSaturated())
-                return;
-
-            rdz.MarkHandled();
-            UnfilledRdzs.Remove(rdz); // now filled!
         }
         private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
         {
@@ -1072,6 +1076,8 @@ namespace DS2S_META.Randomizer
         }
         private bool PassedSoftlockLogic(Randomization rdz, SetType settype)
         {
+            // Is this redundant now?
+
             // This condition passes if:
             // - settype is not keys (keys are all placed already so we're safe)
             // - settype is keys, but all required keys for this specific Rdz 
@@ -1114,8 +1120,344 @@ namespace DS2S_META.Randomizer
         }
         private bool PassedDistanceCond(Randomization rdz, DropInfo di)
         {
-            // TODO
+            // This condition passes if:
+            // - itemID has no distance restriction
+            // - itemID has a distance restriction, but rdz is within acceptable "distance"
+            //
+            // This function can be used as a weighting to "place things early" etc.
+
+            if (rdz is DropRdz)
+                return true; // no distance checks for these
+
+            if (!DistanceRestrictedIDs.TryGetValue(di.ItemID, out var minmax))
+                return true; // no distance restriction
+
+            var node = Nodes[rdz.RandoInfo.NodeKey];
+            if (node.IsLocked)
+                return false; // softlock => not allowed
+
+            // Calculate "traversible distance" to this Rdz
+            // including any keys required to get here.
+            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes);
+            if (dist < minmax.Min || dist > minmax.Max) 
+                return false;
+
             return true; 
+        }
+
+        
+        // Traversible distance calculations
+        private void SetupAreasGraph()
+        {
+            // Defines the adjacency matrix for connected game areas
+
+            // Static for now (TODO):
+            List<MapArea> MapList = new() // "Column/row lookup"
+            {
+                MapArea.ThingsBetwixt,
+                MapArea.Majula,
+                MapArea.FOFG,
+                MapArea.HeidesTowerOfFlame,
+                MapArea.NoMansWharf,
+                MapArea.TheLostBastille,
+                MapArea.BelfryLuna,
+                MapArea.SinnersRise,
+                MapArea.HuntsmansCopse,
+                MapArea.UndeadPurgatory,
+                MapArea.HarvestValley,
+                MapArea.EarthenPeak,
+                MapArea.IronKeep,
+                MapArea.BelfrySol,
+                MapArea.ShadedWoods,
+                MapArea.DoorsOfPharros,
+                MapArea.Tseldora,
+                MapArea.ThePit,
+                MapArea.GraveOfSaints,
+                MapArea.TheGutter,
+                MapArea.BlackGulch,
+                MapArea.DrangleicCastle,
+                MapArea.ShrineOfAmana,
+                MapArea.UndeadCrypt,
+                MapArea.AldiasKeep,
+                MapArea.DragonAerie,
+                MapArea.DragonShrine,
+                MapArea.MemoryOfJeigh,
+                MapArea.MemoryOfOrro,
+                MapArea.MemoryOfVammar,
+                MapArea.ShulvaSanctumCity,
+                MapArea.DragonsSanctum,
+                MapArea.CaveOfTheDead,
+                MapArea.BrumeTower,
+                MapArea.IronPassage,
+                MapArea.MemoryOfTheOldIronKing,
+                MapArea.FrozenEleumLoyce,
+                MapArea.FrigidOutskirts,
+            };
+
+            // Create dictionary:
+            Map2Id = new(); // Reset dictionary of Map -> int ID
+            for (int i = 0; i < MapList.Count; i++)
+                Map2Id[MapList[i]] = i;
+            Id2Map = Map2Id.ToDictionary(x => x.Value, x => x.Key); // reverse lookup
+
+            // Define area connections (hardcoded)
+            Dictionary<MapArea, List<MapArea>> Connections = new() 
+            {
+                [MapArea.ThingsBetwixt] = new() 
+                { 
+                    MapArea.Majula 
+                },
+
+                [MapArea.Majula] = new()
+                {
+                    MapArea.ThingsBetwixt,
+                    MapArea.FOFG,
+                    MapArea.HeidesTowerOfFlame,
+                    MapArea.HuntsmansCopse,
+                    MapArea.ShadedWoods,
+                    MapArea.ThePit,
+                },
+
+                [MapArea.HeidesTowerOfFlame] = new()
+                {
+                    MapArea.Majula,
+                    MapArea.NoMansWharf,
+                },
+                
+                [MapArea.NoMansWharf] = new()
+                {
+                    MapArea.HeidesTowerOfFlame,
+                    MapArea.TheLostBastille,
+                },
+                
+                [MapArea.TheLostBastille] = new()
+                {
+                    MapArea.FOFG,
+                    MapArea.NoMansWharf,
+                    MapArea.BelfryLuna,
+                    MapArea.SinnersRise,
+                },
+                    
+                [MapArea.BelfryLuna] = new() { MapArea.TheLostBastille },
+                    
+                [MapArea.SinnersRise] = new() { MapArea.TheLostBastille },
+                    
+                [MapArea.HuntsmansCopse] = new()
+                {
+                    MapArea.Majula,
+                    MapArea.UndeadPurgatory,
+                    MapArea.HarvestValley,
+                },
+                    
+                [MapArea.UndeadPurgatory] = new() { MapArea.HuntsmansCopse, },
+                    
+                [MapArea.HarvestValley] = new()
+                {
+                    MapArea.HuntsmansCopse,
+                    MapArea.EarthenPeak,
+                },
+                    
+                [MapArea.EarthenPeak] = new()
+                {
+                    MapArea.HarvestValley,
+                    MapArea.IronKeep,
+                },
+                    
+                [MapArea.IronKeep] = new()
+                {
+                    MapArea.EarthenPeak,
+                    MapArea.BelfrySol,
+                    MapArea.BrumeTower,
+                },
+                    
+                [MapArea.BelfrySol] = new() { MapArea.IronKeep, },
+                    
+                [MapArea.ShadedWoods] = new()
+                {
+                    MapArea.Majula,
+                    MapArea.DoorsOfPharros,
+                    MapArea.DrangleicCastle,
+                    MapArea.AldiasKeep,
+                },
+
+                [MapArea.DoorsOfPharros] = new()
+                {
+                    MapArea.ShadedWoods,
+                    MapArea.Tseldora,
+                },
+                [MapArea.Tseldora] = new()
+                {
+                    MapArea.DoorsOfPharros,
+                },
+                
+                [MapArea.ThePit] = new()
+                {
+                    MapArea.Majula,
+                    MapArea.GraveOfSaints,
+                    MapArea.TheGutter,
+                },
+                
+                [MapArea.GraveOfSaints] = new()
+                {
+                    MapArea.ThePit,
+                },
+                [MapArea.TheGutter] = new()
+                {
+                    MapArea.ThePit,
+                    MapArea.BlackGulch,
+                },
+                [MapArea.BlackGulch] = new()
+                {
+                    MapArea.TheGutter,
+                    MapArea.ShulvaSanctumCity,
+                },
+                
+                [MapArea.DrangleicCastle] = new()
+                {
+                    MapArea.ShrineOfAmana
+                },
+                
+                [MapArea.ShrineOfAmana] = new()
+                { 
+                    MapArea.DrangleicCastle,
+                    MapArea.UndeadCrypt, 
+                },
+                
+                [MapArea.UndeadCrypt] = new() { MapArea.ShrineOfAmana, },
+                
+                [MapArea.AldiasKeep] = new() 
+                { 
+                    MapArea.ShadedWoods,
+                    MapArea.DragonAerie, 
+                },
+                
+                [MapArea.DragonAerie] = new() 
+                { 
+                    MapArea.AldiasKeep, 
+                    MapArea.DragonShrine
+                },
+                
+                [MapArea.DragonShrine] = new() { MapArea.DragonAerie, },
+                
+                [MapArea.MemoryOfJeigh] = new() { MapArea.FOFG, },
+                [MapArea.MemoryOfOrro] = new() { MapArea.FOFG },
+                [MapArea.MemoryOfVammar] = new() { MapArea.FOFG },
+                
+                [MapArea.ShulvaSanctumCity] = new()
+                {
+                    MapArea.BlackGulch,
+                    MapArea.DragonsSanctum,
+                    MapArea.CaveOfTheDead,
+                },
+
+                [MapArea.DragonsSanctum] = new() { MapArea.ShulvaSanctumCity, },
+                
+                [MapArea.CaveOfTheDead] = new() { MapArea.ShulvaSanctumCity, },
+                
+                [MapArea.BrumeTower] = new()
+                {
+                    MapArea.IronKeep,
+                    MapArea.IronPassage,
+                    MapArea.MemoryOfTheOldIronKing,
+                },
+                [MapArea.IronPassage] = new() { MapArea.BrumeTower, },
+                
+                [MapArea.MemoryOfTheOldIronKing] = new() { MapArea.BrumeTower, },
+                
+                [MapArea.FrozenEleumLoyce] = new()
+                {
+                    MapArea.ShadedWoods,
+                    MapArea.FrigidOutskirts,
+                },
+
+                [MapArea.FrigidOutskirts] = new() { MapArea.FrozenEleumLoyce, }
+            };
+
+            // Create Adjacency matrix
+            int N = MapList.Count;
+            RandoGraph = new int[N,N];
+            foreach (var kvp in Connections)
+            {
+                // Unpack:
+                var row = Map2Id[kvp.Key];
+                var conmaps = kvp.Value;
+
+                // Populate connections
+                foreach (var conmap in conmaps)
+                {
+                    var col = Map2Id[conmap];
+                    RandoGraph[row,col] = 1;
+                }
+            }
+
+        }
+        private int SteinerTreeDist(int[,] graph, List<int> reqnodes)
+        {
+            // Guard clauses:
+            if (reqnodes.Count < 2)
+                throw new Exception("I think you should not get here");
+            
+            // Use Djikstra's where possible:
+            if (reqnodes.Count == 2)
+                return Djikstras(graph, reqnodes);
+
+            // Actually need to solve the Steiner tree
+
+
+
+            //// We must have passed soft-lock restrictions
+            //// to get to here, so theres at least one key-set-option
+            //// for which all keys are already placed.
+            //foreach (var kso in rdz.RandoInfo.KeySet)
+            //{
+            //    // Only interested in the keysets that have been complete
+            //    if (!KeySetFullyPlaced(kso))
+            //        continue;
+
+            //    CalcKSOTravDist(kso);
+            //}
+        }
+        private int Djikstras(int[,] graph, List<int> reqnodes)
+        {
+            // TODO
+            return 0;
+        }
+        private bool KeySetFullyPlaced(KeySet kso)
+        {
+            if (kso.Keys.Length == 0)
+                return true; // no key restrictions
+
+            return kso.Keys.All(keyid => KeysPlacedSoFar.Contains((int)keyid));
+        }
+        private void SetupTravNodes()
+        {
+            // Each Node is a group of Rdzs that
+            // exactly share MapArea & KeySet
+            //
+            // Any nodes with no KeySet reqs are considered
+            // "unlocked" and safe for placement. Other
+            // nodes will become unlocked as their keys
+            // are placed.
+            var ShopLotsPTF = AllPTF.Where(rdz => rdz is not DropRdz).ToList();
+            var grps = ShopLotsPTF.GroupBy(rdz => rdz.RandoInfo.NodeKey);
+
+            // Create initial dictionary:
+            foreach (var grp in grps)
+                Nodes[grp.Key] = new Node(grp);
+        }
+        
+        
+        private int CalcKSOTravDist(KeySet kso)
+        {
+            // !All keys must be placed in order to get here!
+            // When keys are placed, their distance is calculated
+            // and stored, so we can just read it.
+
+            // Minimum spanning tree reaching these nodes
+            foreach (var keyid in kso.Keys)
+            {
+                // Get Rdz
+            }
         }
 
         private void AddToRdz(Randomization rdz, DropInfo di)

@@ -128,6 +128,7 @@ namespace DS2S_META.Randomizer
         internal KeySet[] KeySet;
         internal RDZ_STATUS RandoHandleType { get; set; }
         internal int RefInfoID = 0;
+        internal readonly NodeKey NodeKey;
 
         // Main class constructor
         internal RandoInfo()
@@ -146,6 +147,7 @@ namespace DS2S_META.Randomizer
             PickupTypes = new PICKUPTYPE[] { type };
             KeySet = reqkeys;
             RandoHandleType = RDZ_STATUS.STANDARD;
+            NodeKey = new NodeKey(Area, KeySet);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, params KeySet[] reqkeys)
         {
