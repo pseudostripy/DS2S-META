@@ -1483,7 +1483,10 @@ namespace DS2S_META.Randomizer
             if (terminals.Count < 1)
                 throw new Exception("I think you should not get here");
             if (terminals.Count == 1)
+            {
                 steinsol = terminals; // Betwixt only!
+                return 1;
+            }
             
             //// Use Djikstra's where possible: [don't think it'll help rn]
             //if (terminals.Count == 2)
