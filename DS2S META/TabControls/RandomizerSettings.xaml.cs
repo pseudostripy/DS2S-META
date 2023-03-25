@@ -134,6 +134,33 @@ namespace DS2S_META
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
 
+            // Fields/Properties:
+            public string Name { get; set; }
+            public List<int> ItemIDs { get; set; }
+            public ITEMGROUP GroupType { get; set; }
+
+            private int _distMin = 1;
+            public int DistMin
+            {
+                get => _distMin;
+                set
+                {
+                    _distMin = value;
+                    OnPropertyChanged(nameof(DistMin));
+                }
+            }
+            private int _distMax = 20;
+            public int DistMax
+            {
+                get => _distMax;
+                set
+                {
+                    _distMax = value;
+                    OnPropertyChanged(nameof(DistMax));
+                }
+            }
+            
+
             public static Dictionary<RestrType, string> TypeComboItems { get; set; } = new() 
             {
                 [RestrType.Anywhere]  = "Anywhere",
@@ -166,10 +193,7 @@ namespace DS2S_META
             //}
 
 
-            // Those don't need to fire PropertyChangedEvents, since those cannot be changed in UI
-            public List<int> ItemIDs { get; set; }
-            public ITEMGROUP GroupType { get; set; }
-            public string Name { get; set; }
+            
 
 
             // Used for hiding the section for area selection and min/max distance
@@ -219,23 +243,19 @@ namespace DS2S_META
             //}
 
             // Constructors:
-            // Group of items:
-            public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = Randomizer.RestrType.Anywhere)
+            public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = RestrType.Anywhere)
             {
                 Name = name;
+                ItemIDs = new();
                 GroupType = grp;    
                 RestrType = restrType;
-                //UpdateVisibility();
             }
-
-            // Specified item:
-            public ItemRestriction(string name, ITEMID itemID, RestrType restrType = Randomizer.RestrType.Anywhere)
+            public ItemRestriction(string name, ITEMID itemID, RestrType restrType = RestrType.Anywhere)
             {
                 Name = name;
                 ItemIDs = new List<int>((int)itemID);
                 GroupType = ITEMGROUP.Specified;
                 RestrType = restrType;
-                //UpdateVisibility();
             }
 
         }
@@ -256,12 +276,6 @@ namespace DS2S_META
             //catch (Exception) // If the settings file is broken, FileNotFoundException won't help - just recreate the settings...?
             //{
             //    ItemRestrictions = DefaultRestrictions();
-
-            //        //new ItemRestriction("Any Pyromancy Flame", new(){ 05400000, 05410000 }, RestrType.Anywhere),
-            //        //new ItemRestriction("Any Staff", new(){ 1280000, 3800000, 3810000, 3820000, 3830000, 3850000, 3860000, 3870000,
-            //        //    3880000, 3890000, 3900000, 3910000, 3930000, 3940000, 4150000, 5370000, 5540000, 11150000 }, RestrType.Anywhere),
-            //        //new ItemRestriction("Any Chime", new(){ 2470000, 4010000, 4020000, 4030000, 4040000, 4050000, 4060000, 4080000,
-            //        //    4090000, 4100000, 4110000, 4120000, 4150000, 11150000 }, RestrType.Anywhere),
             //    };
             //}
         }
@@ -308,52 +322,5 @@ namespace DS2S_META
         {
 
         }
-
-        //public static void UpdateMapAreaComboItems()
-        //{
-        //    MapAreaComboItems = MapAreas.toString.Where(area => AreaDistanceCalculator.HasConnectedAreas(area.Key)).ToDictionary(a => a.Key, a => a.Value);
-        //}
-
-        //private void UpdateConnectedAreaDistanceListItems(MapArea area)
-        //{
-        //    ConnectedAreaDistanceListItems.Clear();
-
-        //    // Shouldn't ever occur, if combobox entries are properly updated based on the dictionary entries
-        //    if (!AreaDistanceCalculator.HasConnectedAreas(area))
-        //    {
-        //        listViewConnectedAreasDistances.Visibility = Visibility.Collapsed;
-        //        return;
-        //    }
-
-        //    listViewConnectedAreasDistances.Visibility = Visibility.Visible;
-
-        //    foreach (var a in AreaDistanceCalculator.ConnectedAreaDistances[area])
-        //        if (AreaDistanceCalculator.HasConnectedAreas(a.Key)) // Hides NPC/covenant pseudoareas
-        //            ConnectedAreaDistanceListItems.Add(new KeyValueStruct<KeyValueStruct<MapArea, string>, int>(new KeyValueStruct<MapArea, string>(a.Key, MapAreas.toString[a.Key]), a.Value));
-        //}
-
-        //private void ConnectedAreaDistanceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (listViewConnectedAreasDistances == null)
-        //        return;
-
-        //    var selectedArea = ((KeyValuePair<MapArea, string>)((ComboBox)sender).SelectedValue).Key;
-        //    UpdateConnectedAreaDistanceListItems(selectedArea);
-        //}
-
-        //private void ConnectedAreaDistanceBox_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-        //    var box = (TextBox)sender;
-
-        //    MapArea area = ((KeyValuePair<MapArea, string>)connectedAreaDistanceComboBox.SelectedValue).Key;
-        //    MapArea targetArea = ((KeyValueStruct<KeyValueStruct<MapArea, string>, int>)(box.DataContext)).Key.Key;
-        //    try
-        //    {
-        //        AreaDistanceCalculator.ConnectedAreaDistances[area][targetArea] = int.Parse(box.Text);
-        //    }
-        //    catch (Exception) { }
-
-        //    SaveRandomizerSettings();
-        //}
     }
 }

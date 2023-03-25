@@ -40,9 +40,9 @@
                                 </Grid.ColumnDefinitions>
                                 <Border BorderBrush="LightGray" BorderThickness="1" Grid.RowSpan="2" Grid.ColumnSpan="5"/>
                                 <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Min distance:"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceLowerBound}"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding DistMin}"/>
                                 <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Max distance:"/>
-                                <TextBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceUpperBound}"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding DistMax}"/>
                             </Grid>
                         </Grid>
                     </DataTemplate>

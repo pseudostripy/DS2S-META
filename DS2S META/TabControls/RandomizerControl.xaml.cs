@@ -18,6 +18,8 @@ using DS2S_META.Properties;
 
 namespace DS2S_META
 {
+    using IRest = RandomizerSettings.ItemRestriction;
+
     /// <summary>
     /// Randomizer Code & Front End for RandomizerControl.xaml
     /// </summary>
@@ -111,23 +113,40 @@ namespace DS2S_META
 
         private void CreateItemRestrictions()
         {
-            //RM.OneFromItemSetRestrictions.Clear();
-            //foreach (var restriction in RandomizerSettings.ItemRestrictions)
-            //{
-            //    switch (restriction.Type)
-            //    {
-            //        case ItemRestrictionType.Anywhere:
-            //            // No reason to create a dummy filter
-            //            //RM.ItemSetRestrictions.Add(restriction.ItemIDs, new NoPlacementRestriction());
-            //            break;
-            //        case ItemRestrictionType.Vanilla:
-            //            RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
-            //            break;
-            //        case ItemRestrictionType.AreaDistance:
-            //            RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
-            //            break;
-            //    }
-            //}
+            RM.Restrictions = new();
+            foreach (var restr in RandomizerSettings.ItemRestrictions)
+            {
+                SetItemGroupOptions(restr);
+                RM.Restrictions.Add(restr);
+            }
+        }
+        private static void SetItemGroupOptions(IRest irest)
+        {
+            switch (irest.GroupType)
+            {
+                case ITEMGROUP.Specified:
+                    return;
+
+                // TODO Make more robust with Param field types
+                case ITEMGROUP.Pyro:
+                    irest.ItemIDs = new() { 05400000, 05410000 };
+                    return;
+
+                case ITEMGROUP.Staff:
+                    irest.ItemIDs = new() { 1280000, 3800000, 3810000, 3820000, 3830000, 3850000, 3860000, 3870000,
+                                            3880000, 3890000, 3900000, 3910000, 3930000, 3940000, 4150000, 5370000,
+                                            5540000, 11150000 };
+                    return;
+
+                case ITEMGROUP.BlacksmithKey:
+                    irest.ItemIDs = new List<ITEMID>() { ITEMID.LENIGRASTKEY, ITEMID.DULLEMBER, ITEMID.FANGKEY }.Cast<int>().ToList();
+                    return;
+
+                case ITEMGROUP.Chime:
+                    irest.ItemIDs = new() { 2470000, 4010000, 4020000, 4030000, 4040000, 4050000, 4060000, 4080000,
+                                            4090000, 4100000, 4110000, 4120000, 4150000, 11150000 };
+                    return;
+            }
         }
 
         private bool randomizerSetup()
