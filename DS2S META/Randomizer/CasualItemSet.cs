@@ -1868,7 +1868,7 @@ namespace DS2S_META.Randomizer
             Dold.Add(50366900, SafeInfo(MapArea.BrumeTower, "[DLC2] In the first area with Cask Runners", KEYID.DLC2));
             Dold.Add(50365010, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest outside just before the Upper Floor bonfire", KEYID.DLC2));
             Dold.Add(50366000, SafeInfo(MapArea.BrumeTower, "[DLC2] In the corner of small room next to the second Ashen Idol", KEYID.DLC2));
-            Dold.Add(50365560, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest up the ladder from the second Ashen Idol"));
+            Dold.Add(50365560, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest up the ladder from the second Ashen Idol", KEYID.DLC2));
             Dold.Add(50366370, SafeInfo(MapArea.BrumeTower, "[DLC2] In a corridor up the ladder from the second Ashen Idol", KEYID.DLC2));
             Dold.Add(50366390, SafeInfo(MapArea.BrumeTower, "[DLC2] On ledge next to the Leap of Faith illusory rock after the second Ashen Idol", KEYID.DLC2));
             Dold.Add(50365500, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind Leap of Faith illusory rock after the second Ashen Idol", KEYID.DLC2));

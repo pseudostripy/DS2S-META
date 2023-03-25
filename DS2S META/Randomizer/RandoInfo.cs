@@ -99,6 +99,8 @@ namespace DS2S_META.Randomizer
         FLAMEBUTTERFLY  = 60430000,
     }
 
+    //internal 
+
     internal enum PICKUPTYPE : int
     {
         ENEMYDROP,
