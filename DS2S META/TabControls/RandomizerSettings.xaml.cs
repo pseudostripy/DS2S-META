@@ -253,7 +253,7 @@ namespace DS2S_META
             public ItemRestriction(string name, ITEMID itemID, RestrType restrType = RestrType.Anywhere)
             {
                 Name = name;
-                ItemIDs = new List<int>((int)itemID);
+                ItemIDs = new List<int>() { (int)itemID };
                 GroupType = ITEMGROUP.Specified;
                 RestrType = restrType;
             }

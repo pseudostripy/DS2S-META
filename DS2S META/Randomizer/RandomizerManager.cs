@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
 using DS2S_META.Utils;
+using static DS2S_META.Randomizer.RandomizerManager;
+using System.Runtime.Intrinsics.Arm;
 
 namespace DS2S_META.Randomizer
 {
@@ -927,7 +929,7 @@ namespace DS2S_META.Randomizer
             KeysPlacedSoFar.Add(di.ItemID);
 
             // check for new KeySets now achieved
-            var relevantKSs = UniqueIncompleteKSs.Where(ks => ks.HasKey(di.ItemID));
+            var relevantKSs = UniqueIncompleteKSs.Where(ks => ks.HasKey(di.ItemID)).ToList();
 
             foreach (var ks in relevantKSs)
             {
@@ -980,15 +982,33 @@ namespace DS2S_META.Randomizer
                 availRdzs.Remove(rdz);
             }
 
+            // !!
+            // TODO Put a "best avaialable" min/max dist placement
+            // to avoid all max distances being full etc
+            // !!
+
             // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
         }
         private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
         {
-            // Must pass all filters:
-            if (!PassedReservedCond(rdz, di))
+            // Special Filter (Vanilla items):
+            if (!PassedReservedCond(rdz, di, out var vanplace))
                 return false;
 
+            // Remaining filters:
+            if (vanplace)
+                return PassedVanillaConds(rdz, settype);
+            else
+                return PassedNonVanConds(rdz, di, settype);
+        }
+        private bool PassedVanillaConds(Randomization rdz, SetType settype)
+        {
+            return PassedSoftlockLogic(rdz, settype);
+        }
+        private bool PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype)
+        {
+            // Standard conditions to meet when we're not placing a vanilla item
             if (!PassedPickupTypeCond(rdz, di, settype))
                 return false;
 
@@ -1001,16 +1021,25 @@ namespace DS2S_META.Randomizer
             // Passed gauntlet
             return true;
         }
+        
 
         // Placement Logic Filters:
-        private bool PassedReservedCond(Randomization rdz, DropInfo di)
+        private bool PassedReservedCond(Randomization rdz, DropInfo di, out bool vanplace)
         {
             // This condition passes if:
             // - Rdz has no reservation, itemID has no restriction
             // - Rdz has reservedID that has already been successfully filled,
             //      and itemID has no restriction
             // - Rdz has reservedID that matches itemID restriction
-            
+            //
+            // vanplace is a special boolean flag to state that this
+            // is the case 3) above, where we OVERRULE other restrictions
+            // EXCEPT softlock conditions that must still be abided.
+            // Vanilla keys are placed last in the list to ensure
+            // that they should pass softlock.
+
+            vanplace = false;
+
             if (!ReservedRdzs.TryGetValue(rdz, out int resItemID))
             {
                 // Rdz has no reservedID
@@ -1025,7 +1054,10 @@ namespace DS2S_META.Randomizer
                 return true; // [case 2]: Rdz pre-filled; safe to add secondary drops
 
             if (di.ItemID == resItemID)
+            {
+                vanplace = true;
                 return true; // [case 3]: reserved for me!
+            }
             return false;
         }
         private bool PassedSoftlockLogic(Randomization rdz, SetType settype)
