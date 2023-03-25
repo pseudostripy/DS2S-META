@@ -645,7 +645,6 @@ namespace DS2S_META.Randomizer
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
             UniqueIncompleteKSs = FindUniqueKS();
-            Nodes = new();
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
