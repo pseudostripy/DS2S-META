@@ -1480,8 +1480,10 @@ namespace DS2S_META.Randomizer
         private int SteinerTreeDist(int[,] graph, List<int> terminals, out List<int> steinsol)
         {
             // Guard clauses:
-            if (terminals.Count < 2)
+            if (terminals.Count < 1)
                 throw new Exception("I think you should not get here");
+            if (terminals.Count == 1)
+                steinsol = terminals; // Betwixt only!
             
             //// Use Djikstra's where possible: [don't think it'll help rn]
             //if (terminals.Count == 2)
