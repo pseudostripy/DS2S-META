@@ -326,20 +326,6 @@ namespace DS2S_META.Randomizer
                 }
             }
         }
-        //private Randomization GetManualVanillaRdz(int itemid)
-        //{
-        //    // Used when there's multiple options on which is "Vanilla"
-        //    switch (itemid)
-        //    {
-        //        case (int)ITEMID.ROTUNDALOCKSTONE:
-        //            var vdroprdz = AllPTF_drops.Where(rdz => rdz.HasVannilaItemID(itemid)).ToList();
-        //            if (vdroprdz.Count != 1)
-        //                throw new Exception("Not found or not unique");
-        //            return vdroprdz.First();
-        //        default:
-        //            throw new Exception("Rdz collision needs checking");
-        //    }
-        //}
         internal void RandomizeStartingClasses()
         {
             var classids = new List<int>() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
@@ -1372,6 +1358,7 @@ namespace DS2S_META.Randomizer
                 {
                     MapArea.Majula,
                     MapArea.DoorsOfPharros,
+                    MapArea.FrozenEleumLoyce,
                     MapArea.DrangleicCastle,
                     MapArea.AldiasKeep,
                 },
@@ -1410,6 +1397,8 @@ namespace DS2S_META.Randomizer
                 
                 [MapArea.DrangleicCastle] = new()
                 {
+                    MapArea.ShadedWoods,
+                    MapArea.FrozenEleumLoyce,
                     MapArea.ShrineOfAmana
                 },
                 
@@ -1463,6 +1452,7 @@ namespace DS2S_META.Randomizer
                 [MapArea.FrozenEleumLoyce] = new()
                 {
                     MapArea.ShadedWoods,
+                    MapArea.DrangleicCastle,
                     MapArea.FrigidOutskirts,
                 },
 
@@ -1517,7 +1507,7 @@ namespace DS2S_META.Randomizer
                 throw new Exception("No possible Steiner tree!");
 
             // Return any best distance solution
-            steinsol = paths.Where(path => path.Count == minSpan).First();
+            steinsol = paths.First(path => path.Count == minSpan);
             return minSpan;
 
             // Recursion, save end result in paths
