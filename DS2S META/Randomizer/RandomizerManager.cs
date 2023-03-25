@@ -21,6 +21,7 @@ namespace DS2S_META.Randomizer
         DS2SHook? Hook;
         List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
         List<Randomization> AllPTF = new(); // Places to Randomize
+        List<Randomization> AllPTF_drops => AllPTF.Where(rdz => rdz is DropRdz).ToList();
         internal static Random RNG = new();
         private List<ItemLotRow> VanillaLots = new();
         private List<ItemLotRow> VanillaDrops = new();
@@ -120,8 +121,8 @@ namespace DS2S_META.Randomizer
             VanillaItemParams = Hook.Items.ToDictionary(it => it.ID, it => it);
 
             SetupAllPTF();
+            AddDropsToLogic();
             SetupTravNodes();
-            FixLogicDictionary();
             GetLootToRandomize(); // set LTR_Flatlist field
             IsInitialized = true;
         }
@@ -200,7 +201,7 @@ namespace DS2S_META.Randomizer
             foreach (var droprow in vanlotschr) droprow.IsDropTable = true;
             VanillaDrops = vanlotschr;
 
-            AddDropsToLogic(); // gotta do it somewhere
+            //AddDropsToLogic(); // gotta do it somewhere
             return;
         }
         internal void GetVanillaLots()
@@ -232,8 +233,7 @@ namespace DS2S_META.Randomizer
             ResetForRerandomization();
 
             // Place sets of items:
-            PlaceSet(ldkeys_unres, SetType.Keys);
-            PlaceSet(ldkeys_res, SetType.Keys);
+            PlaceSet(ldkeys, SetType.Keys);
             PlaceSet(ldreqs, SetType.Reqs);
             PlaceSet(ldgens, SetType.Gens);
             FillLeftovers();
@@ -293,8 +293,7 @@ namespace DS2S_META.Randomizer
 
             int indID;
             int itemid;
-            Randomization rdz;
-
+            
             foreach( var irest in Restrictions)
             {
                 switch (irest.RestrType)
@@ -306,8 +305,15 @@ namespace DS2S_META.Randomizer
                         // Draw random itemID from list of options:
                         indID = RNG.Next(irest.ItemIDs.Count);
                         itemid = irest.ItemIDs[indID];
-                        rdz = AllPTF.First(rdz => rdz.HasVannilaItemID(itemid)) ?? throw new NullReferenceException();
-                        ReservedRdzs[rdz] = itemid; // store
+
+                        // Get vanillas:
+                        var rdzvans = AllPTF.Where(rdz => rdz.HasVannilaItemID(itemid)).ToList();
+                        if (rdzvans.Count == 0)
+                            throw new Exception("Cannot find the Vanilla placement");
+                        
+                        // Store each vanilla:
+                        foreach(var rdz in rdzvans)
+                            ReservedRdzs[rdz] = itemid; // store
                         break;
 
                     case RestrType.Distance:
@@ -319,6 +325,20 @@ namespace DS2S_META.Randomizer
                 }
             }
         }
+        //private Randomization GetManualVanillaRdz(int itemid)
+        //{
+        //    // Used when there's multiple options on which is "Vanilla"
+        //    switch (itemid)
+        //    {
+        //        case (int)ITEMID.ROTUNDALOCKSTONE:
+        //            var vdroprdz = AllPTF_drops.Where(rdz => rdz.HasVannilaItemID(itemid)).ToList();
+        //            if (vdroprdz.Count != 1)
+        //                throw new Exception("Not found or not unique");
+        //            return vdroprdz.First();
+        //        default:
+        //            throw new Exception("Rdz collision needs checking");
+        //    }
+        //}
         internal void RandomizeStartingClasses()
         {
             var classids = new List<int>() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
@@ -330,7 +350,7 @@ namespace DS2S_META.Randomizer
                                                 ITEMID.ESTUSEMPTY,
                                                 ITEMID.DARKSIGN,
                                                 ITEMID.BONEOFORDER,
-                                                ITEMID.BLACKSEPARATIONCRYSTAL }).Cast<int>();
+                                                ITEMID.BLACKSEPCRYSTAL }).Cast<int>();
             var all_items = ParamMan.ItemParam?.Rows.OfType<ItemRow>();
             var all_consumables = (all_items?.Where(it => it.ItemType == eItemType.CONSUMABLE)
                                             .Where(it => it.ItemUsageID != (int)ITEMUSAGE.ITEMUSAGEKEY
@@ -670,10 +690,6 @@ namespace DS2S_META.Randomizer
             var res = rdzlist.FirstOrDefault(rdz => rdz.UniqueParamID == id);
             return res ?? throw new Exception($"Cannot find Randomization object with id {id}");
         }
-        internal void FixLogicDictionary()
-        {
-            AddDropsToLogic(); // gotta do it somewhere
-        }
         internal void SetupAllPTF()
         {
             // "Places To Fill"
@@ -756,10 +772,19 @@ namespace DS2S_META.Randomizer
                 droprdz.RandoInfo.Description = droprdz.RandoDesc; // still empty for now
                 PICKUPTYPE droptype = droprdz.IsGuaranteedDrop ? PICKUPTYPE.GUARANTEEDENEMYDROP : PICKUPTYPE.ENEMYDROP;
                 droprdz.RandoInfo.PickupTypes = new PICKUPTYPE[] { droptype };
-                    
+
+                if (DropKeySets.TryGetValue(droprdz.ParamID, out var kso))
+                    droprdz.RandoInfo.KSO = kso;
+
                 Logic.D[droprdz.GUID] = droprdz.RandoInfo; // Add to dictionary
             }
         }
+        internal static Dictionary<int, KeySet[]> DropKeySets = new()
+        {
+            // Awkward cases of DropRdzs dropping keys in vanilla:
+            [(int)DROPPARAMID.LICIAHEIDES] = Array.Empty<KeySet>(),
+            [(int)DROPPARAMID.DUKETSELDORA] = new KeySet[1] {new KeySet(KEYID.BRANCH) },
+        };
         internal void DefineKRG()
         {
             // Take a copy of the FlatList so we don't need to regenerate everytime:
@@ -897,7 +922,11 @@ namespace DS2S_META.Randomizer
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
 
-                PlaceItem(di, settype);
+                var logicres = PlaceItem(di, settype);
+                if (settype == SetType.Keys && logicres == LOGICRES.DELAY_VANLOCKED)
+                    continue; // leave in pool and redraw
+
+                // Item placed successfully
                 ld.RemoveAt(keyindex);
             }
 
@@ -905,24 +934,45 @@ namespace DS2S_META.Randomizer
             if (ld.Count > 0 && settype != SetType.Gens)
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
-        private void PlaceItem(DropInfo di, SetType stype)
+        private LOGICRES PlaceItem(DropInfo di, SetType stype)
         {
             // Placement logic:
-            var rdz = FindElligibleRdz(di, stype);
+            var logicres = FindElligibleRdz(di, stype, out var rdz);
+            if (logicres == LOGICRES.DELAY_VANLOCKED)
+                return logicres; // handled above
+
+            // Extra checks:
+            if (IsFailure(logicres))
+                throw new Exception("Shouldn't get here");
+            if (rdz == null)
+                throw new NullReferenceException();
 
             // Place Item:
-            AddToRdz(rdz, di);
-
+            AddToAllLinkedRdz(rdz, di);
+            
             // Update graph/logic on key placement
             if (stype == SetType.Keys)
                 UpdateForNewKey(rdz, di);    
             
             // Handle saturation
             if (!rdz.IsSaturated())
-                return;
+                return LOGICRES.SUCCESS;
 
             rdz.MarkHandled();
             UnfilledRdzs.Remove(rdz); // now filled!
+            return LOGICRES.SUCCESS;
+        }
+        private static bool IsFailure(LOGICRES res)
+        {
+            return res switch
+            {
+                LOGICRES.FAIL_DISTANCE => true,
+                LOGICRES.FAIL_SOFTLOCK => true,
+                LOGICRES.FAIL_PICKUPTYPE => true,
+                LOGICRES.FAIL_RESERVED => true,
+                LOGICRES.FAIL_VAN_WRONGRDZ => true,
+                _ => false,
+            };
         }
         private void UpdateForNewKey(Randomization rdz, DropInfo di)
         {
@@ -964,9 +1014,10 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        private Randomization FindElligibleRdz(DropInfo di, SetType stype)
+        private LOGICRES FindElligibleRdz(DropInfo di, SetType stype, out Randomization? rdz_ellig)
         {
             // Find an Rdz (at random) satisfying all constraints.
+            rdz_ellig = default;
 
             // List of remaining spots to search through
             var availRdzs = new List<Randomization>(UnfilledRdzs);
@@ -975,13 +1026,30 @@ namespace DS2S_META.Randomizer
             {
                 // Choose random rdz for item:
                 var rdz = availRdzs[RNG.Next(availRdzs.Count)];
+                var rescheck = PassedPlacementConds(rdz, di, stype);
 
-                // Check our chosen rdz
-                if (PassedPlacementConds(rdz, di, stype))
-                    return rdz;
+                switch (rescheck)
+                {
+                    // Failed: remove it from available options
+                    case LOGICRES.FAIL_RESERVED:
+                    case LOGICRES.FAIL_VAN_WRONGRDZ:
+                    case LOGICRES.FAIL_PICKUPTYPE:
+                    case LOGICRES.FAIL_SOFTLOCK:
+                    case LOGICRES.FAIL_DISTANCE:
+                        availRdzs.Remove(rdz);
+                        continue;
 
-                // Failed: remove it from available options
-                availRdzs.Remove(rdz);
+                    // Semi-fail: cannot place vanilla just yet
+                    case LOGICRES.DELAY_VANLOCKED:
+                        return LOGICRES.DELAY_VANLOCKED;
+
+                    case LOGICRES.SUCCESS:
+                        rdz_ellig = rdz;
+                        return LOGICRES.SUCCESS;
+
+                    default:
+                        throw new Exception("?");
+                }
             }
 
             // !!
@@ -992,41 +1060,61 @@ namespace DS2S_META.Randomizer
             // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
         }
-        private bool PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
+        private LOGICRES PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
         {
             // Special Filter (Vanilla items):
-            if (!PassedReservedCond(rdz, di, out var vanplace))
-                return false;
+            var rescheck = PassedReservedCond(rdz, di);
+            if (rescheck == LOGICRES.FAIL_VAN_WRONGRDZ || rescheck == LOGICRES.FAIL_RESERVED)
+                return rescheck;
 
             // Remaining filters:
-            if (vanplace)
-                return PassedVanillaConds(rdz, settype);
+            if (rescheck == LOGICRES.SUCCESS_VANPLACE)
+                return PassedVanillaConds(rdz, di, settype);
             else
                 return PassedNonVanConds(rdz, di, settype);
         }
-        private bool PassedVanillaConds(Randomization rdz, SetType settype)
+        private LOGICRES PassedVanillaConds(Randomization rdz, DropInfo di, SetType settype)
         {
-            return PassedSoftlockLogic(rdz, settype);
+            if (IsRotundaDeadlock(di))
+                return LOGICRES.SUCCESS; // it'll resolve itself
+            
+            if (PassedSoftlockLogic(rdz, settype))
+                return LOGICRES.SUCCESS;
+
+            return LOGICRES.DELAY_VANLOCKED;
         }
-        private bool PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype)
+        private static bool IsRotundaDeadlock(DropInfo di)
+        {
+            // Catch a specific meme regarding the Rotunda Lockstone
+            // in that it's second Vanilla location (crushed eye invasion)
+            // is locked behind Drangleic (which is in turn locked
+            // behind placing the Rotunda).
+            // Given that Licia is always (CURRENTLY) 
+            // accessible from the start, we can just hard-code 
+            // fix this case.
+            if (di.ItemID == (int)ITEMID.ROTUNDALOCKSTONE)
+                return true;
+            return false;
+        }
+        private LOGICRES PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype)
         {
             // Standard conditions to meet when we're not placing a vanilla item
             if (!PassedPickupTypeCond(rdz, di, settype))
-                return false;
+                return LOGICRES.FAIL_PICKUPTYPE;
 
             if (!PassedSoftlockLogic(rdz, settype))
-                return false;
+                return LOGICRES.FAIL_SOFTLOCK;
 
             if (!PassedDistanceCond(rdz, di))
-                return false;
+                return LOGICRES.FAIL_DISTANCE;
 
             // Passed gauntlet
-            return true;
+            return LOGICRES.SUCCESS;
         }
         
 
         // Placement Logic Filters:
-        private bool PassedReservedCond(Randomization rdz, DropInfo di, out bool vanplace)
+        private LOGICRES PassedReservedCond(Randomization rdz, DropInfo di)
         {
             // This condition passes if:
             // - Rdz has no reservation, itemID has no restriction
@@ -1040,27 +1128,23 @@ namespace DS2S_META.Randomizer
             // Vanilla keys are placed last in the list to ensure
             // that they should pass softlock.
 
-            vanplace = false;
+            // This rdz is reserved for some itemID
+            var rdzThis = ReservedRdzs.ContainsKey(rdz);
 
-            if (!ReservedRdzs.TryGetValue(rdz, out int resItemID))
+            // Rdz reservation that is not filled already
+            if (rdzThis && !rdz.HasShuffledItemID(di.ItemID))
             {
-                // Rdz has no reservedID
-                if (ReservedRdzs.ContainsValue(di.ItemID))
-                    return false; // item is reserved for a different Rdz
-                else
-                    return true; // [case 1]: neither restricted
+                // Must be match:
+                if (ReservedRdzs[rdz] != di.ItemID)
+                    return LOGICRES.FAIL_RESERVED;
+
+                // [case 3]: Match
+                return LOGICRES.SUCCESS_VANPLACE;
             }
 
-            // Get here if Rdz is reserved for *some* ID
-            if (rdz.HasShuffledItemID(resItemID))
-                return true; // [case 2]: Rdz pre-filled; safe to add secondary drops
-
-            if (di.ItemID == resItemID)
-            {
-                vanplace = true;
-                return true; // [case 3]: reserved for me!
-            }
-            return false;
+            // No rdz reserved: can place item in unless it is Vanilla
+            var isItemVan = ReservedRdzs.ContainsValue(di.ItemID);
+            return isItemVan ? LOGICRES.FAIL_VAN_WRONGRDZ : LOGICRES.SUCCESS;
         }
         private bool PassedSoftlockLogic(Randomization rdz, SetType settype)
         {
@@ -1475,13 +1559,26 @@ namespace DS2S_META.Randomizer
             foreach (var grp in grps)
                 Nodes[grp.Key] = new Node(grp);
         }
-        
-        private void AddToRdz(Randomization rdz, DropInfo di)
+        private void AddToAllLinkedRdz(Randomization rdz, DropInfo di)
         {
             // This is preliminary code if you want to randomize reinforcement/infusion
             FixReinforcement(di);
             FixInfusion(di);
 
+            // Get linked Rdzs:
+            List<Randomization> linkedrdz = new();
+            if (!ReservedRdzs.ContainsKey(rdz))
+                linkedrdz.Add(rdz);
+            else
+                linkedrdz = ReservedRdzs.Where(kvp => kvp.Value == di.ItemID)
+                                        .Select(kvp => kvp.Key).ToList();
+
+            foreach(var lrdz in linkedrdz)
+                AddToRdz(lrdz, di);
+
+        }
+        private static void AddToRdz(Randomization rdz, DropInfo di)
+        {
             rdz.AddShuffledItem(di);
         }
 
