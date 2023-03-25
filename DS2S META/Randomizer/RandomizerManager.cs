@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using DS2S_META.Utils;
 using static DS2S_META.Randomizer.RandomizerManager;
 using System.Runtime.Intrinsics.Arm;
+using DS2S_META.ViewModels;
 
 namespace DS2S_META.Randomizer
 {
@@ -30,7 +31,7 @@ namespace DS2S_META.Randomizer
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
-        internal List<RandomizerSettings.ItemRestriction> Restrictions;
+        internal List<ItemRestriction> Restrictions;
         
         // From front-end
         internal Dictionary<Randomization, int> ReservedRdzs = new();

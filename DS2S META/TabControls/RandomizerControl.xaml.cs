@@ -15,10 +15,11 @@ using System.Windows.Data;
 using Octokit;
 using System.ComponentModel;
 using DS2S_META.Properties;
+using DS2S_META.ViewModels;
 
 namespace DS2S_META
 {
-    using IRest = RandomizerSettings.ItemRestriction;
+    using IRest = ItemRestriction;
 
     /// <summary>
     /// Randomizer Code & Front End for RandomizerControl.xaml

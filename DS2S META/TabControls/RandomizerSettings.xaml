@@ -7,7 +7,7 @@
                     xmlns:local="clr-namespace:DS2S_META"
                     xmlns:rando="clr-namespace:DS2S_META.Randomizer"
                     mc:Ignorable="d" 
-                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray" Loaded="RandoSettings_Loaded">
+                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
 
     <StackPanel>
         <Expander>
