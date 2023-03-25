@@ -26,6 +26,7 @@ namespace DS2S_META.Randomizer
         LENIGRASTKEY    = 0x030836F0,
         FANGKEY         = 0x0307E8D0,
         BLACKSEPCRYSTAL = 0x03B47C80,
+        BASTILLEKEY     = 0x03072580,
         ROTUNDALOCKSTONE = 0x03088510,
     }
     public enum ITEMUSAGE

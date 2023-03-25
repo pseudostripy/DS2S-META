@@ -23,6 +23,9 @@ namespace DS2S_META.Randomizer
         internal void AddStein(MapArea area)
         {
             SteinerNodesMA.Add(area);
+            if (area == MapArea.Undefined || area == MapArea.Quantum)
+                return; // no dist on these!
+
             SteinerNodes.Add(RandomizerManager.Map2Id[area]);
         }
         internal void AddStein(int ID)

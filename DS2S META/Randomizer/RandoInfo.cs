@@ -130,6 +130,7 @@ namespace DS2S_META.Randomizer
         internal RDZ_STATUS RandoHandleType { get; set; }
         internal int RefInfoID = 0;
         internal readonly NodeKey NodeKey;
+        internal bool IsKeyless => KSO.Length == 0 || (KSO.Length == 1 && KSO[0].HasKey(KEYID.NONE));
 
         // Main class constructor
         internal RandoInfo()
@@ -250,10 +251,11 @@ namespace DS2S_META.Randomizer
 
         public bool Equals(KeySet other)
         {
-            return Keys == other.Keys;
+            return Keys.SequenceEqual(other.Keys);
         }
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
+            if (obj == null) return false;
             return Equals((KeySet)obj);
         }
         public override int GetHashCode()

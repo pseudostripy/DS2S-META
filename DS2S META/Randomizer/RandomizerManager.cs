@@ -655,7 +655,7 @@ namespace DS2S_META.Randomizer
             var shoplots = AllPTF.Where(rdz => rdz is not DropRdz).ToList();
             foreach(var rdz in shoplots)
             {
-                if (rdz.RandoInfo.KSO.Length == 0)
+                if (rdz.RandoInfo.IsKeyless)
                     continue;
 
                 foreach (var ks in rdz.RandoInfo.KSO)
@@ -994,14 +994,11 @@ namespace DS2S_META.Randomizer
             KeysPlacedSoFar.Add(di.ItemID);
 
             // check for new KeySets now achieved
-            var relevantKSs = UniqueIncompleteKSs.Where(ks => ks.HasKey(di.ItemID)).ToList();
+            var relevantKSs = GetNewUnlocks();
+
 
             foreach (var ks in relevantKSs)
             {
-                // find new completions:
-                if (!ks.Keys.All(keyid => ItemSetBase.IsPlaced(keyid, KeysPlacedSoFar)))
-                    continue; // not complete yet
-
                 // Acknowledge keyset completion
                 UniqueIncompleteKSs.Remove(ks);
 
@@ -1012,7 +1009,8 @@ namespace DS2S_META.Randomizer
 
                 // Get node we're placing into, and calculate new Steiner set and distance
                 var rdzNode = Nodes[rdz.RandoInfo.NodeKey]; // where we're placing key
-                if (rdzNode.IsLocked) throw new Exception("Should have been caught in logic");
+                if (rdzNode.IsLocked) 
+                    throw new Exception("Should have been caught in logic");
                 var dist = SteinerTreeDist(RandoGraph, rdzNode.SteinerNodes, out var steinsol);
 
                 // Unlock/Update nodes:
@@ -1025,6 +1023,17 @@ namespace DS2S_META.Randomizer
                     
                 }
             }
+        }
+        private List<KeySet> GetNewUnlocks()
+        {
+            // Check over the incomplete keysets and see what completes:
+            List<KeySet> newKeys = new();
+            foreach(var ks in UniqueIncompleteKSs)
+            {
+                if (ks.Keys.All(keyid => ItemSetBase.IsPlaced(keyid, KeysPlacedSoFar)))
+                    newKeys.Add(ks);
+            }
+            return newKeys;
         }
 
         private LOGICRES FindElligibleRdz(DropInfo di, SetType stype, out Randomization? rdz_ellig)
