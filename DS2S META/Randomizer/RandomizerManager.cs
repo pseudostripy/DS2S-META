@@ -45,7 +45,8 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> ldgens = new();
         //
         private List<Randomization> UnfilledRdzs = new();
-        private List<int> KeysPlacedSoFar = new(); // to tidy
+        private List<int> KeysPlacedSoFar = new();
+        private List<int> ResVanPlacedSoFar = new();
         internal Dictionary<NodeKey,Node> Nodes = new();
         internal static Dictionary<MapArea, int> Map2Id = new();
         internal static Dictionary<int, MapArea> Id2Map = new();
@@ -922,12 +923,25 @@ namespace DS2S_META.Randomizer
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
 
+                if (ResVanPlacedSoFar.Contains(di.ItemID))
+                {
+                    // All Vanilla instances were placed on a previous
+                    // call to this which had the same ID.
+                    ld.RemoveAt(keyindex);
+                    continue;
+                }
+
+
                 var logicres = PlaceItem(di, settype);
                 if (settype == SetType.Keys && logicres == LOGICRES.DELAY_VANLOCKED)
                     continue; // leave in pool and redraw
 
+                if (logicres == LOGICRES.SUCCESS_VANPLACE)
+                    ResVanPlacedSoFar.Add(di.ItemID);
+
                 // Item placed successfully
                 ld.RemoveAt(keyindex);
+                
             }
 
             // Must have ran out of space to place things:
@@ -956,11 +970,11 @@ namespace DS2S_META.Randomizer
             
             // Handle saturation
             if (!rdz.IsSaturated())
-                return LOGICRES.SUCCESS;
+                return logicres;
 
             rdz.MarkHandled();
             UnfilledRdzs.Remove(rdz); // now filled!
-            return LOGICRES.SUCCESS;
+            return logicres;
         }
         private static bool IsFailure(LOGICRES res)
         {
@@ -1044,8 +1058,9 @@ namespace DS2S_META.Randomizer
                         return LOGICRES.DELAY_VANLOCKED;
 
                     case LOGICRES.SUCCESS:
+                    case LOGICRES.SUCCESS_VANPLACE:
                         rdz_ellig = rdz;
-                        return LOGICRES.SUCCESS;
+                        return rescheck;
 
                     default:
                         throw new Exception("?");
@@ -1069,19 +1084,19 @@ namespace DS2S_META.Randomizer
 
             // Remaining filters:
             if (rescheck == LOGICRES.SUCCESS_VANPLACE)
-                return PassedVanillaConds(rdz, di, settype);
+                return PassedVanillaConds(rdz, di, settype) ? LOGICRES.SUCCESS_VANPLACE : LOGICRES.DELAY_VANLOCKED;
             else
                 return PassedNonVanConds(rdz, di, settype);
         }
-        private LOGICRES PassedVanillaConds(Randomization rdz, DropInfo di, SetType settype)
+        private bool PassedVanillaConds(Randomization rdz, DropInfo di, SetType settype)
         {
             if (IsRotundaDeadlock(di))
-                return LOGICRES.SUCCESS; // it'll resolve itself
+                return true; // it'll resolve itself
             
             if (PassedSoftlockLogic(rdz, settype))
-                return LOGICRES.SUCCESS;
+                return true;
 
-            return LOGICRES.DELAY_VANLOCKED;
+            return false;
         }
         private static bool IsRotundaDeadlock(DropInfo di)
         {
