@@ -111,23 +111,23 @@ namespace DS2S_META
 
         private void CreateItemRestrictions()
         {
-            RM.OneFromItemSetRestrictions.Clear();
-            foreach (var restriction in RandomizerSettings.ItemRestrictions)
-            {
-                switch (restriction.Type)
-                {
-                    case ItemRestrictionType.Anywhere:
-                        // No reason to create a dummy filter
-                        //RM.ItemSetRestrictions.Add(restriction.ItemIDs, new NoPlacementRestriction());
-                        break;
-                    case ItemRestrictionType.Vanilla:
-                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
-                        break;
-                    case ItemRestrictionType.AreaDistance:
-                        RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
-                        break;
-                }
-            }
+            //RM.OneFromItemSetRestrictions.Clear();
+            //foreach (var restriction in RandomizerSettings.ItemRestrictions)
+            //{
+            //    switch (restriction.Type)
+            //    {
+            //        case ItemRestrictionType.Anywhere:
+            //            // No reason to create a dummy filter
+            //            //RM.ItemSetRestrictions.Add(restriction.ItemIDs, new NoPlacementRestriction());
+            //            break;
+            //        case ItemRestrictionType.Vanilla:
+            //            RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new VanillaPlacementRestriction());
+            //            break;
+            //        case ItemRestrictionType.AreaDistance:
+            //            RM.OneFromItemSetRestrictions.Add(restriction.ItemIDs, new AreaDistancePlacementRestriction(restriction.Area, restriction.AreaDistanceLowerBound, restriction.AreaDistanceUpperBound));
+            //            break;
+            //    }
+            //}
         }
 
         private bool randomizerSetup()

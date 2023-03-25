@@ -40,8 +40,10 @@ namespace DS2S_META.Randomizer
 
         
 
-        internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // e.g. select random blacksmith key for restriction
-        internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
+        //internal Dictionary<List<int>, CustomItemPlacementRestriction> OneFromItemSetRestrictions = new(); // e.g. select random blacksmith key for restriction
+        //internal Dictionary<int, CustomItemPlacementRestriction> Restrictions = new(); // Final restrictions, after selecting items out of their respective sets
+        
+        
         internal Dictionary<Randomization, int> ReservedRdzs = new(); // to populate w/ frontend
         internal Dictionary<int,MinMax>  DistanceRestrictedIDs = new(); // to populate w/ frontend
         // 
@@ -1556,20 +1558,6 @@ namespace DS2S_META.Randomizer
                 Nodes[grp.Key] = new Node(grp);
         }
         
-        
-        private int CalcKSOTravDist(KeySet kso)
-        {
-            // !All keys must be placed in order to get here!
-            // When keys are placed, their distance is calculated
-            // and stored, so we can just read it.
-
-            // Minimum spanning tree reaching these nodes
-            foreach (var keyid in kso.Keys)
-            {
-                // Get Rdz
-            }
-        }
-
         private void AddToRdz(Randomization rdz, DropInfo di)
         {
             // This is preliminary code if you want to randomize reinforcement/infusion

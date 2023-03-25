@@ -7,7 +7,7 @@
                     xmlns:local="clr-namespace:DS2S_META"
                     xmlns:rando="clr-namespace:DS2S_META.Randomizer"
                     mc:Ignorable="d" 
-                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray" Loaded="RandoSettings_Loaded">
 
     <StackPanel>
         <Expander>
@@ -27,63 +27,29 @@
                                 <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock TextWrapping="Wrap" Text="{Binding Path=Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
-                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding Type}" ItemsSource="{Binding Path=TypeComboItems}" SelectionChanged="RestrictionTypeSelection_SelectionChanged"/>
-                            <Grid Visibility="{Binding Path=AreaSelectionVisible}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding RestrType}" ItemsSource="{Binding Path=TypeComboItems}" MinWidth="80"/>
+                            <Grid Visibility="{Binding Path=VisDistSettings}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="3*"/>
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Border BorderBrush="LightGray" BorderThickness="1" Grid.RowSpan="2" Grid.ColumnSpan="5"/>
-                                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Margin="4" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Area:"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Stretch" Margin="4" DisplayMemberPath="Value" SelectedValuePath="Key" SelectedValue="{Binding Area}" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=MapAreaComboItems}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Minimal distance:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Min distance:"/>
                                 <TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceLowerBound}"/>
-                                <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Maximal distance:"/>
-                                <TextBox Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceUpperBound}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right" Margin="4" TextAlignment="Center" Text="Max distance:"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Margin="4" TextAlignment="Center" Text="{Binding AreaDistanceUpperBound}"/>
                             </Grid>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Expander>
 
-        <Expander>
-            <Expander.Header>
-                <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Distance To Connected Areas</TextBlock>
-            </Expander.Header>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="4*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" TextAlignment="Right" FontSize="14" Text="From:" Margin="0,0,0,4"/>
-                <ComboBox x:Name="connectedAreaDistanceComboBox" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6" DisplayMemberPath="Value" FontSize="14" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=MapAreaComboItems}" SelectionChanged="ConnectedAreaDistanceComboBox_SelectionChanged"/>
-                <ListView x:Name="listViewConnectedAreasDistances" Grid.Row="1" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ConnectedAreaDistanceListItems}" Visibility="Collapsed">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="4*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Text="{Binding Key.Value}"/>
-                                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" Margin="2" VerticalAlignment="Center" TextAlignment="Center" FontSize="14" Text="{Binding Value}" TextChanged="ConnectedAreaDistanceBox_TextChanged"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </Grid>
         </Expander>
+        
     </StackPanel>
 </local:METAControl>

@@ -1833,8 +1833,8 @@ namespace DS2S_META.Randomizer
             Dold.Add(50356490, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KEYID.ELANA));
             Dold.Add(50356500, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KEYID.ELANA));
             Dold.Add(50356520, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the room with many opened chests one level down from Sanctum Interior bonfire", KEYID.ELANA));
-            Dold.Add(50356540, SafeInfo(MapArea.DragonsRest, "[DLC1] In Sinh's arena", KEYID.ELANA));
-            Dold.Add(60020000, SafeInfo(MapArea.DragonsRest, "[DLC1] Vanilla Crown: in Sinh's arena after defeating him", KEYID.ELANA));
+            Dold.Add(50356540, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In Sinh's arena", KEYID.ELANA));
+            Dold.Add(60020000, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Crown: in Sinh's arena after defeating him", KEYID.ELANA));
             Dold.Add(50355190, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with Eternal Sanctum key", KEYID.GANKSQUAD));
             Dold.Add(50355200, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KEYID.GANKSQUAD));
             Dold.Add(50355210, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KEYID.GANKSQUAD));
@@ -1964,14 +1964,14 @@ namespace DS2S_META.Randomizer
 
             // DLC3:
             Dold.Add(679000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Aava, the King's Pet drop", KEYID.DLC3));
-            Dold.Add(690000, BossInfo(MapArea.TheOldChaos, "[DLC3] Ivory King drop", KEYID.DLC3));
+            Dold.Add(690000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Ivory King drop", KEYID.DLC3));
             Dold.Add(679010, BossInfo(MapArea.FrigidOutskirts, "[DLC3] Lud and Zallen drop", KEYID.FRIGIDOUTSKIRTS));
-            Dold.Add(50375710, MChestInfo(MapArea.GrandCathedral, "[DLC3] Vanilla Vessel Shield: netal chest after Aava", KEYID.DLC3));
-            Dold.Add(1788000, CovInfo(MapArea.GrandCathedral, "[DLC3] Gift from Alsanna after bringing her 5 Loyce souls", KEYID.DLC3));
-            Dold.Add(1788010, CovInfo(MapArea.GrandCathedral, "[DLC3] Gift from Alsanna after bringing her 15 Loyce souls", KEYID.DLC3));
-            Dold.Add(1788020, CovInfo(MapArea.GrandCathedral, "[DLC3] Gift from Alsanna after bringing her 35 Loyce souls", KEYID.DLC3));
-            Dold.Add(1788030, SafeInfo(MapArea.GrandCathedral, "[DLC3] Gift from Alsanna after bringing her 50 Loyce souls; or killing her", KEYID.DLC3));
-            Dold.Add(60031000, SafeInfo(MapArea.TheOldChaos, "[DLC3] Vanilla Crown: in the Ivory King arena after defeating him", KEYID.DLC3));
+            Dold.Add(50375710, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Vessel Shield: netal chest after Aava", KEYID.DLC3));
+            Dold.Add(1788000, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 5 Loyce souls", KEYID.DLC3));
+            Dold.Add(1788010, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 15 Loyce souls", KEYID.DLC3));
+            Dold.Add(1788020, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 35 Loyce souls", KEYID.DLC3));
+            Dold.Add(1788030, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 50 Loyce souls; or killing her", KEYID.DLC3));
+            Dold.Add(60031000, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Crown: in the Ivory King arena after defeating him", KEYID.DLC3));
             Dold.Add(50376340, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In a corner of the first room right from the Outer Wall bonfire", KEYID.DLC3));
             Dold.Add(50376410, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In a narrow corridor in the beginning of the area", KEYID.DLC3));
             Dold.Add(50376350, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In an area with ice dogs in the beginning", KEYID.DLC3));
