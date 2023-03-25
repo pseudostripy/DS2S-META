@@ -56,6 +56,7 @@ namespace DS2S_META.Randomizer
         internal static Dictionary<int, MapArea> Id2Map = new();
         internal int CurrSeed;
         internal int[,] RandoGraph;
+        List<KeySet> UniqueIncompleteKSs = new();
         //
         internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -723,10 +724,28 @@ namespace DS2S_META.Randomizer
 
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
+            UniqueIncompleteKSs = FindUniqueKS();
             Nodes = new();
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
+        }
+        private List<KeySet> FindUniqueKS()
+        {
+            List<KeySet> ksuniques = new();
+            var shoplots = AllPTF.Where(rdz => rdz is not DropRdz).ToList();
+            foreach(var rdz in shoplots)
+            {
+                if (rdz.RandoInfo.KSO.Length == 0)
+                    continue;
+
+                foreach (var ks in rdz.RandoInfo.KSO)
+                {
+                    if (!ksuniques.Contains(ks))
+                        ksuniques.Add(ks);
+                }
+            }
+            return ksuniques;
         }
         private void HandleTrivialities()
         {
@@ -996,9 +1015,11 @@ namespace DS2S_META.Randomizer
 
             // Place Item:
             AddToRdz(rdz, di);
-            if (stype == SetType.Keys)
-                KeysPlacedSoFar.Add(di.ItemID);
 
+            // Update graph/logic on key placement
+            if (stype == SetType.Keys)
+                UpdateForNewKey(rdz, di);    
+            
             // Handle saturation
             if (!rdz.IsSaturated())
                 return;
@@ -1006,6 +1027,46 @@ namespace DS2S_META.Randomizer
             rdz.MarkHandled();
             UnfilledRdzs.Remove(rdz); // now filled!
         }
+        private void UpdateForNewKey(Randomization rdz, DropInfo di)
+        {
+            // Big function to update a variety of class variables and 
+            // logic, including Graph after a key has been placed
+            KeysPlacedSoFar.Add(di.ItemID);
+
+            // check for new KeySets now achieved
+            var relevantKSs = UniqueIncompleteKSs.Where(ks => ks.HasKey(di.ItemID));
+
+            foreach (var ks in relevantKSs)
+            {
+                // find new completions:
+                if (!ks.Keys.All(keyid => ItemSetBase.IsPlaced(keyid, KeysPlacedSoFar)))
+                    continue; // not complete yet
+
+                // Acknowledge keyset completion
+                UniqueIncompleteKSs.Remove(ks);
+
+                // Graph changes:
+                var affectedNodes = Nodes.Where(ndkvp => ndkvp.Key.HasKSO(ks)).ToList();
+                if (affectedNodes.Count == 0)
+                    continue;
+
+                // Get node we're placing into, and calculate new Steiner set and distance
+                var rdzNode = Nodes[rdz.RandoInfo.NodeKey]; // where we're placing key
+                if (rdzNode.IsLocked) throw new Exception("Should have been caught in logic");
+                var dist = SteinerTreeDist(RandoGraph, rdzNode.SteinerNodes, out var steinsol);
+
+                // Unlock/Update nodes:
+                foreach (var nodekvp in affectedNodes)
+                {
+                    // Update on new or better path:
+                    var node = nodekvp.Value;
+                    if (node.SteinerNodes.Count == 0 || dist < node.SteinerNodes.Count)
+                        node.SteinerNodes = steinsol;
+                    
+                }
+            }
+        }
+
         private Randomization FindElligibleRdz(DropInfo di, SetType stype)
         {
             // Find an Rdz (at random) satisfying all constraints.
@@ -1126,11 +1187,12 @@ namespace DS2S_META.Randomizer
             //
             // This function can be used as a weighting to "place things early" etc.
 
-            if (rdz is DropRdz)
-                return true; // no distance checks for these
-
             if (!DistanceRestrictedIDs.TryGetValue(di.ItemID, out var minmax))
                 return true; // no distance restriction
+
+            // These are considered inf distance
+            if (rdz is DropRdz)
+                return false;
 
             var node = Nodes[rdz.RandoInfo.NodeKey];
             if (node.IsLocked)
@@ -1138,7 +1200,7 @@ namespace DS2S_META.Randomizer
 
             // Calculate "traversible distance" to this Rdz
             // including any keys required to get here.
-            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes);
+            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out _);
             if (dist < minmax.Min || dist > minmax.Max) 
                 return false;
 
@@ -1391,37 +1453,85 @@ namespace DS2S_META.Randomizer
             }
 
         }
-        private int SteinerTreeDist(int[,] graph, List<int> reqnodes)
+        private int SteinerTreeDist(int[,] graph, List<int> terminals, out List<int> steinsol)
         {
             // Guard clauses:
-            if (reqnodes.Count < 2)
+            if (terminals.Count < 2)
                 throw new Exception("I think you should not get here");
             
-            // Use Djikstra's where possible:
-            if (reqnodes.Count == 2)
-                return Djikstras(graph, reqnodes);
+            //// Use Djikstra's where possible: [don't think it'll help rn]
+            //if (terminals.Count == 2)
+            //    return Dijkstras(graph, terminals);
 
             // Actually need to solve the Steiner tree
+            // "Exhaustion + Pruning"
+            // Keep adding all possible paths (breadth-first) to our list until one 
+            // finds a span of the terminals (required nodes). 
+            // Save this distance as minimum and keep adding paths until
+            // the path exceeds this distance, then give up on that strand.
+            // If we find a better span along the way then save this as a the new minimum
+            // and prune any current strands with length > min.
+            // Do not allow any cycles.
+            List<List<int>> paths = new();
+            
+            // Always start from Betwixt:
+            List<int> initPath = new() { Map2Id[MapArea.ThingsBetwixt] };
+            int minSpan = 10000; // some high number
+            AddAllNeighbours(graph, initPath); // RECURSION
 
+            if (paths.Count == 0)
+                throw new Exception("No possible Steiner tree!");
 
+            // Return any best distance solution
+            steinsol = paths.Where(path => path.Count == minSpan).First();
+            return minSpan;
 
-            //// We must have passed soft-lock restrictions
-            //// to get to here, so theres at least one key-set-option
-            //// for which all keys are already placed.
-            //foreach (var kso in rdz.RandoInfo.KeySet)
-            //{
-            //    // Only interested in the keysets that have been complete
-            //    if (!KeySetFullyPlaced(kso))
-            //        continue;
+            // Recursion, save end result in paths
+            void AddAllNeighbours(int[,] graph, List<int> currPath)
+            {
+                int row = currPath[^1]; // all connections from end node
+                List<List<int>> pathsList = new();
+                int DIMCOl = 1;
+                for (int i = 0; i < graph.GetLength(DIMCOl); i++)
+                {
+                    // Only add connected nodes
+                    if (RandoGraph[row, i] == 0)
+                        continue;
 
-            //    CalcKSOTravDist(kso);
-            //}
+                    // Ignore cycles
+                    if (currPath.Contains(i))
+                        continue;
+
+                    // Add new node to path
+                    var newpath = new List<int>(currPath){ i }; // copy list & add node i
+
+                    // Check for completion:
+                    if (terminals.All(nd => newpath.Contains(nd)))
+                    {
+                        paths.Add(newpath);
+                        minSpan = newpath.Count; // undirected weight 1 graph, can generalize
+                        continue; // don't need to go further from here
+                    }
+
+                    // Prune if path is still incomplete and more nodes
+                    // would make it longer than an already solved case
+                    if (newpath.Count >= minSpan)
+                        continue;
+
+                    // Keep going along path and all connections
+                    pathsList.Add(newpath);
+                }
+
+                // Recursion exit (for explicity)
+                if (pathsList.Count == 0)
+                    return; 
+
+                // Recurse new paths
+                foreach (var path in pathsList)
+                    AddAllNeighbours(graph, path);
+            }
         }
-        private int Djikstras(int[,] graph, List<int> reqnodes)
-        {
-            // TODO
-            return 0;
-        }
+        
         private bool KeySetFullyPlaced(KeySet kso)
         {
             if (kso.Keys.Length == 0)

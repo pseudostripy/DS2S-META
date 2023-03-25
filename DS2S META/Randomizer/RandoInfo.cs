@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -125,7 +126,7 @@ namespace DS2S_META.Randomizer
         internal MapArea Area;
         internal string? Description;
         internal PICKUPTYPE[] PickupTypes;
-        internal KeySet[] KeySet;
+        internal KeySet[] KSO; // KeySet Options
         internal RDZ_STATUS RandoHandleType { get; set; }
         internal int RefInfoID = 0;
         internal readonly NodeKey NodeKey;
@@ -136,51 +137,56 @@ namespace DS2S_META.Randomizer
             // Default "Empty" RandoInfo
             Area = MapArea.Undefined;
             Description = "<EmptyRandoInfoDefaultString>";
-            KeySet = Array.Empty<KeySet>();
+            KSO = Array.Empty<KeySet>();
             PickupTypes = Array.Empty<PICKUPTYPE>();
             RandoHandleType = RDZ_STATUS.UNDEFINED;
+            NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
             PickupTypes = new PICKUPTYPE[] { type };
-            KeySet = reqkeys;
+            KSO = reqkeys;
             RandoHandleType = RDZ_STATUS.STANDARD;
-            NodeKey = new NodeKey(Area, KeySet);
+            NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
             PickupTypes = types;
-            KeySet = reqkeys;
+            KSO = reqkeys;
             RandoHandleType = RDZ_STATUS.STANDARD;
+            NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
             PickupTypes = new PICKUPTYPE[] { type };
-            KeySet = reqkeys;
+            KSO = reqkeys;
             RandoHandleType = handletype;
+            NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, int refID, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
             PickupTypes = new PICKUPTYPE[] { type };
-            KeySet = reqkeys;
+            KSO = reqkeys;
             RandoHandleType = handletype;
             RefInfoID = refID;
+            NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_STATUS handletype, params KeySet[] reqkeys)
         {
             Area = area;
             Description = desc;
             PickupTypes = types;
-            KeySet = reqkeys;
+            KSO = reqkeys;
             RandoHandleType = handletype;
+            NodeKey = new NodeKey(Area, KSO);
         }
 
 
@@ -208,7 +214,7 @@ namespace DS2S_META.Randomizer
         internal bool IsSoftlockPlacement(List<int> placedSoFar)
         {
             // Try each different option for key requirements
-            foreach (var keyset in KeySet)
+            foreach (var keyset in KSO)
             {
                 if (keyset.Keys.All(kid => ItemSetBase.IsPlaced(kid, placedSoFar)))
                     return false; // NOT SOFT LOCKED all required keys are placed for at least one Keyset
@@ -217,12 +223,42 @@ namespace DS2S_META.Randomizer
         }
     };
 
-    internal class KeySet
+    internal struct KeySet
     {
         internal KEYID[] Keys;
         internal KeySet(params KEYID[] keys)
         {
             Keys = keys;
+        }
+
+        internal bool HasKey(KEYID keyid)
+        {
+            return HasKey((int)keyid);
+        }
+        internal bool HasKey(int itemid)
+        {
+            foreach (var key in Keys)
+            {
+                if ((int)key == itemid) return true;
+            }
+            return false;
+        }
+
+        public static bool operator ==(KeySet lhs, KeySet rhs) { return lhs.Keys.SequenceEqual(rhs.Keys); }
+        public static bool operator !=(KeySet lhs, KeySet rhs) { return !(lhs == rhs); }
+
+
+        public bool Equals(KeySet other)
+        {
+            return Keys == other.Keys;
+        }
+        public override bool Equals(object obj)
+        {
+            return Equals((KeySet)obj);
+        }
+        public override int GetHashCode()
+        {
+            return Keys.GetHashCode();
         }
     }
 }

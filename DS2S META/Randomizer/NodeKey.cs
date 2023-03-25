@@ -16,5 +16,15 @@ namespace DS2S_META.Randomizer
             Area = area;
             KSO = kso;
         }
+
+        internal bool HasKSO(KeySet querykso)
+        {
+            foreach (KeySet kso in KSO) 
+            {
+                if (kso == querykso)
+                    return true;
+            }
+            return false;
+        }
     }
 }
