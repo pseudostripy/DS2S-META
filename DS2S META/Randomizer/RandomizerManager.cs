@@ -37,7 +37,9 @@ namespace DS2S_META.Randomizer
         internal Dictionary<Randomization, int> ReservedRdzs = new();
         internal Dictionary<int,MinMax>  DistanceRestrictedIDs = new();
         // 
-        internal List<DropInfo> ldkeys = new();
+        internal List<DropInfo> ldkeys = new();         // all keys
+        internal List<DropInfo> ldkeys_res = new();     // vanilla keys
+        internal List<DropInfo> ldkeys_unres = new();   // other keys
         internal List<DropInfo> ldreqs = new();
         internal List<DropInfo> ldgens = new();
         //
@@ -226,11 +228,12 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             SetSeed(seed);      // reset Rng Twister
-            ResetForRerandomization();
             SetupRestrictions();
+            ResetForRerandomization();
 
             // Place sets of items:
-            PlaceSet(ldkeys, SetType.Keys);
+            PlaceSet(ldkeys_unres, SetType.Keys);
+            PlaceSet(ldkeys_res, SetType.Keys);
             PlaceSet(ldreqs, SetType.Reqs);
             PlaceSet(ldgens, SetType.Gens);
             FillLeftovers();
@@ -765,11 +768,8 @@ namespace DS2S_META.Randomizer
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
             ldkeys = RemoveExtraTorches(too_many_torches);
-
-            // -- Sort Vanilla keys to end --
-            // Keys placed in Vanilla Locations need to be placed last across
-            // all keys to ensure softlock avoidance in certain situations
-
+            ldkeys_res = ldkeys.Where(di => ReservedRdzs.ContainsValue(di.ItemID)).ToList(); // need to be placed after
+            ldkeys_unres = ldkeys.Where(di => !ReservedRdzs.ContainsValue(di.ItemID)).ToList();
 
 
             var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
@@ -886,7 +886,7 @@ namespace DS2S_META.Randomizer
             return ItemSetBase.ItemAllowTypes[item.ItemType];
         }
 
-        internal void PlaceSet(List<DropInfo> ld, SetType flag)
+        internal void PlaceSet(List<DropInfo> ld, SetType settype)
         {
             // ld: list of DropInfos
             while (ld.Count > 0)
@@ -896,12 +896,13 @@ namespace DS2S_META.Randomizer
 
                 int keyindex = RNG.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
-                PlaceItem(di, flag);
+
+                PlaceItem(di, settype);
                 ld.RemoveAt(keyindex);
             }
 
             // Must have ran out of space to place things:
-            if (ld.Count > 0 && flag != SetType.Gens)
+            if (ld.Count > 0 && settype != SetType.Gens)
                 throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
         }
         private void PlaceItem(DropInfo di, SetType stype)
@@ -1458,13 +1459,6 @@ namespace DS2S_META.Randomizer
             }
         }
         
-        private bool KeySetFullyPlaced(KeySet kso)
-        {
-            if (kso.Keys.Length == 0)
-                return true; // no key restrictions
-
-            return kso.Keys.All(keyid => KeysPlacedSoFar.Contains((int)keyid));
-        }
         private void SetupTravNodes()
         {
             // Each Node is a group of Rdzs that
