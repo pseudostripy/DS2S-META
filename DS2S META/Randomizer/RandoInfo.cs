@@ -48,7 +48,8 @@ namespace DS2S_META.Randomizer
         
         BRANCH          = 0xAA0,    // Require at least 3 branches
         PHARROS         = 0xAA1,    // Enough Pharros Lockstones available
-        NADALIA         = 0xAA2,    // DLC2 + enough Smelter Wedges 
+        ALLWEDGES       = 0xAA2,    // Enough Smelter Wedges
+        ALLNADSOULS     = 0xAA3,    // Enough Nadalia Soul Fragments
         TENBRANCHLOCK   = 0xAA4,    // Require at least 10 branches
         BIGPHARROS      = 0xAA5,    // Require at least two lockstones
         MIRRORKNIGHTEVENT = 0xAA6,  // Drangleic & King's passage [see also Amana]
@@ -202,7 +203,8 @@ namespace DS2S_META.Randomizer
                 case KEYID.BRANCH:
                 case KEYID.TENBRANCHLOCK:
                 case KEYID.PHARROS:
-                case KEYID.NADALIA:
+                case KEYID.ALLWEDGES:
+                case KEYID.ALLNADSOULS:
                     foreach (var ks in kso)
                         ks.Add(keyid);
                     return kso;
@@ -391,7 +393,7 @@ namespace DS2S_META.Randomizer
 
                 case KEYID.NADALIAFULL:
                     foreach (var ks in kso)
-                        ks.Add(KEYID.NADALIA);
+                        ks.Add(KEYID.ALLWEDGES, KEYID.ALLNADSOULS);
                     var kso4 = AddToKSO(kso, KEYID.FUME);
                     return AddToKSO(kso4, KEYID.BLUESMELTER);
 
@@ -446,7 +448,7 @@ namespace DS2S_META.Randomizer
 
                 case KEYID.FUMEIDOL:
                     foreach (var ks in kso)
-                        ks.Add(KEYID.NADALIA);
+                        ks.Add(KEYID.ALLWEDGES);
                     return AddToKSO(kso, KEYID.FUME);
 
                 case KEYID.FUMETOWERIDOL:
@@ -456,7 +458,7 @@ namespace DS2S_META.Randomizer
 
                 case KEYID.SMELTERIDOL:
                     foreach (var ks in kso)
-                        ks.Add(KEYID.NADALIA);
+                        ks.Add(KEYID.ALLWEDGES);
                     return AddToKSO(kso, KEYID.BLUESMELTER);
 
                 case KEYID.DLC3CAVE:
@@ -537,7 +539,7 @@ namespace DS2S_META.Randomizer
         internal static List<KeySet> KeyLogic(KEYID keyid)
         {
             // Monster wrapper for defining key combinations as shorthand
-            var kso = new List<KeySet>();
+            var kso = new List<KeySet>() { new KeySet() }; // initialise for filling
             return AddToKSO(kso, keyid);
         }
     }
@@ -576,7 +578,9 @@ namespace DS2S_META.Randomizer
         internal RDZ_STATUS RandoHandleType { get; set; }
         internal int RefInfoID = 0;
         internal readonly NodeKey NodeKey;
-        internal bool IsKeyless => KSO.Count == 0 || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE));
+        internal bool IsKeyless => KSO.Count == 0 
+                        || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE))
+                        || KSO.Count == 1 && KSO[0].Keys.Count == 0;
 
         // Main class constructor
         internal RandoInfo()
@@ -675,11 +679,21 @@ namespace DS2S_META.Randomizer
 
     internal struct KeySet
     {
-        internal List<KEYID> Keys;
-        internal KeySet(params KEYID[] keys)
+        internal List<KEYID> Keys = new();
+
+        public KeySet()
         {
-            Keys = keys.ToList();
         }
+        public KeySet(KEYID key)
+        {
+            Keys.Add(key);
+        }
+
+        //internal KeySet()
+        //{
+        //    //Keys = keys.ToList();
+        //}
+
 
         internal static KeySet Clone(KeySet ks)
         {

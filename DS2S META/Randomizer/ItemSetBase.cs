@@ -545,105 +545,111 @@ namespace DS2S_META.Randomizer
         {
             return types;
         }
-        internal static KeySet KSO(params KEYID[] keys) // KeySetOption
-        {
-            return new KeySet(keys);
-        }
+        //internal static KeySet KSO(params KEYID[] keys) // KeySetOption
+        //{
+        //    return new KeySet(keys);
+        //}
         
         internal void AppendKvp(KeyValuePair<int, RandoInfo> kvp) 
         {
             Dold.Add(kvp.Key, kvp.Value);
         }
-        
+
         // Softlock logic:
+        //internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
+        //{
+        //    // DO WE NEED THIS ANYMORE ? 
+
+        //    // Function to handle different checks depending on KeyTypes I guess:
+        //    return kid switch
+        //    {
+        //        KEYID.NONE => true,// no condition required:
+        //        KEYID.BELFRYLUNA => condLuna(),// Branch && Pharros Lockstone x2
+        //        KEYID.SINNERSRISE => condSinner(),// Branch || Antiquated
+        //        KEYID.DRANGLEIC => condDrangleic(),// Branch && Rotunda && Sinner's Rise
+        //        KEYID.AMANA => condAmana(),// Drangleic && King's passage
+        //        KEYID.ALDIASKEEP => condAldias(),// Branch && King's Ring
+        //        KEYID.MEMORYJEIGH => condJeigh(),// King's Ring && Ashen Mist
+        //        KEYID.GANKSQUAD => condGankSquad(),// DLC1 && Eternal Sanctum
+        //        KEYID.PUZZLINGSWORD => condDLC1(),// DLC1 (TODO Bow/Arrow as keys)
+        //        KEYID.ELANA => condElana(),// DLC1 && Dragon Stone
+        //        KEYID.FUME => condFume(),// DLC2 && Scorching Sceptor
+        //        KEYID.BLUESMELTER => condBlueSmelter(),// DLC2 && Tower Key
+        //        KEYID.ALONNE => condAlonne(),// DLC2 && Tower Key && Scorching Scepter && Ashen Mist
+        //        KEYID.DLC3 => condDLC3(),// DLC3key && Drangleic
+        //        KEYID.FRIGIDOUTSKIRTS => condFrigid(),// DLC3 && Garrison Ward Key
+        //        KEYID.CREDITS => condCredits(),// Drangleic & Memory of Jeigh
+        //        KEYID.VENDRICK => condVendrick(),// Amana + SoaG x3
+        //        KEYID.BRANCH => condBranch(),// Three branches available
+        //        KEYID.TENBRANCHLOCK => condTenBranch(),// Ten branches available
+        //        KEYID.ALLWEDGES => condNadalia(),// DLC2 && Scepter && Tower Key && 12x Smelter Wedge
+        //        KEYID.PHARROS => condPharros(),// Eight Pharros lockstones available
+        //        KEYID.BELFRYSOL => condSol(),// Rotunda Lockstone && Pharros Lockstone x2
+        //        KEYID.DARKLURKER => condDarklurker(),// Drangleic && Forgotten key && Torch && Butterfly x3
+        //        KEYID.DLC2 => condDLC2(),// Rotunda Lockstone && DLC2 key
+        //        KEYID.MEMORYORRO => condOrro(),// Soldier Key && Ashen Mist
+
+        //        // Simple Key checks: [unsure how to write it in switch expr format with when modified with contains]
+        //        KEYID.EARTHERNPEAK or KEYID.IRONKEEP or KEYID.UNDEADCRYPT or 
+        //        KEYID.THRONEWANT or KEYID.BIGPHARROS or KEYID.MIRRORKNIGHTEVENT or 
+        //        KEYID.SHRINEOFWINTER or KEYID.HEADVENGARL or KEYID.AGDAYNE or 
+        //        KEYID.GILLIGAN or KEYID.WELLAGER or KEYID.GAVLAN or 
+        //        KEYID.CREIGHTON or KEYID.STRAID or KEYID.CHLOANNE or KEYID.MCDUFF or 
+        //        KEYID.ORNIFEX or KEYID.TITCHY or KEYID.SOLDIER or KEYID.FORGOTTEN or 
+        //        KEYID.TOWER or KEYID.KINSHIP or KEYID.ASHENMIST or KEYID.GARRISONWARD or 
+        //        KEYID.ALDIASKEY or KEYID.SCEPTER or KEYID.KINGSRING or KEYID.DRAGONSTONE or 
+        //        KEYID.DLC1KEY or KEYID.DLC2KEY or KEYID.DLC3KEY or KEYID.EMBEDDED or 
+        //        KEYID.KINGSPASSAGE or KEYID.ETERNALSANCTUM or KEYID.UNDEADLOCKAWAY or 
+        //        KEYID.BASTILLEKEY or KEYID.IRON or KEYID.ANTIQUATED or KEYID.MANSION or 
+        //        KEYID.BRIGHTSTONE or KEYID.FANG or KEYID.ROTUNDA or KEYID.TSELDORADENKEY or 
+        //        KEYID.BLACKSMITH or KEYID.DULLEMBER or KEYID.TORCH or KEYID.PHARROSLOCKSTONE or 
+        //        KEYID.FRAGRANTBRANCH or KEYID.PETRIFIEDEGG or KEYID.WHISPERS or KEYID.SOULOFAGIANT or 
+        //        KEYID.CRUSHEDEYEORB or KEYID.SMELTERWEDGE or KEYID.NADALIAFRAGMENT or 
+        //        KEYID.TOKENOFFIDELITY or KEYID.TOKENOFSPITE or KEYID.FLAMEBUTTERFLY 
+        //            => condKey(kid),// Simple Key checkthrow new Exception("Unhandled"),
+        //        _ => throw new Exception("Unhandled")
+        //    };
+
+        //    // Conditions wrappers:
+        //    int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();
+        //    int countPharros() => placedSoFar.Where(i => i == (int)KEYID.PHARROSLOCKSTONE).Count();
+        //    bool condKey(KEYID keyid) => placedSoFar.Contains((int)keyid);
+        //    bool condBranch() => countBranches() >= 3;
+        //    bool condTenBranch() => countBranches() >= 10;
+        //    bool condRotunda() => condKey(KEYID.ROTUNDA);
+        //    bool condAshen() => condKey(KEYID.ASHENMIST);
+        //    bool condKingsRing() => condKey(KEYID.KINGSRING);
+        //    bool condDLC1() => condKey(KEYID.DLC1KEY);
+        //    bool condDLC2() => condRotunda() && condKey(KEYID.DLC2);
+        //    bool condSinner() => condBranch() || condKey(KEYID.ANTIQUATED);
+        //    bool condDrangleic() => condBranch() && condRotunda() && condSinner();
+        //    bool condAmana() => condDrangleic() && condKey(KEYID.KINGSPASSAGE);
+        //    bool condAldias() => condBranch() && condKingsRing();
+        //    bool condJeigh() => condAshen() && condKingsRing();
+        //    bool condGankSquad() => condDLC1() && condKey(KEYID.ETERNALSANCTUM);
+        //    bool condElana() => condDLC1() && condKey(KEYID.DRAGONSTONE);
+        //    bool condFume() => condDLC2() && condKey(KEYID.SCEPTER);
+        //    bool condBlueSmelter() => condDLC2() && condKey(KEYID.TOWER);
+        //    bool condAlonne() => condDLC2() && condKey(KEYID.TOWER) && condKey(KEYID.SCEPTER) && condAshen();
+        //    bool condDLC3() => condKey(KEYID.DLC3KEY) && condDrangleic();
+        //    bool condFrigid() => condDLC3() && condKey(KEYID.GARRISONWARD);
+        //    bool condCredits() => condDrangleic() && condJeigh();
+        //    bool condWedges() => placedSoFar.Where(i => i == (int)KEYID.SMELTERWEDGE).Count() == 12;
+        //    bool condNadalia() => condFume() && condBlueSmelter() && condWedges();
+        //    bool condVendrick() => condAmana() && (placedSoFar.Where(i => i == (int)KEYID.SOULOFAGIANT).Count() >= 3);
+        //    bool condBigPharros() => countPharros() >= 2;
+        //    bool condPharros() => countPharros() >= 8; // surely enough
+        //    bool condLuna() => condBranch() && condBigPharros();
+        //    bool condSol() => condRotunda() && condBigPharros();
+        //    bool condButterflies() => placedSoFar.Where(i => i == (int)KEYID.FLAMEBUTTERFLY).Count() >= 3;
+        //    bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
+        //    bool condOrro() => condAshen() && condKey(KEYID.SOLDIER);
+        //}
         internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
-            // Function to handle different checks depending on KeyTypes I guess:
-            return kid switch
-            {
-                KEYID.NONE => true,// no condition required:
-                KEYID.BELFRYLUNA => condLuna(),// Branch && Pharros Lockstone x2
-                KEYID.SINNERSRISE => condSinner(),// Branch || Antiquated
-                KEYID.DRANGLEIC => condDrangleic(),// Branch && Rotunda && Sinner's Rise
-                KEYID.AMANA => condAmana(),// Drangleic && King's passage
-                KEYID.ALDIASKEEP => condAldias(),// Branch && King's Ring
-                KEYID.MEMORYJEIGH => condJeigh(),// King's Ring && Ashen Mist
-                KEYID.GANKSQUAD => condGankSquad(),// DLC1 && Eternal Sanctum
-                KEYID.PUZZLINGSWORD => condDLC1(),// DLC1 (TODO Bow/Arrow as keys)
-                KEYID.ELANA => condElana(),// DLC1 && Dragon Stone
-                KEYID.FUME => condFume(),// DLC2 && Scorching Sceptor
-                KEYID.BLUESMELTER => condBlueSmelter(),// DLC2 && Tower Key
-                KEYID.ALONNE => condAlonne(),// DLC2 && Tower Key && Scorching Scepter && Ashen Mist
-                KEYID.DLC3 => condDLC3(),// DLC3key && Drangleic
-                KEYID.FRIGIDOUTSKIRTS => condFrigid(),// DLC3 && Garrison Ward Key
-                KEYID.CREDITS => condCredits(),// Drangleic & Memory of Jeigh
-                KEYID.VENDRICK => condVendrick(),// Amana + SoaG x3
-                KEYID.BRANCH => condBranch(),// Three branches available
-                KEYID.TENBRANCHLOCK => condTenBranch(),// Ten branches available
-                KEYID.NADALIA => condNadalia(),// DLC2 && Scepter && Tower Key && 12x Smelter Wedge
-                KEYID.PHARROS => condPharros(),// Eight Pharros lockstones available
-                KEYID.BELFRYSOL => condSol(),// Rotunda Lockstone && Pharros Lockstone x2
-                KEYID.DARKLURKER => condDarklurker(),// Drangleic && Forgotten key && Torch && Butterfly x3
-                KEYID.DLC2 => condDLC2(),// Rotunda Lockstone && DLC2 key
-                KEYID.MEMORYORRO => condOrro(),// Soldier Key && Ashen Mist
-                
-                // Simple Key checks: [unsure how to write it in switch expr format with when modified with contains]
-                KEYID.EARTHERNPEAK or KEYID.IRONKEEP or KEYID.UNDEADCRYPT or 
-                KEYID.THRONEWANT or KEYID.BIGPHARROS or KEYID.MIRRORKNIGHTEVENT or 
-                KEYID.SHRINEOFWINTER or KEYID.HEADVENGARL or KEYID.AGDAYNE or 
-                KEYID.GILLIGAN or KEYID.WELLAGER or KEYID.GAVLAN or 
-                KEYID.CREIGHTON or KEYID.STRAID or KEYID.CHLOANNE or KEYID.MCDUFF or 
-                KEYID.ORNIFEX or KEYID.TITCHY or KEYID.SOLDIER or KEYID.FORGOTTEN or 
-                KEYID.TOWER or KEYID.KINSHIP or KEYID.ASHENMIST or KEYID.GARRISONWARD or 
-                KEYID.ALDIASKEY or KEYID.SCEPTER or KEYID.KINGSRING or KEYID.DRAGONSTONE or 
-                KEYID.DLC1KEY or KEYID.DLC2KEY or KEYID.DLC3KEY or KEYID.EMBEDDED or 
-                KEYID.KINGSPASSAGE or KEYID.ETERNALSANCTUM or KEYID.UNDEADLOCKAWAY or 
-                KEYID.BASTILLEKEY or KEYID.IRON or KEYID.ANTIQUATED or KEYID.MANSION or 
-                KEYID.BRIGHTSTONE or KEYID.FANG or KEYID.ROTUNDA or KEYID.TSELDORADENKEY or 
-                KEYID.BLACKSMITH or KEYID.DULLEMBER or KEYID.TORCH or KEYID.PHARROSLOCKSTONE or 
-                KEYID.FRAGRANTBRANCH or KEYID.PETRIFIEDEGG or KEYID.WHISPERS or KEYID.SOULOFAGIANT or 
-                KEYID.CRUSHEDEYEORB or KEYID.SMELTERWEDGE or KEYID.NADALIAFRAGMENT or 
-                KEYID.TOKENOFFIDELITY or KEYID.TOKENOFSPITE or KEYID.FLAMEBUTTERFLY 
-                    => condKey(kid),// Simple Key checkthrow new Exception("Unhandled"),
-                _ => throw new Exception("Unhandled")
-            };
-
-            // Conditions wrappers:
-            int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();
-            int countPharros() => placedSoFar.Where(i => i == (int)KEYID.PHARROSLOCKSTONE).Count();
-            bool condKey(KEYID keyid) => placedSoFar.Contains((int)keyid);
-            bool condBranch() => countBranches() >= 3;
-            bool condTenBranch() => countBranches() >= 10;
-            bool condRotunda() => condKey(KEYID.ROTUNDA);
-            bool condAshen() => condKey(KEYID.ASHENMIST);
-            bool condKingsRing() => condKey(KEYID.KINGSRING);
-            bool condDLC1() => condKey(KEYID.DLC1KEY);
-            bool condDLC2() => condRotunda() && condKey(KEYID.DLC2);
-            bool condSinner() => condBranch() || condKey(KEYID.ANTIQUATED);
-            bool condDrangleic() => condBranch() && condRotunda() && condSinner();
-            bool condAmana() => condDrangleic() && condKey(KEYID.KINGSPASSAGE);
-            bool condAldias() => condBranch() && condKingsRing();
-            bool condJeigh() => condAshen() && condKingsRing();
-            bool condGankSquad() => condDLC1() && condKey(KEYID.ETERNALSANCTUM);
-            bool condElana() => condDLC1() && condKey(KEYID.DRAGONSTONE);
-            bool condFume() => condDLC2() && condKey(KEYID.SCEPTER);
-            bool condBlueSmelter() => condDLC2() && condKey(KEYID.TOWER);
-            bool condAlonne() => condDLC2() && condKey(KEYID.TOWER) && condKey(KEYID.SCEPTER) && condAshen();
-            bool condDLC3() => condKey(KEYID.DLC3KEY) && condDrangleic();
-            bool condFrigid() => condDLC3() && condKey(KEYID.GARRISONWARD);
-            bool condCredits() => condDrangleic() && condJeigh();
-            bool condWedges() => placedSoFar.Where(i => i == (int)KEYID.SMELTERWEDGE).Count() == 12;
-            bool condNadalia() => condFume() && condBlueSmelter() && condWedges();
-            bool condVendrick() => condAmana() && (placedSoFar.Where(i => i == (int)KEYID.SOULOFAGIANT).Count() >= 3);
-            bool condBigPharros() => countPharros() >= 2;
-            bool condPharros() => countPharros() >= 8; // surely enough
-            bool condLuna() => condBranch() && condBigPharros();
-            bool condSol() => condRotunda() && condBigPharros();
-            bool condButterflies() => placedSoFar.Where(i => i == (int)KEYID.FLAMEBUTTERFLY).Count() >= 3;
-            bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
-            bool condOrro() => condAshen() && condKey(KEYID.SOLDIER);
+            return placedSoFar.Contains((int)kid);
         }
-        internal void TransformToUID(List<Randomization> rdzs)
+        internal void FixGUID_AddRandoInfo(List<Randomization> rdzs)
         {
             foreach (var rdz in rdzs)
             {

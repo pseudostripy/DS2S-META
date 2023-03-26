@@ -10,8 +10,12 @@ namespace DS2S_META.Randomizer
     {
         internal MapArea Area;
         internal List<KeySet> KSO;
+        internal bool BadArea => Area == MapArea.Undefined || Area == MapArea.Quantum;
 
-        internal bool IsKeyless => KSO.Count == 0 || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE));
+        // TO TIDY!
+        internal bool IsKeyless => KSO.Count == 0
+                        || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE))
+                        || KSO.Count == 1 && KSO[0].Keys.Count == 0;
 
         internal NodeKey(MapArea area, List<KeySet> kso)
         {
@@ -19,11 +23,13 @@ namespace DS2S_META.Randomizer
             KSO = kso;
         }
 
-        internal bool HasKSO(KeySet querykso)
+
+
+        internal bool HasKeySet(KeySet querykso)
         {
-            foreach (KeySet kso in KSO) 
+            foreach (KeySet ks in KSO) 
             {
-                if (kso == querykso)
+                if (ks == querykso)
                     return true;
             }
             return false;

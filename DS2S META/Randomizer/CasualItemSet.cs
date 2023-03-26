@@ -40,10 +40,11 @@ namespace DS2S_META.Randomizer
             SetupShopsDictionary();     // add Shops
         }
 
-        internal List<KeySet> KL(KEYID keyid = KEYID.NONE)
+        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE)
         {
             // Shorthand wrapper:
-            return RandoLogicHelper.KeyLogic(keyid);
+            var test = RandoLogicHelper.KeyLogic(keyid);
+            return test;
         }
         
         
@@ -1956,10 +1957,10 @@ namespace DS2S_META.Randomizer
             Dold.Add(50366970, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the second hall in Alonne memory", KL(KEYID.ALONNE)));
             Dold.Add(50366960, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On side alcove on the lower level of the second hall", KL(KEYID.ALONNE)));
             Dold.Add(60013000, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On throne after Sir Alonne", KL(KEYID.ALONNE)));
-            Dold.Add(60012100, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the top of the tower next to the Throne Floor bonfire", KL(KEYID.NADALIA)));
-            Dold.Add(60012000, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol (the second ashen idol from the top of the tower)", KL(KEYID.NADALIA)));
-            Dold.Add(60012050, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the Lever Rooom with multiple other enemies", KL(KEYID.NADALIA)));
-            Dold.Add(60012080, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen idol in the tower where Maldron invades", KL(KEYID.NADALIA)));
+            Dold.Add(60012100, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the top of the tower next to the Throne Floor bonfire", KL(KEYID.ALLWEDGES)));
+            Dold.Add(60012000, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol (the second ashen idol from the top of the tower)", KL(KEYID.ALLWEDGES)));
+            Dold.Add(60012050, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the Lever Rooom with multiple other enemies", KL(KEYID.ALLWEDGES)));
+            Dold.Add(60012080, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen idol in the tower where Maldron invades", KL(KEYID.ALLWEDGES)));
             Dold.Add(60012010, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
             Dold.Add(60012020, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
             Dold.Add(60012030, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the right side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));

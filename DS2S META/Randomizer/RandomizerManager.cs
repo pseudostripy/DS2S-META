@@ -46,6 +46,7 @@ namespace DS2S_META.Randomizer
         //
         private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new();
+        private Dictionary<KEYID, HashSet<int>> KeyNodes = new(); // NodeID lookup
         private List<int> ResVanPlacedSoFar = new();
         internal Dictionary<NodeKey,Node> Nodes = new();
         internal static Dictionary<MapArea, int> Map2Id = new();
@@ -631,6 +632,7 @@ namespace DS2S_META.Randomizer
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
             UniqueIncompleteKSs = FindUniqueKS();
+            KeyNodes = new();
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
@@ -696,7 +698,7 @@ namespace DS2S_META.Randomizer
         {
             // Get copy of all VanillaLots
             IEnumerable<GLotRdz> all_lots = VanillaLots.Select(lot => new LotRdz(lot)).ToList(); // LotsToFill
-            Logic.TransformToUID(all_lots.Cast<Randomization>().ToList());     // FixLogic: PT1, Transform lots
+            Logic.FixGUID_AddRandoInfo(all_lots.Cast<Randomization>().ToList());     // FixLogic: PT1, Transform lots
 
             // Define exclusions (not placed)
             var excl = all_lots.Where(ldz => ldz.IsEmpty ||
@@ -742,7 +744,7 @@ namespace DS2S_META.Randomizer
 
             // Setup all shops as randomization:
             var shoprdzs = VanillaShops.Select(SR => new ShopRdz(SR)).ToList(); // ToList IS required
-            Logic.TransformToUID(shoprdzs.Cast<Randomization>().ToList());      // FixLogic PT2: Transform shops
+            Logic.FixGUID_AddRandoInfo(shoprdzs.Cast<Randomization>().ToList());      // FixLogic PT2: Transform shops
 
             // Output
             return shoprdzs.Cast<Randomization>();
@@ -975,9 +977,26 @@ namespace DS2S_META.Randomizer
         }
         private void UpdateForNewKey(Randomization rdz, DropInfo di)
         {
+            // This has been growing as I've been debugging,
+            // probably needs refactoring as some point.
+
             // Big function to update a variety of class variables and 
             // logic, including Graph after a key has been placed
-            KeysPlacedSoFar.Add(di.ItemID);
+            KEYID keyid;
+            if (IsMultiKey(di.ItemID))
+            {
+                if (!HandleMultiKey(di.ItemID, out keyid))
+                    return; // nothing new to say
+            }
+            else
+            {
+                KeysPlacedSoFar.Add(di.ItemID); // std keys
+                keyid = GetEnumKEYID(di.ItemID);
+            }
+
+            // Get node we're placing into, and calculate new Steiner set and distance
+            var rdzNode = Nodes[rdz.RandoInfo.NodeKey]; // where we're placing key
+            KeyNodes[keyid] = rdzNode.SteinerNodes.ToHashSet(); // it must be unlocked and therefore have required nodes
 
             // check for new KeySets now achieved
             var relevantKSs = GetNewUnlocks();
@@ -989,25 +1008,150 @@ namespace DS2S_META.Randomizer
                 UniqueIncompleteKSs.Remove(ks);
 
                 // Graph changes:
-                var affectedNodes = Nodes.Where(ndkvp => ndkvp.Key.HasKSO(ks)).ToList();
+                var affectedNodes = Nodes.Where(ndkvp => ndkvp.Key.HasKeySet(ks)).ToList();
                 if (affectedNodes.Count == 0)
                     continue;
 
-                // Get node we're placing into, and calculate new Steiner set and distance
-                var rdzNode = Nodes[rdz.RandoInfo.NodeKey]; // where we're placing key
-                if (rdzNode.IsLocked) 
-                    throw new Exception("Should have been caught in logic");
-                var dist = SteinerTreeDist(RandoGraph, rdzNode.SteinerNodes, out var steinsol);
+                
+
+                // Steiner nodes are given by the unique union of key nodes
+                // that are used to unlock this KeySet.
+                HashSet<int> myhash = new();
+                foreach (var kid in ks.Keys)
+                {
+                    foreach (var nid in KeyNodes[kid])
+                        myhash.Add(nid); // add unique nodes
+                }
+                var ksnodes = myhash.ToList();
 
                 // Unlock/Update nodes:
                 foreach (var nodekvp in affectedNodes)
                 {
-                    // Update on new or better path:
                     var node = nodekvp.Value;
-                    if (node.SteinerNodes.Count == 0 || dist < node.SteinerNodes.Count)
-                        node.SteinerNodes = steinsol;
-                    
+
+                    // Require all previous keys, and to get to current location:
+                    List<int> allnodes = new(ksnodes) { Map2Id[node.NodeKey.Area] };
+
+                    // Easy case:
+                    if (node.IsLocked)
+                    {
+                        node.SteinerNodes = allnodes; // unlock
+                        continue;
+                    }
+
+                    // Hard case: already unlocked and we're providing an alternative
+                    // path to the Node.
+                    var newdist = SteinerTreeDist(RandoGraph, allnodes, out var steinsol);
+                    var olddist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var oldsteinsol);
+
+                    // Update if nodes provides a better path:
+                    if (newdist < olddist)
+                        node.SteinerNodes = steinsol;   
                 }
+            }
+        }
+        private static KEYID GetEnumKEYID(int keyid)
+        {
+            foreach (var k in Enum.GetValues(typeof(KEYID)).Cast<KEYID>())
+            {
+                if ((int)k == keyid) return k;
+            }
+            throw new Exception("Cannot find Enum for KEYID");
+        }
+        private static bool IsMultiKey(int itemID)
+        {
+            var multikeys = new List<KEYID>() { KEYID.TORCH, KEYID.SOULOFAGIANT, KEYID.NADALIAFRAGMENT,
+                                                KEYID.PHARROSLOCKSTONE, KEYID.FRAGRANTBRANCH, KEYID.SMELTERWEDGE };
+            return multikeys.Cast<int>().Contains(itemID);
+        }
+        private bool HandleMultiKey(int itemID, out KEYID keyid)
+        {
+            // This is messy af. TODO
+
+            // Checks if a new number count for this ID reaches the boundary
+            // If it does, add the new count-key to the list and return true
+            keyid = KEYID.NONE;
+            var count = AllPTF.Where(rdz => rdz.HasShuffledItemID(itemID)).Count(); // *technically an oversight*
+            switch (itemID)
+            {
+                case (int)KEYID.TORCH:
+                case (int)KEYID.SOULOFAGIANT:
+                    if (count <= 3 || KeysPlacedSoFar.Contains(itemID))
+                        return false;
+
+                    KeysPlacedSoFar.Add(itemID); // itemID for torch and giant match keyid
+                    if (itemID == (int)KEYID.TORCH)
+                        keyid = KEYID.TORCH;
+                    else
+                        keyid = KEYID.SOULOFAGIANT;
+                    return true;
+
+                case (int)KEYID.NADALIAFRAGMENT:
+                    if (KeysPlacedSoFar.Contains((int)KEYID.ALLNADSOULS))
+                        return false;
+                    if (count != 11)
+                        return false;
+
+                    KeysPlacedSoFar.Add((int)KEYID.ALLNADSOULS);
+                    keyid = KEYID.ALLNADSOULS;
+                    return true;
+
+                case (int)KEYID.SMELTERWEDGE:
+                    if (KeysPlacedSoFar.Contains((int)KEYID.ALLWEDGES))
+                        return false;
+                    if (count != 11)
+                        return false;
+
+                    KeysPlacedSoFar.Add((int)KEYID.ALLWEDGES);
+                    keyid = KEYID.ALLWEDGES;
+                    return true;
+
+                case (int)KEYID.PHARROSLOCKSTONE:
+                    if (KeysPlacedSoFar.Contains((int)KEYID.MEMEPHARROS))
+                        return false; // already at max effect
+                    
+                    if (count == 10)
+                    {
+                        KeysPlacedSoFar.Add((int)KEYID.MEMEPHARROS);
+                        keyid = KEYID.MEMEPHARROS;
+                        return true;
+                    }
+
+                    if (KeysPlacedSoFar.Contains((int)KEYID.BIGPHARROS))
+                        return false;
+
+                    if (count == 2)
+                    {
+                        KeysPlacedSoFar.Add((int)KEYID.BIGPHARROS);
+                        keyid = KEYID.BIGPHARROS;
+                        return true;
+                    }
+                    return false;
+
+                case (int)KEYID.FRAGRANTBRANCH:
+                    if (KeysPlacedSoFar.Contains((int)KEYID.TENBRANCHLOCK))
+                        return false; // already at max effect
+
+                    if (count == 10)
+                    {
+                        KeysPlacedSoFar.Add((int)KEYID.TENBRANCHLOCK);
+                        keyid = KEYID.TENBRANCHLOCK;
+                        return true;
+                    }
+
+                    if (KeysPlacedSoFar.Contains((int)KEYID.BRANCH))
+                        return false;
+
+                    if (count == 3)
+                    {
+                        KeysPlacedSoFar.Add((int)KEYID.BRANCH);
+                        keyid = KEYID.BRANCH;
+                        return true;
+                    }
+                    return false;
+
+                default:
+                    throw new Exception("Unexpected mulitkey ID");
             }
         }
         private List<KeySet> GetNewUnlocks()
@@ -1214,6 +1358,9 @@ namespace DS2S_META.Randomizer
             if (rdz is DropRdz)
                 return false;
 
+            if (rdz.RandoInfo.Area == MapArea.Undefined || rdz.RandoInfo.Area == MapArea.Quantum)
+                return false; // can't calc these really
+
             var node = Nodes[rdz.RandoInfo.NodeKey];
             if (node.IsLocked)
                 return false; // softlock => not allowed
@@ -1283,11 +1430,11 @@ namespace DS2S_META.Randomizer
             Id2Map = Map2Id.ToDictionary(x => x.Value, x => x.Key); // reverse lookup
 
             // Define area connections (hardcoded)
-            Dictionary<MapArea, List<MapArea>> Connections = new() 
+            Dictionary<MapArea, List<MapArea>> Connections = new()
             {
-                [MapArea.ThingsBetwixt] = new() 
-                { 
-                    MapArea.Majula 
+                [MapArea.ThingsBetwixt] = new()
+                {
+                    MapArea.Majula
                 },
 
                 [MapArea.Majula] = new()
@@ -1298,6 +1445,15 @@ namespace DS2S_META.Randomizer
                     MapArea.HuntsmansCopse,
                     MapArea.ShadedWoods,
                     MapArea.ThePit,
+                },
+
+                [MapArea.FOFG] = new()
+                {
+                    MapArea.Majula,
+                    MapArea.MemoryOfJeigh,
+                    MapArea.MemoryOfOrro,
+                    MapArea.MemoryOfVammar,
+                    MapArea.TheLostBastille
                 },
 
                 [MapArea.HeidesTowerOfFlame] = new()
@@ -1571,7 +1727,8 @@ namespace DS2S_META.Randomizer
             // nodes will become unlocked as their keys
             // are placed.
             var ShopLotsPTF = AllPTF.Where(rdz => rdz is not DropRdz).ToList();
-            var grps = ShopLotsPTF.GroupBy(rdz => rdz.RandoInfo.NodeKey);
+            var grps = ShopLotsPTF.GroupBy(rdz => rdz.RandoInfo.NodeKey)
+                                   .Where(grp => !grp.Key.BadArea);
 
             // Create initial dictionary:
             foreach (var grp in grps)
