@@ -19,7 +19,7 @@ A
 * [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
 
 ## Installing  
-* Extract contents of zip archive to it's own folder. You may have to run as admin if DS2S META crashes  
+* Extract contents of zip archive to it's own folder. Open DS2 META.exe  
 
 ## Thank You  
 **Nordgaren/Pseudostripy** Main developers of META\
