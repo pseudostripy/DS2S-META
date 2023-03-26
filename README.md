@@ -19,7 +19,9 @@ A
 * [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
 
 ## Installing  
-* Extract contents of zip archive to it's own folder. Open DS2 META.exe  
+* Extract contents of zip archive to it's own folder. 
+* Open DS2 META.exe and let Windows scan it if it needs to.
+* Ensure Windows defender or your antivirus didn't quarantine the program. 
 
 ## Thank You  
 **Nordgaren/Pseudostripy** Main developers of META\
