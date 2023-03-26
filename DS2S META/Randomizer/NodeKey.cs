@@ -9,9 +9,11 @@ namespace DS2S_META.Randomizer
     internal struct NodeKey
     {
         internal MapArea Area;
-        internal KeySet[] KSO;
+        internal List<KeySet> KSO;
 
-        internal NodeKey(MapArea area, KeySet[] kso)
+        internal bool IsKeyless => KSO.Count == 0 || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE));
+
+        internal NodeKey(MapArea area, List<KeySet> kso)
         {
             Area = area;
             KSO = kso;

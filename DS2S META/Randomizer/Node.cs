@@ -41,9 +41,7 @@ namespace DS2S_META.Randomizer
             RdzList = grouping.ToList();
 
             // Unlock places that require zero keys
-            var nokeys = NodeKey.KSO.Length == 0 ||
-                         (NodeKey.KSO.Length == 1 && NodeKey.KSO[0].HasKey(KEYID.NONE));
-            if (nokeys)
+            if (NodeKey.IsKeyless)
             {
                 AddStein(MapArea.ThingsBetwixt);
                 

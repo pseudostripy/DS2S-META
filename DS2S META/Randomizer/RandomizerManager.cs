@@ -765,11 +765,11 @@ namespace DS2S_META.Randomizer
                 Logic.D[droprdz.GUID] = droprdz.RandoInfo; // Add to dictionary
             }
         }
-        internal static Dictionary<int, KeySet[]> DropKeySets = new()
+        internal static Dictionary<int, List<KeySet>> DropKeySets = new()
         {
             // Awkward cases of DropRdzs dropping keys in vanilla:
-            [(int)DROPPARAMID.LICIAHEIDES] = Array.Empty<KeySet>(),
-            [(int)DROPPARAMID.DUKETSELDORA] = new KeySet[1] {new KeySet(KEYID.BRANCH) },
+            [(int)DROPPARAMID.LICIAHEIDES] = new List<KeySet>(),
+            [(int)DROPPARAMID.DUKETSELDORA] = new List<KeySet>() {new KeySet(KEYID.BRANCH) },
         };
         internal void DefineKRG()
         {
