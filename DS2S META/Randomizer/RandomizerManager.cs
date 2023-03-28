@@ -10,6 +10,7 @@ using static DS2S_META.Randomizer.RandomizerManager;
 using System.Runtime.Intrinsics.Arm;
 using DS2S_META.ViewModels;
 using System.Xml.Serialization;
+using System.Windows.Shapes;
 
 namespace DS2S_META.Randomizer
 {
@@ -1368,7 +1369,9 @@ namespace DS2S_META.Randomizer
 
             // Calculate "traversible distance" to this Rdz
             // including any keys required to get here.
-            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out _);
+            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
+            var _ = HelperListID2Maps(steinsol); // debugging
+
             if (dist < minmax.Min || dist > minmax.Max) 
                 return false;
 
@@ -1634,7 +1637,7 @@ namespace DS2S_META.Randomizer
             }
 
         }
-        private int SteinerTreeDist(int[,] graph, List<int> terminals, out List<int> steinsol)
+        private static int SteinerTreeDist(int[,] graph, List<int> terminals, out List<int> steinsol)
         {
             // Guard clauses:
             if (terminals.Count < 1)
@@ -1645,106 +1648,102 @@ namespace DS2S_META.Randomizer
                 return 1;
             }
 
-            //// Use Djikstra's where possible: [don't think it'll help rn]
-            //if (terminals.Count == 2)
-            //    return Dijkstras(graph, terminals);
-
-            // Actually need to solve the Steiner tree
-            // "Exhaustion + Pruning"
-            // Keep adding all possible paths (breadth-first) to our list until one 
-            // finds a span of the terminals (required nodes). 
-            // Save this distance as minimum and keep adding paths until
-            // the path exceeds this distance, then give up on that strand.
-            // If we find a better span along the way then save this as a the new minimum
-            // and prune any current strands with length > min.
-            // Do not allow any cycles.
-
-            // Always start from Betwixt:
-            List<int> initPath = new() { Map2Id[MapArea.ThingsBetwixt] };
-            List<List<int>> initPaths = new() { initPath };
-            List<List<int>> paths_checked = new() { initPath };
-            List<List<MapArea>> paths_checked_maps = new() { new List<MapArea>() { MapArea.ThingsBetwixt } }; // DEBUGGING
-            List<List<int>> paths = new();
             
-            int minSpan = 10000; // some high number
-            int DIMCOL = 1;
-            int Ncols = graph.GetLength(DIMCOL);
-            int depth = 0;
-            AddAllNeighbours(depth, graph, initPaths); // RECURSION
-
-            if (paths.Count == 0)
-                throw new Exception("No possible Steiner tree!");
-
-            // Return any best distance solution
-            steinsol = paths.First(path => path.Count == minSpan).ToList();
-            return minSpan;
-
-            // Recursion, save end result in paths
-            void AddAllNeighbours(int depth, int[,] graph, List<List<int>> prevPathsList)
+            List<int> minSpanUnion = new();
+            foreach (int tsink in terminals.TakeLast(terminals.Count - 1))
             {
-                // Get new-depth PathsList
-                List<List<int>> newPathsList = new();
+                // Shortest point-to-point (from betwixt)
+                var pathP2P = Dijkstras(graph, new List<int> { Map2Id[MapArea.ThingsBetwixt], tsink });
 
-                foreach (var prevpath in prevPathsList)
-                {
-                    // loop over all sub-paths
-                    for (int n = 0; n < prevpath.Count; n++)
-                    {
-                        // all connections starting from each node of subpath
-                        int row = prevpath[n];
-                        var connNodes = GetConnections(graph, row);
+                // Add new distinct nodes to ongoing list:
+                minSpanUnion = minSpanUnion.Union(pathP2P).ToList();
+            }
 
-                        foreach (var nd in connNodes)
-                        {
-                            // Ignore cycles
-                            if (prevpath.Contains(nd))
-                                continue;
+            steinsol = minSpanUnion;
+            return minSpanUnion.Count;
 
-                            // Add new node to path
-                            var newpath = new List<int>(prevpath) { nd }; // copy list & add node index nd
+        }
+        private static List<int> Dijkstras(int[,] graph, List<int> terminals)
+        {
+            // <This isn't actually dijstras, its some poor mans BFS I guess>
+            var src = terminals[0];
+            //var sink = terminals[1];
 
-                            // Check for completion:
-                            if (terminals.All(nd => newpath.Contains(nd)))
-                            {
-                                paths.Add(newpath);
-                                minSpan = newpath.Count; // undirected weight 1 graph, can generalize
-                                continue; // don't need to go further from here
-                            }
+            List<List<int>> initPaths = new() { new() { src } };
+            List<List<int>> prevPaths;
+            int depth = 0;
+            
+            prevPaths = initPaths;
+            while (true)
+            {
+                var bsol = AddLayer(depth++, graph, terminals, prevPaths, out var newPaths, out var pathSol);
+                if (bsol)
+                    return pathSol; // exit
 
-                            // Prune if path is still incomplete and more nodes
-                            // would make it longer than an already solved case
-                            if (newpath.Count >= minSpan)
-                                continue;
-
-                            // Ensure we haven't backtracked to a previous path
-                            // that is already included
-                            if (HasPath(paths_checked, newpath))
-                                continue;
-
-                            // Add for further investigation and keep going
-                            paths_checked.Add(newpath);
-                            var newpath_map = new List<MapArea>();
-                            foreach (var id in newpath)
-                                newpath_map.Add(Id2Map[id]);
-
-                            paths_checked_maps.Add(newpath_map);
-                            newPathsList.Add(newpath);
-                        }
-
-                    }
-                }
-
-                // No new paths added. Complete.
-                if (newPathsList.Count == 0)
-                    return;
-
-                // Deepen new paths by 1
-                AddAllNeighbours(depth++, graph, newPathsList); // recurse
-
-                var debug = 1;
-                
+                // Next loop:
+                prevPaths = newPaths;
             }
         }
+            
+        private static List<MapArea> HelperListID2Maps(List<int> ids)
+        {
+            // Add for further investigation and keep going
+            var newpath_map = new List<MapArea>();
+            foreach (var id in ids)
+                newpath_map.Add(Id2Map[id]);
+            return newpath_map;
+        }
+
+        // Recursion, save end result in pathsol
+        private static bool AddLayer(int depth, int[,] graph, List<int> terminals, List<List<int>> prevPathsList, 
+                                    out List<List<int>> newPathsList, out List<int> pathSol)
+        {
+            // Get new-depth PathsList
+            newPathsList = new();
+            pathSol = new();
+
+            foreach (var path in prevPathsList)
+            {
+                // all connections from end node
+                int row = path[^1];
+                var connNodes = GetConnections(graph, row);
+
+                foreach (var nd in connNodes)
+                {
+                    // Ignore cycles
+                    if (path.Contains(nd))
+                        continue;
+
+                    // Add new node to path
+                    var newpath = new List<int>(path) { nd }; // copy list & add node index nd
+
+                    // Check for completion:
+                    if (terminals.All(nd => newpath.Contains(nd)))
+                    {
+                        // In our case, the first time we hit it (in BFS) will be the shortest
+                        // distance since it's undirected all weight 1!
+                        pathSol = newpath;
+                        return true;
+                    }
+
+                    // Add for further investigation and keep going
+                    //paths_checked.Add(newpath);
+                    //var newpath_map = new List<MapArea>();
+                    //foreach (var id in newpath)
+                    //    newpath_map.Add(Id2Map[id]);
+
+                    //paths_checked_maps.Add(newpath_map);
+                    newPathsList.Add(newpath);
+                }
+            }
+
+            // No new paths added. Complete.
+            if (newPathsList.Count == 0)
+                throw new Exception("Unconnected nodes");
+            return false;
+        }
+
+
         private static List<int> GetConnections(int [,] graph, int src)
         {
             // list all nodes that connect to source node (except itself)
