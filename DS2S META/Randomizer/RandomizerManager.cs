@@ -126,7 +126,6 @@ namespace DS2S_META.Randomizer
 
             SetupAllPTF();
             AddDropsToLogic();
-            SetupTravNodes();
             GetLootToRandomize(); // set LTR_Flatlist field
             IsInitialized = true;
         }
@@ -630,6 +629,8 @@ namespace DS2S_META.Randomizer
             // Empty the shuffled places in preparation:
             foreach (var rdz in AllP)
                 rdz.ResetShuffled();
+            SetupTravNodes();
+
 
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots

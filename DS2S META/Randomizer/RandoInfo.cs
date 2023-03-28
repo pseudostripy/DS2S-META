@@ -235,15 +235,14 @@ namespace DS2S_META.Randomizer
                 case KEYID.SINNERSRISE:
                 case KEYID.STRAID:
                     // Need to separate into options:
-                    var newkso = new List<KeySet>(kso);
+                    List<KeySet> newkso = new();
                     foreach (var ks in kso)
                     {
                         var ks2 = KeySet.Clone(ks);
-                        
                         ks.Add(KEYID.BRANCH);
-                        newkso.Add(ks);
-                        
                         ks2.Add(KEYID.ANTIQUATED);
+                        
+                        newkso.Add(ks);
                         newkso.Add(ks2);
                     }
                     return newkso;
@@ -518,16 +517,15 @@ namespace DS2S_META.Randomizer
 
                 case KEYID.BELLKEEPERSCOV:
                     // Need to separate into options:
-                    var newkso2 = new List<KeySet>(kso);
+                    var newkso2 = new List<KeySet>();
                     foreach (var ks in kso)
                     {
-                        var ks6 = KeySet.Clone(ks);
-
+                        var ks3 = KeySet.Clone(ks);
                         ks.Add(KEYID.BRANCH, KEYID.BIGPHARROS); // LUNA
-                        newkso2.Add(ks);
+                        ks3.Add(KEYID.ROTUNDA, KEYID.BIGPHARROS); // SOL
 
-                        ks6.Add(KEYID.ROTUNDA, KEYID.BIGPHARROS); // SOL
-                        newkso2.Add(ks6);
+                        newkso2.Add(ks);
+                        newkso2.Add(ks3);
                     }
                     return newkso2;
 
