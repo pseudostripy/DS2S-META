@@ -46,6 +46,7 @@ namespace DS2S_META.Randomizer
         internal string RandoDesc = string.Empty;
         internal string GUID;
         internal RandoInfo RandoInfo;
+        internal int PlaceDist = -1;
 
         // Constructors:
         internal Randomization(int pid)
@@ -200,6 +201,10 @@ namespace DS2S_META.Randomizer
         internal override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
+
+            // TODO: (distances of interest are not -1)
+            if (PlaceDist != -1)
+                sb.Append($"Placement Distance: {PlaceDist}{Environment.NewLine}");
 
             // Display empty lots
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)

@@ -39,12 +39,15 @@ namespace DS2S_META.Randomizer
     {
         SUCCESS,
         SUCCESS_VANPLACE,
+        SUCCESS_DISTCOMPROMISE,
         DELAY_VANLOCKED, // try again later
         FAIL_PICKUPTYPE,
         FAIL_SOFTLOCK,
         FAIL_VAN_WRONGRDZ,
         FAIL_RESERVED,
-        FAIL_DISTANCE,
+        FAIL_DISTANCE_MIN,
+        FAIL_DISTANCE_MAX,
+        FAIL_DISTANCE_NA,
     }
     public enum MapArea
     {

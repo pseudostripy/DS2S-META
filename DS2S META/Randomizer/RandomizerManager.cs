@@ -969,7 +969,9 @@ namespace DS2S_META.Randomizer
         {
             return res switch
             {
-                LOGICRES.FAIL_DISTANCE => true,
+                LOGICRES.FAIL_DISTANCE_MIN => true,
+                LOGICRES.FAIL_DISTANCE_MAX => true,
+                LOGICRES.FAIL_DISTANCE_NA => true,
                 LOGICRES.FAIL_SOFTLOCK => true,
                 LOGICRES.FAIL_PICKUPTYPE => true,
                 LOGICRES.FAIL_RESERVED => true,
@@ -1172,6 +1174,14 @@ namespace DS2S_META.Randomizer
         {
             // Find an Rdz (at random) satisfying all constraints.
             rdz_ellig = default;
+            int min_ellig_dist = 10000;
+            int max_ellig_dist = 0;
+            Randomization? min_ellig_Rdz = null;
+            Randomization? max_ellig_Rdz = null;
+            bool bfound_elligmin = false;
+            bool bfound_elligmax = false;
+            int numfail_distmin = 0;
+            int numfail_distmax = 0;
 
             // List of remaining spots to search through
             var availRdzs = new List<Randomization>(UnfilledRdzs);
@@ -1180,7 +1190,30 @@ namespace DS2S_META.Randomizer
             {
                 // Choose random rdz for item:
                 var rdz = availRdzs[RNG.Next(availRdzs.Count)];
-                var rescheck = PassedPlacementConds(rdz, di, stype);
+                var rescheck = PassedPlacementConds(rdz, di, stype, out var dist);
+
+                // Prepare for unmeetable distance restrictions (these are ONLY 
+                // used if NONE of the Rdz are elligible!
+                if (rescheck == LOGICRES.FAIL_DISTANCE_MIN && dist > max_ellig_dist)
+                {
+                    // dist was lower than minimum setting.
+                    // Find the highest distance we can, since everything we tried was
+                    // too low.
+                    max_ellig_dist = dist;
+                    max_ellig_Rdz = rdz; // use if nothing better
+                    bfound_elligmin = true;
+                    numfail_distmin++;
+                }
+                if (rescheck == LOGICRES.FAIL_DISTANCE_MAX && dist < min_ellig_dist)
+                {
+                    // All distances were higher than maximum allowed setting.
+                    // Find the lowest distance possible and use it:
+                    min_ellig_dist = dist;
+                    min_ellig_Rdz = rdz;
+                    bfound_elligmax = true;
+                    numfail_distmax++;
+                }
+
 
                 switch (rescheck)
                 {
@@ -1189,7 +1222,9 @@ namespace DS2S_META.Randomizer
                     case LOGICRES.FAIL_VAN_WRONGRDZ:
                     case LOGICRES.FAIL_PICKUPTYPE:
                     case LOGICRES.FAIL_SOFTLOCK:
-                    case LOGICRES.FAIL_DISTANCE:
+                    case LOGICRES.FAIL_DISTANCE_MIN:
+                    case LOGICRES.FAIL_DISTANCE_MAX:
+                    case LOGICRES.FAIL_DISTANCE_NA:
                         availRdzs.Remove(rdz);
                         continue;
 
@@ -1199,6 +1234,8 @@ namespace DS2S_META.Randomizer
 
                     case LOGICRES.SUCCESS:
                     case LOGICRES.SUCCESS_VANPLACE:
+                        if (dist != -1)
+                            rdz.PlaceDist = dist;
                         rdz_ellig = rdz;
                         return rescheck;
 
@@ -1207,16 +1244,31 @@ namespace DS2S_META.Randomizer
                 }
             }
 
-            // !!
-            // TODO Put a "best avaialable" min/max dist placement
-            // to avoid all max distances being full etc
-            // !!
+            // Best attempt (only failed on distance check comparison vs user value):
+            if (bfound_elligmin && !bfound_elligmax || numfail_distmin >= numfail_distmax)
+            {
+                rdz_ellig = max_ellig_Rdz;
+                if (rdz_ellig == null) throw new NullReferenceException();
+                rdz_ellig.PlaceDist = max_ellig_dist;
+                return LOGICRES.SUCCESS_DISTCOMPROMISE;
+            }
+            if (bfound_elligmax && !bfound_elligmin || numfail_distmin < numfail_distmax)
+            {
+                rdz_ellig = min_ellig_Rdz;
+                if (rdz_ellig == null) throw new NullReferenceException();
+                rdz_ellig.PlaceDist = min_ellig_dist;
+                return LOGICRES.SUCCESS_DISTCOMPROMISE;
+            }
+            
+
 
             // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
         }
-        private LOGICRES PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype)
+        private LOGICRES PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype, out int dist)
         {
+            dist = -1; // assume failure somewhere else
+
             // Special Filter (Vanilla items):
             var rescheck = PassedReservedCond(rdz, di);
             if (rescheck == LOGICRES.FAIL_VAN_WRONGRDZ || rescheck == LOGICRES.FAIL_RESERVED)
@@ -1226,7 +1278,7 @@ namespace DS2S_META.Randomizer
             if (rescheck == LOGICRES.SUCCESS_VANPLACE)
                 return PassedVanillaConds(rdz, di, settype) ? LOGICRES.SUCCESS_VANPLACE : LOGICRES.DELAY_VANLOCKED;
             else
-                return PassedNonVanConds(rdz, di, settype);
+                return PassedNonVanConds(rdz, di, settype, out dist);
         }
         private bool PassedVanillaConds(Randomization rdz, DropInfo di, SetType settype)
         {
@@ -1251,8 +1303,10 @@ namespace DS2S_META.Randomizer
                 return true;
             return false;
         }
-        private LOGICRES PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype)
+        private LOGICRES PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype, out int dist)
         {
+            dist = -1;
+
             // Standard conditions to meet when we're not placing a vanilla item
             if (!PassedPickupTypeCond(rdz, di, settype))
                 return LOGICRES.FAIL_PICKUPTYPE;
@@ -1260,8 +1314,8 @@ namespace DS2S_META.Randomizer
             if (!PassedSoftlockLogic(rdz, settype))
                 return LOGICRES.FAIL_SOFTLOCK;
 
-            if (!PassedDistanceCond(rdz, di))
-                return LOGICRES.FAIL_DISTANCE;
+            if (!PassedDistanceCond(rdz, di, out var distres, out dist))
+                return distres;
 
             // Passed gauntlet
             return LOGICRES.SUCCESS;
@@ -1345,8 +1399,10 @@ namespace DS2S_META.Randomizer
             // Check types:
             return rdz.ContainsOnlyTypes(allowedPUF);
         }
-        private bool PassedDistanceCond(Randomization rdz, DropInfo di)
+        private bool PassedDistanceCond(Randomization rdz, DropInfo di, out LOGICRES distres, out int dist)
         {
+            dist = -1;
+            distres = LOGICRES.SUCCESS; // assume
             // This condition passes if:
             // - itemID has no distance restriction
             // - itemID has a distance restriction, but rdz is within acceptable "distance"
@@ -1358,23 +1414,43 @@ namespace DS2S_META.Randomizer
 
             // These are considered inf distance
             if (rdz is DropRdz)
+            {
+                distres = LOGICRES.FAIL_DISTANCE_NA;
                 return false;
+            }
 
             if (rdz.RandoInfo.Area == MapArea.Undefined || rdz.RandoInfo.Area == MapArea.Quantum)
+            {
+                distres = LOGICRES.FAIL_DISTANCE_NA;
                 return false; // can't calc these really
+            }
 
             var node = Nodes[rdz.RandoInfo.NodeKey];
             if (node.IsLocked)
+            {
+                distres = LOGICRES.FAIL_SOFTLOCK;
                 return false; // softlock => not allowed
+            }
 
             // Calculate "traversible distance" to this Rdz
             // including any keys required to get here.
-            var dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
+            dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
             var _ = HelperListID2Maps(steinsol); // debugging
 
-            if (dist < minmax.Min || dist > minmax.Max) 
+            if (dist < minmax.Min)
+            {
+                // not far enough away
+                distres = LOGICRES.FAIL_DISTANCE_MIN;
                 return false;
+            }
+            if(dist > minmax.Max)
+            {
+                // too far away
+                distres = LOGICRES.FAIL_DISTANCE_MAX;
+                return false;
+            }
 
+            // No issue
             return true; 
         }
 
@@ -1667,8 +1743,7 @@ namespace DS2S_META.Randomizer
         {
             // <This isn't actually dijstras, its some poor mans BFS I guess>
             var src = terminals[0];
-            //var sink = terminals[1];
-
+            
             List<List<int>> initPaths = new() { new() { src } };
             List<List<int>> prevPaths;
             int depth = 0;
@@ -1725,14 +1800,6 @@ namespace DS2S_META.Randomizer
                         pathSol = newpath;
                         return true;
                     }
-
-                    // Add for further investigation and keep going
-                    //paths_checked.Add(newpath);
-                    //var newpath_map = new List<MapArea>();
-                    //foreach (var id in newpath)
-                    //    newpath_map.Add(Id2Map[id]);
-
-                    //paths_checked_maps.Add(newpath_map);
                     newPathsList.Add(newpath);
                 }
             }
@@ -1757,12 +1824,7 @@ namespace DS2S_META.Randomizer
             }
             return connNodes;
         }
-        private static bool HasPath(List<List<int>> prevpaths, List<int> path)
-        {
-            // wrapper for list contains. Possibly could be handled more efficient.
-            return prevpaths.Any(p => p.ToHashSet().SetEquals(path.ToHashSet()));
-        }
-
+        
         
         private void SetupTravNodes()
         {
@@ -1917,11 +1979,12 @@ namespace DS2S_META.Randomizer
         internal void PrintKeysNeat()
         {
             // Prep:
-            List<string> lines = new();
-
-            // Intro line
-            lines.Add($"Printing key locations for seed {CurrSeed}");
-            lines.Add("---------------------------------------------");
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing key locations for seed {CurrSeed}",
+                "---------------------------------------------"
+            };
 
             // Main print loop
             foreach (int keyid in ItemSetBase.KeyOutputOrder.Cast<int>())
@@ -1949,14 +2012,15 @@ namespace DS2S_META.Randomizer
         internal void PrintAllRdz()
         {
             // Prep:
-            List<string> lines = new List<string>();
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing items at all locations for seed {CurrSeed}",
+                "---------------------------------------------",
 
-            // Intro line
-            lines.Add($"Printing items at all locations for seed {CurrSeed}");
-            lines.Add("---------------------------------------------");
-
-            // World placements:
-            lines.Add("World placement:");
+                // World placements:
+                "World placement:"
+            };
             foreach (var ldz in AllPTF.OfType<LotRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
