@@ -256,6 +256,7 @@ namespace DS2S_META.Randomizer
         internal override void ResetShuffled()
         {
             ShuffledLot = VanillaLot.CloneBlank();
+            PlaceDist = -1;
             IsHandled = false;
         }
         internal override int UniqueParamID => IsDropTable ? ParamID + 80000000 : ParamID;
@@ -450,6 +451,7 @@ namespace DS2S_META.Randomizer
         internal override void ResetShuffled()
         {
             ShuffledShop = VanillaShop.CloneBlank();
+            PlaceDist = -1;
             IsHandled = false;
         }
         internal void ZeroiseShuffledShop()
