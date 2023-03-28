@@ -11,6 +11,7 @@ using System.Runtime.Intrinsics.Arm;
 using DS2S_META.ViewModels;
 using System.Xml.Serialization;
 using System.Windows.Shapes;
+using System.Windows.Input;
 
 namespace DS2S_META.Randomizer
 {
@@ -48,7 +49,9 @@ namespace DS2S_META.Randomizer
         //
         private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new();
-        private Dictionary<KEYID, HashSet<int>> KeyNodes = new(); // NodeID lookup
+        private Dictionary<KEYID, HashSet<int>> KeySteinerNodes = new(); // NodeID lookup
+        private Dictionary<MapArea, HashSet<int>> KeyPaths = new(); // NodeID lookup
+        private Dictionary<MapArea, HashSet<int>> AreaPaths = new(); // NodeID lookup
         private List<int> ResVanPlacedSoFar = new();
         internal Dictionary<NodeKey,Node> Nodes = new();
         internal static Dictionary<MapArea, int> Map2Id = new();
@@ -630,12 +633,13 @@ namespace DS2S_META.Randomizer
             foreach (var rdz in AllP)
                 rdz.ResetShuffled();
             SetupTravNodes();
+            SolveBasicAreas(); // solution if keys aren't a concept
 
 
             KeysPlacedSoFar = new List<int>();
             UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
             UniqueIncompleteKSs = FindUniqueKS();
-            KeyNodes = new();
+            KeySteinerNodes = new();
 
             // Remake (copies of) list of Keys, Required, Generics for placement
             DefineKRG();
@@ -1001,7 +1005,7 @@ namespace DS2S_META.Randomizer
 
             // Get node we're placing into, and calculate new Steiner set and distance
             var rdzNode = Nodes[rdz.RandoInfo.NodeKey]; // where we're placing key
-            KeyNodes[keyid] = rdzNode.SteinerNodes.ToHashSet(); // it must be unlocked and therefore have required nodes
+            KeySteinerNodes[keyid] = rdzNode.SteinerNodes.ToHashSet(); // it must be unlocked and therefore have required nodes
 
             // check for new KeySets now achieved
             var relevantKSs = GetNewUnlocks();
@@ -1017,25 +1021,29 @@ namespace DS2S_META.Randomizer
                 if (affectedNodes.Count == 0)
                     continue;
 
-                
+
 
                 // Steiner nodes are given by the unique union of key nodes
                 // that are used to unlock this KeySet.
-                HashSet<int> myhash = new();
+                HashSet<int> kshash = new();
                 foreach (var kid in ks.Keys)
                 {
-                    foreach (var nid in KeyNodes[kid])
-                        myhash.Add(nid); // add unique nodes
+                    foreach (var i in KeySteinerNodes[kid])
+                        kshash.Add(i); // add unique nodes
                 }
-                var ksnodes = myhash.ToList();
-
+                
                 // Unlock/Update nodes:
                 foreach (var nodekvp in affectedNodes)
                 {
                     var node = nodekvp.Value;
 
+                    // Steiner nodes are given by the unique union of key nodes
+                    // that are used to unlock this KeySet.
+                    HashSet<int> myhash = new(kshash);
+                    var allnodes = AddHashset(myhash,AreaPaths[node.NodeKey.Area]).ToList();
+
                     // Require all previous keys, and to get to current location:
-                    List<int> allnodes = new(ksnodes) { Map2Id[node.NodeKey.Area] };
+                    //List<int> allnodes = new(ksnodes) { Map2Id[node.NodeKey.Area] };
 
                     // Easy case:
                     if (node.IsLocked)
@@ -1046,14 +1054,25 @@ namespace DS2S_META.Randomizer
 
                     // Hard case: already unlocked and we're providing an alternative
                     // path to the Node.
-                    var newdist = SteinerTreeDist(RandoGraph, allnodes, out var steinsol);
-                    var olddist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var oldsteinsol);
+                    var newdist = allnodes.Count;
+                    //var newdist = SteinerTreeDist(RandoGraph, allnodes, out var steinsol);
+                    var olddist = node.SteinerNodes.Count;
 
                     // Update if nodes provides a better path:
                     if (newdist < olddist)
-                        node.SteinerNodes = steinsol;   
+                        node.SteinerNodes = allnodes;   
                 }
             }
+        }
+        //private int nodes2dist(List<int> nodes)
+        //{
+
+        //}
+        private HashSet<int> AddHashset(HashSet<int> src, HashSet<int> newset)
+        {
+            foreach (var i in newset)
+                src.Add(i);
+            return src;
         }
         private static KEYID GetEnumKEYID(int keyid)
         {
@@ -1843,6 +1862,19 @@ namespace DS2S_META.Randomizer
             // Create initial dictionary:
             foreach (var grp in grps)
                 Nodes[grp.Key] = new Node(grp);
+        }
+        private void SolveBasicAreas()
+        {
+            // Fastest path to each area if all keys unlocked
+            foreach (var map in Enum.GetValues(typeof(MapArea)).Cast<MapArea>())
+            {
+                if (map == MapArea.Undefined) continue;
+                if (map == MapArea.Quantum) continue;
+
+                List<int> terminals = new() { Map2Id[MapArea.ThingsBetwixt], Map2Id[map] };
+                _ = SteinerTreeDist(RandoGraph, terminals, out var pathsol);
+                AreaPaths[map] = pathsol.ToHashSet();
+            }
         }
         private void AddToAllLinkedRdz(Randomization rdz, DropInfo di)
         {

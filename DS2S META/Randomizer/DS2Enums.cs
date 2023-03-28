@@ -83,7 +83,7 @@ namespace DS2S_META.Randomizer
         MemoryOfJeigh,
         MemoryOfOrro,
         MemoryOfVammar,
-        DragonMemories,
+        //DragonMemories,
         ShulvaSanctumCity,
         DragonsSanctum,
         CaveOfTheDead,
