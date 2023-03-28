@@ -9,6 +9,7 @@ using DS2S_META.Utils;
 using static DS2S_META.Randomizer.RandomizerManager;
 using System.Runtime.Intrinsics.Arm;
 using DS2S_META.ViewModels;
+using System.Xml.Serialization;
 
 namespace DS2S_META.Randomizer
 {
@@ -1643,7 +1644,7 @@ namespace DS2S_META.Randomizer
                 steinsol = terminals; // Betwixt only!
                 return 1;
             }
-            
+
             //// Use Djikstra's where possible: [don't think it'll help rn]
             //if (terminals.Count == 2)
             //    return Dijkstras(graph, terminals);
@@ -1657,65 +1658,112 @@ namespace DS2S_META.Randomizer
             // If we find a better span along the way then save this as a the new minimum
             // and prune any current strands with length > min.
             // Do not allow any cycles.
-            List<List<int>> paths = new();
-            
+
             // Always start from Betwixt:
             List<int> initPath = new() { Map2Id[MapArea.ThingsBetwixt] };
+            List<List<int>> initPaths = new() { initPath };
+            List<List<int>> paths_checked = new() { initPath };
+            List<List<MapArea>> paths_checked_maps = new() { new List<MapArea>() { MapArea.ThingsBetwixt } }; // DEBUGGING
+            List<List<int>> paths = new();
+            
             int minSpan = 10000; // some high number
-            AddAllNeighbours(graph, initPath); // RECURSION
+            int DIMCOL = 1;
+            int Ncols = graph.GetLength(DIMCOL);
+            int depth = 0;
+            AddAllNeighbours(depth, graph, initPaths); // RECURSION
 
             if (paths.Count == 0)
                 throw new Exception("No possible Steiner tree!");
 
             // Return any best distance solution
-            steinsol = paths.First(path => path.Count == minSpan);
+            steinsol = paths.First(path => path.Count == minSpan).ToList();
             return minSpan;
 
             // Recursion, save end result in paths
-            void AddAllNeighbours(int[,] graph, List<int> currPath)
+            void AddAllNeighbours(int depth, int[,] graph, List<List<int>> prevPathsList)
             {
-                int row = currPath[^1]; // all connections from end node
-                List<List<int>> pathsList = new();
-                int DIMCOl = 1;
-                for (int i = 0; i < graph.GetLength(DIMCOl); i++)
+                // Get new-depth PathsList
+                List<List<int>> newPathsList = new();
+
+                foreach (var prevpath in prevPathsList)
                 {
-                    // Only add connected nodes
-                    if (RandoGraph[row, i] == 0)
-                        continue;
-
-                    // Ignore cycles
-                    if (currPath.Contains(i))
-                        continue;
-
-                    // Add new node to path
-                    var newpath = new List<int>(currPath){ i }; // copy list & add node i
-
-                    // Check for completion:
-                    if (terminals.All(nd => newpath.Contains(nd)))
+                    // loop over all sub-paths
+                    for (int n = 0; n < prevpath.Count; n++)
                     {
-                        paths.Add(newpath);
-                        minSpan = newpath.Count; // undirected weight 1 graph, can generalize
-                        continue; // don't need to go further from here
+                        // all connections starting from each node of subpath
+                        int row = prevpath[n];
+                        var connNodes = GetConnections(graph, row);
+
+                        foreach (var nd in connNodes)
+                        {
+                            // Ignore cycles
+                            if (prevpath.Contains(nd))
+                                continue;
+
+                            // Add new node to path
+                            var newpath = new List<int>(prevpath) { nd }; // copy list & add node index nd
+
+                            // Check for completion:
+                            if (terminals.All(nd => newpath.Contains(nd)))
+                            {
+                                paths.Add(newpath);
+                                minSpan = newpath.Count; // undirected weight 1 graph, can generalize
+                                continue; // don't need to go further from here
+                            }
+
+                            // Prune if path is still incomplete and more nodes
+                            // would make it longer than an already solved case
+                            if (newpath.Count >= minSpan)
+                                continue;
+
+                            // Ensure we haven't backtracked to a previous path
+                            // that is already included
+                            if (HasPath(paths_checked, newpath))
+                                continue;
+
+                            // Add for further investigation and keep going
+                            paths_checked.Add(newpath);
+                            var newpath_map = new List<MapArea>();
+                            foreach (var id in newpath)
+                                newpath_map.Add(Id2Map[id]);
+
+                            paths_checked_maps.Add(newpath_map);
+                            newPathsList.Add(newpath);
+                        }
+
                     }
-
-                    // Prune if path is still incomplete and more nodes
-                    // would make it longer than an already solved case
-                    if (newpath.Count >= minSpan)
-                        continue;
-
-                    // Keep going along path and all connections
-                    pathsList.Add(newpath);
                 }
 
-                // Recursion exit (for explicity)
-                if (pathsList.Count == 0)
-                    return; 
+                // No new paths added. Complete.
+                if (newPathsList.Count == 0)
+                    return;
 
-                // Recurse new paths
-                foreach (var path in pathsList)
-                    AddAllNeighbours(graph, path);
+                // Deepen new paths by 1
+                AddAllNeighbours(depth++, graph, newPathsList); // recurse
+
+                var debug = 1;
+                
             }
         }
+        private static List<int> GetConnections(int [,] graph, int src)
+        {
+            // list all nodes that connect to source node (except itself)
+            List<int> connNodes = new();
+            int DIMCOL = 1;
+            int Ncols = graph.GetLength(DIMCOL);
+            for (int i = 0; i < Ncols; i++)
+            {
+                if (i != src && graph[src, i] == 1)
+                    connNodes.Add(i);
+            }
+            return connNodes;
+        }
+        private static bool HasPath(List<List<int>> prevpaths, List<int> path)
+        {
+            // wrapper for list contains. Possibly could be handled more efficient.
+            return prevpaths.Any(p => p.ToHashSet().SetEquals(path.ToHashSet()));
+        }
+
         
         private void SetupTravNodes()
         {
