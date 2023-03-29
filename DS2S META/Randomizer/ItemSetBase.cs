@@ -67,6 +67,7 @@ namespace DS2S_META.Randomizer
            PICKUPTYPE.GUARANTEEDENEMYDROP,
            PICKUPTYPE.WOODCHEST,
            PICKUPTYPE.METALCHEST,
+           PICKUPTYPE.SHOP, // not evshop though
          };
 
         internal static Dictionary<eItemType, List<PICKUPTYPE>> ItemAllowTypes = new()
@@ -88,7 +89,7 @@ namespace DS2S_META.Randomizer
         };
 
 
-        internal static List<PICKUPTYPE> BanGeneralTypes = new List<PICKUPTYPE>()
+        internal static List<PICKUPTYPE> BanGeneralTypes = new()
         {
             PICKUPTYPE.EXOTIC,
             PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
@@ -361,23 +362,33 @@ namespace DS2S_META.Randomizer
         {
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, kso);
         }
+        internal static RandoInfo EvShopInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // things which require an event
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, kso);
+        }
         internal static RandoInfo ShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
         }
+        internal static RandoInfo EvShopSustain(MapArea area, string desc, List<KeySet> kso)
+        {
+            // turn off the disable event
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
+        }
         internal static RandoInfo TradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.UNLOCKTRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.UNLOCKTRADE, kso);
         }
         internal static RandoInfo FreeTradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.FREETRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.FREETRADE, kso);
         }
         internal static RandoInfo TradeShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // awkward Ornifex things
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.TRADE_SHOP_COPY, refid, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.TRADE_SHOP_COPY, refid, kso);
         }
         internal static RandoInfo ShopRemoveInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -473,178 +484,18 @@ namespace DS2S_META.Randomizer
             return new RandoInfo(area, desc, pickuptype, kso);
         }
 
-        // Overloads for multiple key options:
-        //internal static RandoInfo ShopInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.SHOP, keysets);
-        //}
-        //internal static RandoInfo NpcInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.NPC, keysets);
-        //}
-        //internal static RandoInfo NpcSafeInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), keysets);
-        //}
-        //internal static RandoInfo CovInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.COVENANTHARD, keysets);
-        //}
-        //internal static RandoInfo CovFineInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.COVENANTEASY, keysets);
-        //}
-        //internal static RandoInfo WChestInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.WOODCHEST, keysets);
-        //}
-        //internal static RandoInfo MChestInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.METALCHEST, keysets);
-        //}
-        //internal static RandoInfo NGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.NGPLUS, keysets);
-        //}
-        //internal static RandoInfo WChestNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), keysets);
-        //}
-        //internal static RandoInfo MChestNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), keysets);
-        //}
-        //internal static RandoInfo SafeInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.NONVOLATILE, keysets);
-        //}
-        //internal static RandoInfo ExoticInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.EXOTIC, keysets);
-        //}
-        //internal static RandoInfo CrammedInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.CRAMMED, keysets);
-        //}
-        //internal static RandoInfo VolInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, PICKUPTYPE.VOLATILE, keysets);
-        //}
-        //internal static RandoInfo BossInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    // This is essentially a flag on top of safeinfo
-        //    return new RandoInfo(area, desc, PICKUPTYPE.BOSS, keysets);
-        //}
-        //internal static RandoInfo BossNGPlusInfo(MapArea area, string desc, params KeySet[] keysets)
-        //{
-        //    return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), keysets);
-        //}
-
         // Utility shorthand methods (for common purposes):
         internal static PICKUPTYPE[] TypeArray(params PICKUPTYPE[] types)
         {
             return types;
         }
-        //internal static KeySet KSO(params KEYID[] keys) // KeySetOption
-        //{
-        //    return new KeySet(keys);
-        //}
         
         internal void AppendKvp(KeyValuePair<int, RandoInfo> kvp) 
         {
             Dold.Add(kvp.Key, kvp.Value);
         }
 
-        // Softlock logic:
-        //internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
-        //{
-        //    // DO WE NEED THIS ANYMORE ? 
-
-        //    // Function to handle different checks depending on KeyTypes I guess:
-        //    return kid switch
-        //    {
-        //        KEYID.NONE => true,// no condition required:
-        //        KEYID.BELFRYLUNA => condLuna(),// Branch && Pharros Lockstone x2
-        //        KEYID.SINNERSRISE => condSinner(),// Branch || Antiquated
-        //        KEYID.DRANGLEIC => condDrangleic(),// Branch && Rotunda && Sinner's Rise
-        //        KEYID.AMANA => condAmana(),// Drangleic && King's passage
-        //        KEYID.ALDIASKEEP => condAldias(),// Branch && King's Ring
-        //        KEYID.MEMORYJEIGH => condJeigh(),// King's Ring && Ashen Mist
-        //        KEYID.GANKSQUAD => condGankSquad(),// DLC1 && Eternal Sanctum
-        //        KEYID.PUZZLINGSWORD => condDLC1(),// DLC1 (TODO Bow/Arrow as keys)
-        //        KEYID.ELANA => condElana(),// DLC1 && Dragon Stone
-        //        KEYID.FUME => condFume(),// DLC2 && Scorching Sceptor
-        //        KEYID.BLUESMELTER => condBlueSmelter(),// DLC2 && Tower Key
-        //        KEYID.ALONNE => condAlonne(),// DLC2 && Tower Key && Scorching Scepter && Ashen Mist
-        //        KEYID.DLC3 => condDLC3(),// DLC3key && Drangleic
-        //        KEYID.FRIGIDOUTSKIRTS => condFrigid(),// DLC3 && Garrison Ward Key
-        //        KEYID.CREDITS => condCredits(),// Drangleic & Memory of Jeigh
-        //        KEYID.VENDRICK => condVendrick(),// Amana + SoaG x3
-        //        KEYID.BRANCH => condBranch(),// Three branches available
-        //        KEYID.TENBRANCHLOCK => condTenBranch(),// Ten branches available
-        //        KEYID.ALLWEDGES => condNadalia(),// DLC2 && Scepter && Tower Key && 12x Smelter Wedge
-        //        KEYID.PHARROS => condPharros(),// Eight Pharros lockstones available
-        //        KEYID.BELFRYSOL => condSol(),// Rotunda Lockstone && Pharros Lockstone x2
-        //        KEYID.DARKLURKER => condDarklurker(),// Drangleic && Forgotten key && Torch && Butterfly x3
-        //        KEYID.DLC2 => condDLC2(),// Rotunda Lockstone && DLC2 key
-        //        KEYID.MEMORYORRO => condOrro(),// Soldier Key && Ashen Mist
-
-        //        // Simple Key checks: [unsure how to write it in switch expr format with when modified with contains]
-        //        KEYID.EARTHERNPEAK or KEYID.IRONKEEP or KEYID.UNDEADCRYPT or 
-        //        KEYID.THRONEWANT or KEYID.BIGPHARROS or KEYID.MIRRORKNIGHTEVENT or 
-        //        KEYID.SHRINEOFWINTER or KEYID.HEADVENGARL or KEYID.AGDAYNE or 
-        //        KEYID.GILLIGAN or KEYID.WELLAGER or KEYID.GAVLAN or 
-        //        KEYID.CREIGHTON or KEYID.STRAID or KEYID.CHLOANNE or KEYID.MCDUFF or 
-        //        KEYID.ORNIFEX or KEYID.TITCHY or KEYID.SOLDIER or KEYID.FORGOTTEN or 
-        //        KEYID.TOWER or KEYID.KINSHIP or KEYID.ASHENMIST or KEYID.GARRISONWARD or 
-        //        KEYID.ALDIASKEY or KEYID.SCEPTER or KEYID.KINGSRING or KEYID.DRAGONSTONE or 
-        //        KEYID.DLC1KEY or KEYID.DLC2KEY or KEYID.DLC3KEY or KEYID.EMBEDDED or 
-        //        KEYID.KINGSPASSAGE or KEYID.ETERNALSANCTUM or KEYID.UNDEADLOCKAWAY or 
-        //        KEYID.BASTILLEKEY or KEYID.IRON or KEYID.ANTIQUATED or KEYID.MANSION or 
-        //        KEYID.BRIGHTSTONE or KEYID.FANG or KEYID.ROTUNDA or KEYID.TSELDORADENKEY or 
-        //        KEYID.BLACKSMITH or KEYID.DULLEMBER or KEYID.TORCH or KEYID.PHARROSLOCKSTONE or 
-        //        KEYID.FRAGRANTBRANCH or KEYID.PETRIFIEDEGG or KEYID.WHISPERS or KEYID.SOULOFAGIANT or 
-        //        KEYID.CRUSHEDEYEORB or KEYID.SMELTERWEDGE or KEYID.NADALIAFRAGMENT or 
-        //        KEYID.TOKENOFFIDELITY or KEYID.TOKENOFSPITE or KEYID.FLAMEBUTTERFLY 
-        //            => condKey(kid),// Simple Key checkthrow new Exception("Unhandled"),
-        //        _ => throw new Exception("Unhandled")
-        //    };
-
-        //    // Conditions wrappers:
-        //    int countBranches() => placedSoFar.Where(i => i == (int)KEYID.FRAGRANTBRANCH).Count();
-        //    int countPharros() => placedSoFar.Where(i => i == (int)KEYID.PHARROSLOCKSTONE).Count();
-        //    bool condKey(KEYID keyid) => placedSoFar.Contains((int)keyid);
-        //    bool condBranch() => countBranches() >= 3;
-        //    bool condTenBranch() => countBranches() >= 10;
-        //    bool condRotunda() => condKey(KEYID.ROTUNDA);
-        //    bool condAshen() => condKey(KEYID.ASHENMIST);
-        //    bool condKingsRing() => condKey(KEYID.KINGSRING);
-        //    bool condDLC1() => condKey(KEYID.DLC1KEY);
-        //    bool condDLC2() => condRotunda() && condKey(KEYID.DLC2);
-        //    bool condSinner() => condBranch() || condKey(KEYID.ANTIQUATED);
-        //    bool condDrangleic() => condBranch() && condRotunda() && condSinner();
-        //    bool condAmana() => condDrangleic() && condKey(KEYID.KINGSPASSAGE);
-        //    bool condAldias() => condBranch() && condKingsRing();
-        //    bool condJeigh() => condAshen() && condKingsRing();
-        //    bool condGankSquad() => condDLC1() && condKey(KEYID.ETERNALSANCTUM);
-        //    bool condElana() => condDLC1() && condKey(KEYID.DRAGONSTONE);
-        //    bool condFume() => condDLC2() && condKey(KEYID.SCEPTER);
-        //    bool condBlueSmelter() => condDLC2() && condKey(KEYID.TOWER);
-        //    bool condAlonne() => condDLC2() && condKey(KEYID.TOWER) && condKey(KEYID.SCEPTER) && condAshen();
-        //    bool condDLC3() => condKey(KEYID.DLC3KEY) && condDrangleic();
-        //    bool condFrigid() => condDLC3() && condKey(KEYID.GARRISONWARD);
-        //    bool condCredits() => condDrangleic() && condJeigh();
-        //    bool condWedges() => placedSoFar.Where(i => i == (int)KEYID.SMELTERWEDGE).Count() == 12;
-        //    bool condNadalia() => condFume() && condBlueSmelter() && condWedges();
-        //    bool condVendrick() => condAmana() && (placedSoFar.Where(i => i == (int)KEYID.SOULOFAGIANT).Count() >= 3);
-        //    bool condBigPharros() => countPharros() >= 2;
-        //    bool condPharros() => countPharros() >= 8; // surely enough
-        //    bool condLuna() => condBranch() && condBigPharros();
-        //    bool condSol() => condRotunda() && condBigPharros();
-        //    bool condButterflies() => placedSoFar.Where(i => i == (int)KEYID.FLAMEBUTTERFLY).Count() >= 3;
-        //    bool condDarklurker() => condDrangleic() && condKey(KEYID.FORGOTTEN) && condButterflies() && condKey(KEYID.TORCH);
-        //    bool condOrro() => condAshen() && condKey(KEYID.SOLDIER);
-        //}
+        
         internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
             return placedSoFar.Contains((int)kid);
@@ -663,8 +514,8 @@ namespace DS2S_META.Randomizer
         }
 
         // To implement:
-        protected Dictionary<int, RandoInfo> Dold = new Dictionary<int, RandoInfo>();
-        internal Dictionary<string, RandoInfo> D = new Dictionary<string, RandoInfo>();
+        protected Dictionary<int, RandoInfo> Dold = new();
+        internal Dictionary<string, RandoInfo> D = new();
         internal abstract void SetupItemSet();
 
 

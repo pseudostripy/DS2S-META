@@ -563,6 +563,7 @@ namespace DS2S_META.Randomizer
         CRAMMED,    // Meme stuff regarding edge cases when you're crammed
         UNRESOLVED,
         SHOP,       //
+        EVSHOP,       //
         CROWS,
         LINKEDSLAVE, // Rules are defined by some other drop that was defined and linked
     }
