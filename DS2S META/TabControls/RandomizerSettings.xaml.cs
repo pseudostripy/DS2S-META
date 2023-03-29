@@ -78,7 +78,7 @@ namespace DS2S_META
 
         public static IPRSList DefaultRestrictions()
         {
-            return new() {
+            IPRSList iprs = new() {
                 new ItemRestriction("Estus Flask", ITEMID.ESTUS),
                 new ItemRestriction("Ring of Binding", ITEMID.RINGOFBINDING),
                 new ItemRestriction("Silvercat Ring", ITEMID.CATRING),
@@ -94,6 +94,8 @@ namespace DS2S_META
                 new ItemRestriction("Any Staff", ITEMGROUP.Staff),
                 new ItemRestriction("Any Chime", ITEMGROUP.Chime),
             };
+            SaveRandomizerSettings();
+            return iprs;
         }
 
         // Events:
