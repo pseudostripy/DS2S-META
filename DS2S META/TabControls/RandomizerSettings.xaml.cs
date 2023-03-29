@@ -87,6 +87,7 @@ namespace DS2S_META
                 new ItemRestriction("Rotunda Lockstone", ITEMID.ROTUNDALOCKSTONE),
                 new ItemRestriction("King's Ring", ITEMID.KINGSRING),
                 new ItemRestriction("Ashen Mist Heart", ITEMID.ASHENMIST),
+                new ItemRestriction("Key to the Embedded", ITEMID.KEYTOEMBEDDED),
 
                 new ItemRestriction("Any Blacksmith Key", ITEMGROUP.BlacksmithKey),
                 new ItemRestriction("Any Pyromancy Flame", ITEMGROUP.Pyro),
