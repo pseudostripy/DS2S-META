@@ -12,6 +12,12 @@ using DS2S_META.ViewModels;
 using System.Xml.Serialization;
 using System.Windows.Shapes;
 using System.Windows.Input;
+using System.Security.Cryptography;
+using System.Windows;
+using Octokit;
+using System.Threading;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace DS2S_META.Randomizer
 {
@@ -24,7 +30,7 @@ namespace DS2S_META.Randomizer
         DS2SHook? Hook;
         List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
         List<Randomization> AllPTF = new(); // Places to Randomize
-        List<Randomization> AllPTF_drops => AllPTF.Where(rdz => rdz is DropRdz).ToList();
+        //List<Randomization> AllPTF_drops => AllPTF.Where(rdz => rdz is DropRdz).ToList();
         internal static Random RNG = new();
         private List<ItemLotRow> VanillaLots = new();
         private List<ItemLotRow> VanillaDrops = new();
@@ -50,7 +56,7 @@ namespace DS2S_META.Randomizer
         private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new();
         private Dictionary<KEYID, HashSet<int>> KeySteinerNodes = new(); // NodeID lookup
-        private Dictionary<MapArea, HashSet<int>> KeyPaths = new(); // NodeID lookup
+        //private Dictionary<MapArea, HashSet<int>> KeyPaths = new(); // NodeID lookup
         private Dictionary<MapArea, HashSet<int>> AreaPaths = new(); // NodeID lookup
         private List<int> ResVanPlacedSoFar = new();
         internal Dictionary<NodeKey,Node> Nodes = new();
@@ -234,6 +240,7 @@ namespace DS2S_META.Randomizer
                 return;
 
             // Setup for re-randomization:
+            if (!EnsureSeedCompatibility(seed)) return;
             SetSeed(seed);      // reset Rng Twister
             SetupRestrictions();
             ResetForRerandomization();
@@ -2193,11 +2200,97 @@ namespace DS2S_META.Randomizer
         //private const double priceSDGaussian = 500;     // For Gaussian distribution
         internal const double priceShapeK = 3.0;        // For Gamma distribution
         internal const double priceScaleTh = 2.0;       // For Gamma distribution
+        
+        internal static bool GenCRCSeed(out int seed)
+        {
+            seed = 0;
+            if (!GetRandoSettingsStr(out var strsett))
+                return false;
+
+            // Look for one that matches current settings hash checks
+            var c = 0; // attempt count
+            while (c < 100000)
+            {
+                seed = RNG.Next();
+                string fullpayload = strsett + seed.ToString();
+                var sha = ComputeSHA256(fullpayload);
+                string shaend = sha[^CRC.Length..];
+                if (shaend == CRC)
+                    return true;
+                c++;
+            }
+            throw new Exception("Either you're exceptionally unlucky, or theres a bug in the SHA256 CRC code");
+        }
         internal void SetSeed(int seed)
         {
             CurrSeed = seed;
             RNG = new Random(seed);
         }
+        internal static bool GetRandoSettingsStr(out string xmlstr)
+        {
+            xmlstr = string.Empty;
+            var path = RandomizerSettings.SettingsFilePath;
+            if (!File.Exists(path))
+                return false;
+
+            xmlstr = File.ReadAllText(path);
+            return true;
+        }
+        internal static string CRC = "AA";
+        internal static bool EnsureSeedCompatibility(int seed)
+        {
+            // do a CRC on the settings to make sure that it aligns.
+            if (!GetRandoSettingsStr(out var strsett))
+                return CRCOverrideQuestion();
+
+            // Check SHA combo
+            string fullpayload = strsett += seed.ToString();
+            var sha = ComputeSHA256(fullpayload);
+            string shaend = sha[^CRC.Length..];
+            bool crccheck = shaend == CRC;
+            if (crccheck)
+                return true; // no issues
+            return CRCOverrideQuestion();
+        }
+        private static bool CRCOverrideQuestion()
+        {
+            var x = System.Windows.Application.Current.Dispatcher.Invoke(WaitForAnswer);
+            return x;
+        }
+        internal static bool WaitForAnswer()
+        {
+            var seedwarn = new RandoSeedWarning()
+            {
+                Title = "Seed/Settings Mismatch",
+                Width = 375,
+                Height = 200,
+            };
+            seedwarn.ShowDialog();
+            return seedwarn.IsOk;
+        }
+
+
+        public static string ComputeSHA256(string s)
+        {
+            // thanks internet
+            string hash = string.Empty;
+
+            // Initialize a SHA256 hash object
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                // Compute the hash of the given string
+                byte[] hashValue = sha256.ComputeHash(Encoding.UTF8.GetBytes(s));
+
+                // Convert the byte array to string format
+                foreach (byte b in hashValue)
+                {
+                    hash += $"{b:X2}";
+                }
+            }
+
+            return hash;
+        }
+
         internal static int RandomGaussianInt(double mean, double stdDev, int roundfac = 50)
         {
             // Steal code from online :)

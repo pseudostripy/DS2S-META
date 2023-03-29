@@ -19,7 +19,7 @@ namespace DS2S_META
     public partial class RandomizerSettings : METAControl
     {
         // Fields/Properties:
-        static readonly string SettingsFilePath = $"{GetTxtResourceClass.ExeDir}/Resources/RandomizerSettings.xml";
+        public static readonly string SettingsFilePath = $"{GetTxtResourceClass.ExeDir}/Resources/RandomizerSettings.xml";
         public static Dictionary<MapArea, string> MapAreaComboItems { get; set; } = new();
         public static IPRSList ItemRestrictions { get; set; } = new();
         

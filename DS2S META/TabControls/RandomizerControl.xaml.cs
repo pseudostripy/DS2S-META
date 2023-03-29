@@ -192,8 +192,14 @@ namespace DS2S_META
         }
         private void PopulateNewSeed()
         {
-            int seed = RandomizerManager.GetRandom();
-            txtSeed.Text = ZeroPadString(seed); // 10 is max value of digits of int32 in decimal
+            if (!RandomizerManager.GenCRCSeed(out int seed))
+            {
+                MessageBox.Show("Issue generating seed automatically. Please report");
+                return;
+            }
+
+            // 10 is max value of digits of int32 in decimal
+            txtSeed.Text = ZeroPadString(seed); 
         }
         private bool EnsureHooked()
         {
