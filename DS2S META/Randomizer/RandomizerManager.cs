@@ -303,6 +303,9 @@ namespace DS2S_META.Randomizer
         {
             // - Split restrictions and assign to associated arrays
             // - Choose one from a group of items for this seed
+            ReservedRdzs = new();
+            DistanceRestrictedIDs = new();
+            ResVanPlacedSoFar = new();
 
             int indID;
             int itemid;
@@ -2195,12 +2198,7 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        // RNG related:
-        //private const double priceMeanGaussian = 3000;  // For Gaussian distribution
-        //private const double priceSDGaussian = 500;     // For Gaussian distribution
-        internal const double priceShapeK = 3.0;        // For Gamma distribution
-        internal const double priceScaleTh = 2.0;       // For Gamma distribution
-        
+        // Seed / CRC related        
         internal static bool GenCRCSeed(out int seed)
         {
             seed = 0;
@@ -2268,8 +2266,6 @@ namespace DS2S_META.Randomizer
             seedwarn.ShowDialog();
             return seedwarn.IsOk;
         }
-
-
         public static string ComputeSHA256(string s)
         {
             // thanks internet
@@ -2291,6 +2287,12 @@ namespace DS2S_META.Randomizer
             return hash;
         }
 
+
+        // RNG related:
+        //private const double priceMeanGaussian = 3000;  // For Gaussian distribution
+        //private const double priceSDGaussian = 500;     // For Gaussian distribution
+        internal const double priceShapeK = 3.0;        // For Gamma distribution
+        internal const double priceScaleTh = 2.0;       // For Gamma distribution
         internal static int RandomGaussianInt(double mean, double stdDev, int roundfac = 50)
         {
             // Steal code from online :)
