@@ -41,7 +41,7 @@ namespace DS2S_META.ViewModels
             get => _distMin;
             set
             {
-                _distMin = value;
+                _distMin = value < DistMax ? value : DistMax;
                 OnPropertyChanged(nameof(DistMin));
             }
         }
@@ -51,7 +51,7 @@ namespace DS2S_META.ViewModels
             get => _distMax;
             set
             {
-                _distMax = value;
+                _distMax = value > DistMin ? value : DistMin;
                 OnPropertyChanged(nameof(DistMax));
             }
         }
