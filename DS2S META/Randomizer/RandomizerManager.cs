@@ -49,8 +49,8 @@ namespace DS2S_META.Randomizer
         internal Dictionary<int,MinMax>  DistanceRestrictedIDs = new();
         // 
         internal List<DropInfo> ldkeys = new();         // all keys
-        internal List<DropInfo> ldkeys_res = new();     // vanilla keys
-        internal List<DropInfo> ldkeys_unres = new();   // other keys
+        //internal List<DropInfo> ldkeys_res = new();     // vanilla keys
+        //internal List<DropInfo> ldkeys_unres = new();   // other keys
         internal List<DropInfo> ldreqs = new();
         internal List<DropInfo> ldgens = new();
         //
@@ -340,6 +340,9 @@ namespace DS2S_META.Randomizer
                         break;
                 }
             }
+
+            // Shorthand
+            RestrictedItems = Restrictions.Select(restr => restr.ItemID).ToList();
         }
         internal void RandomizeStartingClasses()
         {
@@ -798,14 +801,14 @@ namespace DS2S_META.Randomizer
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
             ldkeys = RemoveExtraTorches(too_many_torches);
-            ldkeys_res = ldkeys.Where(di => ReservedRdzs.ContainsValue(di.ItemID)).ToList(); // need to be placed after
-            ldkeys_unres = ldkeys.Where(di => !ReservedRdzs.ContainsValue(di.ItemID)).ToList();
+            //ldkeys_res = ldkeys.Where(di => ReservedRdzs.ContainsValue(di.ItemID)).ToList(); // need to be placed after
+            //ldkeys_unres = ldkeys.Where(di => !ReservedRdzs.ContainsValue(di.ItemID)).ToList();
 
 
             var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
-            ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType).ToList();                // Reqs
+            ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType || IsRestrictedItem(DI.ItemID)).ToList();                // Reqs
 
-            var flatlist_noreqs = flatlist_nokeys.Where(DI => !DI.IsReqType).ToList();  // (reqs handled above)
+            var flatlist_noreqs = flatlist_nokeys.Where(DI => !DI.IsReqType && !IsRestrictedItem(DI.ItemID)).ToList();  // (reqs handled above)
             ldgens = flatlist_noreqs.Except(ldkeys).Except(ldreqs).ToList();            // Generics
 
             // Ensure no meme double placements:
