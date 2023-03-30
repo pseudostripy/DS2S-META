@@ -49,6 +49,7 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.WOODCHEST,
             PICKUPTYPE.SHOP,        // For now
+            PICKUPTYPE.EVSHOP,      // For now
             PICKUPTYPE.ENEMYDROP,   // For now
             PICKUPTYPE.GUARANTEEDENEMYDROP,   // For now
             PICKUPTYPE.CROWS,
