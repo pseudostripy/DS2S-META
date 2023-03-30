@@ -20,7 +20,8 @@ namespace DS2S_META.ViewModels
 
         // Fields/Properties:
         public string Name { get; set; }
-        public List<int> ItemIDs { get; set; }
+        public int ItemID { get; set; }        // chosen randomly
+        public List<int> ItemIDs { get; set; } // all options
         public ITEMGROUP GroupType { get; set; }
 
         private RestrType _restrType = RestrType.Anywhere; // combo box

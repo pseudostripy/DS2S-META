@@ -80,13 +80,13 @@ namespace DS2S_META.Randomizer
         internal static Dictionary<int, List<PICKUPTYPE>> ManuallyRequiredItemsTypeRules = new()
         {
             // Add here / refactor as required.
-            { 60155000, FullySafeFlags },    // Estus Flask
+            //{ 60155000, FullySafeFlags },    // Estus Flask
             { 0x039B89C8, FullySafeFlags },  // Estus Flask Shard
             { 0x039B8DB0, FullySafeFlags },  // Sublime Bone Dust
-            { 05400000, FullySafeFlags },    // Pyromancy Flame
-            { 05410000, FullySafeFlags },    // Dark Pyromancy Flame 
-            { 60355000, FullySafeFlags },    // Aged Feather
-            { 40420000, FullySafeFlags },    // Silvercat Ring
+            //{ 05400000, FullySafeFlags },    // Pyromancy Flame
+            //{ 05410000, FullySafeFlags },    // Dark Pyromancy Flame 
+            //{ 60355000, FullySafeFlags },    // Aged Feather
+            //{ 40420000, FullySafeFlags },    // Silvercat Ring
         };
 
 

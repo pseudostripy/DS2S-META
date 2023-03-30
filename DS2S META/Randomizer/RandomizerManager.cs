@@ -42,6 +42,7 @@ namespace DS2S_META.Randomizer
         internal bool IsRandomized = false;
 
         internal List<ItemRestriction> Restrictions;
+        internal List<int> RestrictedItems = new(); // shorthand
         
         // From front-end
         internal Dictionary<Randomization, int> ReservedRdzs = new();
@@ -307,8 +308,11 @@ namespace DS2S_META.Randomizer
             DistanceRestrictedIDs = new();
             ResVanPlacedSoFar = new();
 
-            int indID;
             int itemid;
+
+            // Choose each from the set:
+            foreach (var restr in Restrictions)
+                restr.ItemID = restr.ItemIDs[RNG.Next(restr.ItemIDs.Count)];
             
             foreach( var irest in Restrictions)
             {
@@ -319,8 +323,7 @@ namespace DS2S_META.Randomizer
 
                     case RestrType.Vanilla:
                         // Draw random itemID from list of options:
-                        indID = RNG.Next(irest.ItemIDs.Count);
-                        itemid = irest.ItemIDs[indID];
+                        itemid = irest.ItemID;
 
                         // Get vanillas:
                         var rdzvans = AllPTF.Where(rdz => rdz.HasVannilaItemID(itemid)).ToList();
@@ -333,10 +336,7 @@ namespace DS2S_META.Randomizer
                         break;
 
                     case RestrType.Distance:
-                        // Draw random itemID from list of options:
-                        indID = RNG.Next(irest.ItemIDs.Count);
-                        itemid = irest.ItemIDs[indID];
-                        DistanceRestrictedIDs[itemid] = new MinMax(irest.DistMin, irest.DistMax);
+                        DistanceRestrictedIDs[irest.ItemID] = new MinMax(irest.DistMin, irest.DistMax);
                         break;
                 }
             }
@@ -1419,6 +1419,8 @@ namespace DS2S_META.Randomizer
             List<PICKUPTYPE> allowedPUF;
             if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
                 allowedPUF = ItemSetBase.FullySafeFlags; // to generalize with front-end
+            else if (IsRestrictedItem(di.ItemID))
+                allowedPUF = ItemSetBase.FullySafeFlags; // front-end specified items
             else if (settype == SetType.Keys)
                 allowedPUF = AllowedKeyTypes;
             else if (settype == SetType.Reqs)
@@ -1428,6 +1430,10 @@ namespace DS2S_META.Randomizer
 
             // Check types:
             return rdz.ContainsOnlyTypes(allowedPUF);
+        }
+        private bool IsRestrictedItem(int itemid)
+        {
+            return RestrictedItems.Contains(itemid);
         }
         private bool PassedDistanceCond(Randomization rdz, DropInfo di, out LOGICRES distres, out int dist)
         {
