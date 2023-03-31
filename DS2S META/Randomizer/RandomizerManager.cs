@@ -312,11 +312,7 @@ namespace DS2S_META.Randomizer
 
             // Choose each from the set:
             foreach (var restr in Restrictions)
-            {
-                var test = 1;
                 restr.ItemID = restr.ItemIDs[RNG.Next(restr.ItemIDs.Count)];
-
-            }
             
             foreach( var irest in Restrictions)
             {
@@ -718,7 +714,8 @@ namespace DS2S_META.Randomizer
                     .Concat(dropptfs).ToList();
 
             // Places to fill with "Ordinary Randomization"
-            var legitRandomizeTypes = new RDZ_STATUS[] { RDZ_STATUS.STANDARD, RDZ_STATUS.UNLOCKTRADE, RDZ_STATUS.FREETRADE, RDZ_STATUS.SHOPSUSTAIN };
+            var legitRandomizeTypes = new RDZ_STATUS[] { RDZ_STATUS.STANDARD, RDZ_STATUS.UNLOCKTRADE, 
+                                                         RDZ_STATUS.FREETRADE, RDZ_STATUS.SHOPSUSTAIN };
             AllPTF = AllP.Where(rdz => legitRandomizeTypes.Contains(rdz.Type)).ToList();
         }
         internal IEnumerable<Randomization> SetLotPTFTypes()
@@ -808,10 +805,7 @@ namespace DS2S_META.Randomizer
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
             ldkeys = RemoveExtraTorches(too_many_torches);
-            //ldkeys_res = ldkeys.Where(di => ReservedRdzs.ContainsValue(di.ItemID)).ToList(); // need to be placed after
-            //ldkeys_unres = ldkeys.Where(di => !ReservedRdzs.ContainsValue(di.ItemID)).ToList();
-
-
+            
             var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
             ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType || IsRestrictedItem(DI.ItemID)).ToList();                // Reqs
 
@@ -836,8 +830,8 @@ namespace DS2S_META.Randomizer
             RemoveFirstIfPresent(0x0308D330); // Ashen Mist
             RemoveFirstIfPresent(0x03B39220); // Token of Fidelity
             RemoveFirstIfPresent(0x03B3B930); // Token of Spite
-            LimitNumberOfItem(0x0399EFA0, 25); // 25x Torch pickups in game
-            LimitNumberOfItem(0x0395D4D8, 50); // 50x Effigy pickups in game
+            LimitNumberOfItem((int)ITEMID.TORCH, 25);       // 25x Torch pickups in game
+            LimitNumberOfItem((int)ITEMID.HUMANEFFIGY, 50); // 50x Effigy pickups in game
         }
         private static List<DropInfo> RemoveExtraTorches(List<DropInfo> too_many_torches)
         {
@@ -947,7 +941,8 @@ namespace DS2S_META.Randomizer
 
 
                 var logicres = PlaceItem(di, settype);
-                if (settype == SetType.Keys && logicres == LOGICRES.DELAY_VANLOCKED)
+                if (settype == SetType.Keys &&
+                    logicres == LOGICRES.DELAY_VANLOCKED || logicres == LOGICRES.DELAY_MAXDIST)
                     continue; // leave in pool and redraw
 
                 if (logicres == LOGICRES.SUCCESS_VANPLACE)
@@ -966,7 +961,7 @@ namespace DS2S_META.Randomizer
         {
             // Placement logic:
             var logicres = FindElligibleRdz(di, stype, out var rdz);
-            if (logicres == LOGICRES.DELAY_VANLOCKED)
+            if (logicres == LOGICRES.DELAY_VANLOCKED || logicres == LOGICRES.DELAY_MAXDIST)
                 return logicres; // handled above
 
             // Extra checks:
@@ -994,8 +989,8 @@ namespace DS2S_META.Randomizer
         {
             return res switch
             {
-                LOGICRES.FAIL_DISTANCE_MIN => true,
-                LOGICRES.FAIL_DISTANCE_MAX => true,
+                LOGICRES.FAIL_DIST_TOONEAR => true,
+                LOGICRES.FAIL_DIST_TOOFAR => true,
                 LOGICRES.FAIL_DISTANCE_NA => true,
                 LOGICRES.FAIL_SOFTLOCK => true,
                 LOGICRES.FAIL_PICKUPTYPE => true,
@@ -1218,8 +1213,8 @@ namespace DS2S_META.Randomizer
             int max_ellig_dist = 0;
             Randomization? min_ellig_Rdz = null;
             Randomization? max_ellig_Rdz = null;
-            bool bfound_elligmin = false;
-            bool bfound_elligmax = false;
+            bool bfound_ellig_buttoonear = false;
+            bool bfound_ellig_buttoofar = false;
             int numfail_distmin = 0;
             int numfail_distmax = 0;
 
@@ -1234,23 +1229,23 @@ namespace DS2S_META.Randomizer
 
                 // Prepare for unmeetable distance restrictions (these are ONLY 
                 // used if NONE of the Rdz are elligible!
-                if (rescheck == LOGICRES.FAIL_DISTANCE_MIN && dist > max_ellig_dist)
+                if (rescheck == LOGICRES.FAIL_DIST_TOONEAR && dist > max_ellig_dist)
                 {
                     // dist was lower than minimum setting.
                     // Find the highest distance we can, since everything we tried was
                     // too low.
                     max_ellig_dist = dist;
-                    max_ellig_Rdz = rdz; // use if nothing better
-                    bfound_elligmin = true;
+                    max_ellig_Rdz = rdz; // use as last resort
+                    bfound_ellig_buttoonear = true;
                     numfail_distmin++;
                 }
-                if (rescheck == LOGICRES.FAIL_DISTANCE_MAX && dist < min_ellig_dist)
+                if (rescheck == LOGICRES.FAIL_DIST_TOOFAR && dist < min_ellig_dist)
                 {
-                    // All distances were higher than maximum allowed setting.
+                    // All distances were higher than maximum allowed dist.
                     // Find the lowest distance possible and use it:
                     min_ellig_dist = dist;
                     min_ellig_Rdz = rdz;
-                    bfound_elligmax = true;
+                    bfound_ellig_buttoofar = true;
                     numfail_distmax++;
                 }
 
@@ -1262,8 +1257,8 @@ namespace DS2S_META.Randomizer
                     case LOGICRES.FAIL_VAN_WRONGRDZ:
                     case LOGICRES.FAIL_PICKUPTYPE:
                     case LOGICRES.FAIL_SOFTLOCK:
-                    case LOGICRES.FAIL_DISTANCE_MIN:
-                    case LOGICRES.FAIL_DISTANCE_MAX:
+                    case LOGICRES.FAIL_DIST_TOONEAR:
+                    case LOGICRES.FAIL_DIST_TOOFAR:
                     case LOGICRES.FAIL_DISTANCE_NA:
                         availRdzs.Remove(rdz);
                         continue;
@@ -1284,15 +1279,26 @@ namespace DS2S_META.Randomizer
                 }
             }
 
+            // Try our very best to reach the distance requirement.
+            // Delay placement and look again later when more
+            // Rdzs are unlocked for placement
+            if (bfound_ellig_buttoonear && stype == SetType.Keys)
+            {
+                // "Is there any key left to be placed that doesn't have
+                // restrictions?" if so, we can delay and come back later
+                if (ldkeys.Any(di => !IsRestrictedItem(di.ItemID)))
+                    return LOGICRES.DELAY_MAXDIST;
+            }
+
             // Best attempt (only failed on distance check comparison vs user value):
-            if (bfound_elligmin && !bfound_elligmax || numfail_distmin >= numfail_distmax)
+            if (bfound_ellig_buttoonear && !bfound_ellig_buttoofar || numfail_distmin >= numfail_distmax)
             {
                 rdz_ellig = max_ellig_Rdz;
                 if (rdz_ellig == null) throw new NullReferenceException();
                 rdz_ellig.PlaceDist = max_ellig_dist;
                 return LOGICRES.SUCCESS_DISTCOMPROMISE;
             }
-            if (bfound_elligmax && !bfound_elligmin || numfail_distmin < numfail_distmax)
+            if (bfound_ellig_buttoofar && !bfound_ellig_buttoonear || numfail_distmin < numfail_distmax)
             {
                 rdz_ellig = min_ellig_Rdz;
                 if (rdz_ellig == null) throw new NullReferenceException();
@@ -1486,13 +1492,13 @@ namespace DS2S_META.Randomizer
             if (dist < minmax.Min)
             {
                 // not far enough away
-                distres = LOGICRES.FAIL_DISTANCE_MIN;
+                distres = LOGICRES.FAIL_DIST_TOONEAR;
                 return false;
             }
-            if(dist > minmax.Max)
+            if (dist > minmax.Max)
             {
                 // too far away
-                distres = LOGICRES.FAIL_DISTANCE_MAX;
+                distres = LOGICRES.FAIL_DIST_TOOFAR;
                 return false;
             }
 

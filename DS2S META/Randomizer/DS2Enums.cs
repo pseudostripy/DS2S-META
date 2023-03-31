@@ -30,6 +30,7 @@ namespace DS2S_META.Randomizer
         ROTUNDALOCKSTONE = 0x03088510,
         DRAKEWINGUGS    = 0x004FCDB0,
         ELEUMLOYCE      = 0x0018DF30,
+        HUMANEFFIGY     = 0x0395D4D8,
     }
     public enum ITEMUSAGE
     {
@@ -43,12 +44,13 @@ namespace DS2S_META.Randomizer
         SUCCESS_VANPLACE,
         SUCCESS_DISTCOMPROMISE,
         DELAY_VANLOCKED, // try again later
+        DELAY_MAXDIST, // try again later
         FAIL_PICKUPTYPE,
         FAIL_SOFTLOCK,
         FAIL_VAN_WRONGRDZ,
         FAIL_RESERVED,
-        FAIL_DISTANCE_MIN,
-        FAIL_DISTANCE_MAX,
+        FAIL_DIST_TOONEAR,
+        FAIL_DIST_TOOFAR,
         FAIL_DISTANCE_NA,
     }
     public enum MapArea
