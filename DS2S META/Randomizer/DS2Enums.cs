@@ -128,4 +128,19 @@ namespace DS2S_META.Randomizer
         Chime,
         BlacksmithKey
     }
+    
+    public static class DS2Data
+    {
+        public static readonly Dictionary<ITEMGROUP, List<int>> ItemGroups = new()
+        {
+            [ITEMGROUP.BlacksmithKey] = new List<ITEMID>() { ITEMID.LENIGRASTKEY, ITEMID.DULLEMBER, ITEMID.FANGKEY }.Cast<int>().ToList(),
+            [ITEMGROUP.Pyro] = new() { 05400000, 05410000 },
+            [ITEMGROUP.Staff] = new() { 1280000, 3800000, 3810000, 3820000, 3830000, 3850000, 3860000, 3870000,
+                                            3880000, 3890000, 3900000, 3910000, 3930000, 3940000, 4150000, 5370000,
+                                            5540000, 11150000 },
+            [ITEMGROUP.Chime] = new() { 2470000, 4010000, 4020000, 4030000, 4040000, 4050000, 4060000, 4080000,
+                                            4090000, 4100000, 4110000, 4120000, 4150000, 11150000 },
+        };
+    }
+
 }

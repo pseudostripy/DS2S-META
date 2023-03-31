@@ -126,7 +126,7 @@
                 </TabItem>
                 <TabItem Header="Randomizer" >
                     <Grid Background="LightGray">
-                        <local:RandomizerControl x:Name="metaRando" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        <local:RandomizerControl x:Name="metaRando" DataContext="{Binding RandoSettingsViewModel}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Cheats" >
@@ -141,7 +141,7 @@
                 </TabItem>
                 <TabItem Header="Dmg Calc PLACEHOLDER" >
                     <Grid Background="LightGray">
-                        <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
             </TabControl>

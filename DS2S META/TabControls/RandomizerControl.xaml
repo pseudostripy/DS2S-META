@@ -1,12 +1,15 @@
-﻿<local:METAControl x:Class="DS2S_META.RandomizerControl"
-                   x:Name="RandoCon"
+﻿<local:METAControl
+             x:Class="DS2S_META.RandomizerControl"
+             x:Name="RandoCon"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DS2S_META"
+             xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+             d:DataContext="{d:DesignInstance viewmodels:RandoSettingsViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <StackPanel Margin="25">
             <Label Content="Randomizer" FontSize="20" HorizontalAlignment="Center"/>

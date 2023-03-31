@@ -55,6 +55,7 @@ namespace DS2S_META.ViewModels
             Hook.Start();
 
             DmgCalcViewModel = new DmgCalcViewModel();
+            RandoSettingsViewModel = new RandoSettingsViewModel();
             ViewModels.Add(DmgCalcViewModel);
 
             ShowOnlineWarning();
@@ -146,6 +147,7 @@ namespace DS2S_META.ViewModels
 
         ObservableCollection<ViewModelBase> ViewModels = new();
         public DmgCalcViewModel DmgCalcViewModel { get; set; }
+        public RandoSettingsViewModel RandoSettingsViewModel { get; set; }
 
         public void UpdateMainProperties()
         {

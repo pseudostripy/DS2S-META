@@ -80,7 +80,7 @@ namespace DS2S_META.ViewModels
         public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = RestrType.Anywhere)
         {
             Name = name;
-            ItemIDs = new();
+            ItemIDs = DS2Data.ItemGroups[grp];
             GroupType = grp;
             RestrType = restrType;
         }

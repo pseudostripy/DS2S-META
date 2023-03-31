@@ -6,15 +6,31 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     xmlns:local="clr-namespace:DS2S_META"
                     xmlns:rando="clr-namespace:DS2S_META.Randomizer"
+                    xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
                     mc:Ignorable="d" 
-                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
-
+                    d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+                    d:DataContext="{d:DesignInstance viewmodels:RandoSettingsViewModel, IsDesignTimeCreatable=True}">
     <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Presets" Height="33" Width="124" HorizontalContentAlignment="Center" FontSize="16" FontWeight="Bold"/>
+            <ComboBox x:Name="cmbPresets" SelectedValue="{Binding Preset}"  Width="120" Grid.Column="1" ItemsSource="{Binding PresetsComboItems}" HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+
         <Expander>
             <Expander.Header>
-                <TextBlock FontSize="16" Margin="4" FontWeight="Bold">Item Placement Restrictions</TextBlock>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Item Placement Restrictions"/></TextBlock>
             </Expander.Header>
-            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}, Path=ItemRestrictions}" HorizontalContentAlignment="Stretch" MaxHeight="500">
+            <ListView x:Name="listViewItemRestrictions" ItemsSource="{Binding ItemRestrictions, RelativeSource={RelativeSource AncestorType={x:Type local:RandomizerSettings}}}" HorizontalContentAlignment="Stretch" MaxHeight="500">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -26,9 +42,9 @@
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock TextWrapping="Wrap" Text="{Binding Path=Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
-                            <ComboBox Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding RestrType}" ItemsSource="{Binding Path=TypeComboItems}" MinWidth="80"/>
-                            <Grid Visibility="{Binding Path=VisDistSettings}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                            <TextBlock TextWrapping="Wrap" Text="{Binding Name}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" TextAlignment="Left" FontWeight="Normal" Margin="4" FontSize="14"/>
+                            <ComboBox x:Name="RestrictionTypeSelection" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" DisplayMemberPath="Value" Margin="4" SelectedValuePath="Key" SelectedValue="{Binding RestrType}" ItemsSource="{Binding TypeComboItems}" MinWidth="80"/>
+                            <Grid Visibility="{Binding VisDistSettings}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
@@ -50,6 +66,6 @@
             </ListView>
 
         </Expander>
-        
+
     </StackPanel>
 </local:METAControl>
