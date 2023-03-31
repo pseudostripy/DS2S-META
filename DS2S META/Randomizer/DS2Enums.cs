@@ -28,6 +28,8 @@ namespace DS2S_META.Randomizer
         BLACKSEPCRYSTAL = 0x03B47C80,
         BASTILLEKEY     = 0x03072580,
         ROTUNDALOCKSTONE = 0x03088510,
+        DRAKEWINGUGS    = 0x004FCDB0,
+        ELEUMLOYCE      = 0x0018DF30,
     }
     public enum ITEMUSAGE
     {

@@ -587,8 +587,11 @@ namespace DS2S_META.Randomizer
             // Only keep loot of shops that I'll be replacing (others are duplicates)
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Type == RDZ_STATUS.STANDARD
-                                        || srdz.Type == RDZ_STATUS.FREETRADE
-                                        || srdz.Type == RDZ_STATUS.UNLOCKTRADE).ToList();
+                                        || srdz.Type == RDZ_STATUS.FREETRADE).ToList();
+            var testx = AllPTF.ToList().OfType<ShopRdz>()
+                                .Where(shp => shp.HasVannilaItemID((int)ITEMID.DRAKEWINGUGS)).ToList();
+            var tests = AllPTF.OfType<ShopRdz>().ToList();
+
             foreach (var shop in okShops)
                 shoplotlists.Add(shop.Flatlist);
 
@@ -632,8 +635,8 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
 
             // query testing
-            var test = LTR_flatlist.Where(di => di.ItemID == 40310000).ToList();
-            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(40310000)).ToList();
+            var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.DRAKEWINGUGS).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.ELEUMLOYCE)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
