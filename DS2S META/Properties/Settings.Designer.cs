@@ -442,5 +442,17 @@ namespace DS2S_META.Properties {
                 this["hkyOHKO"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowWarnSttgChg {
+            get {
+                return ((bool)(this["ShowWarnSttgChg"]));
+            }
+            set {
+                this["ShowWarnSttgChg"] = value;
+            }
+        }
     }
 }

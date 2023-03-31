@@ -19,8 +19,6 @@ using DS2S_META.ViewModels;
 
 namespace DS2S_META
 {
-    using IRest = ItemRestriction;
-
     /// <summary>
     /// Randomizer Code & Front End for RandomizerControl.xaml
     /// </summary>
@@ -114,8 +112,10 @@ namespace DS2S_META
 
         private void CreateItemRestrictions()
         {
+            // to reconsider structure
             RM.Restrictions = new();
-            RM.Restrictions = RandomizerSettings.ItemRestrictions.Select(ir => ir).ToList();
+            var vm = (RandoSettingsViewModel)DataContext;
+            RM.Restrictions = vm.ItemRestrictions.Select(ir => ir).ToList();
         }
         
 

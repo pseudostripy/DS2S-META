@@ -107,5 +107,8 @@
     <Setting Name="hkyOHKO" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">27</Value>
     </Setting>
+    <Setting Name="ShowWarnSttgChg" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

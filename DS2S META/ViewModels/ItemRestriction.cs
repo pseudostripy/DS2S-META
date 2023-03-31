@@ -23,8 +23,8 @@ namespace DS2S_META.ViewModels
         public int ItemID { get; set; }        // chosen randomly
         public List<int> ItemIDs { get; set; } // all options
         public ITEMGROUP GroupType { get; set; }
-        private static int LIMDISTMIN = 1;
-        private static int LIMDISTMAX = 20;
+        private const int LIMDISTMIN = 1;
+        private const int LIMDISTMAX = 20;
 
 
         private RestrType _restrType = RestrType.Anywhere; // combo box
@@ -77,19 +77,44 @@ namespace DS2S_META.ViewModels
             ItemIDs = new();
             Name = string.Empty;
         }
-        public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = RestrType.Anywhere)
-        {
-            Name = name;
-            ItemIDs = DS2Data.ItemGroups[grp];
-            GroupType = grp;
-            RestrType = restrType;
-        }
-        public ItemRestriction(string name, ITEMID itemID, RestrType restrType = RestrType.Anywhere)
+        //public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = RestrType.Anywhere)
+        //{
+        //    Name = name;
+        //    ItemIDs = DS2Data.ItemGroups[grp];
+        //    GroupType = grp;
+        //    RestrType = restrType;
+        //}
+        //public ItemRestriction(string name, ITEMID itemID, RestrType restrType = RestrType.Anywhere)
+        //{
+        //    Name = name;
+        //    ItemIDs = new List<int>() { (int)itemID };
+        //    GroupType = ITEMGROUP.Specified;
+        //    RestrType = restrType;
+        //}
+        public ItemRestriction(string name, ITEMID itemID, 
+                                RestrType restrType = RestrType.Anywhere, 
+                                int distmin = LIMDISTMIN, 
+                                int distmax = LIMDISTMAX)
         {
             Name = name;
             ItemIDs = new List<int>() { (int)itemID };
             GroupType = ITEMGROUP.Specified;
             RestrType = restrType;
+            DistMin = distmin;
+            DistMax = distmax;
+        }
+
+        public ItemRestriction(string name, ITEMGROUP grp, 
+                                RestrType restrType = RestrType.Anywhere, 
+                                int distmin = LIMDISTMIN, 
+                                int distmax = LIMDISTMAX)
+        {
+            Name = name;
+            ItemIDs = DS2Data.ItemGroups[grp];
+            GroupType = grp;
+            RestrType = restrType;
+            DistMin = distmin;
+            DistMax = distmax;
         }
 
     }

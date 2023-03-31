@@ -2249,7 +2249,7 @@ namespace DS2S_META.Randomizer
         internal static bool GetRandoSettingsStr(out string xmlstr)
         {
             xmlstr = string.Empty;
-            var path = RandomizerSettings.SettingsFilePath;
+            var path = RandoSettingsViewModel.SettingsFilePath;
             if (!File.Exists(path))
                 return false;
 
