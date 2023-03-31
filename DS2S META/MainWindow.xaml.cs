@@ -94,15 +94,22 @@ namespace DS2S_META
             UpdateTimer.Stop();
             SaveAllTabs();
 
-            if (RandomizerControl.IsRandomized && Properties.Settings.Default.ShowWarnRandoExit)
+            if (RandomizerControl.IsRandomized)
             {
-                var randoexit = new RandoExitWarning()
+                // Just fix the problem /shrug
+                metaRando.RM.Unrandomize();
+
+                if (Properties.Settings.Default.ShowWarnRandoExit)
                 {
-                    Title = "Game Randomized Warning",
-                    Width = 375,
-                    Height = 195,
-                };
-                randoexit.ShowDialog();
+                    //var randoexit = new RandoExitWarning()
+                    //{
+                    //    Title = "Game Randomized Warning",
+                    //    Width = 375,
+                    //    Height = 195,
+                    //};
+                    //randoexit.ShowDialog();
+                }
+
             }
 
             HKM.ClearHooks();
