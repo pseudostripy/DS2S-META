@@ -45,6 +45,27 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
+#### v0.7.2 [RandoSettings]
+ - RandoFeature: Add Randomizer customisable settings
+ - RandoBugFix: Some shops reset on Shrine of Winter or Nash event now fixed
+ - CrashFix: Very rare possibility of crash on unlucky rando seed related to shop prices
+ - QoL: Added Hotkeys for NoAI and OHKO
+ - Feature: Added DisableAI to META Sotfs cp
+ - RandoBugFix: Licia deadlock on Vanilla Rotunda lockstone restriction
+ - RandoBugFix: Potential softlock with a mis-typed DLC2 chest
+ - RandoBalance: Shops that require no events now may contain rings/spells
+ - RandoBalance: Updates to effigy/torch number of placements
+ - FrontEndHell: Updates and alignment of ViewModels and META architecture
+ - QoL: Automatically unrandomize on META close to avoid having to close DS2
+ - QoL: Automatically turn off gravity on manual height change
+ - BugFix: Binos/Key to Embedded are no longer +10 upgraded
+ - RandoBugFix: Character creation items no longer sometimes missing
+ - RandoQoL: Persistent seed through opening/closing META
+ - BugFix: Speedhack updated for UTF8 encoding, allowing use in folders with foreign characters
+ - BugFix/Awareness: Vanilla speedhack investigated and requires .net6 x86 installed
+ - RandoFeature: Add Randomized starting gifts
+ - RandoBugFix: Shop price bugs & unexpected char creation items due to iconID mishandling
+
 #### v0.7.1 [VanillaSpeedhack]
 * Implement a workaround for Vanilla Speedhack
 * Initial serious refactoring of ViewModels
