@@ -226,18 +226,7 @@ namespace DS2S_META.ViewModels
             Preset = GetPresetType();
         }
 
-
-        internal static bool CheckOverwriteSttgOK()
-        {
-            // user has clicked "never show again"
-            if (!Settings.Default.ShowWarnSttgChg)
-                    return true;
-
-            var warning = new NewRandoSettingsWarn();
-            warning.ShowDialog();
-            return warning.IsOk;
-        }
-
+        // Definitions [tomove]
         public static IPRSList DefineDefaultRestrictions()
         {
             IPRSList iprs = new() {
@@ -250,6 +239,9 @@ namespace DS2S_META.ViewModels
                 new ItemRestriction("King's Ring", ITEMID.KINGSRING),
                 new ItemRestriction("Ashen Mist Heart", ITEMID.ASHENMIST),
                 new ItemRestriction("Key to the Embedded", ITEMID.KEYTOEMBEDDED),
+                new ItemRestriction("Yearn", ITEMID.YEARN),
+                new ItemRestriction("Flynn's Ring", ITEMID.FLYNNSRING),
+                new ItemRestriction("Dark Weapon", ITEMID.DARKWEAPON),
 
                 new ItemRestriction("Any Blacksmith Key", ITEMGROUP.BlacksmithKey),
                 new ItemRestriction("Any Pyromancy Flame", ITEMGROUP.Pyro),
@@ -260,26 +252,31 @@ namespace DS2S_META.ViewModels
         }
         public static IPRSList DefinePainRestrictions()
         {
-            int painmin = 10;
+            int painmid = 10;
+            int painhigh = 18;
             IPRSList iprs = new() {
-                new ItemRestriction("Estus Flask", ITEMID.ESTUS, RestrType.Distance, painmin),
+                new ItemRestriction("Estus Flask", ITEMID.ESTUS, RestrType.Distance, painmid),
                 new ItemRestriction("Ring of Binding", ITEMID.RINGOFBINDING),
-                new ItemRestriction("Silvercat Ring", ITEMID.CATRING, RestrType.Distance, painmin),
-                new ItemRestriction("Aged Feather", ITEMID.AGEDFEATHER, RestrType.Distance, painmin),
-                new ItemRestriction("Dull Ember", ITEMID.DULLEMBER, RestrType.Distance, 18),
-                new ItemRestriction("Rotunda Lockstone", ITEMID.ROTUNDALOCKSTONE, RestrType.Distance, painmin),
-                new ItemRestriction("King's Ring", ITEMID.KINGSRING, RestrType.Distance, painmin),
-                new ItemRestriction("Ashen Mist Heart", ITEMID.ASHENMIST, RestrType.Distance, painmin),
-                new ItemRestriction("Key to the Embedded", ITEMID.KEYTOEMBEDDED, RestrType.Distance, 18),
+                new ItemRestriction("Silvercat Ring", ITEMID.CATRING, RestrType.Distance, painmid),
+                new ItemRestriction("Aged Feather", ITEMID.AGEDFEATHER, RestrType.Distance, painmid),
+                new ItemRestriction("Dull Ember", ITEMID.DULLEMBER, RestrType.Distance, painhigh),
+                new ItemRestriction("Rotunda Lockstone", ITEMID.ROTUNDALOCKSTONE, RestrType.Distance, painmid),
+                new ItemRestriction("King's Ring", ITEMID.KINGSRING, RestrType.Distance, painmid),
+                new ItemRestriction("Ashen Mist Heart", ITEMID.ASHENMIST, RestrType.Distance, painmid),
+                new ItemRestriction("Key to the Embedded", ITEMID.KEYTOEMBEDDED, RestrType.Distance, painhigh),
+                new ItemRestriction("Yearn", ITEMID.YEARN, RestrType.Distance, painhigh),
+                new ItemRestriction("Flynn's Ring", ITEMID.FLYNNSRING, RestrType.Distance, painhigh),
+                new ItemRestriction("Dark Weapon", ITEMID.DARKWEAPON, RestrType.Distance, painhigh),
 
                 new ItemRestriction("Any Blacksmith Key", ITEMGROUP.BlacksmithKey),
-                new ItemRestriction("Any Pyromancy Flame", ITEMGROUP.Pyro, RestrType.Distance, painmin),
+                new ItemRestriction("Any Pyromancy Flame", ITEMGROUP.Pyro, RestrType.Distance, painmid),
                 new ItemRestriction("Any Staff", ITEMGROUP.Staff),
                 new ItemRestriction("Any Chime", ITEMGROUP.Chime),
             };
             return iprs;
         }
 
+        // Utility
         private static bool AreFunctionallySame(IPRSList list1, IPRSList list2)
         {
             if (list1.Count != list2.Count) 
@@ -297,6 +294,16 @@ namespace DS2S_META.ViewModels
                 }
             }
             return true;
+        }
+        internal static bool CheckOverwriteSttgOK()
+        {
+            // user has clicked "never show again"
+            if (!Settings.Default.ShowWarnSttgChg)
+                    return true;
+
+            var warning = new NewRandoSettingsWarn();
+            warning.ShowDialog();
+            return warning.IsOk;
         }
 
 

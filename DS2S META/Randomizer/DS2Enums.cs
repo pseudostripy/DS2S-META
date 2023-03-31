@@ -31,6 +31,9 @@ namespace DS2S_META.Randomizer
         DRAKEWINGUGS    = 0x004FCDB0,
         ELEUMLOYCE      = 0x0018DF30,
         HUMANEFFIGY     = 0x0395D4D8,
+        YEARN           = 0x01DC6120,
+        FLYNNSRING      = 0x027322E0,
+        DARKWEAPON      = 0x0207B6E0,
     }
     public enum ITEMUSAGE
     {
