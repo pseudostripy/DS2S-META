@@ -17,6 +17,7 @@ A
 
 ## Requirements 
 * [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
+* *Specifically for Vanilla Speedhack* [.NET 6 for x86] see above link and select x86
 
 ## Installing  
 * Extract contents of zip archive to it's own folder. 
@@ -28,8 +29,9 @@ A
 **[Nordgaren](https://github.com/Nordgaren)** especially for helping me out on some horrible bugs!\
 **[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) and [Property Hook](https://github.com/JKAnderson/PropertyHook)\
 **[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor\
-**[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge
-**[Stennis](https://github.com/StenniHub)** Contributions to the code and speedhack fixes
+**[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge\
+**[Stennis](https://github.com/StenniHub)** Contributions to code refactoring and speedhack fixes\
+**[Meander5](https://github.com/meander5)** Contributions with bug fixes, testing & example feature implementations
 
 ## Libraries
 Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](https://github.com/JKAnderson/)  
@@ -43,8 +45,7 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
-### META v0.7 [Combiner]:
-#### v0.7.1.0
+#### v0.7.1 [VanillaSpeedhack]
 * Implement a workaround for Vanilla Speedhack
 * Initial serious refactoring of ViewModels
 * "DryUpdate" functionality added for testing releases locally
@@ -54,7 +55,8 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 * Warp-rest improved to restore full hp (applied after max hp boosting effects)
 * Added IsLoading flag for all Versions enabling more robust future code
 
-#### v0.7.0.0
+### META v0.7 [Combiner]:
+#### v0.7.0
 * Merge DS2 META Vanilla into single program DS2S combined!
 * Variety Stability upgrades (crash fixes) on meta/ds2 open/close
 * Finish the full merge of leftover params from Hook into ParamMan
@@ -82,7 +84,6 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 * Hotfixes to hotkey implementation and lag
 
 #### v0.6.1.0
-
 * Overhaul to hotkey implementation for full-screen DS2
 
 #### v0.6.0.8
