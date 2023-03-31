@@ -171,6 +171,7 @@ namespace DS2S_META
             metaPlayer.InitTab();
             metaSettings.InitTab(HKM);
             ViewModel.DmgCalcViewModel.InitViewModel(Hook);
+            ViewModel.RandoSettingsViewModel.InitViewModel(Hook);
         }
         private void UpdateProperties()
         {

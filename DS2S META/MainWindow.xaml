@@ -126,7 +126,7 @@
                 </TabItem>
                 <TabItem Header="Randomizer" >
                     <Grid Background="LightGray">
-                        <local:RandomizerControl x:Name="metaRando" DataContext="{Binding RandoSettingsViewModel}" Grid.ColumnSpan="2"/>
+                        <local:RandomizerControl x:Name="metaRando" DataContext="{Binding RandoSettingsViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Cheats" >

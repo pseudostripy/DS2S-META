@@ -50,6 +50,13 @@ namespace DS2S_META.ViewModels
             LoadPresetSettings(GetDefaultPreset(Preset));
         }
 
+        public DS2SHook? Hook { get; set; }
+        public void InitViewModel(DS2SHook hook)
+        {
+            Hook = hook;
+            OnPropertyChanged(nameof(Hook));
+        }
+
         // Constructor
         public RandoSettingsViewModel()
         {
