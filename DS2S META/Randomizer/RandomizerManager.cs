@@ -312,7 +312,11 @@ namespace DS2S_META.Randomizer
 
             // Choose each from the set:
             foreach (var restr in Restrictions)
+            {
+                var test = 1;
                 restr.ItemID = restr.ItemIDs[RNG.Next(restr.ItemIDs.Count)];
+
+            }
             
             foreach( var irest in Restrictions)
             {

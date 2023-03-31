@@ -1118,15 +1118,15 @@ namespace DS2S_META.Randomizer
             Dold.Add(10046090, SafeInfo(MapArea.ThePit, "[Pit] Fourth board in the pit", KL()));
             Dold.Add(10046150, SafeInfo(MapArea.ThePit, "[Pit] Vanilla homeward bone: entrance to corridor before bridge crystal lizard", KL()));
             Dold.Add(10345000, MChestInfo(MapArea.ThePit, "[Pit] Metal chest after jumping across the wooden bridge in the circular room with explosive hollows", KL()));
-            Dold.Add(10345010, WChestInfo(MapArea.ThePit, "[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter", KL()));
             Dold.Add(10345020, MChestInfo(MapArea.ThePit, "[Pit] Vanilla bone dust: metal chest guarded by syan soldier", KL()));
             Dold.Add(10346000, SafeInfo(MapArea.ThePit, "[Pit] First corpse on scaffolding before the Gutter", KL()));
             Dold.Add(10346010, SafeInfo(MapArea.ThePit, "[Pit] Second corpse on scaffolding before the Gutter", KL()));
-            Dold.Add(10346070, SafeInfo(MapArea.ThePit, "[Pit] First corpse in the circular room", KL()));
             Dold.Add(10346090, SafeInfo(MapArea.ThePit, "[Pit] On the higher bridge  of the circular room after Rat Vanguard", KL()));
             Dold.Add(10346091, NGPlusInfo(MapArea.ThePit, "[Pit] On the higher bridge of the circular room after Rat Vanguard in NG+", KL()));
-            Dold.Add(10346100, SafeInfo(MapArea.ThePit, "[Pit] On a small unconnected ledge offset from the wooden bridge in the circular room", KL()));
+            Dold.Add(10346070, SafeInfo(MapArea.ThePit, "[Pit] First corpse in the circular room", KL()));
             Dold.Add(10346110, SafeInfo(MapArea.ThePit, "[Pit] Second corpse in the circular room with explosive hollows", KL()));
+            Dold.Add(10346100, SafeInfo(MapArea.ThePit, "[Pit] On a small unconnected ledge offset from the wooden bridge in the circular room", KL()));
+            Dold.Add(10345010, WChestInfo(MapArea.ThePit, "[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter", KL()));
 
             // Grave of Saints:
             Dold.Add(226100, BossInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Royal rat vanguard drop", KL()));

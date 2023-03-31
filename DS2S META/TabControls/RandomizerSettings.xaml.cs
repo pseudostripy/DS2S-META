@@ -35,6 +35,8 @@ namespace DS2S_META
             {
                 // Use defaults when not available
                 ItemRestrictions = DefaultRestrictions();
+                SetItemGroupOptions();
+                SaveRandomizerSettings();
             }
             SetupSaveCallbacks();
         }
@@ -94,8 +96,41 @@ namespace DS2S_META
                 new ItemRestriction("Any Staff", ITEMGROUP.Staff),
                 new ItemRestriction("Any Chime", ITEMGROUP.Chime),
             };
-            SaveRandomizerSettings();
             return iprs;
+        }
+        private void SetItemGroupOptions()
+        {
+            foreach (var irest in ItemRestrictions)
+            {
+                switch (irest.GroupType)
+                {
+                    case ITEMGROUP.Specified:
+                        break;
+
+                    // TODO Make more robust with Param field types
+                    case ITEMGROUP.Pyro:
+                        irest.ItemIDs = new() { 05400000, 05410000 };
+                        var debug = 1;
+                        break;
+
+                    case ITEMGROUP.Staff:
+                        irest.ItemIDs = new() { 1280000, 3800000, 3810000, 3820000, 3830000, 3850000, 3860000, 3870000,
+                                            3880000, 3890000, 3900000, 3910000, 3930000, 3940000, 4150000, 5370000,
+                                            5540000, 11150000 };
+                        break;
+
+                    case ITEMGROUP.BlacksmithKey:
+                        irest.ItemIDs = new List<ITEMID>() { ITEMID.LENIGRASTKEY, ITEMID.DULLEMBER, ITEMID.FANGKEY }.Cast<int>().ToList();
+                        break;
+
+                    case ITEMGROUP.Chime:
+                        irest.ItemIDs = new() { 2470000, 4010000, 4020000, 4030000, 4040000, 4050000, 4060000, 4080000,
+                                            4090000, 4100000, 4110000, 4120000, 4150000, 11150000 };
+                        break;
+                    default:
+                        throw new Exception("which one is it?");
+                }
+            }
         }
 
         // Events:
