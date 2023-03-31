@@ -23,6 +23,9 @@ namespace DS2S_META.ViewModels
         public int ItemID { get; set; }        // chosen randomly
         public List<int> ItemIDs { get; set; } // all options
         public ITEMGROUP GroupType { get; set; }
+        private static int LIMDISTMIN = 1;
+        private static int LIMDISTMAX = 20;
+
 
         private RestrType _restrType = RestrType.Anywhere; // combo box
         public RestrType RestrType
@@ -36,24 +39,24 @@ namespace DS2S_META.ViewModels
             }
         }
         public Visibility VisDistSettings => RestrType == RestrType.Distance ? Visibility.Visible : Visibility.Collapsed;
-        private int _distMin = 1;
+        private int _distMin = LIMDISTMIN;
         public int DistMin
         {
             get => _distMin;
             set
             {
-                var limval = Math.Max(value, 1);
+                var limval = Math.Max(value, LIMDISTMIN);
                 _distMin = limval < DistMax ? limval : DistMax;
                 OnPropertyChanged(nameof(DistMin));
             }
         }
-        private int _distMax = 10;
+        private int _distMax = LIMDISTMAX;
         public int DistMax
         {
             get => _distMax;
             set
             {
-                var limval = Math.Min(value, 20);
+                var limval = Math.Min(value, LIMDISTMAX);
                 _distMax = limval > DistMin ? limval : DistMin;
                 OnPropertyChanged(nameof(DistMax));
             }

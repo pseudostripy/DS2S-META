@@ -110,7 +110,6 @@ namespace DS2S_META
                     // TODO Make more robust with Param field types
                     case ITEMGROUP.Pyro:
                         irest.ItemIDs = new() { 05400000, 05410000 };
-                        var debug = 1;
                         break;
 
                     case ITEMGROUP.Staff:
