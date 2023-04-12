@@ -454,5 +454,17 @@ namespace DS2S_META.Properties {
                 this["ShowWarnSttgChg"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("27")]
+        public int hkyGive31 {
+            get {
+                return ((int)(this["hkyGive31"]));
+            }
+            set {
+                this["hkyGive31"] = value;
+            }
+        }
     }
 }

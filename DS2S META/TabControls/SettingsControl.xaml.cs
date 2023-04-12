@@ -50,6 +50,7 @@ namespace DS2S_META
             HKM.LinkHotkeyControl(hkey17k);
             HKM.LinkHotkeyControl(hkeyDisableAI);
             HKM.LinkHotkeyControl(hkeyOHKO);
+            HKM.LinkHotkeyControl(hkey31);
 
             // Enable hotkeys
             HKM.RefreshKeyList();

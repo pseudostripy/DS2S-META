@@ -34,6 +34,8 @@ namespace DS2S_META.Randomizer
         YEARN           = 0x01DC6120,
         FLYNNSRING      = 0x027322E0,
         DARKWEAPON      = 0x0207B6E0,
+        TITANITECHUNK   = 0x03A27B20,
+        TITANITESLAB    = 0x03A2A230,
     }
     public enum ITEMUSAGE
     {

@@ -46,9 +46,13 @@ namespace DS2S_META
         }
 
         // 17k
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_17k(object sender, RoutedEventArgs e)
         {
-            Give17kReward();    
+            Give17kReward();
+        }
+        private void Button_Click_31(object sender, RoutedEventArgs e)
+        {
+            Give3Chunk1Slab();
         }
         public void Give17kReward()
         {
@@ -57,6 +61,28 @@ namespace DS2S_META
             var amounts = new short[2] { 1, 1 };
             Hook.GiveItems(itemids, amounts);
             Hook.AddSouls(17001);
+        }
+        public void Give3Chunk1Slab()
+        {
+            // For the lizard in dlc2
+
+            // Works in this version
+            if (Hook.Is64Bit)
+            {
+                var items = new ITEMID[2] { ITEMID.TITANITECHUNK, ITEMID.TITANITESLAB };
+                var itemids = items.Cast<int>().ToArray();
+                var amounts = new short[2] { 3, 1 };
+                Hook.GiveItems(itemids, amounts);
+                return;
+            }
+
+            // Vanilla: haven't fixed the multi-give yet...
+            var chunk = (int)ITEMID.TITANITECHUNK;
+            var slab = (int)ITEMID.TITANITESLAB;
+            Hook.GiveItem(chunk, 3, 0, 0);
+            Hook.GiveItem(slab, 1, 0, 0);
+            return;
+
         }
     }
 }

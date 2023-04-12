@@ -25,7 +25,8 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <CheckBox x:Name="cbxRubbishMode" Content="Rubbish Challenge" IsChecked="False" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="43,2,44,3" Grid.Column="1" Checked="cbxRubbishMode_Checked" Unchecked="cbxRubbishMode_Unchecked" />
-                <Button Content="Give 17k Reward" Grid.Row="1" Grid.Column="1" Click="Button_Click"/>
+                <Button x:Name="btn_17k" Content="Give 17k Reward" Grid.Row="1" Grid.Column="1" Click="Button_Click_17k"/>
+                <Button x:Name="btn_31" Content="Give 3 chunks, 1 slab" Grid.Row="2" Grid.Column="1" Click="Button_Click_31" Margin="0,8,0,0"/>
             </Grid>
         </StackPanel>
     </Grid>
