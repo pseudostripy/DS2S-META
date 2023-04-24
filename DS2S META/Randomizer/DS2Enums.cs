@@ -36,6 +36,7 @@ namespace DS2S_META.Randomizer
         DARKWEAPON      = 0x0207B6E0,
         TITANITECHUNK   = 0x03A27B20,
         TITANITESLAB    = 0x03A2A230,
+        CRYSTALSOULSPEAR = 0x01DA8C60,
     }
     public enum ITEMUSAGE
     {

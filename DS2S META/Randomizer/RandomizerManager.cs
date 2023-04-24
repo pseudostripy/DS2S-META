@@ -588,10 +588,11 @@ namespace DS2S_META.Randomizer
             var okShops = stage1.OfType<ShopRdz>()
                                 .Where(srdz => srdz.Type == RDZ_STATUS.STANDARD
                                         || srdz.Type == RDZ_STATUS.SHOPSUSTAIN
-                                        || srdz.Type == RDZ_STATUS.FREETRADE).ToList();
+                                        || srdz.Type == RDZ_STATUS.FREETRADE
+                                        || srdz.Type == RDZ_STATUS.UNLOCKTRADE).ToList();
             var testx = AllPTF.ToList().OfType<ShopRdz>()
-                                .Where(shp => shp.HasVannilaItemID((int)ITEMID.YEARN)).ToList();
-            var testx2 = okShops.Where(shp => shp.HasVannilaItemID((int)ITEMID.YEARN)).ToList();
+                                .Where(shp => shp.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
+            var testx2 = okShops.Where(shp => shp.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
             //var tests = AllPTF.OfType<ShopRdz>().ToList();
 
             foreach (var shop in okShops)
@@ -637,8 +638,8 @@ namespace DS2S_META.Randomizer
             LTR_flatlist = LTR_flatlist_lotshops.Concat(drop_flatlist_balanced).ToList();
 
             // query testing
-            var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.YEARN).ToList();
-            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.YEARN)).ToList();
+            var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.CRYSTALSOULSPEAR).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
