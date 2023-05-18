@@ -114,16 +114,17 @@ namespace DS2S_META.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  89 e5                   mov    ebp,esp
-        ///2:  83 ec 18                sub    esp,0x18
-        ///5:  c7 44 24 04 70 70 70    mov    DWORD PTR [esp+0x4],0x70707070	// spefID
+        ///2:  83 ec 44                sub    esp,0x44
+        ///5:  c7 44 24 08 70 70 70    mov    DWORD PTR [esp+0xZ],0x70707070
         ///c:  70
-        ///d:  c7 44 24 08 01 00 00    mov    DWORD PTR [esp+0x8],0x1
+        ///d:  c7 44 24 0c 01 00 00    mov    DWORD PTR [esp+0xZ+4],0x1
         ///14: 00
-        ///15: b8 70 70 70 70          mov    eax,0x70707070					// &amp;-1f
+        ///15: b8 70 70 70 70          mov    eax,0x70707070
         ///1a: f3 0f 10 00             movss  xmm0,DWORD PTR [eax]
-        ///1e: f3 0f 11 44 24 0c       movss  DWORD PTR [esp+0xc],xmm0
-        ///24: b8 70 70 70 70          mov    eax,0x70707070					// ??any non-null pointer??
-        ///29: 89 [rest of string was truncated]&quot;;.
+        ///1e: f3 0f 11 44 24 10       movss  DWORD PTR [esp+0xZ+8],xmm0
+        ///24: c7 44 24 14 16 02 00    mov    DWORD PTR [esp+0xZ+C],0x216
+        ///2b: 00
+        ///2c: 8d 44 24 08             lea     [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ApplySpecialEffect32OP {
             get {
@@ -203,58 +204,39 @@ namespace DS2S_META.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  81 ec e8 01 00 00       sub    esp,0x1e8
-        ///6:  b8 01 00 00 00          mov    eax,0x1
-        ///b:  ba 70 70 70 70          mov    edx,0x70707070
-        ///10: b9 70 70 70 70          mov    ecx,0x70707070
+        ///6:  b8 01 00 00 00          mov    eax,0x1			; numItems?
+        ///b:  ba 70 70 70 70          mov    edx,0x70707070	; ItemStruct
+        ///10: b9 70 70 70 70          mov    ecx,0x70707070	; availItemBag
         ///15: 6a 00                   push   0x0
         ///17: 50                      push   eax
         ///18: 52                      push   edx
-        ///19: b8 70 70 70 70          mov    eax,0x70707070
+        ///19: b8 70 70 70 70          mov    eax,0x70707070	; itemGiveFunc
         ///1e: ff d0                   call   eax
-        ///20: b9 01 00 00 00          mov    ecx,0x1			// NumItems (unique pickup things)
-        ///25: 6a 01                    [rest of string was truncated]&quot;;.
+        ///20: b8 01 00 00 00          mov    eax,0x1
+        ///25: 85 c [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GiveItemWithMenu32 {
+        internal static string GiveItem32 {
             get {
-                return ResourceManager.GetString("GiveItemWithMenu32", resourceCulture);
+                return ResourceManager.GetString("GiveItem32", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to 0:  48 81 ec e8 01 00 00    sub    rsp,0x1e8
-        ///7:  41 b8 08 00 00 00       mov    r8d,0x8 ;Number of items
-        ///d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
+        ///7:  41 b8 08 00 00 00       mov    r8d,0x8 					; numitems (dynamic)
+        ///d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 	; ItemStruct address (linker)
         ///14: ff ff ff
         ///17: 49 8d 17                lea    rdx,[r15]
-        ///1a: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 ;Item bag?
+        ///1a: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 	; ItemBag address? (linker)
         ///21: ff ff ff
         ///24: 45 31 c9                xor    r9d,r9d
-        ///27: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 ;Call add item function DarkSoulsII.exe+1A8C67
+        ///27: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000	; Call GiveItem (linker)
         ///2e: ff ff ff
-        ///31: 41 ff d6      [rest of string was truncated]&quot;;.
+        ///31 [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string GiveItemWithMenu64 {
+        internal static string GiveItem64 {
             get {
-                return ResourceManager.GetString("GiveItemWithMenu64", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 0:  48 83 ec 28             sub    rsp,0x28
-        ///4:  41 b8 08 00 00 00       mov    r8d,0x8
-        ///a:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 ;Item Struct Address
-        ///11: ff ff ff
-        ///14: 49 8d 17                lea    rdx,[r15]
-        ///17: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 ;Item bag?
-        ///1e: ff ff ff
-        ///21: 45 31 c9                xor    r9d,r9d
-        ///24: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 ;Call add item function DarkSoulsII.exe+1A8C67
-        ///2b: ff ff ff
-        ///2e: 41 ff d6                call    [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string GiveItemWithoutMenu {
-            get {
-                return ResourceManager.GetString("GiveItemWithoutMenu", resourceCulture);
+                return ResourceManager.GetString("GiveItem64", resourceCulture);
             }
         }
         

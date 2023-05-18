@@ -16,6 +16,7 @@ using Keystone;
 using System.Threading.Tasks;
 using static DS2S_META.Utils.ItemRow;
 using DS2S_META.Randomizer;
+using Octokit;
 
 namespace DS2S_META
 {
@@ -477,13 +478,6 @@ namespace DS2S_META
                 SomePlayerStats = CreateChildPointer(BaseA, Offsets.PlayerStatsOffsets);
             if (Offsets.LoadingState != null)
             {
-                //var test = Offsets.LoadingState[0..^1];
-                //var test2 = Offsets.LoadingState[^1];
-                //var temp = CreateChildPointer(BaseA, 0x80);
-                //var temp2 = CreateChildPointer(BaseA, 0x80, 0x8);
-                //var temp3 = CreateChildPointer(temp2, 0xbb4);
-                //var tempbool = temp2.ReadBoolean(0xbb4);
-                //var tempbool3 = temp3.ReadBoolean(0);
                 LoadingState = CreateChildPointer(BaseA, Offsets.LoadingState[0..^1]);
             }
             if (Offsets.DisableAI != null)
@@ -1206,7 +1200,27 @@ namespace DS2S_META
 
 
 
-        public void GiveItems(int[] itemids, short[] amounts)
+        
+        public enum GIVEOPTIONS
+        {
+            DEFAULT,
+            SHOWDIALOG,
+            GIVESILENTLY,
+        }
+
+        // QoL Wrappers:
+        public void GiveItem(int itemid, short amount = 1, 
+                             byte upgrade = 0, byte infusion = 0, 
+                             GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
+        {
+            // Simple wrapper for programmer QoL
+            var ids = new int[1] { itemid };
+            var amounts = new short[1] { amount };
+            var upgrades = new byte[1] { upgrade };
+            var infusions = new byte[1] { infusion };
+            GiveItems(ids, amounts, upgrades, infusions, opt); // call actual implementation
+        }
+        public void GiveItems(int[] itemids, short[] amounts, GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
         {
             // Fix wrapping for optionals
             var len = itemids.Length;
@@ -1222,10 +1236,31 @@ namespace DS2S_META
             byte[] infusions = infusions_list.ToArray();
 
             // Call function
-            GiveItems(itemids, amounts, upgrades, infusions);
+            GiveItems(itemids, amounts, upgrades, infusions, opt);
         }
-        public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions)
+        
+        // Main outward facing interface wrapper
+        public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
         {
+            var showdialog = opt switch
+            {
+                GIVEOPTIONS.DEFAULT => !Properties.Settings.Default.SilentItemGive,
+                GIVEOPTIONS.SHOWDIALOG => true,
+                GIVEOPTIONS.GIVESILENTLY => false,
+                _ => throw new Exception("Unexpected flag for Silent Item switch")
+            };
+
+            // call actual assembly function:
+            if (Is64Bit)
+                GiveItems64(itemids, amounts, upgrades, infusions, showdialog);
+            else
+                GiveItems32(itemids, amounts, upgrades, infusions, showdialog);
+        }
+        
+        // Actual implementations:
+        private void GiveItems64(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
+        {
+            // Improved assembly to handle multigive and showdialog more neatly.
             int numitems = itemids.Length;
             if (numitems > 8)
                 throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
@@ -1242,187 +1277,126 @@ namespace DS2S_META
                 Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
             }
 
-            // Fix assembly
+            // Prepare values for assembly
+            var numItems_bytes = BitConverter.GetBytes(numitems);
+            var itemStructAddr_bytes = BitConverter.GetBytes(itemStruct.ToInt64());
+            var availBag_bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
+            var itemGive_bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
+            var itemStruct2Display_bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
+            var itemGiveWindow_bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
+            var displayItem64_bytes = BitConverter.GetBytes(phpDisplayItem.Resolve().ToInt64());
+            var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
+
+            // Get reference assembly and populate links
             var asm = (byte[])DS2SAssembly.GiveItem64.Clone();
-
-            var bytes = BitConverter.GetBytes(numitems);
-            Array.Copy(bytes, 0, asm, 0x9, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xF, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x1C, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x29, 8);
-            bytes = BitConverter.GetBytes(numitems);
-            Array.Copy(bytes, 0, asm, 0x36, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0x3C, 8);
-            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x54, 8);
-            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x66, 8);
-            DisplayItem64 = phpDisplayItem.Resolve().ToInt64();
-            bytes = BitConverter.GetBytes(DisplayItem64);
-            Array.Copy(bytes, 0, asm, 0x70, 8);
+            Array.Copy(numItems_bytes, 0, asm, 0x9, numItems_bytes.Length);
+            Array.Copy(itemStructAddr_bytes, 0, asm, 0xF, itemStructAddr_bytes.Length);
+            Array.Copy(availBag_bytes, 0, asm, 0x1C, availBag_bytes.Length);
+            Array.Copy(itemGive_bytes, 0, asm, 0x29, itemGive_bytes.Length);
+            Array.Copy(showWindow_bytes, 0, asm, 0x37, showWindow_bytes.Length);
+            Array.Copy(numItems_bytes, 0, asm, 0x42, numItems_bytes.Length);
+            Array.Copy(itemStructAddr_bytes, 0, asm, 0x48, itemStructAddr_bytes.Length);
+            Array.Copy(itemStruct2Display_bytes, 0, asm, 0x60, itemStruct2Display_bytes.Length);
+            Array.Copy(itemGiveWindow_bytes, 0, asm, 0x72, itemGiveWindow_bytes.Length);
+            Array.Copy(displayItem64_bytes, 0, asm, 0x7C, displayItem64_bytes.Length);
 
             Execute(asm);
             Free(itemStruct);
         }
-
-        public enum GIVEOPTIONS
+        private void GiveItems32(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
         {
-            DEFAULT,
-            SHOWDIALOG,
-            GIVESILENTLY,
-        }
-        public void GiveItem(int item, short amount, byte upgrade, byte infusion, GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
-        {
-            var showdialog = opt switch
-            {
-                GIVEOPTIONS.DEFAULT => !Properties.Settings.Default.SilentItemGive,
-                GIVEOPTIONS.SHOWDIALOG => true,
-                GIVEOPTIONS.GIVESILENTLY => false,
-                _ => throw new Exception("Unexpected flag for Silent Item switch")
-            };
+            // Improved assembly to handle multigive and showdialog more neatly.
+            int numitems = itemids.Length;
+            if (numitems > 8)
+                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
 
-            if (Is64Bit)
-            {
-                if (showdialog)
-                    GiveItem64(item, amount, upgrade, infusion);
-                else
-                    GiveItemSilently(item, amount, upgrade, infusion);
-            }
-            else
-                GiveItem32(item, amount, upgrade, infusion, showdialog);
-        }
-        public void GiveItemSilently(int item, short amount, byte upgrade, byte infusion)
-        {
-            // 64 bit only TODO
-            if (!Is64Bit)
-                throw new Exception("This is handled differently in 32bit: TODO 64 fix");
-
-            var itemStruct = Allocate(0x8A);
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
-
-            var asm = (byte[])DS2SAssembly.GetItemNoMenu.Clone();
-
-            var bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x6, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xC, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x19, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x26, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-        private void GiveItem64(int item, short amount, byte upgrade, byte infusion)
-        {
+            // Create item structure to pass to DS2
             var itemStruct = Allocate(0x8A); // should this be d128?
+            for (int i = 0; i < itemids.Length; i++)
+            {
+                var offi = i * 16; // length of one itemStruct
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
+                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
+                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
+            }
 
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
+            // Store const float for later reference            
+            var pfloat_store = Allocate(sizeof(float));
+            Kernel32.WriteBytes(Handle, pfloat_store, BitConverter.GetBytes(6.0f));
 
-            var asm = (byte[])DS2SAssembly.GiveItem64.Clone();
-
-            var bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x9, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0xF, 8);
-            bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x1C, 8);
-            bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x29, 8);
-            bytes = BitConverter.GetBytes(0x1);
-            Array.Copy(bytes, 0, asm, 0x36, 4);
-            bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            Array.Copy(bytes, 0, asm, 0x3C, 8);
-            bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x54, 8);
-            bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
-            Array.Copy(bytes, 0, asm, 0x66, 8);
-            DisplayItem64 = phpDisplayItem.Resolve().ToInt64();
-            bytes = BitConverter.GetBytes(DisplayItem64);
-            Array.Copy(bytes, 0, asm, 0x70, 8);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-        private void GiveItem32(int item, short amount, byte upgrade, byte infusion, bool showdialog = true)
-        {
-            // Setup item struct
-            var itemStruct = Allocate(0x8A);
-            Kernel32.WriteBytes(Handle, itemStruct + 0x4, BitConverter.GetBytes(item));
-            Kernel32.WriteBytes(Handle, itemStruct + 0x8, BitConverter.GetBytes(float.MaxValue));
-            Kernel32.WriteBytes(Handle, itemStruct + 0xC, BitConverter.GetBytes(amount));
-            Kernel32.WriteByte(Handle, itemStruct + 0xE, upgrade);
-            Kernel32.WriteByte(Handle, itemStruct + 0xF, infusion);
-
-            // Setup dynamic data
-            int stacksz = 0x1E8;
-            var stackAlloc = BitConverter.GetBytes(stacksz);
-            var pItemStruct = BitConverter.GetBytes(itemStruct.ToInt32());
-            var availItemBag = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt32());
-            var itemGiveFunc = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt32());
-            var itemStruct2Display = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt32());
-            var itemGiveWindow = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt32());
-
-            var pfloat_test = Allocate(sizeof(float));
-            Kernel32.WriteBytes(Handle, pfloat_test, BitConverter.GetBytes(6.0f));
-            var pfloat_bytes = BitConverter.GetBytes(pfloat_test.ToInt32());
-
-            // Figure out the more complicated displayItem pointer:
+            // Figure out the more complicated displayItem pointer (can't remember
+            // whether I made a function for this :/)
             if (Offsets?.Func == null) throw new Exception("Null reference");
             string bytestring = Offsets.Func.DisplayItem;
             var aob_sz = bytestring.Trim().Split(" ").Length;
             var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
             DisplayItem32 = phpDisplayItem.Resolve().ToInt32() + addr_jump_rel + aob_sz; // deal with rel jmp
-            var displayItem = BitConverter.GetBytes(DisplayItem32);
 
-            // assembly template
+
+            // Setup assembly fields for substitution
+            var numItems_bytes = BitConverter.GetBytes(numitems);
+            var pItemStruct_bytes = BitConverter.GetBytes(itemStruct.ToInt32());
+            var availItemBag_bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt32());
+            var itemGiveFunc_bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt32());
+            var itemStruct2Display_bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt32());
+            var itemGiveWindow_bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt32());
+            var pfloat_bytes = BitConverter.GetBytes(pfloat_store.ToInt32());
+            var displayItem_bytes = BitConverter.GetBytes(DisplayItem32);
+            var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
+
+            // Load and fix assembly:
             var asm = (byte[])DS2SAssembly.GiveItem32.Clone();
+            Array.Copy(numItems_bytes, 0, asm, 0x7, numItems_bytes.Length);
+            Array.Copy(pItemStruct_bytes, 0, asm, 0xC, pItemStruct_bytes.Length);
+            Array.Copy(availItemBag_bytes, 0, asm, 0x11, availItemBag_bytes.Length);
+            Array.Copy(itemGiveFunc_bytes, 0, asm, 0x1a, itemGiveFunc_bytes.Length);
+            Array.Copy(showWindow_bytes, 0, asm, 0x21, showWindow_bytes.Length);
+            Array.Copy(numItems_bytes, 0, asm, 0x2a, numItems_bytes.Length);
+            Array.Copy(pItemStruct_bytes, 0, asm, 0x32, pItemStruct_bytes.Length);
+            Array.Copy(pfloat_bytes, 0, asm, 0x38, pfloat_bytes.Length);
+            Array.Copy(itemStruct2Display_bytes, 0, asm, 0x3e, itemStruct2Display_bytes.Length);
+            Array.Copy(pfloat_bytes, 0, asm, 0x48, pfloat_bytes.Length);
+            Array.Copy(itemGiveWindow_bytes, 0, asm, 0x4e, itemGiveWindow_bytes.Length);
+            Array.Copy(displayItem_bytes, 0, asm, 0x53, displayItem_bytes.Length);
 
-            // inject ret instr at mid_ret index and escape early
-            int mid_ret = 0x20; // return early instruction index
-            byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
-            if (!showdialog)
-            {
-                var asm_first = asm.Take(mid_ret).ToArray();
-                var asm_end = new byte[] { 0x81, 0xc4 } // sub esp
-                                .Concat(stackAlloc)
-                                .Concat(ret);
-                asm = asm_first.Concat(asm_end).ToArray();
-            }
+
+            //// inject ret instr at mid_ret index and escape early
+            //int mid_ret = 0x20; // return early instruction index
+            //byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
+            //if (!showdialog)
+            //{
+            //    var asm_first = asm.Take(mid_ret).ToArray();
+            //    var asm_end = new byte[] { 0x81, 0xc4 } // sub esp
+            //                    .Concat(stackAlloc)
+            //                    .Concat(ret);
+            //    asm = asm_first.Concat(asm_end).ToArray();
+            //}
 
             // Fix assembly
-            Array.Copy(stackAlloc, 0, asm, 0x2, stackAlloc.Length);
-            Array.Copy(pItemStruct, 0, asm, 0xC, pItemStruct.Length);
-            Array.Copy(availItemBag, 0, asm, 0x11, availItemBag.Length);
-            Array.Copy(itemGiveFunc, 0, asm, 0x1a, itemGiveFunc.Length);
+            //Array.Copy(stackAlloc, 0, asm, 0x2, stackAlloc.Length);
 
-            if (showdialog)
-            {
-                Array.Copy(pItemStruct, 0, asm, 0x29, pItemStruct.Length);
-                Array.Copy(pfloat_bytes, 0, asm, 0x2f, pfloat_bytes.Length);
-                Array.Copy(itemStruct2Display, 0, asm, 0x35, itemStruct2Display.Length);
-                Array.Copy(pfloat_bytes, 0, asm, 0x3f, pfloat_bytes.Length);
-                Array.Copy(itemGiveWindow, 0, asm, 0x45, itemGiveWindow.Length);
-                Array.Copy(displayItem, 0, asm, 0x4a, displayItem.Length);
-                Array.Copy(stackAlloc, 0, asm, 0x52, stackAlloc.Length);
-            }
+
+
+
+            //if (showdialog)
+            //{
+            //    Array.Copy(pItemStruct, 0, asm, 0x29, pItemStruct.Length);
+            //    Array.Copy(pfloat_bytes, 0, asm, 0x2f, pfloat_bytes.Length);
+            //    Array.Copy(itemStruct2Display_bytes, 0, asm, 0x35, itemStruct2Display_bytes.Length);
+            //    Array.Copy(pfloat_bytes, 0, asm, 0x3f, pfloat_bytes.Length);
+            //    Array.Copy(itemGiveWindow_bytes, 0, asm, 0x45, itemGiveWindow_bytes.Length);
+            //    Array.Copy(displayItem_bytes, 0, asm, 0x4a, displayItem_bytes.Length);
+            //    Array.Copy(stackAlloc, 0, asm, 0x52, stackAlloc.Length);
+            //}
 
             Execute(asm);
             Free(itemStruct);
         }
+
+
+        
         
         public void SetMaxLevels()
         {

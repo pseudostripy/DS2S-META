@@ -1,0 +1,31 @@
+﻿0:  48 81 ec e8 01 00 00    sub    rsp,0x1e8
+7:  41 b8 08 00 00 00       mov    r8d,0x8 					; numitems (dynamic)
+d:  49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 	; ItemStruct address (linker)
+14: ff ff ff
+17: 49 8d 17                lea    rdx,[r15]
+1a: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 	; ItemBag address? (linker)
+21: ff ff ff
+24: 45 31 c9                xor    r9d,r9d
+27: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000	; Call GiveItem (linker)
+2e: ff ff ff
+31: 41 ff d6                call   r14
+34: 48 c7 c0 01 00 00 00    mov    rax,0x1
+3b: 48 85 c0                test   rax,rax					; ShowGiveWindow
+3e: 74 47                   je     87 <RET> 				; RET early if !ShowGiveWindow
+40: 41 b8 08 00 00 00       mov    r8d,0x8 					; numItems (dynamic)
+46: 49 bf 00 00 00 00 ff    movabs r15,0xffffffff00000000 	; ItemStruct address (linker)
+4d: ff ff ff
+50: 49 8d 17                lea    rdx,[r15]
+53: 48 8d 4c 24 20          lea    rcx,[rsp+0x20]
+58: 41 b9 01 00 00 00       mov    r9d,0x1
+5e: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 	; ConvertItemStruct2Display func (linker)
+65: ff ff ff
+68: 41 ff d6                call   r14
+6b: 48 8d 54 24 20          lea    rdx,[rsp+0x20]
+70: 48 b9 00 00 00 00 ff    movabs rcx,0xffffffff00000000 	; ItemGiveWindow (linker)
+77: ff ff ff
+7a: 49 be 00 00 00 00 ff    movabs r14,0xffffffff00000000 	; DisplayGiveWindow (linker)
+81: ff ff ff
+84: 41 ff d6                call   r14
+87: 48 81 c4 e8 01 00 00    add    rsp,0x1e8
+8e: c3                      ret

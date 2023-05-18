@@ -1,0 +1,29 @@
+﻿0:  81 ec e8 01 00 00       sub    esp,0x1e8
+6:  b8 01 00 00 00          mov    eax,0x1			; numItems?
+b:  ba 70 70 70 70          mov    edx,0x70707070	; ItemStruct
+10: b9 70 70 70 70          mov    ecx,0x70707070	; availItemBag
+15: 6a 00                   push   0x0
+17: 50                      push   eax
+18: 52                      push   edx
+19: b8 70 70 70 70          mov    eax,0x70707070	; itemGiveFunc
+1e: ff d0                   call   eax
+20: b8 01 00 00 00          mov    eax,0x1
+25: 85 c0                   test   eax,eax
+27: 74 30                   je     59 <RET>
+29: b9 01 00 00 00          mov    ecx,0x1
+2e: 6a 01                   push   0x1				; numItems
+30: 51                      push   ecx
+31: ba 70 70 70 70          mov    edx,0x70707070	; ItemStruct
+36: 52                      push   edx
+37: b8 70 70 70 70          mov    eax,0x70707070	; some float 6.0 or 8.0??
+3c: 50                      push   eax
+3d: b8 70 70 70 70          mov    eax,0x70707070	; convertItemStruct2Display
+42: ff d0                   call   eax				; 
+44: 83 c4 10                add    esp,0x10	
+47: b9 70 70 70 70          mov    ecx,0x70707070	; some float 6.0 or 8.0??
+4c: 51                      push   ecx
+4d: b9 70 70 70 70          mov    ecx,0x70707070	; itemGiveWindowObj
+52: b8 70 70 70 70          mov    eax,0x70707070	; displayItemWindow
+57: ff d0                   call   eax
+59: 81 c4 e8 01 00 00       add    esp,0x1e8		
+5f: c3                      ret

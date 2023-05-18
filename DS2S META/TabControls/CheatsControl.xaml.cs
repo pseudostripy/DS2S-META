@@ -65,24 +65,10 @@ namespace DS2S_META
         public void Give3Chunk1Slab()
         {
             // For the lizard in dlc2
-
-            // Works in this version
-            if (Hook.Is64Bit)
-            {
-                var items = new ITEMID[2] { ITEMID.TITANITECHUNK, ITEMID.TITANITESLAB };
-                var itemids = items.Cast<int>().ToArray();
-                var amounts = new short[2] { 3, 1 };
-                Hook.GiveItems(itemids, amounts);
-                return;
-            }
-
-            // Vanilla: haven't fixed the multi-give yet...
-            var chunk = (int)ITEMID.TITANITECHUNK;
-            var slab = (int)ITEMID.TITANITESLAB;
-            Hook.GiveItem(chunk, 3, 0, 0);
-            Hook.GiveItem(slab, 1, 0, 0);
-            return;
-
+            var items = new ITEMID[2] { ITEMID.TITANITECHUNK, ITEMID.TITANITESLAB };
+            var itemids = items.Cast<int>().ToArray();
+            var amounts = new short[2] { 3, 1 };
+            Hook.GiveItems(itemids, amounts);
         }
     }
 }

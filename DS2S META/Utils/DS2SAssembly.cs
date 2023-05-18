@@ -30,9 +30,8 @@ namespace DS2S_META
 
         public static byte[] AddSouls64 = LoadDefuseOutput(Properties.Resources.AddSouls64);
         public static byte[] AddSouls32 = LoadDefuseOutput(Properties.Resources.AddSouls32);
-        public static byte[] GiveItem64 = LoadDefuseOutput(Properties.Resources.GiveItemWithMenu64);
-        public static byte[] GiveItem32 = LoadDefuseOutput(Properties.Resources.GiveItemWithMenu32);
-        public static byte[] GetItemNoMenu = LoadDefuseOutput(Properties.Resources.GiveItemWithoutMenu);
+        public static byte[] GiveItem64 = LoadDefuseOutput(Properties.Resources.GiveItem64);
+        public static byte[] GiveItem32 = LoadDefuseOutput(Properties.Resources.GiveItem32);
         public static byte[] SpeedFactorAccel = LoadDefuseOutput(Properties.Resources.SpeedFactorAccel);
         public static byte[] OgSpeedFactorAccel = LoadDefuseOutput(Properties.Resources.OgSpeedFactorAccel);
         public static byte[] SpeedFactor = LoadDefuseOutput(Properties.Resources.SpeedFactor);
