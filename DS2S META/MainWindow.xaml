@@ -7,145 +7,146 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DS2S_META" xmlns:local1="clr-namespace:DS2S_META.ViewModels"
         mc:Ignorable="d"
-        Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" ResizeMode="NoResize" WindowStyle="None" SizeToContent="WidthAndHeight" >
+        Title="DS2 META" Background="DarkGray" Loaded="Window_Loaded" Closing="Window_Closing" ResizeMode="CanResizeWithGrip" WindowStyle="None" SizeToContent="WidthAndHeight" AllowsTransparency="True">
 
     <Window.DataContext>
         <local1:DS2SViewModel x:Name="ViewModel"/>
     </Window.DataContext>
 
-
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.ColumnSpan="2">
-            <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
-                <StackPanel Orientation="Horizontal">
-                    <Image x:Name="imgLadderIcon" Source="Ladder.ico" Width="25"/>
-                    <Label x:Name="lblWindowName" Content="{Binding WindowName}" Foreground="White"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" 
-                        Grid.Column="11"
-                        HorizontalAlignment="Right"
-                            Grid.ColumnSpan="2">
-                    <Button x:Name="Minimize"
-                        Content="➖"
-                        VerticalAlignment="Center"
-                        Width="20"
-                        Height="20"
-                        FontWeight="Bold"
-                        Background="Transparent"
-                        Foreground="White"
-                        Click="Minimize_Click"
-                        BorderThickness="0"/>
-                    <Button x:Name="btnClose"
-                        Content="❌"
-                        Width="20"
-                        Height="20"
-                        Background="Transparent"
-                        Foreground="White"
-                        Click="MainWindowClose_Click"
-                        BorderThickness="0"/>
-                </StackPanel>
-            </Grid>
-            <Grid x:Name="TitleGrid" VerticalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto" MinWidth="90"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto" MaxHeight="{Binding Row3MaxH}"/>
-                </Grid.RowDefinitions>
-                <Label Content="Process:" />
-                <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}" Grid.Column="1" Margin="5,0,0,0"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel Grid.ColumnSpan="2">
+                <Grid MouseDown="Grid_MouseDown" Background="Black" Height="25">
+                    <StackPanel Orientation="Horizontal">
+                        <Image x:Name="imgLadderIcon" Source="Ladder.ico" Width="25"/>
+                        <Label x:Name="lblWindowName" Content="{Binding WindowName}" Foreground="White"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" 
+                            Grid.Column="11"
+                            HorizontalAlignment="Right"
+                                Grid.ColumnSpan="2">
+                        <Button x:Name="Minimize"
+                            Content="➖"
+                            VerticalAlignment="Center"
+                            Width="20"
+                            Height="20"
+                            FontWeight="Bold"
+                            Background="Transparent"
+                            Foreground="White"
+                            Click="Minimize_Click"
+                            BorderThickness="0"/>
+                        <Button x:Name="btnClose"
+                            Content="❌"
+                            Width="20"
+                            Height="20"
+                            Background="Transparent"
+                            Foreground="White"
+                            Click="MainWindowClose_Click"
+                            BorderThickness="0"/>
+                    </StackPanel>
+                </Grid>
+                <Grid x:Name="TitleGrid" VerticalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" MinWidth="90"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto" MaxHeight="{Binding Row3MaxH}"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Process:" Grid.ColumnSpan="2" Margin="0,0,90,26" Grid.RowSpan="2" />
+                    <Label Content="{Binding Hook.ID}" Foreground="{Binding ForegroundID}" Grid.Column="1" Margin="5,0,6,26" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
-                <Label Content="Loaded:" Grid.Row="1" />
-                <Label Name="lblLoaded" Content="{Binding GameLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0"/>
+                    <Label Content="Loaded:" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,90,26" Grid.RowSpan="2" />
+                    <Label Name="lblLoaded" Content="{Binding GameLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,6,26" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
-                <Label Content="Online:" Grid.Row="2" />
-                <Label Content="{Binding ContentOnline}" Margin="5,0,0,0" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1"/>
+                    <Label Content="Online:" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,90,1" Grid.RowSpan="2" />
+                    <Label Content="{Binding ContentOnline}" Margin="5,0,6,1" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
-                <Label Content="DS2 Version:" Grid.Row="1" Grid.Column="2" Margin="5,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,0" Grid.Row="1" Grid.Column="3" Width="150" Grid.RowSpan="2" HorizontalAlignment="Center" />
+                    <Label Content="DS2 Version:" Grid.Row="1" Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <Label Content="{Binding Hook.Version}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,1" Grid.Row="1" Grid.Column="4" Width="150" Grid.RowSpan="3" HorizontalAlignment="Left" />
 
-                
-                <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}"/>
-                <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="2" Margin="5,0,0,0" Visibility="{Binding NewVerVis}">
-                    <Hyperlink x:Name="linkNewVersionAvail" Click="link_NewUpdate_Click" >
-                        New version available!
-                    </Hyperlink>
-                </Label>
 
-                <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Margin="5,0,0,5" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}"/>
-            </Grid>
-            <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center" MaxWidth="450" MinHeight="650">
-                <TabControl.ItemsPanel>
-                    <ItemsPanelTemplate/>
-                </TabControl.ItemsPanel>
-                <TabItem Header="Player">
-                    <local:PlayerControl x:Name="metaPlayer" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
-                </TabItem>
-                <TabItem Header="Stats">
-                    <Grid Background="LightGray">
-                        <local:StatsControl x:Name="metaStats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Items">
-                    <Grid Background="LightGray">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="53*"/>
-                            <ColumnDefinition Width="391*"/>
-                        </Grid.ColumnDefinitions>
-                        <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-                <!--<TabItem Header="Bonfires">
-                    <Grid Background="LightGray">
-                        <local:BonfireMainControl x:Name="metaBonfire" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Covenants">
-                    <Grid Background="LightGray">
-                        <local:CovenantControl x:Name="metaCovenant" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
-                    </Grid>
-                </TabItem>-->
-                <TabItem Header="Misc">
-                    <Grid Background="LightGray">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="95*"/>
-                            <ColumnDefinition Width="16*"/>
-                        </Grid.ColumnDefinitions>
-                        <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Randomizer" >
-                    <Grid Background="LightGray">
-                        <local:RandomizerControl x:Name="metaRando" DataContext="{Binding RandoSettingsViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Cheats" >
-                    <Grid Background="LightGray">
-                        <local:CheatsControl x:Name="metaCheats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Settings" >
-                    <Grid Background="LightGray">
-                        <local:SettingsControl x:Name="metaSettings" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Dmg Calc PLACEHOLDER" >
-                    <Grid Background="LightGray">
-                        <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-        </StackPanel>
+                    <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}" Grid.ColumnSpan="3" Margin="0,0,155,26" Grid.RowSpan="2"/>
+                    <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="3" Margin="5,0,0,26" Visibility="{Binding NewVerVis}" Grid.RowSpan="2">
+                        <Hyperlink x:Name="linkNewVersionAvail" Click="link_NewUpdate_Click" >
+                            New version available!
+                        </Hyperlink>
+                    </Label>
+
+                    <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Left" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Top" Margin="65,14,0,0" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}" Grid.Column="1" Grid.RowSpan="2"/>
+                </Grid>
+
+                <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center">
+                    <TabControl.ItemsPanel>
+                        <ItemsPanelTemplate/>
+                    </TabControl.ItemsPanel>
+                    <TabItem Header="Player">
+                        <local:PlayerControl x:Name="metaPlayer" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
+                    </TabItem>
+                    <TabItem Header="Stats">
+                        <Grid Background="LightGray">
+                            <local:StatsControl x:Name="metaStats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Items">
+                        <Grid Background="LightGray">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </TabItem>
+                    <!--<TabItem Header="Bonfires">
+                        <Grid Background="LightGray">
+                            <local:BonfireMainControl x:Name="metaBonfire" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Covenants">
+                        <Grid Background="LightGray">
+                            <local:CovenantControl x:Name="metaCovenant" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                        </Grid>
+                    </TabItem>-->
+                    <TabItem Header="Misc">
+                        <Grid Background="LightGray">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Randomizer" >
+                        <Grid Background="LightGray">
+                            <local:RandomizerControl x:Name="metaRando" DataContext="{Binding RandoSettingsViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Cheats" >
+                        <Grid Background="LightGray">
+                            <local:CheatsControl x:Name="metaCheats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Settings" >
+                        <Grid Background="LightGray">
+                            <local:SettingsControl x:Name="metaSettings" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Dmg Calc PLACEHOLDER" >
+                        <Grid Background="LightGray">
+                            <local:DmgCalcControl x:Name="metatabDmgCalc" DataContext="{Binding DmgCalcViewModel}" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+        </ScrollViewer>
+
 
 
 

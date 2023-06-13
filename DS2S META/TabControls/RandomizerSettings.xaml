@@ -11,6 +11,7 @@
                     d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
                     d:DataContext="{d:DesignInstance viewmodels:RandoSettingsViewModel, IsDesignTimeCreatable=True}">
     <StackPanel>
+        <!--<ScrollViewer Height="100"/>-->
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
