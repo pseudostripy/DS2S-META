@@ -54,9 +54,12 @@ namespace DS2S_META.ViewModels
             Hook.OnUnhooked += Hook_OnUnhooked;
             Hook.Start();
 
+            // Setup ViewModels
             DmgCalcViewModel = new DmgCalcViewModel();
+            CheatsViewModel = new CheatsViewModel();
             RandoSettingsViewModel = new RandoSettingsViewModel();
             ViewModels.Add(DmgCalcViewModel);
+            ViewModels.Add(CheatsViewModel);
 
             ShowOnlineWarning();
             Versioning();
@@ -148,6 +151,7 @@ namespace DS2S_META.ViewModels
         ObservableCollection<ViewModelBase> ViewModels = new();
         public DmgCalcViewModel DmgCalcViewModel { get; set; }
         public RandoSettingsViewModel RandoSettingsViewModel { get; set; }
+        public CheatsViewModel CheatsViewModel { get; set; }
 
         public void UpdateMainProperties()
         {
@@ -161,6 +165,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(DS2Loading)); // not used yet
 
             DmgCalcViewModel.UpdateViewModel();
+            CheatsViewModel.UpdateViewModel();
         }
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {

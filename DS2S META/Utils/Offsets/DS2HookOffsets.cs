@@ -44,6 +44,7 @@ namespace DS2S_META.Utils.Offsets
         
         // Towards better version-specific functionality:
         public int[]? DisableAI;
+        public int[]? LoadedEnemiesTable;
 
         public PlayerType PlayerType = new() 
         {

@@ -186,9 +186,6 @@ namespace DS2S_META.Randomizer
             }
             genplist.AddRange(ngpList);
 
-            // Querying:
-            //var test = genplist.Where(nil => nil?.Lot != null && nil.Lot.HasItem(0x001312D0)).ToList();
-
             // Get unique & interesting droptables
             var uniques = genplist.GroupBy(nil => nil?.Lot?.ID).Select(grp => grp.First()).ToList();
             return uniques.Where(nil => nil?.Lot?.IsEmpty != null && nil.Lot?.IsEmpty != true).ToList();
@@ -639,7 +636,7 @@ namespace DS2S_META.Randomizer
 
             // query testing
             var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.CRYSTALSOULSPEAR).ToList();
-            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(0x01A46194)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc

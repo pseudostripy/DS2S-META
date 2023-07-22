@@ -527,8 +527,43 @@ namespace DS2S_META
             return pointer.ReadIntPtr(0x0121D4D0 + (int)Offsets.BasePtrOffset2);
         }
 
+        // To improve slowly over time:
+        public bool IsFeatureCompatible(METAFEATURE feature)
+        {
+            // can add extra specific switches on Versions too soon...
+            // aka if the Offsets are defined but it's not working
+            // in certain versions, can veto here.
+            return feature switch
+            {
+                METAFEATURE.MADWARRIOR => Hooked && Offsets.LoadedEnemiesTable != null,
+                _ => throw new NotImplementedException("Add many more here!")
+            };
+        }
+        public bool CheckLoadedEnemies(int queryChrId)
+        {
+            if (Offsets?.LoadedEnemiesTable == null)
+                throw new Exception("Version error, should be handled in front end");
+
+            int nmax = 70; // I think this is the most?
+            int psize = Is64Bit ? 8 : 4;
+            for (int i = 0; i < nmax; i++)
+            {
+                var pchr = new List<int>();
+                pchr.AddRange(Offsets.LoadedEnemiesTable);
+                pchr.Add(i * psize);
+                
+                var chrclass = CreateChildPointer(BaseA, pchr.ToArray());
+                int chrId = chrclass.ReadInt32(0x28); // to check generality
+                if (chrId == queryChrId)
+                    return true;
+            }
+
+            // not found in whole table
+            return false;
+        }
 
 
+        // Player tab stuff:
         public void UpdateName()
         {
             OnPropertyChanged(nameof(Name));

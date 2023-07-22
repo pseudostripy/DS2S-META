@@ -74,7 +74,7 @@
                     <StackPanel Margin="20,0,20,20">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Width="250">
                             <Label Content="Current Covenant: "/>
-                            <Label Content="{Binding ElementName=CovenantCon, Path=Hook.CurrentCovenantName}" />
+                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.CurrentCovenantName}" />
                         </StackPanel>
                         <Separator  Visibility="Hidden" Height="10"/>
                         <StackPanel Orientation="Horizontal">
