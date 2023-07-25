@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using DS2S_META.Randomizer;
 
 namespace DS2S_META.ViewModels
 {
@@ -88,8 +89,12 @@ namespace DS2S_META.ViewModels
             if (!HookValid)
                 return;
 
+            // Check version features:
+            if (!EnableMW) 
+                return;
+
             // Confirmed OK for model reading:
-            IsSpawned = Hook?.CheckLoadedEnemies(MadWarriorChrID) == true;
+            IsSpawned = Hook?.CheckLoadedEnemies(CHRID.MADWARRIOR) == true;
         }
 
         private void HookChangeEvent()

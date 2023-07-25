@@ -539,6 +539,7 @@ namespace DS2S_META
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
+        public bool CheckLoadedEnemies(CHRID chrid) => CheckLoadedEnemies((int)chrid);
         public bool CheckLoadedEnemies(int queryChrId)
         {
             if (Offsets?.LoadedEnemiesTable == null)

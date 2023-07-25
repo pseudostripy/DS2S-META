@@ -636,7 +636,9 @@ namespace DS2S_META.Randomizer
 
             // query testing
             var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.CRYSTALSOULSPEAR).ToList();
-            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID(0x01A46194)).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.BINOCULARS)).ToList();
+
+            var test3 = Hook?.CheckLoadedEnemies(CHRID.TARGRAY);
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc

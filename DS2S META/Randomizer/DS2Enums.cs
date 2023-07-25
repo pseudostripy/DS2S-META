@@ -44,6 +44,14 @@ namespace DS2S_META.Randomizer
         ITEMUSAGEKEY = 2700,
         SOULUSAGE = 1900,
     }
+    public enum CHRID
+    {
+        PLAYER = 100,
+        TARGRAY = 785000,
+        MADWARRIOR = 836000,
+    }
+
+
     public enum LOGICRES
     {
         SUCCESS,
