@@ -10,7 +10,9 @@ namespace DS2S_META.Randomizer
     {
         NONE = 0,
         ESTUS           = 0x0395E478,
+        ESTUSSHARD      = 0x039B89C8,
         ESTUSEMPTY      = 0x0395E860,
+        BONEDUST        = 0x039B8DB0,
         DARKSIGN        = 0x03990540,
         BONEOFORDER     = 0x03B259A0,
         KEYTOEMBEDDED   = 0x001E3660,
@@ -37,6 +39,7 @@ namespace DS2S_META.Randomizer
         TITANITECHUNK   = 0x03A27B20,
         TITANITESLAB    = 0x03A2A230,
         CRYSTALSOULSPEAR = 0x01DA8C60,
+        FRAGRANTBRANCH  = 0x039BB8A8,
     }
     public enum ITEMUSAGE
     {
@@ -55,7 +58,9 @@ namespace DS2S_META.Randomizer
     public enum LOGICRES
     {
         SUCCESS,
+        SUCCESS_IN_LOGIC,
         SUCCESS_VANPLACE,
+        SUCCESS_NO_CONSTRAINTS,
         SUCCESS_DISTCOMPROMISE,
         DELAY_VANLOCKED, // try again later
         DELAY_MAXDIST, // try again later
@@ -63,9 +68,10 @@ namespace DS2S_META.Randomizer
         FAIL_SOFTLOCK,
         FAIL_VAN_WRONGRDZ,
         FAIL_RESERVED,
-        FAIL_DIST_TOONEAR,
-        FAIL_DIST_TOOFAR,
-        FAIL_DISTANCE_NA,
+        FAIL_DIST_TOO_NEAR,
+        FAIL_DIST_TOO_FAR,
+        FAIL_DIST_NOTAPPLICABLE,
+        FAIL_DIST_NODELOCKED,
     }
     public enum MapArea
     {

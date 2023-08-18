@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static DS2S_META.Randomizer.RandomizerManager;
 
 namespace DS2S_META
 {
@@ -22,6 +23,10 @@ namespace DS2S_META
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+        public static bool isKeys(this SetType settype)
+        {
+            return settype == SetType.Keys;
         }
     }
 }

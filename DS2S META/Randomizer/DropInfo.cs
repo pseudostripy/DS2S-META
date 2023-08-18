@@ -72,6 +72,7 @@ namespace DS2S_META.Randomizer
 
         // Query Utility
         internal bool HasItem(int itemid) => ItemID == itemid;
+        internal bool HasItem(ITEMID itemid) => HasItem((int)itemid);
         
         // Todo, improve properly
         internal bool IsEqualTo(DropInfo di2)

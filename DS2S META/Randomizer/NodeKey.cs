@@ -9,7 +9,7 @@ namespace DS2S_META.Randomizer
     internal struct NodeKey
     {
         internal MapArea Area;
-        internal List<KeySet> KSO;
+        internal List<KeySet> KSO; // KeySet Options?
         internal bool BadArea => Area == MapArea.Undefined || Area == MapArea.Quantum;
 
         // TO TIDY!

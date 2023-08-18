@@ -60,7 +60,9 @@ namespace DS2S_META.Randomizer
         internal abstract bool IsSaturated();
         internal abstract void AddShuffledItem(DropInfo item);
         internal abstract bool HasShuffledItemID(int itemID);
-        internal abstract bool HasVannilaItemID(int itemID);
+        internal abstract bool HasVanillaItemID(int itemID);
+        internal bool HasVanillaItemID(ITEMID id) => HasVanillaItemID((int)id);
+        internal bool HasVanillaAnyItemID(List<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
         internal abstract int GetShuffledItemQuant(int itemID);
         internal abstract string GetNeatDescription();
         internal abstract void AdjustQuantity(DropInfo di);
@@ -70,12 +72,8 @@ namespace DS2S_META.Randomizer
         // Common Methods:
 
         // Wrappers to RandoInfo
-        internal bool HasPickupType(List<PICKUPTYPE> bannedtypes)
-        {
-            //if (RandoInfo == null) throw new Exception("Shouldn't get here without Logic being set"); // TODO?
-            if (RandoInfo == null) return false; // TODO?
-            return RandoInfo.HasType(bannedtypes);
-        }
+        internal bool HasPickupType(List<PICKUPTYPE> types) => RandoInfo?.HasType(types) == true;
+        internal bool HasPickupType(PICKUPTYPE type) => RandoInfo?.HasType(type) == true;
         internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytpes)
         {
             if (RandoInfo == null) return false; // TODO?
@@ -182,7 +180,7 @@ namespace DS2S_META.Randomizer
                 return false;
             return ShuffledLot.Items.Contains(itemID);
         }
-        internal override bool HasVannilaItemID(int itemID)
+        internal override bool HasVanillaItemID(int itemID)
         {
             if (VanillaLot == null)
                 return false;
@@ -396,7 +394,7 @@ namespace DS2S_META.Randomizer
                 return false;
             return ShuffledShop.ItemID == itemID;
         }
-        internal override bool HasVannilaItemID(int itemID)
+        internal override bool HasVanillaItemID(int itemID)
         {
             if (ShuffledShop == null)
                 return false;

@@ -77,20 +77,6 @@ namespace DS2S_META.ViewModels
             ItemIDs = new();
             Name = string.Empty;
         }
-        //public ItemRestriction(string name, ITEMGROUP grp, RestrType restrType = RestrType.Anywhere)
-        //{
-        //    Name = name;
-        //    ItemIDs = DS2Data.ItemGroups[grp];
-        //    GroupType = grp;
-        //    RestrType = restrType;
-        //}
-        //public ItemRestriction(string name, ITEMID itemID, RestrType restrType = RestrType.Anywhere)
-        //{
-        //    Name = name;
-        //    ItemIDs = new List<int>() { (int)itemID };
-        //    GroupType = ITEMGROUP.Specified;
-        //    RestrType = restrType;
-        //}
         public ItemRestriction(string name, ITEMID itemID, 
                                 RestrType restrType = RestrType.Anywhere, 
                                 int distmin = LIMDISTMIN, 

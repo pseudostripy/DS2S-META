@@ -688,12 +688,6 @@ namespace DS2S_META.Randomizer
             Keys.Add(key);
         }
 
-        //internal KeySet()
-        //{
-        //    //Keys = keys.ToList();
-        //}
-
-
         internal static KeySet Clone(KeySet ks)
         {
             return new KeySet

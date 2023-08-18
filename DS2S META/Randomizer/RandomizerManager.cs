@@ -18,6 +18,7 @@ using Octokit;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Windows.Documents;
 
 namespace DS2S_META.Randomizer
 {
@@ -31,7 +32,6 @@ namespace DS2S_META.Randomizer
         List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
         List<Randomization> AllPTF = new(); // Places to Randomize
         //List<Randomization> AllPTF_drops => AllPTF.Where(rdz => rdz is DropRdz).ToList();
-        internal static Random RNG = new();
         private List<ItemLotRow> VanillaLots = new();
         private List<ItemLotRow> VanillaDrops = new();
         private List<ShopRow> VanillaShops = new();
@@ -41,6 +41,7 @@ namespace DS2S_META.Randomizer
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
+        internal List<Randomization> RdzMajors = new(); // populated in ??
         internal List<ItemRestriction> Restrictions;
         internal List<int> RestrictedItems = new(); // shorthand
         
@@ -57,7 +58,6 @@ namespace DS2S_META.Randomizer
         private List<Randomization> UnfilledRdzs = new();
         private List<int> KeysPlacedSoFar = new();
         private Dictionary<KEYID, HashSet<int>> KeySteinerNodes = new(); // NodeID lookup
-        //private Dictionary<MapArea, HashSet<int>> KeyPaths = new(); // NodeID lookup
         private Dictionary<MapArea, HashSet<int>> AreaPaths = new(); // NodeID lookup
         private List<int> ResVanPlacedSoFar = new();
         internal Dictionary<NodeKey,Node> Nodes = new();
@@ -114,7 +114,7 @@ namespace DS2S_META.Randomizer
         // Constructors:
         internal RandomizerManager()
         {
-            RNG = new Random(Environment.TickCount); // used for generate seed numbers
+            Rng.SetSeed(Environment.TickCount); // used for generate seed numbers
         }
 
         // Main Methods:
@@ -240,8 +240,11 @@ namespace DS2S_META.Randomizer
             // Setup for re-randomization:
             if (!EnsureSeedCompatibility(seed)) return;
             SetSeed(seed);      // reset Rng Twister
+            
+            // todo moveto rerandomization setup
             SetupRestrictions();
             ResetForRerandomization();
+            CreateRdzMajors();
 
             // Place sets of items:
             PlaceSet(ldkeys, SetType.Keys);
@@ -290,10 +293,7 @@ namespace DS2S_META.Randomizer
             Hook?.WarpLast();
             IsRandomized = false;
         }
-        internal static int GetRandom()
-        {
-            return RNG.Next();
-        }
+        internal static int GetRandom() => Rng.Next();
 
 
         // Core Logic
@@ -309,7 +309,7 @@ namespace DS2S_META.Randomizer
 
             // Choose each from the set:
             foreach (var restr in Restrictions)
-                restr.ItemID = restr.ItemIDs[RNG.Next(restr.ItemIDs.Count)];
+                restr.ItemID = restr.ItemIDs[Rng.Next(restr.ItemIDs.Count)];
             
             foreach( var irest in Restrictions)
             {
@@ -323,7 +323,7 @@ namespace DS2S_META.Randomizer
                         itemid = irest.ItemID;
 
                         // Get vanillas:
-                        var rdzvans = AllPTF.Where(rdz => rdz.HasVannilaItemID(itemid)).ToList();
+                        var rdzvans = AllPTF.Where(rdz => rdz.HasVanillaItemID(itemid)).ToList();
                         if (rdzvans.Count == 0)
                             throw new Exception("Cannot find the Vanilla placement");
                         
@@ -409,18 +409,18 @@ namespace DS2S_META.Randomizer
 
                 // Class Rings 15% chance:
                 int ringnum = 0;
-                while (RNG.Next(100) < 15 && ringnum < 4)
+                while (Rng.Next(100) < 15 && ringnum < 4)
                 {
-                    var randring = all_rings[RNG.Next(all_rings.Count)];
+                    var randring = all_rings[Rng.Next(all_rings.Count)];
                     classrow.WriteAtRingArray(ringnum, randring.IconID); // if you allow +1 rings etc you don't get an icon!
                     ringnum++;
                 };
 
                 // Class Right-hand weapons 40% chance:
                 int rhwepnum = 0;
-                while (RNG.Next(100) < 40 && rhwepnum < 3)
+                while (Rng.Next(100) < 40 && rhwepnum < 3)
                 {
-                    var randwep = all_weapons[RNG.Next(all_weapons.Count)];
+                    var randwep = all_weapons[Rng.Next(all_weapons.Count)];
                     classrow.WriteAtRHWepArray(rhwepnum, randwep.ItemID);
                     classrow.WriteAtRHWepReinforceArray(rhwepnum, GetRandomReinforce());
                     rhwepnum++;
@@ -428,9 +428,9 @@ namespace DS2S_META.Randomizer
 
                 // Class Left-hand weapons 40% chance:
                 int lhwepnum = 0;
-                while (RNG.Next(100) < 40 && lhwepnum < 3)
+                while (Rng.Next(100) < 40 && lhwepnum < 3)
                 {
-                    var randwep = all_weapons[RNG.Next(all_weapons.Count)];
+                    var randwep = all_weapons[Rng.Next(all_weapons.Count)];
                     classrow.WriteAtLHWepArray(lhwepnum, randwep.ItemID);
                     classrow.WriteAtLHWepReinforceArray(lhwepnum, GetRandomReinforce());
                     lhwepnum++;
@@ -438,33 +438,33 @@ namespace DS2S_META.Randomizer
 
                 // Class Arrows 20% chance:
                 int arrownum = 0;
-                while (RNG.Next(100) < 20 && lhwepnum < 2)
+                while (Rng.Next(100) < 20 && lhwepnum < 2)
                 {
-                    var randarrow = all_arrows[RNG.Next(all_arrows.Count)];
+                    var randarrow = all_arrows[Rng.Next(all_arrows.Count)];
                     classrow.WriteAtArrowArray(arrownum, randarrow.ItemID);
-                    classrow.WriteAtArrowAmountArray(arrownum, (short)RNG.Next(30));
+                    classrow.WriteAtArrowAmountArray(arrownum, (short)Rng.Next(30));
                     arrownum++;
                 };
 
                 // Class Bolts 20% chance:
                 int boltnum = 0;
-                while (RNG.Next(100) < 20 && boltnum < 2)
+                while (Rng.Next(100) < 20 && boltnum < 2)
                 {
-                    var randbolt = all_bolts[RNG.Next(all_bolts.Count)];
+                    var randbolt = all_bolts[Rng.Next(all_bolts.Count)];
                     classrow.WriteAtBoltArray(boltnum, randbolt.ItemID);
-                    classrow.WriteAtBoltAmountArray(boltnum, (short)RNG.Next(30));
+                    classrow.WriteAtBoltAmountArray(boltnum, (short)Rng.Next(30));
                     boltnum++;
                 };
 
                 // Class Armour: each piece 50% chance
-                if (RNG.Next(100) < 50)
-                    classrow.HeadArmour = all_head[RNG.Next(all_head.Count)].ID;
-                if (RNG.Next(100) < 50)
-                    classrow.BodyArmour = all_body[RNG.Next(all_body.Count)].ID;
-                if (RNG.Next(100) < 50)
-                    classrow.HandsArmour = all_arms[RNG.Next(all_arms.Count)].ID;
-                if (RNG.Next(100) < 50)
-                    classrow.LegsArmour = all_legs[RNG.Next(all_legs.Count)].ID;
+                if (Rng.Next(100) < 50)
+                    classrow.HeadArmour = all_head[Rng.Next(all_head.Count)].ID;
+                if (Rng.Next(100) < 50)
+                    classrow.BodyArmour = all_body[Rng.Next(all_body.Count)].ID;
+                if (Rng.Next(100) < 50)
+                    classrow.HandsArmour = all_arms[Rng.Next(all_arms.Count)].ID;
+                if (Rng.Next(100) < 50)
+                    classrow.LegsArmour = all_legs[Rng.Next(all_legs.Count)].ID;
 
                 // Class Levels:
                 classrow.Vigor = GetRandomLevel();
@@ -528,9 +528,9 @@ namespace DS2S_META.Randomizer
         {
             if (drawpool == null) throw new Exception("No items in list to draw from");
 
-            var randitem = drawpool[RNG.Next(drawpool.Count)];
+            var randitem = drawpool[Rng.Next(drawpool.Count)];
 
-            var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : (1 + RNG.Next(4));
+            var quant = (randitem.ItemUsageID == (int)ITEMUSAGE.SOULUSAGE) ? 1 : (1 + Rng.Next(4));
             return new IDQUANT(randitem.ItemID, quant);
         }
 
@@ -588,8 +588,8 @@ namespace DS2S_META.Randomizer
                                         || srdz.Type == RDZ_STATUS.FREETRADE
                                         || srdz.Type == RDZ_STATUS.UNLOCKTRADE).ToList();
             var testx = AllPTF.ToList().OfType<ShopRdz>()
-                                .Where(shp => shp.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
-            var testx2 = okShops.Where(shp => shp.HasVannilaItemID((int)ITEMID.CRYSTALSOULSPEAR)).ToList();
+                                .Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
+            var testx2 = okShops.Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
             //var tests = AllPTF.OfType<ShopRdz>().ToList();
 
             foreach (var shop in okShops)
@@ -636,9 +636,12 @@ namespace DS2S_META.Randomizer
 
             // query testing
             var test = LTR_flatlist.Where(di => di.ItemID == (int)ITEMID.CRYSTALSOULSPEAR).ToList();
-            var test2 = AllP.Where(rdz => rdz.HasVannilaItemID((int)ITEMID.BINOCULARS)).ToList();
+            var test2 = AllP.Where(rdz => rdz.HasVanillaItemID((int)ITEMID.BINOCULARS)).ToList();
 
             var test3 = Hook?.CheckLoadedEnemies(CHRID.TARGRAY);
+
+            var test4 = LTR_flatlist.Where(di => di.Infusion != 0).ToList();
+            var test5 = AllP.Where(rdz => rdz.Flatlist.Any(di => di.Infusion != 0)).ToList();
 
             // Final Manual/Miscellaneous fixes
             FixFlatList(); // ensure correct number of keys etc
@@ -921,6 +924,24 @@ namespace DS2S_META.Randomizer
 
             return ItemSetBase.ItemAllowTypes[item.ItemType];
         }
+        internal void CreateRdzMajors()
+        {
+            RdzMajors = AllPTF.Where(rdz => MajorCondition(rdz)).ToList();
+        }
+        internal bool MajorCondition(Randomization rdz)
+        {
+            // todo define/read UI settings
+
+            // do fastest queries first for efficiency
+            bool isboss = rdz.HasPickupType(PICKUPTYPE.BOSS);
+            bool issafe = rdz.HasPickupType(ItemSetBase.FullySafeFlags);
+            if (!(isboss || issafe)) return false; // volatile or uninterested
+
+            // add more logic here as you see fit
+            var majoritems = new List<ITEMID>() { ITEMID.ESTUSSHARD, ITEMID.BONEDUST, ITEMID.FRAGRANTBRANCH };
+            bool ismajorpickup = rdz.HasVanillaAnyItemID(majoritems);
+            return isboss || (issafe && ismajorpickup);
+        }
 
         internal void PlaceSet(List<DropInfo> ld, SetType settype)
         {
@@ -930,7 +951,7 @@ namespace DS2S_META.Randomizer
                 if (UnfilledRdzs.Count == 0)
                     break;
 
-                int keyindex = RNG.Next(ld.Count);
+                int keyindex = Rng.Next(ld.Count);
                 DropInfo di = ld[keyindex]; // get item to place
 
                 if (ResVanPlacedSoFar.Contains(di.ItemID))
@@ -987,13 +1008,15 @@ namespace DS2S_META.Randomizer
             UnfilledRdzs.Remove(rdz); // now filled!
             return logicres;
         }
+
+        // Steiner distance logic
         private static bool IsFailure(LOGICRES res)
         {
             return res switch
             {
-                LOGICRES.FAIL_DIST_TOONEAR => true,
-                LOGICRES.FAIL_DIST_TOOFAR => true,
-                LOGICRES.FAIL_DISTANCE_NA => true,
+                LOGICRES.FAIL_DIST_TOO_NEAR => true,
+                LOGICRES.FAIL_DIST_TOO_FAR => true,
+                LOGICRES.FAIL_DIST_NOTAPPLICABLE => true,
                 LOGICRES.FAIL_SOFTLOCK => true,
                 LOGICRES.FAIL_PICKUPTYPE => true,
                 LOGICRES.FAIL_RESERVED => true,
@@ -1081,11 +1104,7 @@ namespace DS2S_META.Randomizer
                 }
             }
         }
-        //private int nodes2dist(List<int> nodes)
-        //{
-
-        //}
-        private HashSet<int> AddHashset(HashSet<int> src, HashSet<int> newset)
+        private static HashSet<int> AddHashset(HashSet<int> src, HashSet<int> newset)
         {
             foreach (var i in newset)
                 src.Add(i);
@@ -1226,12 +1245,12 @@ namespace DS2S_META.Randomizer
             while (availRdzs.Count > 0)
             {
                 // Choose random rdz for item:
-                var rdz = availRdzs[RNG.Next(availRdzs.Count)];
+                var rdz = availRdzs[Rng.Next(availRdzs.Count)];
                 var rescheck = PassedPlacementConds(rdz, di, stype, out var dist);
 
                 // Prepare for unmeetable distance restrictions (these are ONLY 
                 // used if NONE of the Rdz are elligible!
-                if (rescheck == LOGICRES.FAIL_DIST_TOONEAR && dist > max_ellig_dist)
+                if (rescheck == LOGICRES.FAIL_DIST_TOO_NEAR && dist > max_ellig_dist)
                 {
                     // dist was lower than minimum setting.
                     // Find the highest distance we can, since everything we tried was
@@ -1241,7 +1260,7 @@ namespace DS2S_META.Randomizer
                     bfound_ellig_buttoonear = true;
                     numfail_distmin++;
                 }
-                if (rescheck == LOGICRES.FAIL_DIST_TOOFAR && dist < min_ellig_dist)
+                if (rescheck == LOGICRES.FAIL_DIST_TOO_FAR && dist < min_ellig_dist)
                 {
                     // All distances were higher than maximum allowed dist.
                     // Find the lowest distance possible and use it:
@@ -1259,9 +1278,9 @@ namespace DS2S_META.Randomizer
                     case LOGICRES.FAIL_VAN_WRONGRDZ:
                     case LOGICRES.FAIL_PICKUPTYPE:
                     case LOGICRES.FAIL_SOFTLOCK:
-                    case LOGICRES.FAIL_DIST_TOONEAR:
-                    case LOGICRES.FAIL_DIST_TOOFAR:
-                    case LOGICRES.FAIL_DISTANCE_NA:
+                    case LOGICRES.FAIL_DIST_TOO_NEAR:
+                    case LOGICRES.FAIL_DIST_TOO_FAR:
+                    case LOGICRES.FAIL_DIST_NOTAPPLICABLE:
                         availRdzs.Remove(rdz);
                         continue;
 
@@ -1308,36 +1327,170 @@ namespace DS2S_META.Randomizer
                 return LOGICRES.SUCCESS_DISTCOMPROMISE;
             }
             
-
-
             // True softlock - no elligible rdz place
             throw new Exception("True Softlock, please investigate");
         }
-        private LOGICRES PassedPlacementConds(Randomization rdz, DropInfo di, SetType settype, out int dist)
-        {
-            dist = -1; // assume failure somewhere else
 
-            // Special Filter (Vanilla items):
-            var rescheck = PassedReservedCond(rdz, di);
-            if (rescheck == LOGICRES.FAIL_VAN_WRONGRDZ || rescheck == LOGICRES.FAIL_RESERVED)
-                return rescheck;
+
+        // placement logic filters:
+        private PlaceResult GetPlacementResult(Randomization rdz, DropInfo di, SetType st)
+        {
+            // allocate output obj
+            PlaceResult placeRes = new();
+
+            // Priority Filter (Reserved UI items):
+            placeRes.AddReservedRes(GetReservedResult(rdz, di));
+            if (!placeRes.PassedReservedCond) return placeRes; // exit on fail reserved checks
 
             // Remaining filters:
-            if (rescheck == LOGICRES.SUCCESS_VANPLACE)
-                return PassedVanillaConds(rdz, di, settype) ? LOGICRES.SUCCESS_VANPLACE : LOGICRES.DELAY_VANLOCKED;
-            else
-                return PassedNonVanConds(rdz, di, settype, out dist);
+            if (placeRes.IsVanillaPlacement)
+            {
+                // special Vanilla placement checks
+                placeRes.AddCategoryRes(CategoryRes.VanillaOverride); // autopass: n/a for Vanilla placements
+                placeRes.AddSoftlockRes(GetVanSoftlockLogic(rdz, di, st));
+                return placeRes;
+            }
+
+            // normal randomizer placement checks
+            placeRes.AddCategoryRes(GetPickupTypeCond(rdz, di, st));    // check pickuptypes
+            if (!placeRes.PassedCategoryCond) return placeRes;          // exit on fail pickuptypes
+            placeRes.AddSoftlockRes(GetVanSoftlockLogic(rdz, di, st));  // check softlock
+            if (!placeRes.PassedSoftlockCond) return placeRes;          // exit on fail softlock
+            placeRes.AddDistanceRes(GetDistanceResult(rdz, di));        // check distance logic
+            return placeRes;                                            // final return
         }
-        private bool PassedVanillaConds(Randomization rdz, DropInfo di, SetType settype)
+        private ReservedRes GetReservedResult(Randomization rdz, DropInfo di)
+        {
+            // This condition passes if:
+            // 1. Rdz has no reservation, itemID has no restriction
+            // 2. Rdz reservation already fulfilled, itemID has no restriction
+            // 3. Rdz reserved for provided input itemid
+            //
+            // vanplace is a special boolean flag to state that this
+            // is the case 3) above, where we OVERRULE other restrictions
+            // EXCEPT softlock conditions that must still be abided.
+            // Vanilla keys are placed last in the list to ensure
+            // that they should pass softlock.
+
+            // Check if special item or rdz
+            bool rdzReserved = ReservedRdzs.ContainsKey(rdz);
+            bool itemReserved = ReservedRdzs.ContainsValue(di.ItemID);
+
+            // 00 - always pass
+            if (!rdzReserved && !itemReserved)
+                return new ReservedRes(LOGICRES.SUCCESS); // Case 1 [no restrictions]
+
+            // 01 - always fail
+            if (!rdzReserved && itemReserved)
+                return new ReservedRes(LOGICRES.FAIL_VAN_WRONGRDZ); // item is reserved for different rdz
+
+            // 10 - conditional
+            if (rdzReserved && !itemReserved)
+            {
+                var isRdzFulfilled = rdz.HasShuffledItemID(ReservedRdzs[rdz]);
+                if (isRdzFulfilled)
+                    return new ReservedRes(LOGICRES.SUCCESS); // Case 2 [already completed reservations]
+                else
+                    return new ReservedRes(LOGICRES.FAIL_RESERVED); // rdz is reserved for a different item
+            }
+                
+            // 11 - conditional
+            if (rdzReserved && itemReserved)
+            {
+                if (ReservedRdzs[rdz] == di.ItemID)
+                    return new ReservedRes(LOGICRES.SUCCESS_VANPLACE); // Case 3 [matched reservations]
+                else
+                    return new ReservedRes(LOGICRES.FAIL_RESERVED); // each are reserved for other places
+            }
+            throw new Exception("Missed some logic apparently?");
+        }
+        private SoftlockRes GetVanSoftlockLogic(Randomization rdz, DropInfo di, SetType st)
         {
             if (IsRotundaDeadlock(di))
-                return true; // it'll resolve itself
-            
-            if (PassedSoftlockLogic(rdz, settype))
-                return true;
+                return SoftlockRes.DeadlockOverride; // Rotunda will just be placed in Heides without issue
 
-            return false;
+            return GetSoftlockLogic(rdz, st);
         }
+        private SoftlockRes GetSoftlockLogic(Randomization rdz, SetType st)
+        {
+            // This condition passes if:
+            // 1. Not placing keys: logic was already resolved
+            // 2. Placing keys, and all required keys for this specific Rdz 
+            //      location are already placed, so this is in logic.
+
+            if (!st.IsKeys())
+                return SoftlockRes.NotRequired; // settypes cannot lock things behind them
+
+            // Check whether rdz is open yet
+            if (rdz.IsSoftlockPlacement(KeysPlacedSoFar))
+                return SoftlockRes.Softlock;
+            else
+                return SoftlockRes.InLogic;
+        }
+        private CategoryRes GetPickupTypeCond(Randomization rdz, DropInfo di, SetType st)
+        {
+            // This condition passes if:
+            // 1. Rdz abides by pickuptype flags for item-type
+            //
+            // The list of allowed pickuptypes is set by the item that we are
+            // placing, where the item is categorized as the first bullet
+            // that applies starting from the top (highest priority):
+            //    - Category: CustomManuallyAdjustable [UI-customisable item restrictions]
+            //    - Category: KeyItems                  
+            //    - Category: RequiredItems             
+            //    - Category: GeneralItems
+
+            // Racemode special:
+            var isRaceMode = true;
+            if (isRaceMode && st.IsKeys())
+            {
+                if (RdzMajors.Contains(rdz))
+                    return CategoryRes.RaceKeyPass;
+                else
+                    return CategoryRes.RaceKeyFail;
+            }
+
+            // Normal checks:
+            if (rdz.ContainsOnlyTypes(DefineAllowedPickupTypes(st, di)))
+                return CategoryRes.ValidPickupTypes;
+            else
+                return CategoryRes.ForbiddenPickupTypes;
+        }
+        private DistanceRes GetDistanceResult(Randomization rdz, DropInfo di)
+        {
+            // This condition passes if:
+            // a) itemID has no distance restriction
+            // b) itemID has distance restriction that is satisfied
+
+            if (!DistanceRestrictedIDs.TryGetValue(di.ItemID, out var minmax))
+                return DistanceRes.NoRestriction; // no distance restriction on item
+
+            if (rdz is DropRdz)
+                throw new Exception("Reserved item should be forbidden from DropRdz in CategoryRes");
+
+            if (rdz.RandoInfo.Area == MapArea.Undefined || rdz.RandoInfo.Area == MapArea.Quantum)
+                return DistanceRes.Incalculable; // should be impossible to get here, left in as safety
+
+            // get node we're trying to place into
+            var node = Nodes[rdz.RandoInfo.NodeKey];
+            if (node.IsLocked)
+                throw new Exception("Should have been caught in SoftlockRes checks");
+
+            // Calc "traversible distance" to this Rdz including required keys on passage.
+            int dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
+            //var _ = HelperListID2Maps(steinsol); // debugging
+
+            // Breaking soft constraints:
+            if (dist < minmax.Min)
+                return DistanceRes.TooNear(dist);
+            if (dist > minmax.Max)
+                return DistanceRes.TooFar(dist);
+
+            // Perfect gauntlet
+            return DistanceRes.DistancePass(dist);
+        }
+
+        // placement logic utility helpers:
         private static bool IsRotundaDeadlock(DropInfo di)
         {
             // Catch a specific meme regarding the Rotunda Lockstone
@@ -1351,164 +1504,24 @@ namespace DS2S_META.Randomizer
                 return true;
             return false;
         }
-        private LOGICRES PassedNonVanConds(Randomization rdz, DropInfo di, SetType settype, out int dist)
+        private List<PICKUPTYPE> DefineAllowedPickupTypes(SetType st, DropInfo di)
         {
-            dist = -1;
-
-            // Standard conditions to meet when we're not placing a vanilla item
-            if (!PassedPickupTypeCond(rdz, di, settype))
-                return LOGICRES.FAIL_PICKUPTYPE;
-
-            if (!PassedSoftlockLogic(rdz, settype))
-                return LOGICRES.FAIL_SOFTLOCK;
-
-            if (!PassedDistanceCond(rdz, di, out var distres, out dist))
-                return distres;
-
-            // Passed gauntlet
-            return LOGICRES.SUCCESS;
-        }
-        
-
-        // Placement Logic Filters:
-        private LOGICRES PassedReservedCond(Randomization rdz, DropInfo di)
-        {
-            // This condition passes if:
-            // - Rdz has no reservation, itemID has no restriction
-            // - Rdz has reservedID that has already been successfully filled,
-            //      and itemID has no restriction
-            // - Rdz has reservedID that matches itemID restriction
-            //
-            // vanplace is a special boolean flag to state that this
-            // is the case 3) above, where we OVERRULE other restrictions
-            // EXCEPT softlock conditions that must still be abided.
-            // Vanilla keys are placed last in the list to ensure
-            // that they should pass softlock.
-
-            // This rdz is reserved for some itemID
-            var rdzThis = ReservedRdzs.ContainsKey(rdz);
-
-            // Rdz reservation that is not filled already
-            if (rdzThis && !rdz.HasShuffledItemID(di.ItemID))
-            {
-                // Must be match:
-                if (ReservedRdzs[rdz] != di.ItemID)
-                    return LOGICRES.FAIL_RESERVED;
-
-                // [case 3]: Match
-                return LOGICRES.SUCCESS_VANPLACE;
-            }
-
-            // No rdz reserved: can place item in unless it is Vanilla
-            var isItemVan = ReservedRdzs.ContainsValue(di.ItemID);
-            return isItemVan ? LOGICRES.FAIL_VAN_WRONGRDZ : LOGICRES.SUCCESS;
-        }
-        private bool PassedSoftlockLogic(Randomization rdz, SetType settype)
-        {
-            // Is this redundant now?
-
-            // This condition passes if:
-            // - settype is not keys (keys are all placed already so we're safe)
-            // - settype is keys, but all required keys for this specific Rdz 
-            //      location are already placed, so this is admissible.
-
-            if (settype != SetType.Keys)
-                return true; // logic already solved
-
-            if (!rdz.IsSoftlockPlacement(KeysPlacedSoFar))
-                return true;
-            return false;
-        }
-        private bool PassedPickupTypeCond(Randomization rdz, DropInfo di, SetType settype)
-        {
-            // This condition passes if:
-            // - Rdz pickuptype flags have no contradictions with the 
-            //   associated category requirements for this item-type.
-            //
-            // The list of allowed pickuptypes is set by the item that we are
-            // placing, where the item is categorized as the first bullet
-            // that applies starting from the top (highest priority):
-            //    - Category: CustomManuallyAdjustable [UI-customisable item restrictions]
-            //    - Category: KeyItems                  
-            //    - Category: RequiredItems             
-            //    - Category: GeneralItems
-
-            // Get list of allowed pickuptypes flags (PUF) for this item-type:
-            List<PICKUPTYPE> allowedPUF;
+            // todo
             if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(di.ItemID))
-                allowedPUF = ItemSetBase.FullySafeFlags; // to generalize with front-end
-            else if (IsRestrictedItem(di.ItemID))
-                allowedPUF = ItemSetBase.FullySafeFlags; // front-end specified items
-            else if (settype == SetType.Keys)
-                allowedPUF = AllowedKeyTypes;
-            else if (settype == SetType.Reqs)
-                allowedPUF = GetAllowedReqTypes(di);
-            else
-                allowedPUF = AllowedGenTypes;
+                return ItemSetBase.FullySafeFlags; // to generalize with front-end
 
-            // Check types:
-            return rdz.ContainsOnlyTypes(allowedPUF);
+            if (IsRestrictedItem(di.ItemID))
+                return ItemSetBase.FullySafeFlags; // front-end specified items
+
+            if (st.IsKeys()) return AllowedKeyTypes;
+            if (st.IsReqs()) return GetAllowedReqTypes(di);
+            if (st.IsGens()) return AllowedGenTypes;
+            throw new Exception("Unexpected fall through set type");
         }
-        private bool IsRestrictedItem(int itemid)
-        {
-            return RestrictedItems.Contains(itemid);
-        }
-        private bool PassedDistanceCond(Randomization rdz, DropInfo di, out LOGICRES distres, out int dist)
-        {
-            dist = -1;
-            distres = LOGICRES.SUCCESS; // assume
-            // This condition passes if:
-            // - itemID has no distance restriction
-            // - itemID has a distance restriction, but rdz is within acceptable "distance"
-            //
-            // This function can be used as a weighting to "place things early" etc.
-
-            if (!DistanceRestrictedIDs.TryGetValue(di.ItemID, out var minmax))
-                return true; // no distance restriction
-
-            // These are considered inf distance
-            if (rdz is DropRdz)
-            {
-                distres = LOGICRES.FAIL_DISTANCE_NA;
-                return false;
-            }
-
-            if (rdz.RandoInfo.Area == MapArea.Undefined || rdz.RandoInfo.Area == MapArea.Quantum)
-            {
-                distres = LOGICRES.FAIL_DISTANCE_NA;
-                return false; // can't calc these really
-            }
-
-            var node = Nodes[rdz.RandoInfo.NodeKey];
-            if (node.IsLocked)
-            {
-                distres = LOGICRES.FAIL_SOFTLOCK;
-                return false; // softlock => not allowed
-            }
-
-            // Calculate "traversible distance" to this Rdz
-            // including any keys required to get here.
-            dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
-            var _ = HelperListID2Maps(steinsol); // debugging
-
-            if (dist < minmax.Min)
-            {
-                // not far enough away
-                distres = LOGICRES.FAIL_DIST_TOONEAR;
-                return false;
-            }
-            if (dist > minmax.Max)
-            {
-                // too far away
-                distres = LOGICRES.FAIL_DIST_TOOFAR;
-                return false;
-            }
-
-            // No issue
-            return true; 
-        }
-
+        private bool IsRestrictedItem(int itemid) => RestrictedItems.Contains(itemid);
         
+        
+
         // Traversible distance calculations
         private void SetupAreasGraph()
         {
@@ -1813,7 +1826,6 @@ namespace DS2S_META.Randomizer
                 prevPaths = newPaths;
             }
         }
-            
         private static List<MapArea> HelperListID2Maps(List<int> ids)
         {
             // Add for further investigation and keep going
@@ -1863,8 +1875,6 @@ namespace DS2S_META.Randomizer
                 throw new Exception("Unconnected nodes");
             return false;
         }
-
-
         private static List<int> GetConnections(int [,] graph, int src)
         {
             // list all nodes that connect to source node (except itself)
@@ -1878,8 +1888,6 @@ namespace DS2S_META.Randomizer
             }
             return connNodes;
         }
-        
-        
         private void SetupTravNodes()
         {
             // Each Node is a group of Rdzs that
@@ -1910,6 +1918,8 @@ namespace DS2S_META.Randomizer
                 AreaPaths[map] = pathsol.ToHashSet();
             }
         }
+        
+        // helpers:
         private void AddToAllLinkedRdz(Randomization rdz, DropInfo di)
         {
             // This is preliminary code if you want to randomize reinforcement/infusion
@@ -1932,7 +1942,6 @@ namespace DS2S_META.Randomizer
         {
             rdz.AddShuffledItem(di);
         }
-
         private void FillLeftovers()
         {
             // ld: list of DropInfos
@@ -1941,7 +1950,7 @@ namespace DS2S_META.Randomizer
             {
                 while (!rdz.IsSaturated())
                 {
-                    int ind = RNG.Next(Nfc);
+                    int ind = Rng.Next(Nfc);
                     DropInfo item = ItemSetBase.FillerItems[ind]; // get filler item
                     rdz.AddShuffledItem(item);
                 }
@@ -2233,7 +2242,7 @@ namespace DS2S_META.Randomizer
             var c = 0; // attempt count
             while (c < 100000)
             {
-                seed = RNG.Next();
+                seed = Rng.Next();
                 string fullpayload = strsett + seed.ToString();
                 var sha = ComputeSHA256(fullpayload);
                 string shaend = sha[^CRC.Length..];
@@ -2246,7 +2255,7 @@ namespace DS2S_META.Randomizer
         internal void SetSeed(int seed)
         {
             CurrSeed = seed;
-            RNG = new Random(seed);
+            Rng.SetSeed(seed); // reinitialize
         }
         internal static bool GetRandoSettingsStr(out string xmlstr)
         {
@@ -2307,80 +2316,7 @@ namespace DS2S_META.Randomizer
                     hash += $"{b:X2}";
                 }
             }
-
             return hash;
-        }
-
-
-        // RNG related:
-        //private const double priceMeanGaussian = 3000;  // For Gaussian distribution
-        //private const double priceSDGaussian = 500;     // For Gaussian distribution
-        internal const double priceShapeK = 3.0;        // For Gamma distribution
-        internal const double priceScaleTh = 2.0;       // For Gamma distribution
-        internal static int RandomGaussianInt(double mean, double stdDev, int roundfac = 50)
-        {
-            // Steal code from online :)
-            double u1 = 1.0 - RNG.NextDouble(); // uniform(0,1] random doubles
-            double u2 = 1.0 - RNG.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
-                         Math.Sin(2.0 * Math.PI * u2); // random normal(0,1)
-            double randNormal =
-                         mean + stdDev * randStdNormal; // random normal(mean,stdDev^2)
-
-            return RoundToFactorN(randNormal, roundfac);
-        }
-        internal static int RoundToFactorN(double val, int fac)
-        {
-            var nearestMultiple = Math.Round((val / fac), MidpointRounding.AwayFromZero) * fac;
-            return (int)nearestMultiple;
-        }
-        internal static int RandomGammaInt(int wantedMean, int roundfac = 50, double scaleA = priceShapeK, double shapeTh = priceScaleTh)
-        {
-            // Wrapper to handle pre/post int manipulation for Gamma distribution
-            double rvg = RandomGammaVariable(scaleA, shapeTh);
-
-            double rvgmode = (scaleA - 1) * shapeTh; // gamma distribution property
-            double rvgScaled = (rvg / rvgmode) * wantedMean;
-            return RoundToFactorN(rvgScaled, roundfac);
-        }
-        internal static double RandomGammaVariable(double shapeA, double scaleTh)
-        {
-            // https://www.cs.toronto.edu/~radford/csc2541.F04/gamma.html
-            // Can code up a more efficient version if you want to go through the maths
-
-            double scaleB = 1 / scaleTh; // Align notation
-            int Na = (int)Math.Floor(shapeA);
-            List<double> RVu = new(); // RandomVariables Uniform(0,1] distribution
-            List<double> RVe = new(); // RandomVariables Exponential(1) distribution
-            for (int i = 0; i < Na; i++)
-            {
-                double ui = RNG.NextDouble();
-                double Li = -Math.Log(1 - ui);
-
-                // Store results:
-                RVu.Add(ui);
-                RVe.Add(Li);
-            }
-
-            double S = RVe.Sum();
-            double RVgamma = S / scaleB;
-            return RVgamma;
-        }
-        internal static int GetRandomReinforce()
-        {
-            var tmp = RNG.Next(100);
-            if (tmp < 60) return 0;
-            if (tmp < 90) return 1;
-            if (tmp < 95) return 2;
-            if (tmp < 99) return 3;
-            return 4;
-        }
-        internal static short GetRandomLevel()
-        {
-            int lvlmean = 7;
-            //var randlvl = (short)RandomGammaInt(lvlmean, 1);
-            var randlvl = (short)RandomGaussianInt(lvlmean, 3, 1);
-            return (short)(randlvl <= 0 ? 1 : randlvl);
         }
     }
 }
