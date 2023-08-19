@@ -1,4 +1,8 @@
 //Format: Item ID; Name [arbitrary]
+ 21001100 Naked head
+ 21001101 Naked body
+ 21001102 Naked arms
+ 21001103 Naked legs
  21010100 Pate's Helm
  21010101 Pate's Armor
  21010102 Pate's Gloves

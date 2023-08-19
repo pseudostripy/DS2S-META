@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Randomizer
+namespace DS2S_META.Randomizer.Placement
 {
     /// <summary>
     /// DistanceResult. Encapsulates information from a Steiner Distance Check
@@ -15,11 +15,11 @@ namespace DS2S_META.Randomizer
         public LOGICRES LogicRes;
         public int Distance;
 
-        public ReservedRes(LOGICRES logicres) 
+        public ReservedRes(LOGICRES logicres)
         {
             LogicRes = logicres;
         }
-        
+
         private static List<LOGICRES> LogicFails = new()
         {
             LOGICRES.FAIL_DIST_NOTAPPLICABLE,

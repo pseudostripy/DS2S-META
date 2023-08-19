@@ -14,6 +14,7 @@ namespace DS2S_META.Randomizer
         internal byte Quantity { get; set; }
         internal byte Infusion { get; set; }
         internal byte Reinforcement { get; set; }
+        internal bool IsPlaced { get; private set; } = false;
 
         // Constructors:
         internal DropInfo() { }
@@ -50,6 +51,7 @@ namespace DS2S_META.Randomizer
         {
             return (DropInfo)MemberwiseClone();
         }
+        internal void MarkPlaced() { IsPlaced = true; }
 
 
 

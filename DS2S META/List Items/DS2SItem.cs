@@ -6,57 +6,28 @@ namespace DS2S_META
 {
     public class DS2SItem : IComparable<DS2SItem>
     {
-        public enum ItemType
-        {
-            Weapon = 0,
-            Armor = 1,
-            Item = 2,
-            Ring = 3
-        }
-       
-        private static Regex ItemEntryRx = new Regex(@"^\s*(?<id>\S+)\s+(?<name>.+)$");
-
-        private bool ShowID;
+        private static readonly Regex ItemEntryRx = new(@"^\s*(?<id>\S+)\s+(?<name>.+)$");
 
         public string Name;
-        public int ID;
-        public int itemID => Type == ItemType.Armor ? ID - 10000000 : ID; // Interface fix for DS2SItem to normal itemID
-        public ItemType Type;
+        public int ItemId;
+        //public int itemID => Type == ITEMCATEGORY.Armor ? ID - 10000000 : ID; // Interface fix for DS2SItem to normal itemID
+        
 
-        public static Dictionary<int, string> Items = new Dictionary<int, string>()
+        public DS2SItem(int itemid, string name)
         {
-            {3400000 ,"Fist"},
-            {21001100 ,"Naked"},
-            {21001101 ,"Naked"},
-            {21001102 ,"Naked"},
-            {21001103 ,"Naked"}
-        };
-
-        public DS2SItem(string config, int type, bool showID)
-        {
-            Match itemEntry = ItemEntryRx.Match(config);
-            ID = Convert.ToInt32(itemEntry.Groups["id"].Value);
-            Type = (ItemType)type;
-            ShowID = showID;
-            if (showID)
-                Name = ID.ToString() + ": " + itemEntry.Groups["name"].Value;
-            else
-                Name = itemEntry.Groups["name"].Value;
-
-            Items.Add(ID, itemEntry.Groups["name"].Value);
+            ItemId = itemid;
+            Name = name;
         }
-        public override string ToString()
+        public static DS2SItem ParseNew(string lineentry)
         {
-            return Name;
-        }
-        public int CompareTo(DS2SItem? other)
-        {
-            if (ShowID)
-                return ID.CompareTo(other?.ID);
-            else
-                return Name.CompareTo(other?.Name);
+            Match m = ItemEntryRx.Match(lineentry);
+            var itemid = Convert.ToInt32(m.Groups["id"].Value);
+            var name = m.Groups["name"].Value;
+            return new DS2SItem(itemid, name);
         }
 
+        public override string ToString() => Name;
+        public int CompareTo(DS2SItem? other) => Name.CompareTo(other?.Name);
         public bool NameContains(string txtfrag)
         {
             // Used for easier filtering

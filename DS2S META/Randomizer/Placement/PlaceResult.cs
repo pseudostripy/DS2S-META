@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Randomizer
+namespace DS2S_META.Randomizer.Placement
 {
     /// <summary>
     /// Encapsulates information from all different placement-type checks
@@ -17,10 +17,10 @@ namespace DS2S_META.Randomizer
         public SoftlockRes? SoftlockRes;
         public CategoryRes? CategoryRes;
         public DistanceRes? DistanceRes;
-        
+
         // Constructor
         public PlaceResult() { }
-        
+
         public void AddReservedRes(ReservedRes reservedRes) { ReservedRes = reservedRes; }
         public void AddSoftlockRes(SoftlockRes softlockRes) { SoftlockRes = softlockRes; }
         public void AddCategoryRes(CategoryRes categoryRes) { CategoryRes = categoryRes; }

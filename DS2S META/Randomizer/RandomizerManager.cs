@@ -19,6 +19,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Windows.Documents;
+using DS2S_META.Randomizer.Placement;
 
 namespace DS2S_META.Randomizer
 {
@@ -66,6 +67,8 @@ namespace DS2S_META.Randomizer
         internal int CurrSeed;
         internal int[,] RandoGraph;
         List<KeySet> UniqueIncompleteKSs = new();
+        internal IEnumerable<Diset> Disets; // Groups of itemtypes to be placed, eg. "Keys"
+
         //
         internal static Dictionary<int, ItemRow> VanillaItemParams = new();
         internal static string GetItemName(int itemid) => VanillaItemParams[itemid].MetaItemName;
@@ -107,10 +110,7 @@ namespace DS2S_META.Randomizer
         }
         //
 
-        // Enums:
-        internal enum SetType : byte { Keys, Reqs, Gens }
-
-
+        
         // Constructors:
         internal RandomizerManager()
         {
@@ -247,6 +247,7 @@ namespace DS2S_META.Randomizer
             CreateRdzMajors();
 
             // Place sets of items:
+            var placer = new PlacementManager(Disets);
             PlaceSet(ldkeys, SetType.Keys);
             PlaceSet(ldreqs, SetType.Reqs);
             PlaceSet(ldgens, SetType.Gens);
@@ -256,7 +257,7 @@ namespace DS2S_META.Randomizer
             HandleTrivialities();   // Simply mark done
             FixShopEvents();        // All additional shop processing & edge cases.
             FixLotCopies();         // Aka Pursuer
-            new CharCreationRandomizer().Randomize();
+            CharCreation.Randomize();
 
             // Ensure all handled:
             var unhandled = AllP.Where(rdz => rdz.IsHandled == false);
@@ -396,7 +397,7 @@ namespace DS2S_META.Randomizer
                                         || srdz.Type == RDZ_STATUS.SHOPSUSTAIN
                                         || srdz.Type == RDZ_STATUS.FREETRADE
                                         || srdz.Type == RDZ_STATUS.UNLOCKTRADE).ToList();
-            var testx = AllPTF.ToList().OfType<ShopRdz>()
+            var testx = AllPTF.OfType<ShopRdz>()
                                 .Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
             var testx2 = okShops.Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
             //var tests = AllPTF.OfType<ShopRdz>().ToList();
@@ -614,82 +615,47 @@ namespace DS2S_META.Randomizer
         internal void DefineKRG()
         {
             // Take a copy of the FlatList so we don't need to regenerate everytime:
-            var flatlist_copy = LTR_flatlist.Select(di => di.Clone()).ToList();
+            var flcopy = LTR_flatlist.Select(di => di.Clone()).ToList();
 
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
-            var too_many_torches = flatlist_copy.Where(DI => DI.IsKeyType).ToList();                  // Keys
-            ldkeys = RemoveExtraTorches(too_many_torches);
-            
-            var flatlist_nokeys = flatlist_copy.Where(DI => !DI.IsKeyType).ToList();    // (keys handled above)
-            ldreqs = flatlist_nokeys.Where(DI => DI.IsReqType || IsRestrictedItem(DI.ItemID)).ToList();                // Reqs
+            var keys = flcopy.Where(di => di.IsKeyType).ToList();                                  // Keys
+            var flNoKeys = flcopy.Except(ldkeys);
+            var reqs = flNoKeys.Where(di => di.IsReqType || IsRestrictedItem(di.ItemID)).ToList(); // Reqs
+            var gens = flNoKeys.Except(ldreqs).ToList();                                           // Generics
 
-            var flatlist_noreqs = flatlist_nokeys.Where(DI => !DI.IsReqType && !IsRestrictedItem(DI.ItemID)).ToList();  // (reqs handled above)
-            ldgens = flatlist_noreqs.Except(ldkeys).Except(ldreqs).ToList();            // Generics
-
-            // Ensure no meme double placements:
-            //if (ldkeys.Any(di => ldreqs.Contains(di)))
-            //    throw new Exception("Add a query to remove duplicates here!");
+            // Create group objects for placement
+            Disets = new List<Diset>()
+            {
+                Diset.FromKeys(keys),
+                Diset.FromReqs(reqs),
+                Diset.FromGens(gens),
+            };
         }
         internal void FixFlatList()
         {
             // Ensure 5 SoaGs (game defines these weirdly)
-            var soag = LTR_flatlist.Where(di => di.ItemID == (int)KEYID.SOULOFAGIANT).First();
+            var soag = LTR_flatlist.FilterByItem(ITEMID.SOULOFAGIANT).First();
             LTR_flatlist.Add(soag);
             LTR_flatlist.Add(soag);
 
-            // Duplicate Fixes:
-            RemoveFirstIfPresent(0x03088510); // Rotunda Lockstone
-            RemoveFirstIfPresent(0x0398F1B8); // Feather
-            RemoveFirstIfPresent(0x03096F70); // Ladder Miniature
-            RemoveFirstIfPresent(0x0308D330); // Ashen Mist
-            RemoveFirstIfPresent(0x03B39220); // Token of Fidelity
-            RemoveFirstIfPresent(0x03B3B930); // Token of Spite
-            LimitNumberOfItem((int)ITEMID.TORCH, 25);       // 25x Torch pickups in game
-            LimitNumberOfItem((int)ITEMID.HUMANEFFIGY, 50); // 50x Effigy pickups in game
+            // Duplication fixes and balance:
+            LimitItems(ITEMID.ROTUNDALOCKSTONE, 1); // Single Rotunda Lockstone
+            LimitItems(ITEMID.AGEDFEATHER, 1);      // Single Feather
+            LimitItems(ITEMID.LADDERMINIATURE, 1);  // Single Ladder Miniature
+            LimitItems(ITEMID.ASHENMIST, 1);        // Single Ashen Mist
+            LimitItems(ITEMID.TOKENOFFIDELITY, 1);  // Single Token of Fidelity
+            LimitItems(ITEMID.TOKENOFSPITE, 1);     // Single Token of Spite
+            LimitItems(ITEMID.TORCH, 15);           // 15x Torch pickups in game
+            LimitItems(ITEMID.HUMANEFFIGY, 40);     // 40x Effigy pickups in game
         }
-        private static List<DropInfo> RemoveExtraTorches(List<DropInfo> too_many_torches)
+        private void LimitItems(ITEMID itemid, int lim)
         {
-            // 15 independent pickup spots of undetermined quantity
-            int min_torches = 15; 
-            int indepTorchPickupsPlaced = 0;
-            List<DropInfo> ldkeys_out = new();
-            for (int i = 0; i < too_many_torches.Count; i++)
-            {
-                var di = too_many_torches[i];
-                if (di.ItemID == (int)ITEMID.TORCH)
-                {
-                    if (indepTorchPickupsPlaced >= min_torches)
-                        continue;
-                    indepTorchPickupsPlaced++;
-                }
-                ldkeys_out.Add(di); // ok to keep as key
-            }
-            return ldkeys_out;
-        }
-        private void RemoveFirstIfPresent(int itemid)
-        {
-            var di = LTR_flatlist.Where(di => di.ItemID == itemid).FirstOrDefault();
-            if (di == null)
-                return;
-            LTR_flatlist.Remove(di);
-        }
-        private void LimitNumberOfItem(int itemid, int maxlim)
-        {
-            List<DropInfo> torem = new();
-            int remain_cnt = LTR_flatlist.Where(DI => DI.HasItem(itemid)).Count();
-            for (int i = 0; i < LTR_flatlist.Count; i++)
-            {
-                var di = LTR_flatlist[i];
-                if (di.HasItem(itemid))
-                {
-                    torem.Add(di);
-                    remain_cnt--;
-                }
-
-                if (remain_cnt == maxlim)
-                    break;
-            }
-            LTR_flatlist.RemoveAll(torem.Contains);
+            // Limits number of pickup locations (not their specific item count).
+            // It does this at random from the avail pickups.
+            var reldis = LTR_flatlist.FilterByItem(itemid); // relevant DropInfos
+            var tokeep = reldis.RandomElements(lim);
+            var toremove = reldis.Except(tokeep);
+            LTR_flatlist.RemoveAll(toremove.Contains);
         }
 
         // Placement code:
@@ -723,7 +689,7 @@ namespace DS2S_META.Randomizer
         }
         internal static void CreateAllowedKeyTypes()
         {
-            AllowedKeyTypes =  GetAllowedFromBanned(SetType.Keys);
+            AllowedKeyTypes = GetAllowedFromBanned(SetType.Keys);
         }
         internal static List<PICKUPTYPE> GetAllowedReqTypes(DropInfo di)
         {
@@ -752,71 +718,7 @@ namespace DS2S_META.Randomizer
             return isboss || (issafe && ismajorpickup);
         }
 
-        internal void PlaceSet(List<DropInfo> ld, SetType settype)
-        {
-            // ld: list of DropInfos
-            while (ld.Count > 0)
-            {
-                if (UnfilledRdzs.Count == 0)
-                    break;
-
-                int keyindex = Rng.Next(ld.Count);
-                DropInfo di = ld[keyindex]; // get item to place
-
-                if (ResVanPlacedSoFar.Contains(di.ItemID))
-                {
-                    // All Vanilla instances were placed on a previous
-                    // call to this which had the same ID.
-                    ld.RemoveAt(keyindex);
-                    continue;
-                }
-
-
-                var logicres = PlaceItem(di, settype);
-                if (settype == SetType.Keys &&
-                    logicres == LOGICRES.DELAY_VANLOCKED || logicres == LOGICRES.DELAY_MAXDIST)
-                    continue; // leave in pool and redraw
-
-                if (logicres == LOGICRES.SUCCESS_VANPLACE)
-                    ResVanPlacedSoFar.Add(di.ItemID);
-
-                // Item placed successfully
-                ld.RemoveAt(keyindex);
-                
-            }
-
-            // Must have ran out of space to place things:
-            if (ld.Count > 0 && settype != SetType.Gens)
-                throw new Exception("Ran out of space to place keys/reqs. Likely querying issue.");
-        }
-        private LOGICRES PlaceItem(DropInfo di, SetType stype)
-        {
-            // Placement logic:
-            var logicres = FindElligibleRdz(di, stype, out var rdz);
-            if (logicres == LOGICRES.DELAY_VANLOCKED || logicres == LOGICRES.DELAY_MAXDIST)
-                return logicres; // handled above
-
-            // Extra checks:
-            if (IsFailure(logicres))
-                throw new Exception("Shouldn't get here");
-            if (rdz == null)
-                throw new NullReferenceException();
-
-            // Place Item:
-            AddToAllLinkedRdz(rdz, di);
-            
-            // Update graph/logic on key placement
-            if (stype == SetType.Keys)
-                UpdateForNewKey(rdz, di);    
-            
-            // Handle saturation
-            if (!rdz.IsSaturated())
-                return logicres;
-
-            rdz.MarkHandled();
-            UnfilledRdzs.Remove(rdz); // now filled!
-            return logicres;
-        }
+        
 
         // Steiner distance logic
         private static bool IsFailure(LOGICRES res)

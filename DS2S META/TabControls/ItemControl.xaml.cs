@@ -179,7 +179,7 @@ namespace DS2S_META
             if (ds2item == null)
                 return false;
 
-            if (TryGetItem(ds2item.ID, out item))
+            if (TryGetItem(ds2item.ItemId, out item))
                 return true;
             return false;
         }
@@ -287,7 +287,7 @@ namespace DS2S_META
                 var infuidval = infusion.AsByte();
                  
 
-                Hook.GiveItem(ds2item.ID, quanval, upgrval, infuidval);
+                Hook.GiveItem(ds2item.ItemId, quanval, upgrval, infuidval);
                 if (!Properties.Settings.Default.UpdateMaxLive)
                     HandleMaxAvailable();
             }

@@ -163,6 +163,7 @@
  3340000 Old Knight Pike
  3350000 Drakekeeper's Warpick
  3370000 Wrathful Axe
+ 3400000 Fist
  3410000 Claws
  3420000 Malformed Claws
  3430000 Manikin Claws

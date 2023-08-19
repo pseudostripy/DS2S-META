@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Randomizer
+namespace DS2S_META.Randomizer.Placement
 {
     /// <summary>
     /// Encapsulates information relating to Rdz PickupType

@@ -101,7 +101,7 @@ namespace DS2S_META.Randomizer
         FOURFORLORN     = 0xDEA,    // AldiasKeep && Torch
         BELLKEEPERSCOV  = 0xDEB,    // BelfryLuna || BelfrySol
 
-        // Actual Key Item IDs:
+        // Actual Key Item IDs: (TODO)
         SOLDIER         = 50600000,
         FORGOTTEN       = 50820000,
         TOWER           = 52400000,

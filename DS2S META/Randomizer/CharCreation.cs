@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class CharCreationRandomizer
+    internal class CharCreation
     {
         // Fields:
-        internal List<ItemRow> allItems;
-        internal List<ItemRow> consumables;
-        internal List<ItemRow> rings;
-        internal List<ItemRow> weapons;
-        internal List<ItemRow> heads;
-        internal List<ItemRow> bodies;
-        internal List<ItemRow> arms;
-        internal List<ItemRow> legs;
-        internal List<ItemRow> arrows;
-        internal List<ItemRow> bolts;
-        internal List<PlayerStatusClassRow> classrows;
-        internal List<PlayerStatusClassRow> giftsrows;
+        internal static List<ItemRow> allItems;
+        internal static List<ItemRow> consumables;
+        internal static List<ItemRow> rings;
+        internal static List<ItemRow> weapons;
+        internal static List<ItemRow> heads;
+        internal static List<ItemRow> bodies;
+        internal static List<ItemRow> arms;
+        internal static List<ItemRow> legs;
+        internal static List<ItemRow> arrows;
+        internal static List<ItemRow> bolts;
+        internal static List<PlayerStatusClassRow> classrows;
+        internal static List<PlayerStatusClassRow> giftsrows;
 
-        internal List<ITEMID> bannedItems = new() { ITEMID.ESTUS, ITEMID.ESTUSEMPTY,
+        internal static List<ITEMID> bannedItems = new() { ITEMID.ESTUS, ITEMID.ESTUSEMPTY,
                                              ITEMID.DARKSIGN, ITEMID.BONEOFORDER,
                                              ITEMID.BLACKSEPCRYSTAL };
-        internal List<int> classids = new() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
+        internal static List<int> classids = new() { 20, 30, 50, 70, 80, 90, 100, 110 }; // Warrior --> Deprived
 
-        internal CharCreationRandomizer()
+        static CharCreation()
         {
             // Define lists that can be used for CharCreation random draws
             allItems = ParamMan.ItemRows.Where(it => it.HasName).FilterOutId(bannedItems).ToList();
@@ -52,18 +52,18 @@ namespace DS2S_META.Randomizer
             giftsrows = ParamMan.PlayerStatusClassRows.Where(row => row.ID > 400 & row.ID < 1000).ToList();
         }
 
-        internal void Randomize()
+        internal static void Randomize()
         {
             RandomizeCharClasses();
             RandomizeStartingGifts();
         }
-        internal void RandomizeCharClasses()
+        internal static void RandomizeCharClasses()
         {
             // Randomize DS2 classes
             foreach (var classrow in classrows)
                 RandomizeCharClass(classrow);
         }
-        internal void RandomizeCharClass(PlayerStatusClassRow classrow)
+        internal static void RandomizeCharClass(PlayerStatusClassRow classrow)
         {
             // Draw from sets:
             var randRings = DrawUntilFailure(rings, 15, 4, ir => ir.IconID); // Rings 15% (exp), note +1 rings wouldn't display any icon
@@ -123,12 +123,12 @@ namespace DS2S_META.Randomizer
                 classrow.SetSoulLevel();
             }
         }
-        internal void RandomizeStartingGifts()
+        internal static void RandomizeStartingGifts()
         {
             foreach (var giftrow in giftsrows)
                 RandomizeStartingGift(giftrow);
         }
-        internal void RandomizeStartingGift(PlayerStatusClassRow giftrow)
+        internal static void RandomizeStartingGift(PlayerStatusClassRow giftrow)
         {
             // Draw items
             var randItems = DrawItemsUntilLimit(consumables, 50, 5); // Items 50% (flat)

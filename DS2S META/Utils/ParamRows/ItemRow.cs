@@ -30,8 +30,8 @@ namespace DS2S_META.Utils
     public class ItemRow : Param.Row
     {
         // Misc Fields:
-        internal string MetaItemName;
         internal int ItemID;
+        internal string MetaItemName => ItemID.AsMetaName();
 
         // Behind-fields:
         private int _iconID;

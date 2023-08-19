@@ -92,14 +92,14 @@ namespace DS2S_META.Randomizer
         protected static int GetTypeRandomPrice(int itemid)
         {
             if (!RandomizerManager.TryGetItem(itemid, out var item) || item == null)
-                return RandomizerManager.RandomGammaInt(3000, 50); // generic guess
+                return Rng.RandomGammaInt(3000, 50); // generic guess
 
             return item.ItemType switch
             {
-                eItemType.AMMO => RandomizerManager.RandomGammaInt(100, 10),
+                eItemType.AMMO => Rng.RandomGammaInt(100, 10),
                 eItemType.CONSUMABLE => GetConsumableRandomPrice(item.ItemID),
-                eItemType.WEAPON1 or eItemType.WEAPON2 => RandomizerManager.RandomGammaInt(5000, 100),
-                _ => RandomizerManager.RandomGammaInt(3000, 50),
+                eItemType.WEAPON1 or eItemType.WEAPON2 => Rng.RandomGammaInt(5000, 100),
+                _ => Rng.RandomGammaInt(3000, 50),
             };
         }
         protected static int GetConsumableRandomPrice(int itemid)
@@ -108,16 +108,16 @@ namespace DS2S_META.Randomizer
             if (ItemSetBase.SoulPriceList.ContainsKey(itemid))
             {
                 var souls = ItemSetBase.SoulPriceList[itemid];
-                var ranval = RandomizerManager.RandomGammaInt(souls, 50);
+                var ranval = Rng.RandomGammaInt(souls, 50);
                 return (int)Math.Max(ranval, lowestPriceRate * souls); // Limit to 10% off best sale
             }
 
             var lowtier = new List<int>() { 60010000, 60040000, 60595000, 60070000 }; // lifegem, amber herb, dung pie, poison moss
             if (lowtier.Contains(itemid))
-                return RandomizerManager.RandomGammaInt(400, 50);
+                return Rng.RandomGammaInt(400, 50);
 
             // Otherwise:
-            return RandomizerManager.RandomGammaInt(2000, 50);
+            return Rng.RandomGammaInt(2000, 50);
         }
         internal static string GetItemName(int itemid)
         {
