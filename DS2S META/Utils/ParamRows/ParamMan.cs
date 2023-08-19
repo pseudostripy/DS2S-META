@@ -134,6 +134,10 @@ namespace DS2S_META.Utils
         public static Param? ArmorParam => AllParams[PAliases.ARMOR];
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
+        // Rows shorthand
+        public static IEnumerable<ItemRow> ItemRows => ItemParam.AsRows<ItemRow>();
+        public static IEnumerable<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>();
+
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
@@ -183,7 +187,7 @@ namespace DS2S_META.Utils
                     throw new($"The PARAMDEF {defName} does not exist for {entry}.");
 
                 // Make param
-                int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
+                int[] offsets = info[0].Split(';').Select(s => Hex2int(s)).ToArray();
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new(pointer, offsets, paramDef, name, Hook.Is64Bit);
@@ -236,7 +240,7 @@ namespace DS2S_META.Utils
                 GeneratorRegistParams.Add(AllParams[PAliases.GENERATOR_REGIST[i]]);
 
         }
-        private static int hex2int(string hexbyte)
+        private static int Hex2int(string hexbyte)
         {
             return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
         }

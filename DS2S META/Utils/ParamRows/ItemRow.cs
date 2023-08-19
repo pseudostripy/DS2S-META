@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -145,6 +146,7 @@ namespace DS2S_META.Utils
                 WriteAt(24, BitConverter.GetBytes((byte)value));
             }
         }
+        internal bool HasName => MetaItemName != string.Empty;
 
         // Linked Params:
         internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);

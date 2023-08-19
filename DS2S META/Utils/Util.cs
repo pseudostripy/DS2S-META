@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -114,6 +115,16 @@ namespace DS2S_META.Utils
             TextReader textReader = new StreamReader(@$"{ExeDir}/{filePath}");
             XmlSerializer serializer = new(typeof(T));
             return (T?)serializer.Deserialize(textReader);
+        }
+
+        public static IEnumerable<T> CollateCalls<T>(Func<T> f, int count)
+        {
+            // Call a function (no args) N times and return results as enumerable
+
+            List<T> results = new(); // preallocate empty
+            for (var i = 0; i < count; i++)
+                results.Add(f());
+            return results;
         }
     }
 }

@@ -16,6 +16,8 @@ namespace DS2S_META.Randomizer
         }
         internal static int Next() => RNG.Next();
         internal static int Next(int count) => RNG.Next(count);
+        internal static int NextPercent() => RNG.Next(100); // very common
+
 
         // RNG related:
         //private const double priceMeanGaussian = 3000;  // For Gaussian distribution
@@ -71,21 +73,11 @@ namespace DS2S_META.Randomizer
             double RVgamma = S / scaleB;
             return RVgamma;
         }
-        internal static int GetRandomReinforce()
-        {
-            var tmp = RNG.Next(100);
-            if (tmp < 60) return 0;
-            if (tmp < 90) return 1;
-            if (tmp < 95) return 2;
-            if (tmp < 99) return 3;
-            return 4;
-        }
-        internal static short GetRandomLevel()
-        {
-            int lvlmean = 7;
-            //var randlvl = (short)RandomGammaInt(lvlmean, 1);
-            var randlvl = (short)RandomGaussianInt(lvlmean, 3, 1);
-            return (short)(randlvl <= 0 ? 1 : randlvl);
-        }
+
+        
+
+        // Shorthand for get next roll and see if it meets common conditions:
+        internal static bool PassedPercentRoll(int percentpass) => NextPercent() < percentpass;
+        internal static bool FailedPercentRoll(int percentpass) => !PassedPercentRoll(percentpass);
     }
 }

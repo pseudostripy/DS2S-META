@@ -25,10 +25,10 @@ namespace DS2S_META.Utils
         private short _faith;
         private short _adaptability;
         //
-        private int _headArmour;
-        private int _bodyArmour; // two quick ones
-        private int _handsArmour;
-        private int _legsArmour;
+        private int _headArmor;
+        private int _bodyArmor; // two quick ones
+        private int _armsArmor;
+        private int _legsArmor;
 
         internal short SoulLevel
         {
@@ -121,39 +121,39 @@ namespace DS2S_META.Utils
             }
         }
         //
-        internal int HeadArmour
+        internal int HeadArmor
         {
-            get => _headArmour;
+            get => _headArmor;
             set
             {
-                _headArmour = value;
+                _headArmor = value;
                 WriteAt(52, BitConverter.GetBytes(value));
             }
         }
-        internal int BodyArmour 
+        internal int BodyArmor 
         {
-            get => _bodyArmour;
+            get => _bodyArmor;
             set
             {
-                _bodyArmour = value;
+                _bodyArmor = value;
                 WriteAt(53, BitConverter.GetBytes(value));
             }
         }
-        internal int HandsArmour
+        internal int ArmsArmor
         {
-            get => _handsArmour;
+            get => _armsArmor;
             set
             {
-                _handsArmour = value;
+                _armsArmor = value;
                 WriteAt(54, BitConverter.GetBytes(value));
             }
         }
-        internal int LegsArmour
+        internal int LegsArmor
         {
-            get => _legsArmour;
+            get => _legsArmor;
             set
             {
-                _legsArmour = value;
+                _legsArmor = value;
                 WriteAt(55, BitConverter.GetBytes(value));
             }
         }
@@ -161,10 +161,10 @@ namespace DS2S_META.Utils
         // Constructor:
         public PlayerStatusClassRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            HeadArmour = (int)ReadAt(52);
-            BodyArmour = (int)ReadAt(53);
-            HandsArmour = (int)ReadAt(54);
-            LegsArmour = (int)ReadAt(55);
+            HeadArmor = (int)ReadAt(52);
+            BodyArmor = (int)ReadAt(53);
+            ArmsArmor = (int)ReadAt(54);
+            LegsArmor = (int)ReadAt(55);
         }
 
         public void Wipe()
@@ -201,10 +201,10 @@ namespace DS2S_META.Utils
             }
 
             // Starting gear:
-            HeadArmour = -1;
-            BodyArmour = -1;
-            HandsArmour = -1;
-            LegsArmour = -1;
+            HeadArmor = -1;
+            BodyArmor = -1;
+            ArmsArmor = -1;
+            LegsArmor = -1;
         }
         public void SetSoulLevel()
         {
@@ -241,6 +241,59 @@ namespace DS2S_META.Utils
             return count;
         }
 
+        // giga-wrappers
+        public void WriteRings(IEnumerable<int> ids)
+        {
+            for (int i = 0; i < ids.Count(); i++)
+                WriteAtRingArray(i, ids.ElementAt(i));
+        }
+        public void WriteRHWeps(IEnumerable<int> ids, IEnumerable<int> reinfs)
+        {
+            if (ids.Count() != reinfs.Count()) throw new Exception("Argument size mismatch");
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                WriteAtRHWepArray(i, ids.ElementAt(i));
+                WriteAtRHWepReinforceArray(i, reinfs.ElementAt(i));
+            }
+        }
+        public void WriteLHWeps(IEnumerable<int> ids, IEnumerable<int> reinfs)
+        {
+            if (ids.Count() != reinfs.Count()) throw new Exception("Argument size mismatch");
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                WriteAtLHWepArray(i, ids.ElementAt(i));
+                WriteAtLHWepReinforceArray(i, reinfs.ElementAt(i));
+            }
+        }
+        public void WriteItems(IEnumerable<int> ids, IEnumerable<short> quants)
+        {
+            if (ids.Count() != quants.Count()) throw new Exception("Argument size mismatch");
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                WriteAtItemArray(i, ids.ElementAt(i));
+                WriteAtItemQuantArray(i, quants.ElementAt(i));
+            }
+        }
+        public void WriteArrows(IEnumerable<int> ids, IEnumerable<short> quants)
+        {
+            if (ids.Count() != quants.Count()) throw new Exception("Argument size mismatch");
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                WriteAtArrowArray(i, ids.ElementAt(i));
+                WriteAtArrowAmountArray(i, quants.ElementAt(i));
+            }
+        }
+        public void WriteBolts(IEnumerable<int> ids, IEnumerable<short> quants)
+        {
+            if (ids.Count() != quants.Count()) throw new Exception("Argument size mismatch");
+            for (int i = 0; i < ids.Count(); i++)
+            {
+                WriteAtBoltArray(i, ids.ElementAt(i));
+                WriteAtBoltAmountArray(i, quants.ElementAt(i));
+            }
+        }
+
+        // wrappers
         private Param.Field GetField(int indexst)
         {
             // Trivial wrapper for convenience
