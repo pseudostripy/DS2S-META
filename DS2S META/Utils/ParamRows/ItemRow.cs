@@ -154,27 +154,6 @@ namespace DS2S_META.Utils
         internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
         internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
 
-
-        // Useful properties:
-        private List<eItemType> WepSpellsArmour = new() 
-        { eItemType.WEAPON1, 
-          eItemType.WEAPON2, 
-          eItemType.HEADARMOUR,
-          eItemType.CHESTARMOUR,
-          eItemType.GAUNTLETS,
-          eItemType.LEGARMOUR,
-          eItemType.SPELLS,
-        };
-        internal bool NeedsMadeUnique => WepSpellsArmour.Contains(ItemType);
-
-        public enum Offsets
-        {
-            ItemUsageID  = 0x44,
-            MaxHeld      = 0x4A,
-            BaseBuyPrice = 0x30,
-            ItemType     = 0x4F,
-        }
-
         // Constructor:
         public ItemRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {

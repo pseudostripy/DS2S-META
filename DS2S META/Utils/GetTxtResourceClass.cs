@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace DS2S_META
 {
+    // TODEPRECATE, see DS2Resource
     class GetTxtResourceClass
     {
         public static readonly string? ExeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);

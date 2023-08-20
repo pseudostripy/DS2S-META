@@ -368,6 +368,7 @@ namespace DS2S_META
             }
             public void WriteRow()
             {
+                if (Param.Pointer == null) throw new Exception("Missing table pointer");
                 Param.Pointer.WriteBytes(DataOffset, RowBytes);
             }
             public string GetName()

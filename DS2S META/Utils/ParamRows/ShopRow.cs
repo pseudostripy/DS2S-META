@@ -12,7 +12,7 @@ namespace DS2S_META.Randomizer
     /// This class provides easier access to the shop substructure fields
     /// of ShopLineupParam
     /// </summary>
-    internal class ShopRow : Param.Row
+    public class ShopRow : Param.Row
     {
         // Behind-fields
         private int _itemid;
@@ -89,17 +89,6 @@ namespace DS2S_META.Randomizer
         }
 
         internal ItemRow ItemParam => RandomizerManager.VanillaItemParams[ItemID];
-        internal int VanillaBasePrice
-        {
-            get
-            {
-                if (!RandomizerManager.TryGetItem(ItemID, out var item))
-                    return -1;
-                if (item == null)
-                    return -1;
-                return item.BaseBuyPrice;
-            }
-        }
         internal string? ParamDesc => Desc;
 
         internal int CopyShopFromParamID = 0;

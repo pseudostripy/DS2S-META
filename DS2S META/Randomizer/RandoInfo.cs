@@ -568,13 +568,29 @@ namespace DS2S_META.Randomizer
         LINKEDSLAVE, // Rules are defined by some other drop that was defined and linked
     }
 
+    internal class RandoInfo2
+    {
+        internal string AreaString;
+        internal string EnemyName;
+        internal int ID;
+        internal bool IsDirect;
+
+        internal RandoInfo2(string? areastring, string enemyname, int paramid, bool directlot)
+        {
+            AreaString = areastring ?? "cantfindmap";
+            EnemyName = enemyname;
+            ID = paramid;
+            IsDirect = directlot;
+        }
+    }
+
     internal class RandoInfo
     {
         internal MapArea Area;
         internal string? Description;
         internal PICKUPTYPE[] PickupTypes;
         internal List<KeySet> KSO; // KeySet Options
-        internal RDZ_STATUS RandoHandleType { get; set; }
+        internal RDZ_TASKTYPE RandoHandleType { get; set; }
         internal int RefInfoID = 0;
         internal readonly NodeKey NodeKey;
         internal bool IsKeyless => KSO.Count == 0 
@@ -589,7 +605,7 @@ namespace DS2S_META.Randomizer
             Description = "<EmptyRandoInfoDefaultString>";
             KSO = new List<KeySet>();
             PickupTypes = Array.Empty<PICKUPTYPE>();
-            RandoHandleType = RDZ_STATUS.UNDEFINED;
+            RandoHandleType = RDZ_TASKTYPE.UNDEFINED;
             NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, List<KeySet> kso)
@@ -598,7 +614,7 @@ namespace DS2S_META.Randomizer
             Description = desc;
             PickupTypes = new PICKUPTYPE[] { type };
             KSO = kso;
-            RandoHandleType = RDZ_STATUS.STANDARD;
+            RandoHandleType = RDZ_TASKTYPE.STANDARD;
             NodeKey = new NodeKey(Area, KSO);
         }
         internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, List<KeySet> kso)
@@ -607,10 +623,10 @@ namespace DS2S_META.Randomizer
             Description = desc;
             PickupTypes = types;
             KSO = kso;
-            RandoHandleType = RDZ_STATUS.STANDARD;
+            RandoHandleType = RDZ_TASKTYPE.STANDARD;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, List<KeySet> kso)
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -619,7 +635,7 @@ namespace DS2S_META.Randomizer
             RandoHandleType = handletype;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_STATUS handletype, int refID, List<KeySet> kso)
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, int refID, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -629,7 +645,7 @@ namespace DS2S_META.Randomizer
             RefInfoID = refID;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_STATUS handletype, List<KeySet> kso)
+        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_TASKTYPE handletype, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -640,7 +656,7 @@ namespace DS2S_META.Randomizer
         }
 
 
-        internal bool HasType(List<PICKUPTYPE> checklist)
+        internal bool HasType(IEnumerable<PICKUPTYPE> checklist)
         {
             return PickupTypes.Any(checklist.Contains);
         }

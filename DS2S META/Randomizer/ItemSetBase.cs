@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using DS2S_META.Utils.ParamRows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace DS2S_META.Randomizer
     internal abstract class ItemSetBase
     {
         // All others are simply the NGplus paramID rounded to nearest 10
-        internal List<LinkNGDrop> LinkedNGs = new() { new LinkNGDrop(675000, 675010) };
+        
         internal List<LinkedDrop> LinkedDrops = new()
         {
             StraightCopy(318000, 60008000), // Pursuer Fight/Platform
@@ -90,56 +91,10 @@ namespace DS2S_META.Randomizer
         };
 
 
-        internal static List<PICKUPTYPE> BanGeneralTypes = new()
-        {
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.CROWS, // handled separately
-        };
-        internal List<PICKUPTYPE> BanFromLoot = new()
-        {
-            // List of places where loot cannot come from:
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
-        };
-        internal List<PICKUPTYPE> BanFromBeingRandomized = new()
-        {
-            // List of places where loot cannot come from:
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
-            PICKUPTYPE.COVENANTHARD,
-        };
+        
+        
 
-        internal List<int> CrowDuplicates = new()
-        {
-            // Prism: keep C loot:
-            50000300, // B loot from prism
-            50000301, // A loot from prism
-            50000302, // S loot from prism
-
-            // Small silky: keep B loot:
-            50000001, // A loot from small silky
-            50000002, // S loot from small silky
-            50000003, // C loot from small silky
-
-            // Silky: keep A loot
-            50000100, // B loot from silky
-            50000102, // S loot from silky
-            50000103, // C loot from silky
-
-            // Petrified: keep S loot
-            50000200, // B loot from petrified
-            50000201, // A loot from petrified
-            50000203, // C loot from petrified
-        };
+        
         
         internal static List<DropInfo> FillerItems = new()
         {
@@ -349,15 +304,7 @@ namespace DS2S_META.Randomizer
             KEYID.NADALIAFRAGMENT,
             KEYID.PHARROSLOCKSTONE,
         };
-        internal string GetDesc(int paramid)
-        {
-            bool found = Dold.ContainsKey(paramid);
-            if (!found)
-                return "";
-
-            return Dold[paramid].Description?? "";
-        }
-
+        
         // Overloads for quick construction, single or no key requirements:
         internal static RandoInfo ShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -371,34 +318,34 @@ namespace DS2S_META.Randomizer
         internal static RandoInfo ShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
         internal static RandoInfo EvShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
         internal static RandoInfo TradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.UNLOCKTRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.UNLOCKTRADE, kso);
         }
         internal static RandoInfo FreeTradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.FREETRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.FREETRADE, kso);
         }
         internal static RandoInfo TradeShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // awkward Ornifex things
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.TRADE_SHOP_COPY, refid, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.TRADE_SHOP_COPY, refid, kso);
         }
         internal static RandoInfo ShopRemoveInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPREMOVE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPREMOVE, kso);
         }
         internal static RandoInfo ShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // not randomized, just copied from copyfromID
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.FILL_BY_COPY, refid, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.FILL_BY_COPY, refid, kso);
         }
         internal static RandoInfo NpcInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -446,7 +393,7 @@ namespace DS2S_META.Randomizer
         }
         internal static RandoInfo CrowsInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_STATUS.CROWS, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_TASKTYPE.CROWS, kso);
         }
         internal static RandoInfo UnresolvedInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -490,13 +437,10 @@ namespace DS2S_META.Randomizer
         {
             return types;
         }
-        
-        internal void AppendKvp(KeyValuePair<int, RandoInfo> kvp) 
-        {
-            Dold.Add(kvp.Key, kvp.Value);
-        }
 
         
+
+
         internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
         {
             return placedSoFar.Contains((int)kid);
@@ -514,10 +458,10 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        // To implement:
-        protected Dictionary<int, RandoInfo> Dold = new();
-        internal Dictionary<string, RandoInfo> D = new();
-        internal abstract void SetupItemSet();
+        // To remove?:
+        //protected Dictionary<int, RandoInfo> Dold = new();
+        //internal Dictionary<string, RandoInfo> D = new();
+        //internal abstract void SetupItemSet();
 
 
     }

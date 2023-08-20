@@ -136,6 +136,9 @@ namespace DS2S_META.Utils
 
         // Rows shorthand
         public static IEnumerable<ItemRow> ItemRows => ItemParam.AsRows<ItemRow>();
+        public static IEnumerable<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>();
+        public static IEnumerable<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>();
+        public static IEnumerable<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>();
         public static IEnumerable<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>();
 
         public static void Initialise(DS2SHook hook)
@@ -173,6 +176,9 @@ namespace DS2S_META.Utils
         }
         private static void AddMemoryParams(List<Param> paramList, string paramPath, string path, string[] pointers)
         {
+            if (Hook == null)
+                throw new Exception("shouldn't get here");
+
             foreach (string entry in pointers)
             {
                 if (!Util.IsValidTxtResource(entry))
@@ -256,7 +262,7 @@ namespace DS2S_META.Utils
 
                 case "ITEM_LOT_PARAM2":
                     if (param.Name == "ITEM_LOT_OTHER")
-                        param.initialise<ItemWLotRow>();
+                        param.initialise<ItemLotRow>();
                     else
                         param.initialise<ItemDropRow>();
                     break;

@@ -54,8 +54,6 @@ namespace DS2S_META
         public static bool Reading { get; set; }
         public bool IsLoading => LoadingState != null && Offsets.LoadingState != null && LoadingState.ReadBoolean(Offsets.LoadingState[^1]);
 
-        public List<ItemRow> Items = new();
-
         private PHPointer GiveSoulsFunc;
         private PHPointer RemoveSoulsFunc;
         private PHPointer ItemGiveFunc;
@@ -196,7 +194,6 @@ namespace DS2S_META
 
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
-            GetVanillaItems();
             GetLevelRequirements();
 
             UpdateStatsProperties();
@@ -917,13 +914,6 @@ namespace DS2S_META
 //            Debug.WriteLine("");
 //        }
 //#endif
-
-        public enum SPECIAL_EFFECT
-        {
-            RESTOREHUMANITY = 100000010,
-            BONFIREREST = 110000010,
-            AREALOAD_POSSIBLY = 130000010,
-        }
         internal void RestoreHumanity()
         {
             ApplySpecialEffect((int)SPECIAL_EFFECT.RESTOREHUMANITY);
@@ -1234,7 +1224,7 @@ namespace DS2S_META
 
 
 
-        
+        // TODO put somewhere more meaningful
         public enum GIVEOPTIONS
         {
             DEFAULT,
@@ -1916,21 +1906,7 @@ namespace DS2S_META
             if (SomePlayerStats == null) return 0;
             return SomePlayerStats.ReadInt32(tbo + 36 * (int)bnstype);
         }
-        internal void GetVanillaItems()
-        {
-            if (ParamMan.ItemParam == null)
-                throw new NullReferenceException("Should be loaded by this point I think");
-            Items = ParamMan.ItemParam.Rows.OfType<ItemRow>().ToList();
-
-            foreach (var item in Items)
-            {
-                var temp = DS2SItemCategory.AllItems.Where(ds2item => ds2item.ID == item.ID).FirstOrDefault();
-                if (temp == null)
-                    continue;
-                item.MetaItemName = temp.Name;
-            }
-            return;
-        }
+        
         // TODO ARCHAIC
         internal bool GetIsDroppable(ItemRow item)
         {
