@@ -29,7 +29,7 @@ namespace DS2S_META.Randomizer
             if (area == MapArea.Undefined || area == MapArea.Quantum)
                 return; // no dist on these!
 
-            SteinerNodes.Add(RandomizerManager.Map2Id[area]);
+            SteinerNodes.Add(Steiner.Map2Id[area]);
         }
         internal void AddStein(int ID)
         {

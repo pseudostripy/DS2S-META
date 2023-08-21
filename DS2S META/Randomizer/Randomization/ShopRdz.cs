@@ -63,7 +63,7 @@ namespace DS2S_META.Randomizer
             // Update:
             ShuffledShop.SetValues(di, VanillaShop, pricerate);
         }
-        internal override bool HasShuffledItemID(int itemID)
+        internal override bool HasShuffledItemId(int itemID)
         {
             if (ShuffledShop == null)
                 return false;

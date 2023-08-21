@@ -139,11 +139,6 @@ namespace DS2S_META
         //RatKingCovenant,
         //BellKeepers,
     };
-    public enum DROPPARAMID
-    {
-        LICIAHEIDES = 76900000,
-        DUKETSELDORA = 1140300,
-    }
     public enum SPECIAL_EFFECT
     {
         RESTOREHUMANITY = 100000010,

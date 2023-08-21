@@ -47,7 +47,7 @@ namespace DS2S_META.Randomizer
             if (ShuffledLot.NumDrops > VanillaLot?.NumDrops)
                 throw new Exception("Shouldn't be able to get here!");
         }
-        internal override bool HasShuffledItemID(int itemID)
+        internal override bool HasShuffledItemId(int itemID)
         {
             if (ShuffledLot == null)
                 return false;

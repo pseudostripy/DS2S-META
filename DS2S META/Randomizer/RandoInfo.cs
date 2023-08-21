@@ -101,7 +101,7 @@ namespace DS2S_META.Randomizer
         FOURFORLORN     = 0xDEA,    // AldiasKeep && Torch
         BELLKEEPERSCOV  = 0xDEB,    // BelfryLuna || BelfrySol
 
-        // Actual Key Item IDs: (TODO)
+        // Actual Key Item IDs:
         SOLDIER         = 50600000,
         FORGOTTEN       = 50820000,
         TOWER           = 52400000,
@@ -675,20 +675,6 @@ namespace DS2S_META.Randomizer
         internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytypes)
         {
             return PickupTypes.All(onlytypes.Contains);
-        }
-
-        internal bool IsSoftlockPlacement(List<int> placedSoFar)
-        {
-            // Try each different option for key requirements
-            if (KSO.Count == 0)
-                return false; // can't cause a softlock if there's no restrictions
-
-            foreach (var keyset in KSO)
-            {
-                if (keyset.Keys.All(kid => ItemSetBase.IsPlaced(kid, placedSoFar)))
-                    return false; // NOT SOFT LOCKED all required keys are placed for at least one Keyset
-            }
-            return true; // No keyset has all keys placed yet, so this is dangerous; try somewhere else
         }
     };
 

@@ -193,7 +193,7 @@ namespace DS2S_META
                 return false;
             };
 
-            item = ParamMan.GetItemFromID(id); // get weapon
+            item = id.AsItemRow(); // get weapon
             return item != null;
         }
 

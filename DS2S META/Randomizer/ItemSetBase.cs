@@ -37,65 +37,6 @@ namespace DS2S_META.Randomizer
         }
 
         // Other Logic related things:
-        internal static List<PICKUPTYPE> BanKeyTypes = new()
-        {
-            PICKUPTYPE.NPC,
-            PICKUPTYPE.VOLATILE,
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.COVENANTEASY,
-            PICKUPTYPE.COVENANTHARD,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.NGPLUS,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.WOODCHEST,
-            PICKUPTYPE.SHOP,        // For now
-            PICKUPTYPE.EVSHOP,      // For now
-            PICKUPTYPE.ENEMYDROP,   // For now
-            PICKUPTYPE.GUARANTEEDENEMYDROP,   // For now
-            PICKUPTYPE.CROWS,
-        };
-
-        internal static List<PICKUPTYPE> FullySafeFlags = new()
-        {
-           PICKUPTYPE.NONVOLATILE,
-           PICKUPTYPE.BOSS,
-           PICKUPTYPE.METALCHEST,
-         };
-        internal static List<PICKUPTYPE> HalfSafe = new()
-        {
-           PICKUPTYPE.NONVOLATILE,
-           PICKUPTYPE.BOSS,
-           PICKUPTYPE.GUARANTEEDENEMYDROP,
-           PICKUPTYPE.WOODCHEST,
-           PICKUPTYPE.METALCHEST,
-           PICKUPTYPE.SHOP, // not evshop though
-         };
-
-        internal static Dictionary<eItemType, List<PICKUPTYPE>> ItemAllowTypes = new()
-        {
-            { eItemType.RING, HalfSafe },
-            { eItemType.SPELLS, HalfSafe },
-        };
-
-        internal static Dictionary<int, List<PICKUPTYPE>> ManuallyRequiredItemsTypeRules = new()
-        {
-            // Add here / refactor as required.
-            //{ 60155000, FullySafeFlags },    // Estus Flask
-            { 0x039B89C8, FullySafeFlags },  // Estus Flask Shard
-            { 0x039B8DB0, FullySafeFlags },  // Sublime Bone Dust
-            //{ 05400000, FullySafeFlags },    // Pyromancy Flame
-            //{ 05410000, FullySafeFlags },    // Dark Pyromancy Flame 
-            //{ 60355000, FullySafeFlags },    // Aged Feather
-            //{ 40420000, FullySafeFlags },    // Silvercat Ring
-        };
-
-
-        
-        
-
-        
-        
         internal static List<DropInfo> FillerItems = new()
         {
             new DropInfo(0x0393AE10, 3), // Lifegem
@@ -441,10 +382,7 @@ namespace DS2S_META.Randomizer
         
 
 
-        internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
-        {
-            return placedSoFar.Contains((int)kid);
-        }
+        
         internal void FixGUID_AddRandoInfo(List<Randomization> rdzs)
         {
             foreach (var rdz in rdzs)

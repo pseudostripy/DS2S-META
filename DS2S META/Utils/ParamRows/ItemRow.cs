@@ -147,6 +147,7 @@ namespace DS2S_META.Utils
             }
         }
         internal bool HasName => MetaItemName != string.Empty;
+        internal bool IsWeaponType => ItemType == eItemType.WEAPON1 || ItemType == eItemType.WEAPON2;
 
         // Linked Params:
         internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);

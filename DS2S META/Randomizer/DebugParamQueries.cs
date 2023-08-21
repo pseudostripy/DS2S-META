@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
@@ -90,7 +91,27 @@ namespace DS2S_META.Randomizer
             paramrow = null;
             return false;
         }
-    
+
+        internal static Dictionary<int, string> ReadShopNames()
+        {
+            Dictionary<int, string> shopnames = new();
+
+            // Read all:
+            var lines = File.ReadAllLines("./Resources/Paramdex_DS2S_09272022/ShopLineupParam.txt");
+
+            // Setup parser:
+            Regex re = new(@"(?<paramid>\d+) (?<desc>.*)");
+            foreach (var line in lines)
+            {
+                var match = re.Match(line);
+                int paramid = int.Parse(match.Groups["paramid"].Value);
+                string desc = match.Groups["desc"].Value;
+                shopnames.Add(paramid, desc);
+            }
+            return shopnames;
+
+        }
+
         internal static void QueryTesting()
         {
             //var testx = AllPtf.OfType<ShopRdz>()

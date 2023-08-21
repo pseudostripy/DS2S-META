@@ -113,9 +113,9 @@ namespace DS2S_META
         private void CreateItemRestrictions()
         {
             // to reconsider structure
-            RM.Restrictions = new();
+            RM.UIRestrictions = new();
             var vm = (RandoSettingsViewModel)DataContext;
-            RM.Restrictions = vm.ItemRestrictions.Select(ir => ir).ToList();
+            RM.UIRestrictions = vm.ItemRestrictions.Select(ir => ir).ToList();
         }
         
 

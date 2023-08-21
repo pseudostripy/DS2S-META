@@ -88,7 +88,6 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        internal ItemRow ItemParam => RandomizerManager.VanillaItemParams[ItemID];
         internal string? ParamDesc => Desc;
 
         internal int CopyShopFromParamID = 0;

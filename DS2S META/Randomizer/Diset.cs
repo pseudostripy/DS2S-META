@@ -18,6 +18,8 @@ namespace DS2S_META.Randomizer
         public SetType Type { get; set; }
         public IEnumerable<DropInfo> Data { get; set; }
 
+        public bool IsKeys => Type == SetType.Keys;
+
         // Constructors
         public Diset(SetType type, IEnumerable<DropInfo> data) 
         { 

@@ -41,6 +41,11 @@ namespace DS2S_META.Randomizer.Placement
 
         // Wider logic utility
         public static List<REASON> LogicPasses = new() { REASON.NORESTRICTION, REASON.INDISTLOGIC };
+        public static List<REASON> SoftFails = new() { REASON.TOONEAR, REASON.TOOFAR };
         public bool Passed => LogicPasses.Contains(Reason);
+        public bool SoftFail => SoftFails.Contains(Reason);
+        public bool HardFail => Reason == REASON.INCALCULABLE;
+        public bool FailTooNear => Reason == REASON.TOONEAR;
+        public bool FailTooFar => Reason == REASON.TOOFAR;
     }
 }

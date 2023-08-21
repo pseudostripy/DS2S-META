@@ -38,6 +38,8 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(VisDistSettings));
             }
         }
+        public bool IsVanillaType => RestrType == RestrType.Vanilla;
+
         public Visibility VisDistSettings => RestrType == RestrType.Distance ? Visibility.Visible : Visibility.Collapsed;
         private int _distMin = LIMDISTMIN;
         public int DistMin

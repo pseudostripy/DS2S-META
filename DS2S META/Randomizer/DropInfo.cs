@@ -61,7 +61,7 @@ namespace DS2S_META.Randomizer
         internal bool IsReqType { 
             get
             {
-                var item = ParamMan.GetItemFromID(ItemID);
+                var item = ItemID.AsItemRow();
                 if (item == null) return false;
 
                 if (ReqTypes.Contains(item.ItemType)) // To generisize

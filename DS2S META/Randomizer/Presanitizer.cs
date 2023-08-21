@@ -48,15 +48,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.LINKEDSLAVE,
             PICKUPTYPE.COVENANTHARD,
         };
-        internal static List<PICKUPTYPE> BanGeneralTypes = new()
-        {
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.CROWS, // handled separately
-        };
         internal List<PICKUPTYPE> BanFromLoot = new()
         {
             // List of places where loot cannot come from:

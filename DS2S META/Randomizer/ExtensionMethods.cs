@@ -15,10 +15,6 @@ namespace DS2S_META
 {
     internal static class ExtensionMethods
     {
-        public static bool IsKeys(this SetType settype) => settype == SetType.Keys;
-        public static bool IsReqs(this SetType settype) => settype == SetType.Reqs;
-        public static bool IsGens(this SetType settype) => settype == SetType.Gens;
-
         // Common filtering queries:
         public static IEnumerable<DropInfo> FilterByItem(this IEnumerable<DropInfo> dropinfos, params ITEMID[] items)
         {
@@ -47,6 +43,10 @@ namespace DS2S_META
         public static IEnumerable<ItemRow> FilterOutUsage(this IEnumerable<ItemRow> itemrows, params ITEMUSAGE[] baduses)
         {
             return itemrows.Where(it => !baduses.Cast<int>().Contains(it.ItemUsageID));
+        }
+        public static IEnumerable<Randomization> FilterByVanillaItem(this IEnumerable<Randomization> rdzs, int itemid)
+        {
+            return rdzs.Where(rdz => rdz.HasVanillaItemID(itemid));
         }
         public static IEnumerable<Randomization> FilterByTaskType(this IEnumerable<Randomization> rdzs, params RDZ_TASKTYPE[] allowtasks)
         {
@@ -80,7 +80,6 @@ namespace DS2S_META
             return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains));
         }
 
-
         // Randomness helpers
         public static T RandomElement<T>(this IEnumerable<T> pool) => pool.ElementAt(Rng.Next(pool.Count()));
         public static IEnumerable<T> RandomElements<T>(this IEnumerable<T> pool, int count)
@@ -112,6 +111,7 @@ namespace DS2S_META
             return string.Empty;
         }
         public static ItemRow AsItemRow(this int itemid) => ParamMan.ItemRows.Where(ir => ir.ItemID == itemid).First();
+        public static ItemRow? TryAsItemRow(this int itemid) => ParamMan.ItemRows.Where(ir => ir.ItemID == itemid).FirstOrDefault();
         public static ItemRow AsItemRow(this DropInfo di) => ParamMan.ItemRows.Where(ir => ir.ItemID == di.ItemID).First();
         public static IEnumerable<T> AsRows<T>(this Param? param)
         {
@@ -125,7 +125,6 @@ namespace DS2S_META
             return CasualItemSet.DropData?[paramid] ?? throw new Exception("Not initialized");
         }
         public static RandoInfo GetShopRandoInfo(this int paramid) => CasualItemSet.ShopData[paramid];
-
 
         // More general methods:
         public static string[] RegexSplit(this string source, string pattern) => Regex.Split(source, pattern);

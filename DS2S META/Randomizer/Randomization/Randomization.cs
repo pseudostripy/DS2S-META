@@ -42,7 +42,8 @@ namespace DS2S_META.Randomizer
         internal abstract string PrintData();
         internal abstract bool IsSaturated();
         internal abstract void AddShuffledItem(DropInfo item);
-        internal abstract bool HasShuffledItemID(int itemID);
+        internal bool HasShuffledItemId(ITEMID itemid) => HasShuffledItemId((int)itemid);
+        internal abstract bool HasShuffledItemId(int itemID);
         internal abstract bool HasVanillaItemID(int itemID);
         internal bool HasVanillaItemID(ITEMID id) => HasVanillaItemID((int)id);
         internal bool HasVanillaAnyItemID(List<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
@@ -62,19 +63,14 @@ namespace DS2S_META.Randomizer
             if (RandoInfo == null) return false; // TODO?
             return RandoInfo.ContainsOnlyTypes(onlytpes);
         }
-        internal bool IsSoftlockPlacement(List<int> placedSoFar)
-        {
-            // Wrapper
-            if (RandoInfo == null) throw new Exception();
-            return RandoInfo.IsSoftlockPlacement(placedSoFar);
-        }
         protected static int RoundUpNearestMultiple(int val, int m)
         {
             return (int)Math.Ceiling((double)val / m) * m;
         }
         protected static int GetTypeRandomPrice(int itemid)
         {
-            if (!RandomizerManager.TryGetItem(itemid, out var item) || item == null)
+            var item = itemid.TryAsItemRow();
+            if (item == null)
                 return Rng.RandomGammaInt(3000, 50); // generic guess
 
             return item.ItemType switch
@@ -128,6 +124,9 @@ namespace DS2S_META.Randomizer
                     return;
             }
         }
+
+
+        
 
         internal bool IsStandardHT => Type == RDZ_TASKTYPE.STANDARD;
         internal bool IsExcludedHT => Type == RDZ_TASKTYPE.EXCLUDE;

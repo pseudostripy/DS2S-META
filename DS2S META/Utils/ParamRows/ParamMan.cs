@@ -366,14 +366,6 @@ namespace DS2S_META.Utils
                 return default;
             return lookup.First();
         }
-        public static ItemRow? GetItemFromID(int id)
-        {
-            // Just a useful QOL to avoid replicating code everywhere
-            if (ItemParam == null)
-                throw new Exception("Weapon param table not initialised");
-
-            return ItemParam.Rows.FirstOrDefault(row => row.ID == id) as ItemRow;
-        }
         public static WeaponRow? GetWeaponFromID(int? id)
         {
             if (id == null) return null;
