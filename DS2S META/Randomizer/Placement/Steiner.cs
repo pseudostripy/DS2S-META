@@ -430,7 +430,18 @@ namespace DS2S_META.Randomizer.Placement
             return src;
         }
 
+        public int GetSteinerTreeDist(NodeKey nodekey, out List<int> steinsol)
+        {
+            // get node we're trying to place into
+            var node = Nodes[nodekey];
+            if (node.IsLocked)
+                throw new Exception("Shouldn't get here. Locked rdzs should have been caught in SoftlockRes checks");
+            var terminals = node.SteinerNodes;
 
+            if (RandoGraph == null)
+                throw new Exception("Steiner class not intiialized");
+            return SteinerTreeDist(RandoGraph, terminals, out steinsol);
+        }
         private static int SteinerTreeDist(int[,] graph, List<int> terminals, out List<int> steinsol)
         {
             // Guard clauses:

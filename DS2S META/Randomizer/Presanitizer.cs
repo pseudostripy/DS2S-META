@@ -111,6 +111,11 @@ namespace DS2S_META.Randomizer
             SetupAllPtf();          // AllPtf
             GetLootToRandomize();   // LTR_Flatlist
         }
+        internal void Reinitialize()
+        {
+            foreach (var rdz in AllPtf)
+                rdz.ResetShuffled();
+        }
 
         // Core:
         internal void SetupAllPtf()

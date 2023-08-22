@@ -678,7 +678,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(HiddenSanctumChamber));
             OnPropertyChanged(nameof(LairOfTheImperfect));
             OnPropertyChanged(nameof(SanctumInterior));
-            OnPropertyChanged(nameof(TowerofPrayerAmana));
+            OnPropertyChanged(nameof(TowerOfPrayerAmana));
             OnPropertyChanged(nameof(SanctumNadir));
             OnPropertyChanged(nameof(ThroneFloor));
             OnPropertyChanged(nameof(UpperFloor));

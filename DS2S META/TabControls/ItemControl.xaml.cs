@@ -32,7 +32,7 @@ namespace DS2S_META
         // Setup stuff:
         public override void InitTab()
         {
-            cmbCategory.ItemsSource = DS2SItemCategory.All;
+            cmbCategory.ItemsSource = DS2Resource.ItemCategories;
             cmbCategory.SelectedIndex = 0;
             FilterItems();
             InventoryTimer.Interval = 100;

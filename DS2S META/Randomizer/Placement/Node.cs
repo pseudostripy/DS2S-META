@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Randomizer
+namespace DS2S_META.Randomizer.Placement
 {
     /// <summary>
     /// A group of Rdzs that exactly share MapArea & KeySet
@@ -17,7 +17,7 @@ namespace DS2S_META.Randomizer
         // MapAreasMinimally visited nodes for unlock
         internal List<int> SteinerNodes = new();        // nodes stored by integer ID
         internal List<MapArea> SteinerNodesMA = new();  // as above but human readable
-        
+
         // Properties
         internal bool IsUnlocked => SteinerNodes.Count != 0;
         internal bool IsLocked => !IsUnlocked;
@@ -34,7 +34,7 @@ namespace DS2S_META.Randomizer
         internal void AddStein(int ID)
         {
             SteinerNodes.Add(ID);
-            SteinerNodesMA.Add(RandomizerManager.Id2Map[ID]);
+            SteinerNodesMA.Add(Steiner.Id2Map[ID]);
         }
 
         // Constructor:
@@ -47,7 +47,7 @@ namespace DS2S_META.Randomizer
             if (NodeKey.IsKeyless)
             {
                 AddStein(MapArea.ThingsBetwixt);
-                
+
                 if (NodeKey.Area == MapArea.ThingsBetwixt)
                     return; // done
 

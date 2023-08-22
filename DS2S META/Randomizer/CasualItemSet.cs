@@ -41,13 +41,8 @@ namespace DS2S_META.Randomizer
             ShopData = SetupShopsDictionary();    // shops
         }
 
-        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE)
-        {
-            // Shorthand wrapper:
-            var test = RandoLogicHelper.KeyLogic(keyid);
-            return test;
-        }
-        internal static void AssignDropDescriptions(){ DropDescriptions = DebugParamQueries.ActiveDropDescriptions(); }
+        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE) => RandoLogicHelper.KeyLogic(keyid);
+        internal static void AssignDropDescriptions(){ DropData = DebugParamQueries.ActiveDropDescriptions(); }
         
         
         internal static Dictionary<int, RandoInfo> SetupShopsDictionary()

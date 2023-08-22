@@ -27,7 +27,7 @@ namespace DS2S_META
         public StatsControl()
         {
             InitializeComponent();
-            foreach (DS2SClass charClass in DS2SClass.All)
+            foreach (DS2SClass charClass in DS2Resource.Classes)
                 cmbClass.Items.Add(charClass);
             cmbClass.SelectedIndex = -1;
         }

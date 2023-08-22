@@ -57,21 +57,7 @@ namespace DS2S_META.Randomizer
 
         // Properties:
         internal bool IsKeyType => Enum.IsDefined(typeof(KEYID), ItemID);
-        internal static List<eItemType> ReqTypes = new(){ eItemType.RING, eItemType.SPELLS };
-        internal bool IsReqType { 
-            get
-            {
-                var item = ItemID.AsItemRow();
-                if (item == null) return false;
-
-                if (ReqTypes.Contains(item.ItemType)) // To generisize
-                    return true;
-                if (ItemSetBase.ManuallyRequiredItemsTypeRules.ContainsKey(ItemID))
-                    return true;
-                return false;
-            } 
-        }
-
+                
         // Query Utility
         internal bool HasItem(int itemid) => ItemID == itemid;
         internal bool HasItem(ITEMID itemid) => HasItem((int)itemid);

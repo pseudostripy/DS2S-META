@@ -22,8 +22,8 @@ namespace DS2S_META
     public partial class DmgCalcControl : METAControl
     {
         // Fields:
-        private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
-        private DS2SItem? SelDs2item;
+        //private List<DS2SItem> Weapons => DS2Resource.Weapons; // shorthand
+        //private DS2SItem? SelDs2item;
         //private WeaponRow Wep;
         internal ItemRow? Item;
         Timer InventoryTimer = new Timer();

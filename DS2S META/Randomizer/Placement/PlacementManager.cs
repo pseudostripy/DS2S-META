@@ -24,7 +24,8 @@ namespace DS2S_META.Randomizer.Placement
         internal IEnumerable<Diset> Disets { get; set; }
         internal Presanitizer Scope { get; set; }
         internal Steiner Steiner { get; set; }
-        internal List<ItemRestriction> Restrictions;
+        internal List<Restriction> Restrictions;
+        internal Dictionary<int,MinMax> DistRestr;
 
         private List<DropInfo> LTR => Scope.LTR_flatlist; // shorthand
         private List<Randomization> PTF => Scope.AllPtf;
@@ -36,6 +37,9 @@ namespace DS2S_META.Randomizer.Placement
         private static Randomization? MinElligRdz;
         private static Randomization? MaxElligRdz;
         private static Randomization? RecentBestRdz;
+        internal List<Randomization> ReservedRdzs;
+        internal static List<int> VanItems;
+
 
         // Enums/definitions
         internal static List<PICKUPTYPE> FullySafeFlags = new()
@@ -90,15 +94,25 @@ namespace DS2S_META.Randomizer.Placement
         };
         private static IEnumerable<int> IntArray(params int[] values) { return  values; }
         internal List<Randomization> RdzMajors;
+        internal static List<eItemType> RequiredTypes = new() { eItemType.SPELLS, eItemType.WEAPON1, eItemType.WEAPON2 }; // todecprecate?
+
+
 
         // Constructor
-        public PlacementManager(Presanitizer scope, List<ItemRestriction> uiRestrictions) 
+        public PlacementManager(Presanitizer scope, IEnumerable<Restriction> restrictions) 
         {
             Scope = scope;
-            Restrictions = uiRestrictions;
+            Restrictions = restrictions.ToList();
             CreateDisets();
             CreateRdzMajors();
             Steiner = new Steiner(this, scope);
+        }
+        public void Intialize()
+        {
+            // More lists for faster lookups
+            VanItems = Restrictions.FilterByType(RestrType.Vanilla).Select(restr => restr.ItemId).ToList();
+            ReservedRdzs = Scope.AllPtf.Where(rdz => rdz.HasVanillaAnyItemID(VanItems)).ToList();
+            DistRestr = Restrictions.FilterByType(RestrType.Distance).ToDictionary(r => r.ItemId, r => r.Dist);
         }
 
         // Setup
@@ -110,19 +124,21 @@ namespace DS2S_META.Randomizer.Placement
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
             var keys = flcopy.Where(di => di.IsKeyType).ToList();                                  // Keys
             var flNoKeys = flcopy.Except(keys);
-            var reqs = flNoKeys.Where(di => di.IsReqType || IsRestrictedItem(di.ItemID)).ToList(); // Reqs
+            var reqs = flNoKeys.Where(di => IsRequiredType(di.ItemID) || IsRestrictedItem(di.ItemID)).ToList(); // Reqs
             var gens = flNoKeys.Except(reqs).ToList();                                           // Generics
 
             // Create group objects for placement
             Disets = new List<Diset>()
             {
-                Diset.FromKeys(keys),
-                Diset.FromReqs(reqs),
-                Diset.FromGens(gens),
+                FromKeys(keys),
+                FromReqs(reqs),
+                FromGens(gens),
             };
         }
-        private bool IsRestrictedItem(int itemid) => Restrictions.Any(rs => rs.ItemID == itemid);
-        private bool IsVanillaRestricted(int itemid) => Restrictions.Where(rs => rs.IsVanillaType).Any(rs => rs.ItemID != itemid);
+        private bool IsRestrictedItem(int itemid) => Restrictions.Any(rs => rs.ItemId == itemid);
+        private bool IsVanillaRestricted(int itemid) => Restrictions.FilterByType(RestrType.Vanilla).Any(rs => rs.ItemId != itemid);
+        private static bool IsRequiredType(int itemid) => RequiredTypes.Contains(itemid.AsItemRow().ItemType);
+        
 
         // Core
         internal void Randomize()
@@ -374,8 +390,8 @@ namespace DS2S_META.Randomizer.Placement
             // that they should pass softlock.
 
             // Check if special item or rdz
-            bool rdzReserved = ReservedRdzs.ContainsKey(rdz);
-            bool itemReserved = ReservedRdzs.ContainsValue(di.ItemID);
+            bool rdzReserved = ReservedRdzs.Contains(rdz);
+            bool itemReserved = VanItems.Contains(di.ItemID);
 
             // 00 - always pass
             if (!rdzReserved && !itemReserved)
@@ -388,7 +404,7 @@ namespace DS2S_META.Randomizer.Placement
             // 10 - conditional
             if (rdzReserved && !itemReserved)
             {
-                var isRdzFulfilled = rdz.HasShuffledItemID(ReservedRdzs[rdz]);
+                var isRdzFulfilled = VanItems.Any(vanitem => rdz.HasShuffledItemId(vanitem));
                 if (isRdzFulfilled)
                     return new ReservedRes(LOGICRES.SUCCESS); // Case 2 [already completed reservations]
                 else
@@ -398,7 +414,7 @@ namespace DS2S_META.Randomizer.Placement
             // 11 - conditional
             if (rdzReserved && itemReserved)
             {
-                if (ReservedRdzs[rdz] == di.ItemID)
+                if (rdz.HasVanillaItemID(di.ItemID))
                     return new ReservedRes(LOGICRES.SUCCESS_VANPLACE); // Case 3 [matched reservations]
                 else
                     return new ReservedRes(LOGICRES.FAIL_RESERVED); // each are reserved for other places
@@ -478,7 +494,7 @@ namespace DS2S_META.Randomizer.Placement
             // a) itemID has no distance restriction
             // b) itemID has distance restriction that is satisfied
 
-            if (!DistanceRestrictedIDs.TryGetValue(di.ItemID, out var minmax))
+            if (!DistRestr.TryGetValue(di.ItemID, out var minmax))
                 return DistanceRes.NoRestriction; // no distance restriction on item
 
             if (rdz is DropRdz)
@@ -487,13 +503,8 @@ namespace DS2S_META.Randomizer.Placement
             if (rdz.RandoInfo.Area == MapArea.Undefined || rdz.RandoInfo.Area == MapArea.Quantum)
                 return DistanceRes.Incalculable; // should be impossible to get here, left in as safety
 
-            // get node we're trying to place into
-            var node = Nodes[rdz.RandoInfo.NodeKey];
-            if (node.IsLocked)
-                throw new Exception("Should have been caught in SoftlockRes checks");
-
             // Calc "traversible distance" to this Rdz including required keys on passage.
-            int dist = SteinerTreeDist(RandoGraph, node.SteinerNodes, out var steinsol);
+            int dist = Steiner.GetSteinerTreeDist(rdz.RandoInfo.NodeKey, out var steinsol);
             //var _ = HelperListID2Maps(steinsol); // debugging
 
             // Breaking soft constraints:
@@ -546,7 +557,7 @@ namespace DS2S_META.Randomizer.Placement
 
             // Update softlock logic
             KeysPlacedSoFar.Add((int)keyenact);
-            Steiner.UpdateSteinerNodesOnKey(rdz.RandoInfo.NodeKey, keyenact);
+            Steiner.UpdateSteinerNodesOnKey(keyenact, rdz.RandoInfo.NodeKey);
         }
         
 

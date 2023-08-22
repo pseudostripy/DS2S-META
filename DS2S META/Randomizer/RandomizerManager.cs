@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Windows.Documents;
 using DS2S_META.Randomizer.Placement;
 using static System.Formats.Asn1.AsnWriter;
+using DS2S_META.Utils.ParamRows;
 
 namespace DS2S_META.Randomizer
 {
@@ -56,16 +57,15 @@ namespace DS2S_META.Randomizer
         internal List<DropInfo> ldkeys = new();         // all keys
         internal List<DropInfo> ldreqs = new();
         internal List<DropInfo> ldgens = new();
-        //
-        //private List<Randomization> UnfilledRdzs = new();
-        //private List<int> KeysPlacedSoFar = new();
+        
         
         internal int CurrSeed;
-        
+        internal IEnumerable<Restriction> Restrictions;
         
         internal IEnumerable<Diset> Disets; // Groups of itemtypes to be placed, eg. "Keys"
 
         internal Presanitizer Scope;
+        internal PlacementManager Placer;
 
         internal static int GetItemMaxUpgrade(ItemRow item)
         {
@@ -118,17 +118,12 @@ namespace DS2S_META.Randomizer
             SetSeed(seed);      // reset Rng Twister
             
             // todo moveto rerandomization setup
-            var Restrictions = SetupRestrictions();
+            SetupRestrictions();
             ResetForRerandomization();
-            CreateRdzMajors();
-
+            
             // Place sets of items:
-            var placer = new PlacementManager(Disets);
-            PlaceSet(ldkeys, SetType.Keys);
-            PlaceSet(ldreqs, SetType.Reqs);
-            PlaceSet(ldgens, SetType.Gens);
-            FillLeftovers();
-
+            Placer = new PlacementManager(Scope, Restrictions);
+            
             // Miscellaneous things to handle:
             HandleTrivialities();   // Simply mark done
             FixShopEvents();        // All additional shop processing & edge cases.
@@ -177,63 +172,39 @@ namespace DS2S_META.Randomizer
         {
             // - Split restrictions and assign to associated arrays
             // - Choose one from a group of items for this seed
-            ReservedRdzs = new();
-            DistanceRestrictedIDs = new();
-            
+            var restrictions = new List<Restriction>(); // preallocate empty
+                        
+            // volatile;
             int itemid;
+            MinMax minmax = new(0, 0) ;
 
-            // Choose each from the set:
-            foreach (var restr in UIRestrictions)
-                restr.ItemID = restr.ItemIDs[Rng.Next(restr.ItemIDs.Count)];
-            
             foreach( var irest in UIRestrictions)
             {
+                itemid = irest.ItemIDs.RandomElement(); // choose each from available set
+                
                 switch (irest.RestrType)
                 {
                     case RestrType.Anywhere:
+                    case RestrType.Vanilla:
+                        minmax = new MinMax(0, 0); // irrelevant
                         break; // no restriction
 
-                    case RestrType.Vanilla:
-                        // Draw random itemID from list of options:
-                        itemid = irest.ItemID;
-
-                        // Get vanillas:
-                        var rdzvans = AllPTF.Where(rdz => rdz.HasVanillaItemID(itemid)).ToList();
-                        if (rdzvans.Count == 0)
-                            throw new Exception("Cannot find the Vanilla placement");
-                        
-                        // Store each vanilla:
-                        foreach(var rdz in rdzvans)
-                            ReservedRdzs[rdz] = itemid; // store
-                        break;
-
                     case RestrType.Distance:
-                        DistanceRestrictedIDs[irest.ItemID] = new MinMax(irest.DistMin, irest.DistMax);
+                        minmax = new MinMax(irest.DistMin, irest.DistMax);
                         break;
                 }
+                var restr = new Restriction(irest.RestrType, itemid, minmax);
+                restrictions.Add(restr);
             }
 
-            // Shorthand
-            RestrictedItems = UIRestrictions.Select(restr => restr.ItemID).ToList();
+            // Store to class
+            Restrictions = restrictions;
         }
-        
-
-        
         private void ResetForRerandomization()
         {
             // Reset required arrays for the randomizer to work:
 
-            // Empty the shuffled places in preparation:
-            foreach (var rdz in AllP)
-                rdz.ResetShuffled();
             
-
-            KeysPlacedSoFar = new List<int>();
-            UnfilledRdzs = new List<Randomization>(AllPTF); // initialize with all spots
-            
-
-            // Remake (copies of) list of Keys, Required, Generics for placement
-            DefineKRG();
         }
        
         
@@ -263,7 +234,7 @@ namespace DS2S_META.Randomizer
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotOtherParam?.WriteModifiedParam();
         }
-        internal static void WriteAllDrops(List<ItemLotRow> lots)
+        internal static void WriteAllDrops(List<ItemDropRow> lots)
         {
             lots.ForEach(lot => lot.StoreRow());
             ParamMan.ItemLotChrParam?.WriteModifiedParam();

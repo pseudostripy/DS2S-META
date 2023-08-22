@@ -75,6 +75,10 @@ namespace DS2S_META
         {
             return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains));
         }
+        public static IEnumerable<Restriction> FilterByType(this IEnumerable<Restriction> restrs, RestrType allowtype)
+        {
+            return restrs.Where(r => r.Type == allowtype);
+        }
         public static IEnumerable<LotRdz> FilterByPickupType(this IEnumerable<LotRdz> rdzs, params PICKUPTYPE[] allowtypes)
         {
             return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains));

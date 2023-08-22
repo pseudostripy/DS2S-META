@@ -46,7 +46,8 @@ namespace DS2S_META.Randomizer
         internal abstract bool HasShuffledItemId(int itemID);
         internal abstract bool HasVanillaItemID(int itemID);
         internal bool HasVanillaItemID(ITEMID id) => HasVanillaItemID((int)id);
-        internal bool HasVanillaAnyItemID(List<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
+        internal bool HasVanillaAnyItemID(IEnumerable<int> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
+        internal bool HasVanillaAnyItemID(IEnumerable<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
         internal abstract int GetShuffledItemQuant(int itemID);
         internal abstract string GetNeatDescription();
         internal abstract void AdjustQuantity(DropInfo di);
