@@ -4,22 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using System.Text.RegularExpressions;
 using DS2S_META.Utils;
-using System.Runtime.Intrinsics.Arm;
 using DS2S_META.ViewModels;
-using System.Xml.Serialization;
-using System.Windows.Shapes;
-using System.Windows.Input;
 using System.Security.Cryptography;
-using System.Windows;
-using Octokit;
-using System.Threading;
-using System.Windows.Threading;
-using System.Diagnostics;
-using System.Windows.Documents;
 using DS2S_META.Randomizer.Placement;
-using static System.Formats.Asn1.AsnWriter;
 using DS2S_META.Utils.ParamRows;
 
 namespace DS2S_META.Randomizer
@@ -31,60 +19,18 @@ namespace DS2S_META.Randomizer
     {
         // Fields:
         DS2SHook? Hook;
-        List<Randomization> AllP = new();   // All Places (including those to fill_by_copy)
-        List<Randomization> AllPTF = new(); // Places to Randomize
         
-        private List<ItemLotRow> VanillaLots = new();
-        private List<ItemLotRow> VanillaDrops = new();
-        private List<ShopRow> VanillaShops = new();
-
-        internal List<ShopRow> ShopsToFillByCopying = new();
-
-        //internal ItemSetBase Logic = new CasualItemSet();
-
-        internal List<DropInfo> LTR_flatlist = new();
         internal bool IsInitialized = false;
         internal bool IsRandomized = false;
 
         
-        internal List<ItemRestriction> UIRestrictions;
-        internal List<int> RestrictedItems = new(); // shorthand
-        
-        // From front-end
-        internal Dictionary<Randomization, int> ReservedRdzs = new();
-        internal Dictionary<int,MinMax>  DistanceRestrictedIDs = new();
-        // 
-        internal List<DropInfo> ldkeys = new();         // all keys
-        internal List<DropInfo> ldreqs = new();
-        internal List<DropInfo> ldgens = new();
-        
-        
         internal int CurrSeed;
+        internal List<ItemRestriction> UIRestrictions;
         internal IEnumerable<Restriction> Restrictions;
-        
-        internal IEnumerable<Diset> Disets; // Groups of itemtypes to be placed, eg. "Keys"
-
         internal Presanitizer Scope;
         internal PlacementManager Placer;
 
-        internal static int GetItemMaxUpgrade(ItemRow item)
-        {
-            // Wrapper similar to the DS2Item class call in Hook.
-            switch (item.ItemType)
-            {
-                case eItemType.WEAPON1: // & shields
-                case eItemType.WEAPON2: // & staves
-                    return item.WeaponRow?.MaxUpgrade ?? 0;
-                case eItemType.HEADARMOUR:
-                case eItemType.CHESTARMOUR:
-                case eItemType.GAUNTLETS:
-                case eItemType.LEGARMOUR:
-                    return item.ArmorRow?.ArmorReinforceRow?.MaxReinforceLevel ?? 0;
-
-                default:
-                    return 0;
-            }
-        }
+        
         
         // Constructors:
         internal RandomizerManager()
@@ -96,11 +42,6 @@ namespace DS2S_META.Randomizer
         internal void Initalize(DS2SHook hook)
         {
             Hook = hook; // Required for reading game params in memory
-
-            // One-time speedup
-            //CreateAllowedKeyTypes();
-            //CreateAllowedGenTypes();
-            //SetupAreasGraph();
             Scope = new Presanitizer();
             IsInitialized = true;
         }
@@ -115,25 +56,13 @@ namespace DS2S_META.Randomizer
 
             // Setup for re-randomization:
             if (!EnsureSeedCompatibility(seed)) return;
-            SetSeed(seed);      // reset Rng Twister
+            SetSeed(seed);          // reset Rng Twister
+            SetupRestrictions();    // reload from UI
             
-            // todo moveto rerandomization setup
-            SetupRestrictions();
-            ResetForRerandomization();
-            
-            // Place sets of items:
+            // DoRandomize:
             Placer = new PlacementManager(Scope, Restrictions);
-            
-            // Miscellaneous things to handle:
-            HandleTrivialities();   // Simply mark done
-            FixShopEvents();        // All additional shop processing & edge cases.
-            FixLotCopies();         // Aka Pursuer
+            Placer.Randomize();
             CharCreation.Randomize();
-
-            // Ensure all handled:
-            var unhandled = AllP.Where(rdz => rdz.IsHandled == false);
-            if (unhandled.Any())
-                throw new Exception("Unhandled things remain.");
 
             // Printout the current shuffled lots:
             PrintKeysNeat();
@@ -166,8 +95,6 @@ namespace DS2S_META.Randomizer
             IsRandomized = false;
         }
         
-
-        // Core Logic
         internal void SetupRestrictions()
         {
             // - Split restrictions and assign to associated arrays
@@ -200,33 +127,7 @@ namespace DS2S_META.Randomizer
             // Store to class
             Restrictions = restrictions;
         }
-        private void ResetForRerandomization()
-        {
-            // Reset required arrays for the randomizer to work:
-
-            
-        }
-       
         
-        private void HandleTrivialities()
-        {
-            foreach (var rdz in AllP.Where(rdz => rdz.Type == RDZ_TASKTYPE.EXCLUDE))
-                rdz.MarkHandled();
-
-            // TODO!
-            foreach (var rdz in AllP.Where(rdz => rdz.Type == RDZ_TASKTYPE.CROWS))
-                rdz.MarkHandled();
-        }
-        private void FixShopEvents()
-        {
-            FixShopCopies();
-            FixNormalTrade();
-            FixShopSustains();
-            FixShopTradeCopies();
-            FixFreeTrade(); // needs to be after FixShopTradeCopies()
-            FixShopsToRemove();
-        }
-
         
         // Memory modification:
         internal static void WriteAllLots(List<ItemLotRow> lots)
@@ -246,21 +147,21 @@ namespace DS2S_META.Randomizer
         }
         internal void WriteShuffledLots()
         {
-            var shuffledlots = AllP.OfType<LotRdz>()
+            var shuffledlots = Scope.AllPtf.OfType<LotRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllLots(shuffledlots);
         }
         internal void WriteShuffledDrops()
         {
-            var shuffleddrops = AllP.OfType<DropRdz>()
+            var shuffleddrops = Scope.AllPtf.OfType<DropRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllDrops(shuffleddrops);
         }
         internal void WriteShuffledShops()
         {
-            var shuffledshops = AllP.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
+            var shuffledshops = Scope.AllPtf.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             WriteAllShops(shuffledshops);
         }
 
@@ -278,7 +179,7 @@ namespace DS2S_META.Randomizer
             // Main print loop
             foreach (int keyid in ItemSetBase.KeyOutputOrder.Cast<int>())
             {
-                var rdzsWithKey = AllPTF.Where(rdz => rdz.HasShuffledItemId(keyid)).ToList();
+                var rdzsWithKey = Scope.AllPtf.Where(rdz => rdz.HasShuffledItemId(keyid)).ToList();
                 foreach (var rdz in rdzsWithKey)
                 {
                     var itemname = keyid.AsMetaName();
@@ -308,136 +209,23 @@ namespace DS2S_META.Randomizer
                 // World placements:
                 "World placement:"
             };
-            foreach (var ldz in AllPTF.OfType<LotRdz>())
+            foreach (var ldz in Scope.AllPtf.OfType<LotRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
             // Shops:
             lines.Add("");
             lines.Add("Shops:");
-            foreach (var rdz in AllPTF.OfType<ShopRdz>())
+            foreach (var rdz in Scope.AllPtf.OfType<ShopRdz>())
                 lines.Add(rdz.GetNeatDescription());
 
             // Enemy drops:
             lines.Add("");
             lines.Add("Enemy Drops:");
-            foreach (var ldz in AllPTF.OfType<DropRdz>())
+            foreach (var ldz in Scope.AllPtf.OfType<DropRdz>())
                 lines.Add(ldz.GetNeatDescription());
 
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
-        }
-
-        // Miscellaneous post-processing
-        internal void FixShopCopies()
-        {
-            // Maughlin / Gilligan / Gavlan
-            var fillbycopy = AllP.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.FILL_BY_COPY).ToList();
-            var done_shops = AllPTF.OfType<ShopRdz>();
-
-            //// Define shops that need handling:
-            //var LEvents = ShopRules.GetLinkedEvents();
-            //var shopcopies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
-
-            
-            foreach (var shp in fillbycopy)
-            {
-                //var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
-                var shop_to_copy = done_shops.First(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID);
-                                                    //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
-
-                // Fill by copy:
-                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
-                shp.MarkHandled();
-            }
-        }
-        internal void FixNormalTrade()
-        {
-            var normal_trades = AllPTF.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.UNLOCKTRADE).ToList();
-            foreach (var shp in normal_trades)
-            {
-                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
-                shp.ShuffledShop.DisableFlag = -1;
-                shp.MarkHandled();
-            }
-        }
-        internal void FixShopSustains()
-        {
-            // Don't allow these events to be disabled
-            var sustain_shops = AllPTF.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.SHOPSUSTAIN).ToList();
-            foreach (var shp in sustain_shops)
-            {
-                shp.ShuffledShop.DisableFlag = -1; // Never disable
-                shp.MarkHandled();
-            }
-        }
-        internal void FixShopTradeCopies()
-        {
-            // Ornifex (non-free)
-            var fillbycopy = AllP.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.TRADE_SHOP_COPY).ToList();
-            var filled_shops = AllPTF.OfType<ShopRdz>();
-
-            //// Define shops that need handling:
-            //var LEvents = ShopRules.GetLinkedEvents();
-            //var tradecopies = LEvents.Where(lev => lev.IsCopy && lev.IsTrade);
-
-            foreach (var shp in fillbycopy)
-            {
-                //var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
-                var shop_to_copy = filled_shops.Where(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID).First();
-                                                //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
-
-                // Fill by copy:
-                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
-
-                // They still won't show till after the event so this should work
-                shp.ShuffledShop.EnableFlag = -1;
-                shp.ShuffledShop.DisableFlag = -1;
-                shp.MarkHandled();
-            }
-        }
-        internal void FixFreeTrade()
-        {
-            // This is just a Normal Trade Fix but where we additionally 0 the price
-            // Ornifex First Trade (ensure free)
-            var shops_makefree = AllPTF.OfType<ShopRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.FREETRADE);
-            foreach (var shp in shops_makefree)
-            {
-                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
-                shp.ShuffledShop.DisableFlag = -1;
-                shp.ShuffledShop.PriceRate = 0;
-                shp.MarkHandled();
-            }
-        }
-        internal void FixShopsToRemove()
-        {
-            // Ornifex First Trade (ensure free)
-            var shops_toremove = AllP.OfType<ShopRdz>()
-                                       .Where(rdz => rdz.Type == RDZ_TASKTYPE.SHOPREMOVE);
-            foreach (var shp in shops_toremove)
-            {
-                shp.ZeroiseShuffledShop();
-                shp.MarkHandled();
-            }
-        }
-        internal void FixLotCopies()
-        {
-            var fillbycopy = AllP.OfType<LotRdz>()
-                                 .Where(rdz => rdz.Type == RDZ_TASKTYPE.FILL_BY_COPY);
-            foreach (var lot in fillbycopy)
-            {
-                // Get Randomized ItemLot to copy from:
-                var lot_to_copy = AllPTF.OfType<LotRdz>().Where(ldz => ldz.UniqueParamID == lot?.RandoInfo?.RefInfoID).First();
-
-                // Clone/Update:
-                lot.ShuffledLot = lot.VanillaLot.CloneBlank();              // keep param reference for this ID
-                lot.ShuffledLot.CloneValuesFrom(lot_to_copy.ShuffledLot);   // set to new values
-                lot.MarkHandled();
-            }
         }
 
         // Seed / CRC related        

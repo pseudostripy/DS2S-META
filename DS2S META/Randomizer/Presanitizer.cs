@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils;
+﻿using DS2S_META.Randomizer.Placement;
+using DS2S_META.Utils;
 using DS2S_META.Utils.ParamRows;
 using PropertyHook;
 using System;
@@ -19,12 +20,11 @@ namespace DS2S_META.Randomizer
         SHOPSUSTAIN,
         STANDARD,
         CROWS,
-        //COMPLETE,
         FILL_BY_COPY,
         UNLOCKTRADE, // enable immediately
         FREETRADE,
         TRADE_SHOP_COPY,
-        //INITIALIZING,
+        LINKEDSLAVE, // LotRdz version of fill_by_copy
     }
 
     /// <summary>
@@ -45,7 +45,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
             PICKUPTYPE.COVENANTHARD,
         };
         internal List<PICKUPTYPE> BanFromLoot = new()
@@ -54,7 +53,6 @@ namespace DS2S_META.Randomizer
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
         };
         internal static List<int> CrowDuplicates = new()
         {
@@ -225,6 +223,8 @@ namespace DS2S_META.Randomizer
                 return RDZ_TASKTYPE.EXCLUDE;
             if (CrowDuplicates.Contains(lotrow.ID))
                 return RDZ_TASKTYPE.EXCLUDE;
+            if (PlacementManager.LinkedDrops.ContainsKey(lotrow.ID))
+                return RDZ_TASKTYPE.LINKEDSLAVE;
 
             // keep underlying status
             return ri.RandoHandleType;

@@ -24,18 +24,6 @@ namespace DS2S_META.Randomizer
 
     internal abstract class ItemSetBase
     {
-        // All others are simply the NGplus paramID rounded to nearest 10
-        
-        internal List<LinkedDrop> LinkedDrops = new()
-        {
-            StraightCopy(318000, 60008000), // Pursuer Fight/Platform
-        }; // LinkedLots..
-
-        internal static LinkedDrop StraightCopy(int id1, int id2)
-        {
-            return new LinkedDrop(id1, id2);
-        }
-
         // Other Logic related things:
         internal static List<DropInfo> FillerItems = new()
         {
@@ -367,11 +355,69 @@ namespace DS2S_META.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, int toCopyID, List<KeySet> kso)
+        internal static RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, List<KeySet> kso)
         {
-            // This is essentially a flag on top of safeinfo
+            // This method doesn't do anything different (it's caught during Presanitizer instead),
+            // but is here so that it can be obvious within CasualItemSet that it's a special case.
             return new RandoInfo(area, desc, pickuptype, kso);
         }
+        //
+        internal static RandoInfo EnemyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // these will be converted do GUARANTEEDENEMYDROP during Presanitization if required.
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYDROP, kso);
+        }
+        internal static RandoInfo EnemyNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), kso);
+        }
+        internal static RandoInfo EnemyRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTDROP, kso);
+        }
+        internal static RandoInfo EnemyRegistNpc(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTNPC, kso);
+        }
+        internal static RandoInfo EnemyRegistInvasion(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTINVASION, kso);
+        }
+        internal static RandoInfo EnemyRegistSummon(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTSUMMON, PICKUPTYPE.BADREGISTDROP), kso);
+        }
+        internal static RandoInfo EnemyRegistNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.NGPLUS), kso);
+        }
+        internal static RandoInfo EnemyRegistJourneyPlus(MapArea area, string desc, List<KeySet> kso)
+        {
+            // For enemies that *only* spawn on second journey, not via ascetic
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.JOURNEYPLUS), kso);
+        }
+        internal static RandoInfo UnreachableDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // for things the player isn't expected to be able to kill?
+            return new RandoInfo(area, desc, PICKUPTYPE.BADENEMYDROP, kso);
+        }
+        internal static RandoInfo UnreachableRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // for things the player isn't expected to be able to kill?
+            return new RandoInfo(area, desc, PICKUPTYPE.BADREGISTDROP, kso);
+        }
+        internal static RandoInfo MemeCopyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // e.g things with identical enemies with identical drops, but in
+            // different itemlot tables.
+            return new RandoInfo(area, desc, PICKUPTYPE.BADENEMYDROP, kso);
+        }
+
 
         // Utility shorthand methods (for common purposes):
         internal static PICKUPTYPE[] TypeArray(params PICKUPTYPE[] types)

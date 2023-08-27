@@ -53,6 +53,11 @@ namespace DS2S_META
             // return those that match any of the allowtasks types
             return rdzs.FilterByTaskType(allowtasks);
         }
+        public static IEnumerable<ShopRdz> FilterByTaskType(this IEnumerable<ShopRdz> rdzs, params RDZ_TASKTYPE[] allowtasks)
+        {
+            // return those that match any of the allowtasks types
+            return rdzs.FilterByTaskType(allowtasks);
+        }
         public static IEnumerable<Randomization> FilterByTaskType(this IEnumerable<Randomization> rdzs, IEnumerable<RDZ_TASKTYPE> allowtasks)
         {
             // return those that match any of the allowtasks types
@@ -123,7 +128,7 @@ namespace DS2S_META
             return param.Rows.OfType<T>();
         }
 
-        public static RandoInfo GetGlotRandoInfo(this int paramid) => CasualItemSet.GlotData[paramid];
+        public static RandoInfo GetGlotRandoInfo(this int paramid) => CasualItemSet.LotData[paramid];
         public static RandoInfo2 GetDropRandoInfo(this int paramid)
         {
             return CasualItemSet.DropData?[paramid] ?? throw new Exception("Not initialized");

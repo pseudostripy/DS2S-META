@@ -532,7 +532,7 @@ namespace DS2S_META
             // in certain versions, can veto here.
             return feature switch
             {
-                METAFEATURE.MADWARRIOR => Hooked && Offsets.LoadedEnemiesTable != null,
+                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -2235,20 +2235,24 @@ namespace DS2S_META
         public byte InnerWall { get => ReadBfLevel(Bfs.InnerWall); set { WriteBfLevel(Bfs.InnerWall, value); }}
         public byte LowerGarrison { get => ReadBfLevel(Bfs.LowerGarrison); set { WriteBfLevel(Bfs.LowerGarrison, value); }}
         public byte GrandCathedral { get => ReadBfLevel(Bfs.GrandCathedral); set { WriteBfLevel(Bfs.GrandCathedral, value); }}
-        
+
         // Equipped items:
-        private string PlayerCtrlToName(int offset) => Loaded ? PlayerCtrl.ReadInt32(offset).AsMetaName() : string.Empty;
+        private string PlayerCtrlToName(int? offset) {
+            if (offset == null || !Loaded)
+                return string.Empty;
+            return PlayerCtrl.ReadInt32((int)offset).AsMetaName();
+        }
         //
-        public string Head => PlayerCtrlToName(Offsets.PlayerEquipment.Head);
-        public string Chest => PlayerCtrlToName(Offsets.PlayerEquipment.Chest);
-        public string Arms => PlayerCtrlToName(Offsets.PlayerEquipment.Arms);
-        public string Legs => PlayerCtrlToName(Offsets.PlayerEquipment.Legs);
-        public string RightHand1 => PlayerCtrlToName(Offsets.PlayerEquipment.RightHand1);
-        public string RightHand2 => PlayerCtrlToName(Offsets.PlayerEquipment.RightHand2);
-        public string RightHand3 => PlayerCtrlToName(Offsets.PlayerEquipment.RightHand3);
-        public string LeftHand1 => PlayerCtrlToName(Offsets.PlayerEquipment.LeftHand1);
-        public string LeftHand2 => PlayerCtrlToName(Offsets.PlayerEquipment.LeftHand2);
-        public string LeftHand3 => PlayerCtrlToName(Offsets.PlayerEquipment.LeftHand3);
+        public string Head => PlayerCtrlToName(Offsets?.PlayerEquipment.Head);
+        public string Chest => PlayerCtrlToName(Offsets?.PlayerEquipment.Chest);
+        public string Arms => PlayerCtrlToName(Offsets?.PlayerEquipment.Arms);
+        public string Legs => PlayerCtrlToName(Offsets?.PlayerEquipment.Legs);
+        public string RightHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand1);
+        public string RightHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand2);
+        public string RightHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand3);
+        public string LeftHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand1);
+        public string LeftHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand2);
+        public string LeftHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand3);
 
         private bool _speedFactors;
         public bool EnableSpeedFactors

@@ -95,7 +95,10 @@ namespace DS2S_META.Randomizer.Placement
         private static IEnumerable<int> IntArray(params int[] values) { return  values; }
         internal List<Randomization> RdzMajors;
         internal static List<eItemType> RequiredTypes = new() { eItemType.SPELLS, eItemType.WEAPON1, eItemType.WEAPON2 }; // todecprecate?
-
+        internal static Dictionary<int, int> LinkedDrops = new()
+        {
+            { 60008000, 318000 }, // Slave/Master Pursuer Fight/Platform
+        };
 
 
         // Constructor
@@ -106,8 +109,9 @@ namespace DS2S_META.Randomizer.Placement
             CreateDisets();
             CreateRdzMajors();
             Steiner = new Steiner(this, scope);
+            QuickListSetup(); // make copies for faster query access during logic
         }
-        public void Intialize()
+        public void QuickListSetup()
         {
             // More lists for faster lookups
             VanItems = Restrictions.FilterByType(RestrType.Vanilla).Select(restr => restr.ItemId).ToList();
@@ -145,6 +149,15 @@ namespace DS2S_META.Randomizer.Placement
         {
             PlaceSets();
             FillLeftovers();
+            //
+            HandleTrivialities();
+            FixShopEvents();
+            FixShopCopies();
+            FixNormalTrade();
+            FixShopSustains();
+            FixShopTradeCopies();
+            FixFreeTrade();
+            FixShopsToRemove();
 
             // Sanity checks
             if (PTF.Where(rdz => !rdz.IsHandled).Any()) throw new Exception("Something not completed");
@@ -200,6 +213,138 @@ namespace DS2S_META.Randomizer.Placement
 
                 // Solution found (or compromise reached)
                 PlaceIt(rdz, di, availrdzs, diset.IsKeys);
+            }
+        }
+        //
+        // Miscellaneous post-processing
+        private void HandleTrivialities()
+        {
+            foreach (var rdz in PTF.Where(rdz => rdz.Type == RDZ_TASKTYPE.EXCLUDE))
+                rdz.MarkHandled();
+
+            // TODO!
+            foreach (var rdz in PTF.Where(rdz => rdz.Type == RDZ_TASKTYPE.CROWS))
+                rdz.MarkHandled();
+        }
+        private void FixShopEvents()
+        {
+            FixShopCopies();
+            FixNormalTrade();
+            FixShopSustains();
+            FixShopTradeCopies();
+            FixFreeTrade(); // needs to be after FixShopTradeCopies()
+            FixShopsToRemove();
+        }
+        internal void FixShopCopies()
+        {
+            // Maughlin / Gilligan / Gavlan
+            var fillbycopy = PTF.OfType<ShopRdz>()
+                                 .FilterByTaskType(RDZ_TASKTYPE.FILL_BY_COPY).ToList();
+            var shops = PTF.OfType<ShopRdz>();
+
+            //// Define shops that need handling:
+            //var LEvents = ShopRules.GetLinkedEvents();
+            //var shopcopies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
+
+
+            foreach (var shp in fillbycopy)
+            {
+                //var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
+                var shop_to_copy = shops.First(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID);
+                //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
+
+                // Fill by copy:
+                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
+                shp.MarkHandled();
+            }
+        }
+        internal void FixNormalTrade()
+        {
+            var normal_trades = PTF.OfType<ShopRdz>()
+                                   .FilterByTaskType(RDZ_TASKTYPE.UNLOCKTRADE).ToList();
+            foreach (var shp in normal_trades)
+            {
+                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.MarkHandled();
+            }
+        }
+        internal void FixShopSustains()
+        {
+            // Don't allow these events to be disabled
+            var sustain_shops = PTF.OfType<ShopRdz>()
+                                   .FilterByTaskType(RDZ_TASKTYPE.SHOPSUSTAIN).ToList();
+            foreach (var shp in sustain_shops)
+            {
+                shp.ShuffledShop.DisableFlag = -1; // Never disable
+                shp.MarkHandled();
+            }
+        }
+        internal void FixShopTradeCopies()
+        {
+            // Ornifex (non-free)
+            var fillbycopy = PTF.OfType<ShopRdz>()
+                                .FilterByTaskType(RDZ_TASKTYPE.TRADE_SHOP_COPY).ToList();
+            var filled_shops = PTF.OfType<ShopRdz>();
+
+            //// Define shops that need handling:
+            //var LEvents = ShopRules.GetLinkedEvents();
+            //var tradecopies = LEvents.Where(lev => lev.IsCopy && lev.IsTrade);
+
+            foreach (var shp in fillbycopy)
+            {
+                //var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
+                var shop_to_copy = filled_shops.Where(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID).First();
+                //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
+
+                // Fill by copy:
+                shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
+
+                // They still won't show till after the event so this should work
+                shp.ShuffledShop.EnableFlag = -1;
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.MarkHandled();
+            }
+        }
+        internal void FixFreeTrade()
+        {
+            // This is just a Normal Trade Fix but where we additionally 0 the price
+            // Ornifex First Trade (ensure free)
+            var shops_makefree = PTF.OfType<ShopRdz>()
+                                    .FilterByTaskType(RDZ_TASKTYPE.FREETRADE).ToList();
+            foreach (var shp in shops_makefree)
+            {
+                shp.ShuffledShop.EnableFlag = -1;  // enable (show) immediately (except Ornifex "1" trades that are locked behind event)
+                shp.ShuffledShop.DisableFlag = -1;
+                shp.ShuffledShop.PriceRate = 0;
+                shp.MarkHandled();
+            }
+        }
+        internal void FixShopsToRemove()
+        {
+            // Ornifex First Trade (ensure free)
+            var shops_toremove = PTF.OfType<ShopRdz>()
+                                    .FilterByTaskType(RDZ_TASKTYPE.SHOPREMOVE);
+
+            foreach (var shp in shops_toremove)
+            {
+                shp.ZeroiseShuffledShop();
+                shp.MarkHandled();
+            }
+        }
+        internal void FixLotCopies()
+        {
+            var fillbycopy = PTF.OfType<LotRdz>()
+                                 .FilterByTaskType(RDZ_TASKTYPE.LINKEDSLAVE).OfType<LotRdz>().ToList();
+            foreach (var lot in fillbycopy)
+            {
+                // Get Randomized ItemLot to copy from:
+                var lot_to_copy = PTF.OfType<LotRdz>().Where(ldz => ldz.UniqueParamID == lot?.RandoInfo?.RefInfoID).First();
+
+                // Clone/Update:
+                lot.ShuffledLot = lot.VanillaLot.CloneBlank();              // keep param reference for this ID
+                lot.ShuffledLot.CloneValuesFrom(lot_to_copy.ShuffledLot);   // set to new values
+                lot.MarkHandled();
             }
         }
         //
@@ -270,7 +415,7 @@ namespace DS2S_META.Randomizer.Placement
         private static byte GetFixedReinforcement(DropInfo di)
         {
             var item = di.AsItemRow();
-            var maxupgrade = GetItemMaxUpgrade(item);
+            var maxupgrade = item.GetItemMaxUpgrade();
             return (byte)Math.Min(di.Reinforcement, maxupgrade); // limit to item max upgrade
         }
 
@@ -559,9 +704,6 @@ namespace DS2S_META.Randomizer.Placement
             KeysPlacedSoFar.Add((int)keyenact);
             Steiner.UpdateSteinerNodesOnKey(keyenact, rdz.RandoInfo.NodeKey);
         }
-        
-
-
         private bool ReachedNumKeysTrigger(ITEMID keyid, out KEYID triggerkey)
         {
             // Conceptually: Is the number of placed keys enough to unlock
@@ -604,37 +746,5 @@ namespace DS2S_META.Randomizer.Placement
                 _ => throw new Exception("Unexpected MultiKey condition")
             };
         }
-        
-
-
-
-        
-
-        
-
-        
-        
-
-
-
-
-        
-
-        //private void FixLinkedRdz()
-        //{
-            // TODO
-            // Get linked Rdzs:
-            //List<Randomization> linkedrdz = new();
-            //if (!ReservedRdzs.ContainsKey(rdz))
-            //    linkedrdz.Add(rdz);
-            //else
-            //    linkedrdz = ReservedRdzs.Where(kvp => kvp.Value == di.ItemID)
-            //                            .Select(kvp => kvp.Key).ToList();
-
-            //foreach (var lrdz in linkedrdz)
-            //    lrdz.AddShuffledItem(di);
-        //}
-
-        
     }
 }

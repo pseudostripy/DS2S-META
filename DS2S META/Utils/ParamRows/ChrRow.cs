@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using DS2S_META.Utils;
+using DS2S_META.Utils.ParamRows;
 
 namespace DS2S_META.Randomizer
 {
@@ -29,7 +30,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Linked Params:
-        internal ItemLotRow? ItemLot => ParamMan.GetLink<ItemLotRow>(ParamMan.ItemLotChrParam, ItemLotID);
+        internal ItemDropRow? ItemLot => ParamMan.GetLink<ItemDropRow>(ParamMan.ItemLotChrParam, ItemLotID);
 
         // Constructors:
         public ChrRow(Param param, string name, int id, int offset) : base(param, name, id, offset)

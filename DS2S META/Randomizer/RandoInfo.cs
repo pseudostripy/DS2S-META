@@ -79,7 +79,7 @@ namespace DS2S_META.Randomizer
         SINNERSCELLS    = 0xDD4,    // SinnerRise && BastilleKey
         ROTUNDAPHARROS  = 0xDD5,    // Rotunda && Pharros
         DRAGONCOVENANT  = 0xDD6,    // IronKeep && PetrifiedEgg
-        BRANCHMEMEPHARROS = 0xDD7,    // Branch && LowPharros
+        BRANCHMEMEPHARROS = 0xDD7,  // Branch && LowPharros
         TSELDORADEN     = 0xDD8,    // Tseldora && TseldoraDenKey
         TSELDORAVAULT   = 0xDD9,    // Tseldora && BrightstoneKey
         BENHARTFULLQUEST = 0xDDA,   // Ashen && Drangleic
@@ -95,7 +95,7 @@ namespace DS2S_META.Randomizer
         AMANAPHARROS    = 0xDE4,    // Amana && MemePharros
         AMANABRANCH     = 0xDE5,    // Amana && MemeBranch
         AGDAYNEGIFT     = 0xDE6,    // Agdayne && KingsRing
-        LUCATIELFULLQUEST = 0xDE7,   // AldiasKeep
+        LUCATIELFULLQUEST = 0xDE7,  // AldiasKeep
         NAVLANQUEST     = 0xDE8,    // AldiasKeep && Rotunda
         ALDIASLAB       = 0xDE9,    // AldiasKeep && AldiaKey
         FOURFORLORN     = 0xDEA,    // AldiasKeep && Torch
@@ -548,7 +548,14 @@ namespace DS2S_META.Randomizer
     internal enum PICKUPTYPE : int
     {
         ENEMYDROP,
+        ENEMYREGISTDROP,
+        ENEMYREGISTNPC,
+        ENEMYREGISTINVASION,
+        ENEMYREGISTSUMMON,
+        BADENEMYDROP,
+        BADREGISTDROP,
         GUARANTEEDENEMYDROP,
+
         COVENANTEASY,
         COVENANTHARD,
         NPC,
@@ -558,6 +565,7 @@ namespace DS2S_META.Randomizer
         NONVOLATILE, // this is basically corpse pickups now
         BOSS,
         NGPLUS,
+        JOURNEYPLUS, // memes
         EXOTIC,     // Legit in game things considered too hard to achieve in rando
         REMOVED,    // Lost content
         CRAMMED,    // Meme stuff regarding edge cases when you're crammed
@@ -565,7 +573,6 @@ namespace DS2S_META.Randomizer
         SHOP,       //
         EVSHOP,       //
         CROWS,
-        LINKEDSLAVE, // Rules are defined by some other drop that was defined and linked
     }
 
     internal class RandoInfo2

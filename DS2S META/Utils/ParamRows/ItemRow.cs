@@ -196,5 +196,17 @@ namespace DS2S_META.Utils
                 return new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
             return WeaponRow.GetInfusionList();
         }
+
+        // To improve
+        internal int GetItemMaxUpgrade()
+        {
+            // Wrapper similar to the DS2Item class call in Hook.
+            return ItemType switch
+            {
+                eItemType.WEAPON1 or eItemType.WEAPON2 => WeaponRow?.MaxUpgrade ?? 0,
+                eItemType.HEADARMOUR or eItemType.CHESTARMOUR or eItemType.GAUNTLETS or eItemType.LEGARMOUR => ArmorRow?.ArmorReinforceRow?.MaxReinforceLevel ?? 0,
+                _ => 0
+            };
+        }
     }
 }

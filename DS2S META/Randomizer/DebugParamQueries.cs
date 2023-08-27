@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Shapes;
 
 namespace DS2S_META.Randomizer
 {
@@ -53,7 +54,21 @@ namespace DS2S_META.Randomizer
                 ri2 = new RandoInfo2("cantfind", "cantfind", -1, false);
                 dropdict[droprow.ID] = ri2;
             }
+
+            // dump to file
+            List<string> lines = new();
+            foreach (var kvp in dropdict)
+            {
+                var rr = kvp.Value;
+                lines.Add($"{kvp.Key} => {rr.ID}, {rr.EnemyName}, {rr.AreaString}, {rr.IsDirect}");
+            }
+
+            // Write file:
+            File.WriteAllLines("./dropdesc.txt", lines.ToArray());
+
+
             return dropdict;
+
         }
         internal static bool TryFindRegistRow(int itemlotid, out GeneratorRegistRow? registrow)
         {
@@ -63,7 +78,7 @@ namespace DS2S_META.Randomizer
                 var prows = genregistparam.Rows.OfType<GeneratorRegistRow>();
                 foreach (var row in prows)
                 {
-                    var ilot = row.Enemy?.ItemLot?.ID;
+                    var ilot = row.Enemy?.ItemLotID;
                     if (ilot == itemlotid)
                     {
                         registrow = row;
