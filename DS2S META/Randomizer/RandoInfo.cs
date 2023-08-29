@@ -142,10 +142,40 @@ namespace DS2S_META.Randomizer
         TOKENOFSPITE    = 62110000,
         FLAMEBUTTERFLY  = 60430000,
     }
-
+    
     internal static class RandoLogicHelper
     {
-        internal static List<KeySet> AddToKSO(List<KeySet> kso, KEYID keyid)
+        internal static readonly List<ITEMID> TRUEKEYS = new()
+        {
+            ITEMID.SOLDIERKEY,
+            ITEMID.FORGOTTENKEY,
+            ITEMID.TOWERKEY,
+            ITEMID.ASHENMIST,
+            ITEMID.GARRISONWARDKEY, 
+            ITEMID.ALDIASKEY,
+            ITEMID.SCORCHINGSCEPTER,
+            ITEMID.KINGSRING,
+            ITEMID.DRAGONSTONE,
+            ITEMID.DRAGONTALON,
+            ITEMID.HEAVYIRONKEY,
+            ITEMID.FROZENFLOWER,
+            ITEMID.KINGSPASSAGEKEY, 
+            ITEMID.ETERNALSANCTUMKEY,
+            ITEMID.UNDEADLOCKAWAYKEY,
+            ITEMID.BASTILLEKEY,
+            ITEMID.IRONKEY,
+            ITEMID.ANTIQUATEDKEY,
+            ITEMID.HOUSEKEY,
+            ITEMID.FANGKEY,
+            ITEMID.ROTUNDALOCKSTONE,
+            ITEMID.DULLEMBER,
+            // won't be used:
+            ITEMID.BRIGHTSTONEKEY,
+            ITEMID.TSELDORADENKEY, 
+            ITEMID.LENIGRASTKEY,
+        };
+
+    internal static List<KeySet> AddToKSO(List<KeySet> kso, KEYID keyid)
         {
             // Somewhat recursive.
             // Wrapper to make building this up a bit faster.
@@ -573,22 +603,6 @@ namespace DS2S_META.Randomizer
         SHOP,       //
         EVSHOP,       //
         CROWS,
-    }
-
-    internal class RandoInfo2
-    {
-        internal string AreaString;
-        internal string EnemyName;
-        internal int ID;
-        internal bool IsDirect;
-
-        internal RandoInfo2(string? areastring, string enemyname, int paramid, bool directlot)
-        {
-            AreaString = areastring ?? "cantfindmap";
-            EnemyName = enemyname;
-            ID = paramid;
-            IsDirect = directlot;
-        }
     }
 
     internal class RandoInfo

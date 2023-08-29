@@ -252,6 +252,7 @@ namespace DS2S_META.Randomizer.Placement
         internal Steiner(PlacementManager placeman, Presanitizer scope) 
         {
             Scope = scope;
+            PlaceMan = placeman;
             SetupAreasGraph();
             SetupNodesDict();
             SolveBasicAreas(); // solution if keys aren't a concept
@@ -325,7 +326,7 @@ namespace DS2S_META.Randomizer.Placement
         private void SetupUniqueKS()
         {
             // only need to calc once
-            if (UniqueIncompleteKSOrig != null)
+            if (UniqueIncompleteKSOrig == null)
                 SetupUniqueKSOnce();
 
             if (UniqueIncompleteKSOrig == null) throw new Exception("Issue creating orig incomplete keysets");

@@ -76,6 +76,8 @@ namespace DS2S_META
             lblWorking.Visibility = Visibility.Visible;
 
             int seed = Seed;
+            //RM.SetSeed(seed);
+
             var tasks = new List<Task>();
             switch (rpt)
             {

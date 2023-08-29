@@ -94,7 +94,8 @@ namespace DS2S_META.Randomizer
         };
         internal static Dictionary<int, int> AbnormalNgLinks = new() {
             // Key = NG plus ID, Value = assoc NG ID 
-            { 675010, 675000 } // fume knight :/
+            { 675010, 675000 }, // fume knight :/
+            { 0x393A6AE, 0x393A6A4 } // Betwixt Pursuer
         }; 
 
         // Output fields:
@@ -105,7 +106,6 @@ namespace DS2S_META.Randomizer
         // Constructor
         internal Presanitizer()
         {
-            CasualItemSet.AssignDropDescriptions(); // toimprove
             SetupAllPtf();          // AllPtf
             GetLootToRandomize();   // LTR_Flatlist
         }
@@ -139,27 +139,29 @@ namespace DS2S_META.Randomizer
 
             // LOTS
             // Normal Lots:
-            var ldzs = potentialRdzs.OfType<LotRdz>();
+            var ldzs = potentialRdzs.OfType<LotRdz>().ToList();
             var ldzsNgp = ldzs.FilterByPickupType(PICKUPTYPE.NGPLUS);
-            var ldzsNg = ldzsNgp.Except(ldzsNgp);
+            var ldzsNg = ldzs.Except(ldzsNgp).ToList();
+
             // 
-            var flNgLots = ldzsNg.SelectMany(ldz => ldz.Flatlist); // keep all NG loot
-            var flNgpLots = ldzsNgp.SelectMany(ldz => ldz.GetUniqueFlatlist(GetAssocNgItemlot(ldz, ldzsNg).Flatlist)); // keep only unique ng+ loot
+            var flNgLots = ldzsNg.SelectMany(ldz => ldz.Flatlist).ToList(); // keep all NG loot
+            var flNgpLots = ldzsNgp.SelectMany(ldz => ldz.GetUniqueFlatlist(GetAssocNgItemlot(ldz, ldzsNg).Flatlist)).ToList(); // keep only unique ng+ loot
 
             // DROPS
             // Add single copy of armour/weapons arising from drop
             var rawflDrops = potentialRdzs.OfType<DropRdz>()                    // all droprdzs
-                                    .SelectMany(ddz => ddz.Flatlist);           // all dropinfos from droprdzs
+                                    .SelectMany(ddz => ddz.Flatlist).ToList();  // all dropinfos from droprdzs
             //
+            var test = ParamMan.ItemRows.ToList();
+            //var test = rawflDrops.FilterByItemType(WepSpellsArmour).ToList();
             var flBalDrops = rawflDrops.FilterByItemType(WepSpellsArmour)       // only those with matching item type
                                     .DistinctBy(di => di.ItemID);               // keep only 1 of each item 
             var flOtherDrops = rawflDrops.FilterOutItemType(WepSpellsArmour);   // keep everything else as is
 
             // SHOPS
             // Only keep loot of shops that I'll be replacing (others are duplicates)
-            var flShops = potentialRdzs.OfType<ShopRdz>()
-                                .FilterByTaskType(ShopLootInclTasks)
-                                .SelectMany(sdz => sdz.Flatlist);
+            var flShops = potentialRdzs.OfType<ShopRdz>().ToList().FilterByTaskType(ShopLootInclTasks).SelectMany(sdz => sdz.Flatlist).ToList();
+            
 
             // Combine everything
             LTR_flatlist.AddRange(flNgLots);
@@ -173,7 +175,7 @@ namespace DS2S_META.Randomizer
         }
 
         // AllPtf categorized logic:
-        internal static IEnumerable<Randomization> DefineLotRdzs()
+        internal static List<Randomization> DefineLotRdzs()
         {
             // Get copy of all VanillaLots
             List<LotRdz> all_lots = new(); // preallocate empty
@@ -184,23 +186,30 @@ namespace DS2S_META.Randomizer
                 var ldz = new LotRdz(lotrow, ri, status); // create combined information
                 all_lots.Add(ldz);
             }
-            return all_lots.Cast<Randomization>();
+            return all_lots.Cast<Randomization>().ToList();
         }
-        internal static IEnumerable<Randomization> DefineDropRdzs()
+        internal static List<Randomization> DefineDropRdzs()
         {
             List<DropRdz> droprdzs = new(); // preallocate empty
             foreach (var droprow in  ParamMan.ItemLotChrRows)
             {
-                RandoInfo2 ri2 = droprow.ID.GetDropRandoInfo(); // no lookup info available for drops
-                RandoInfo ri;
-                var status = CalcDropRdzStatus(droprow, ri2); // all OK until further notice
+                RandoInfo ri = droprow.ID.GetDropRandoInfo(); // no lookup info available for drops
+                if (droprow.IsGuaranteedDrops())
+                {
+                    var pulist = ri.PickupTypes.ToList();
+                    pulist.Add(PICKUPTYPE.GUARANTEEDENEMYDROP);
+                    ri.PickupTypes = pulist.ToArray();
+                }
+                    
+
+                var status = CalcDropRdzStatus(droprow, ri); // all OK until further notice
                 ri = new RandoInfo(MapArea.Undefined, "todo", PICKUPTYPE.ENEMYDROP, new List<KeySet>()); // temporary until desc added
                 var sdz = new DropRdz(droprow, ri, status);  // create combined information
                 droprdzs.Add(sdz);
             }
-            return droprdzs.Cast<Randomization>();
+            return droprdzs.Cast<Randomization>().ToList();
         }
-        internal static IEnumerable<Randomization> DefineShopRdzs()
+        internal static List<Randomization> DefineShopRdzs()
         {
             List<ShopRdz> shoprdzs = new(); // preallocate empty
             foreach (var shoprow in ParamMan.ShopLineupRows)
@@ -210,7 +219,7 @@ namespace DS2S_META.Randomizer
                 var sdz = new ShopRdz(shoprow, ri, status);  // create combined information
                 shoprdzs.Add(sdz);
             }
-            return shoprdzs.Cast<Randomization>();
+            return shoprdzs.Cast<Randomization>().ToList();
         }
         private static RDZ_TASKTYPE CalcLotRdzStatus(ItemLotRow lotrow, RandoInfo ri)
         {
@@ -229,21 +238,25 @@ namespace DS2S_META.Randomizer
             // keep underlying status
             return ri.RandoHandleType;
         }
-        private static RDZ_TASKTYPE CalcDropRdzStatus(ItemDropRow droprow, RandoInfo2 ri2)
+        private static RDZ_TASKTYPE CalcDropRdzStatus(ItemDropRow droprow, RandoInfo ri)
         {
             // still WIP
-            return ri2.ID == -1 ? RDZ_TASKTYPE.EXCLUDE : RDZ_TASKTYPE.STANDARD;
+            var excltypes = new List<PICKUPTYPE>() { PICKUPTYPE.BADENEMYDROP, PICKUPTYPE.BADREGISTDROP };
+            if (ri.HasType(excltypes))
+                return RDZ_TASKTYPE.EXCLUDE;
+
+            return RDZ_TASKTYPE.STANDARD;
         }
         private static RDZ_TASKTYPE CalcShopRdzStatus(ShopRow lotrow, RandoInfo ri) => ri.RandoHandleType; // until told otherwise
         
         // Misc. helpers
-        private static ItemLotRow GetAssocNgItemlot(LotRdz ngpldz, IEnumerable<LotRdz> ldzsNg)
+        private static ItemLotRow GetAssocNgItemlot(LotRdz ngpldz, List<LotRdz> ldzsNg)
         {
             // Find the NG itemlot associated with the input NGplus itemlot.
             // This is used to remove duplicated items from loot table.
             int assocNGid;
             int ngplotid = ngpldz.VanillaLot.ID;
-            if (!AbnormalNgLinks.ContainsKey(ngplotid))
+            if (AbnormalNgLinks.ContainsKey(ngplotid))
                 assocNGid = AbnormalNgLinks[ngplotid];
             else
                  assocNGid = ngplotid / 10 * 10; // Round down to nearest 10

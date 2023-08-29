@@ -131,7 +131,6 @@ namespace DS2S_META
         
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
-            int test = 1;
             //GetWeaponProperties();
         }
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)

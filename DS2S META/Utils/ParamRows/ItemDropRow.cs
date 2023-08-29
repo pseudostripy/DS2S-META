@@ -79,6 +79,16 @@ namespace DS2S_META.Utils.ParamRows
                 return c;
             }
         }
+        internal bool IsGuaranteedDrops()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                if (Quantities[i] > 0 && Chances[i] < 99.9)
+                    return false;
+            }
+            return true;
+        }
+        
         internal override ItemDropRow CloneBlank()
         {
             // Performs a deep clone on the Lot object

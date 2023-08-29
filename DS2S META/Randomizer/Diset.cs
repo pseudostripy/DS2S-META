@@ -12,24 +12,28 @@ namespace DS2S_META.Randomizer
     internal class Diset
     {
         // Enums:
-        internal enum SetType : byte { Keys, Reqs, Gens }
+        internal enum SetType : byte { TrueKeys, TrashKeys, Reqs, Gens }
 
         // Fields
         public SetType Type { get; set; }
-        public IEnumerable<DropInfo> Data { get; set; }
+        public List<DropInfo> Data { get; set; }
 
-        public bool IsKeys => Type == SetType.Keys;
+        public bool IsKeys => Type == SetType.TrueKeys || Type == SetType.TrashKeys;
+        public bool IsTrueKeys => Type == SetType.TrueKeys;
+        public bool IsTrashKeys => Type == SetType.TrashKeys;
+        public bool IsReqs => Type == SetType.Reqs;
 
         // Constructors
-        public Diset(SetType type, IEnumerable<DropInfo> data) 
+        public Diset(SetType type, List<DropInfo> data) 
         { 
             Data = data;
             Type = type;
         }
 
         // Handy wrapper factory methods to wrap enum
-        public static Diset FromKeys(IEnumerable<DropInfo> data) => new(SetType.Keys, data);
-        public static Diset FromReqs(IEnumerable<DropInfo> data) => new(SetType.Reqs, data);
-        public static Diset FromGens(IEnumerable<DropInfo> data) => new(SetType.Gens, data);
+        public static Diset FromTrueKeys(List<DropInfo> data) => new(SetType.TrueKeys, data);
+        public static Diset FromTrashKeys(List<DropInfo> data) => new(SetType.TrashKeys, data);
+        public static Diset FromReqs(List<DropInfo> data) => new(SetType.Reqs, data);
+        public static Diset FromGens(List<DropInfo> data) => new(SetType.Gens, data);
     }
 }

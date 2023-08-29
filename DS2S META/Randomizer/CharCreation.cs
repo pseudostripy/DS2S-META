@@ -32,7 +32,7 @@ namespace DS2S_META.Randomizer
         static CharCreation()
         {
             // Define lists that can be used for CharCreation random draws
-            allItems = ParamMan.ItemRows.Where(it => it.HasName).FilterOutId(bannedItems).ToList();
+            allItems = ParamMan.ItemRows.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
             //
             consumables = allItems.FilterByType(eItemType.CONSUMABLE)
                                     .FilterOutUsage(ITEMUSAGE.ITEMUSAGEKEY, ITEMUSAGE.BOSSSOULUSAGE).ToList();
@@ -79,7 +79,7 @@ namespace DS2S_META.Randomizer
              
             // Draw supplementary info: 
             var randRHreinf = DrawWepReinforces(randRHweps.Count());
-            var randLHreinf = DrawWepReinforces(randRHweps.Count());
+            var randLHreinf = DrawWepReinforces(randLHweps.Count());
             var arrowQuants = DrawAmmoQuants(randArrows.Count());
             var boltQuants = DrawAmmoQuants(randBolts.Count());
             var consumQuants = DrawItemQuants(randConsumItems);
@@ -93,10 +93,10 @@ namespace DS2S_META.Randomizer
             classrow.WriteItems(consumIds, consumQuants);
             classrow.WriteArrows(randArrows, arrowQuants);
             classrow.WriteBolts(randBolts, boltQuants);
-            classrow.HeadArmor = randHead;
-            classrow.BodyArmor = randBody;
-            classrow.ArmsArmor = randArms;
-            classrow.LegsArmor = randLegs;
+            if (randHead != null) classrow.HeadArmor = (int)randHead;
+            if (randBody != null) classrow.BodyArmor = (int)randBody;
+            if (randArms != null) classrow.ArmsArmor = (int)randArms;
+            if (randLegs != null) classrow.LegsArmor = (int)randLegs;
             //
             RandomizeLevels(classrow);
             classrow.WriteRow(); // Commit all changes to game memory
@@ -144,16 +144,16 @@ namespace DS2S_META.Randomizer
         }
 
         // Draw ItemRow helpers:
-        internal static IEnumerable<T> DrawUntilFailure<T>(IEnumerable<ItemRow> pool, int pcpass, int nmax, Func<ItemRow, T> outmap)
+        internal static List<T> DrawUntilFailure<T>(List<ItemRow> pool, int pcpass, int nmax, Func<ItemRow, T> outmap)
         {
             // Most generic version: applies outbound transform after draws
             return DrawItemsUntilFailure(pool, pcpass, nmax).Select(outmap).ToList();
         }
-        internal static IEnumerable<int> DrawIdsUntilFailure(IEnumerable<ItemRow> pool, int percentpass, int maxdraws)
+        internal static List<int> DrawIdsUntilFailure(List<ItemRow> pool, int percentpass, int maxdraws)
         {
             return DrawUntilFailure(pool, percentpass, maxdraws, ir => ir.ItemID).ToList();
         }
-        internal static IEnumerable<ItemRow> DrawItemsUntilFailure(IEnumerable<ItemRow> pool, int percentpass, int maxdraws)
+        internal static List<ItemRow> DrawItemsUntilFailure(List<ItemRow> pool, int percentpass, int maxdraws)
         {
             List<ItemRow> randdraws = new();
 
@@ -169,16 +169,16 @@ namespace DS2S_META.Randomizer
             };
             return randdraws;
         }
-        internal static IEnumerable<int> DrawIdsUntilLimit(IEnumerable<ItemRow> pool, int percentpass, int maxdraws)
+        internal static List<int> DrawIdsUntilLimit(List<ItemRow> pool, int percentpass, int maxdraws)
         {
             return DrawItemsUntilLimit(pool, percentpass, maxdraws).Select(ir => ir.ItemID).ToList();
         }
-        internal static int DrawSingleParamId(IEnumerable<ItemRow> pool, int percentpass)
+        internal static int? DrawSingleParamId(List<ItemRow> pool, int percentpass)
         {
             // used for armour memes (todo?)
-            return DrawItemsUntilLimit(pool, percentpass, 1).Select(ir => ir.ID).First();
+            return DrawItemsUntilLimit(pool, percentpass, 1).Select(ir => ir.ID).FirstOrDefault();
         }
-        internal static IEnumerable<ItemRow> DrawItemsUntilLimit(IEnumerable<ItemRow> pool, int percentpass, int maxdraws)
+        internal static List<ItemRow> DrawItemsUntilLimit(List<ItemRow> pool, int percentpass, int maxdraws)
         {
             // more lenient form of DrawItemsUntilFailure. Flat x% chance on every draw, no early exit.
             List<ItemRow> randdraws = new();
@@ -197,9 +197,9 @@ namespace DS2S_META.Randomizer
         }
 
         // Rng helpers:
-        internal static IEnumerable<int> DrawWepReinforces(int n) => Util.CollateCalls(DrawWepReinforce, n);
-        internal static IEnumerable<short> DrawAmmoQuants(int n) => Util.CollateCalls(DrawAmmoQuant, n);
-        internal static IEnumerable<short> DrawItemQuants(IEnumerable<ItemRow> cons) => cons.Select(ir => DrawItemQuant(ir)).ToList();
+        internal static List<int> DrawWepReinforces(int n) => Util.CollateCalls(DrawWepReinforce, n).ToList();
+        internal static List<short> DrawAmmoQuants(int n) => Util.CollateCalls(DrawAmmoQuant, n).ToList();
+        internal static List<short> DrawItemQuants(List<ItemRow> cons) => cons.Select(ir => DrawItemQuant(ir)).ToList();
         //
         internal static int DrawWepReinforce()
         {

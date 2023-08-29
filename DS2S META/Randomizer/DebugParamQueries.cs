@@ -142,5 +142,21 @@ namespace DS2S_META.Randomizer
             //var test4 = LTR_flatlist.Where(di => di.Infusion != 0).ToList();
             //var test5 = AllP.Where(rdz => rdz.Flatlist.Any(di => di.Infusion != 0)).ToList();
         }
+
+        internal class RandoInfo2
+        {
+            internal string AreaString;
+            internal string EnemyName;
+            internal int ID;
+            internal bool IsDirect;
+
+            internal RandoInfo2(string? areastring, string enemyname, int paramid, bool directlot)
+            {
+                AreaString = areastring ?? "cantfindmap";
+                EnemyName = enemyname;
+                ID = paramid;
+                IsDirect = directlot;
+            }
+        }
     }
 }

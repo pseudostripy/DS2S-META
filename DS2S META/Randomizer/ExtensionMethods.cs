@@ -16,82 +16,101 @@ namespace DS2S_META
     internal static class ExtensionMethods
     {
         // Common filtering queries:
-        public static IEnumerable<DropInfo> FilterByItem(this IEnumerable<DropInfo> dropinfos, params ITEMID[] items)
+        public static List<DropInfo> FilterByItem(this List<DropInfo> dropinfos, params ITEMID[] items)
         {
-            return dropinfos.Where(di => items.Cast<int>().Contains(di.ItemID));
+            return dropinfos.Where(di => items.Cast<int>().Contains(di.ItemID)).ToList();
         }
-        public static IEnumerable<DropInfo> FilterByItemType(this IEnumerable<DropInfo> dropinfos, params eItemType[] goodtypes)
+        public static List<DropInfo> FilterByItemType(this List<DropInfo> dropinfos, params eItemType[] goodtypes)
         {
             return dropinfos.FilterByItemType(goodtypes);
         }
-        public static IEnumerable<DropInfo> FilterByItemType(this IEnumerable<DropInfo> dropinfos, IEnumerable<eItemType> goodtypes)
+        public static List<DropInfo> FilterByItemType(this List<DropInfo> dropinfos, List<eItemType> goodtypes)
         {
-            return dropinfos.Where(di => goodtypes.Contains(di.AsItemRow().ItemType));
+            return dropinfos.Where(di => goodtypes.Contains(di.AsItemRow().ItemType)).ToList();
         }
-        public static IEnumerable<DropInfo> FilterOutItemType(this IEnumerable<DropInfo> dropinfos, IEnumerable<eItemType> goodtypes)
+        public static List<DropInfo> FilterOutItemType(this List<DropInfo> dropinfos, List<eItemType> goodtypes)
         {
-            return dropinfos.Where(di => !goodtypes.Contains(di.AsItemRow().ItemType));
+            return dropinfos.Where(di => !goodtypes.Contains(di.AsItemRow().ItemType)).ToList();
         }
-        public static IEnumerable<ItemRow> FilterByType(this IEnumerable<ItemRow> itemrows, params eItemType[] types)
+        public static List<ItemRow> FilterByType(this List<ItemRow> itemrows, params eItemType[] types)
         {
-            return itemrows.Where(it => types.Contains(it.ItemType));
+            return itemrows.Where(it => types.Contains(it.ItemType)).ToList();
         }
-        public static IEnumerable<ItemRow> FilterOutId(this IEnumerable<ItemRow> itemrows, IEnumerable<ITEMID> badids)
+        public static List<ItemRow> FilterOutId(this List<ItemRow> itemrows, List<ITEMID> badids)
         {
-            return itemrows.Where(it => !badids.Cast<int>().Contains(it.ItemID));
+            return itemrows.Where(it => !badids.Cast<int>().Contains(it.ItemID)).ToList();
         }
-        public static IEnumerable<ItemRow> FilterOutUsage(this IEnumerable<ItemRow> itemrows, params ITEMUSAGE[] baduses)
+        public static List<ItemRow> FilterOutUsage(this List<ItemRow> itemrows, params ITEMUSAGE[] baduses)
         {
-            return itemrows.Where(it => !baduses.Cast<int>().Contains(it.ItemUsageID));
+            return itemrows.Where(it => !baduses.Cast<int>().Contains(it.ItemUsageID)).ToList();
         }
-        public static IEnumerable<Randomization> FilterByVanillaItem(this IEnumerable<Randomization> rdzs, int itemid)
+        public static List<Randomization> FilterByVanillaItem(this List<Randomization> rdzs, int itemid)
         {
-            return rdzs.Where(rdz => rdz.HasVanillaItemID(itemid));
+            return rdzs.Where(rdz => rdz.HasVanillaItemID(itemid)).ToList();
         }
-        public static IEnumerable<Randomization> FilterByTaskType(this IEnumerable<Randomization> rdzs, params RDZ_TASKTYPE[] allowtasks)
-        {
-            // return those that match any of the allowtasks types
-            return rdzs.FilterByTaskType(allowtasks);
-        }
-        public static IEnumerable<ShopRdz> FilterByTaskType(this IEnumerable<ShopRdz> rdzs, params RDZ_TASKTYPE[] allowtasks)
+        public static List<Randomization> FilterByTaskType(this List<Randomization> rdzs, params RDZ_TASKTYPE[] allowtasks)
         {
             // return those that match any of the allowtasks types
-            return rdzs.FilterByTaskType(allowtasks);
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
         }
-        public static IEnumerable<Randomization> FilterByTaskType(this IEnumerable<Randomization> rdzs, IEnumerable<RDZ_TASKTYPE> allowtasks)
+        public static List<ShopRdz> FilterByTaskType(this List<ShopRdz> rdzs, params RDZ_TASKTYPE[] allowtasks)
         {
             // return those that match any of the allowtasks types
-            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type));
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
         }
-        public static IEnumerable<Randomization> FilterOutTaskType(this IEnumerable<Randomization> rdzs, params RDZ_TASKTYPE[] badtasks)
+        public static List<ShopRdz> FilterByTaskType(this List<ShopRdz> rdzs, List<RDZ_TASKTYPE> allowtasks)
         {
-            return rdzs.Where(rdz => !badtasks.Contains(rdz.Type));
+            // return those that match any of the allowtasks types
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
         }
-        public static IEnumerable<Randomization> FilterOutPickupType(this IEnumerable<Randomization> rdzs, params PICKUPTYPE[] badtypes)
+        public static List<LotRdz> FilterByTaskType(this List<LotRdz> rdzs, params RDZ_TASKTYPE[] allowtasks)
+        {
+            // return those that match any of the allowtasks types
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
+        }
+        public static List<LotRdz> FilterByTaskType(this List<LotRdz> rdzs, List<RDZ_TASKTYPE> allowtasks)
+        {
+            // return those that match any of the allowtasks types
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
+        }
+        public static List<Randomization> FilterByTaskType(this List<Randomization> rdzs, List<RDZ_TASKTYPE> allowtasks)
+        {
+            // return those that match any of the allowtasks types
+            return rdzs.Where(rdz => allowtasks.Contains(rdz.Type)).ToList();
+        }
+        public static List<Randomization> FilterOutTaskType(this List<Randomization> rdzs, params RDZ_TASKTYPE[] badtasks)
+        {
+            return rdzs.Where(rdz => !badtasks.Contains(rdz.Type)).ToList();
+        }
+        public static List<Randomization> FilterOutPickupType(this List<Randomization> rdzs, params PICKUPTYPE[] badtypes)
         {
             return rdzs.FilterOutPickupType(badtypes);
         }
-        public static IEnumerable<Randomization> FilterOutPickupType(this IEnumerable<Randomization> rdzs, IEnumerable<PICKUPTYPE> badtypes)
+        public static List<Randomization> FilterOutPickupType(this List<Randomization> rdzs, List<PICKUPTYPE> badtypes)
         {
             // check the associated RandoInfo and filter out if it contains any of the badtypes
-            return rdzs.Where(rdz => !rdz.RandoInfo.PickupTypes.Any(badtypes.Contains));
+            return rdzs.Where(rdz => !rdz.RandoInfo.PickupTypes.Any(badtypes.Contains)).ToList();
         }
-        public static IEnumerable<Randomization> FilterByPickupType(this IEnumerable<Randomization> rdzs, params PICKUPTYPE[] allowtypes)
+        public static List<Randomization> FilterByPickupType(this List<Randomization> rdzs, params PICKUPTYPE[] allowtypes)
         {
-            return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains));
+            return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains)).ToList();
         }
-        public static IEnumerable<Restriction> FilterByType(this IEnumerable<Restriction> restrs, RestrType allowtype)
+        public static List<Randomization> FilterByPickupType(this List<Randomization> rdzs, List<PICKUPTYPE> allowtypes)
         {
-            return restrs.Where(r => r.Type == allowtype);
+            return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains)).ToList();
         }
-        public static IEnumerable<LotRdz> FilterByPickupType(this IEnumerable<LotRdz> rdzs, params PICKUPTYPE[] allowtypes)
+        public static List<Restriction> FilterByType(this List<Restriction> restrs, RestrType allowtype)
         {
-            return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains));
+            return restrs.Where(r => r.Type == allowtype).ToList();
+        }
+        public static List<LotRdz> FilterByPickupType(this List<LotRdz> rdzs, params PICKUPTYPE[] allowtypes)
+        {
+            return rdzs.Where(rdz => rdz.RandoInfo.PickupTypes.Any(allowtypes.Contains)).ToList();
         }
 
         // Randomness helpers
-        public static T RandomElement<T>(this IEnumerable<T> pool) => pool.ElementAt(Rng.Next(pool.Count()));
-        public static IEnumerable<T> RandomElements<T>(this IEnumerable<T> pool, int count)
+        public static T RandomElement<T>(this List<T> pool) => pool.ElementAt(Rng.Next(pool.Count()));
+        public static List<T> RandomElements<T>(this List<T> pool, int count)
         {
             var choices = Enumerable.Range(0, pool.Count()).ToList().Shuffle().Take(count);
             var outlist = new List<T>(); // empty
@@ -122,14 +141,14 @@ namespace DS2S_META
         public static ItemRow AsItemRow(this int itemid) => ParamMan.ItemRows.Where(ir => ir.ItemID == itemid).First();
         public static ItemRow? TryAsItemRow(this int itemid) => ParamMan.ItemRows.Where(ir => ir.ItemID == itemid).FirstOrDefault();
         public static ItemRow AsItemRow(this DropInfo di) => ParamMan.ItemRows.Where(ir => ir.ItemID == di.ItemID).First();
-        public static IEnumerable<T> AsRows<T>(this Param? param)
+        public static IList<T> AsRows<T>(this Param? param)
         {
             if (param == null) throw new ArgumentNullException(nameof(param));
-            return param.Rows.OfType<T>();
+            return param.Rows.OfType<T>().ToList();
         }
 
         public static RandoInfo GetGlotRandoInfo(this int paramid) => CasualItemSet.LotData[paramid];
-        public static RandoInfo2 GetDropRandoInfo(this int paramid)
+        public static RandoInfo GetDropRandoInfo(this int paramid)
         {
             return CasualItemSet.DropData?[paramid] ?? throw new Exception("Not initialized");
         }
@@ -137,7 +156,7 @@ namespace DS2S_META
 
         // More general methods:
         public static string[] RegexSplit(this string source, string pattern) => Regex.Split(source, pattern);
-        public static void AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
+        public static void AddRange<T>(this ICollection<T> target, IList<T> source)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));

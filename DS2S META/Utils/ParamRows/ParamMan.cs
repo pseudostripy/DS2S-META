@@ -135,11 +135,11 @@ namespace DS2S_META.Utils
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
         // Rows shorthand
-        public static IEnumerable<ItemRow> ItemRows => ItemParam.AsRows<ItemRow>();
-        public static IEnumerable<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>();
-        public static IEnumerable<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>();
-        public static IEnumerable<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>();
-        public static IEnumerable<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>();
+        public static List<ItemRow> ItemRows => ItemParam.AsRows<ItemRow>().ToList();
+        public static List<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
+        public static List<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>().ToList();
+        public static List<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>().ToList();
+        public static List<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
 
         public static void Initialise(DS2SHook hook)
         {

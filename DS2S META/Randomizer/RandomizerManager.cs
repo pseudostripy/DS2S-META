@@ -26,7 +26,7 @@ namespace DS2S_META.Randomizer
         
         internal int CurrSeed;
         internal List<ItemRestriction> UIRestrictions;
-        internal IEnumerable<Restriction> Restrictions;
+        internal List<Restriction> Restrictions;
         internal Presanitizer Scope;
         internal PlacementManager Placer;
 
@@ -42,6 +42,7 @@ namespace DS2S_META.Randomizer
         internal void Initalize(DS2SHook hook)
         {
             Hook = hook; // Required for reading game params in memory
+            Rng.SetSeed(0x10); // *always same seed for setup*. Seed is updated before randomization
             Scope = new Presanitizer();
             IsInitialized = true;
         }
@@ -58,9 +59,12 @@ namespace DS2S_META.Randomizer
             if (!EnsureSeedCompatibility(seed)) return;
             SetSeed(seed);          // reset Rng Twister
             SetupRestrictions();    // reload from UI
-            
+
             // DoRandomize:
             Placer = new PlacementManager(Scope, Restrictions);
+
+           
+
             Placer.Randomize();
             CharCreation.Randomize();
 

@@ -174,20 +174,21 @@ namespace DS2S_META.Utils
         }
         private int GetItemID()
         {
-            // is this how they do it?
-            if (WeaponID != -1)
-                return WeaponID;
-            if (ArmorID != -1)
-                return ArmorID;
-            if (AmmunitionID != -1)
-                return AmmunitionID;
-            if (RingID != -1)
-                return RingID;
-            if (SpellID != -1)
-                return SpellID;
-            if (GestureID != -1)
-                return GestureID;
-            return ID; // consumables are here I think
+            return ID;
+            //// is this how they do it?
+            //if (WeaponID != -1)
+            //    return WeaponID;
+            //if (ArmorID != -1)
+            //    return ArmorID;
+            //if (AmmunitionID != -1)
+            //    return AmmunitionID;
+            //if (RingID != -1)
+            //    return RingID;
+            //if (SpellID != -1)
+            //    return SpellID;
+            //if (GestureID != -1)
+            //    return GestureID;
+            //return ID; // consumables are here I think
         }
         public List<DS2SInfusion> GetInfusionList()
         {

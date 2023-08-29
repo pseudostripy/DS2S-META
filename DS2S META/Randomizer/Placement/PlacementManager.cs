@@ -21,7 +21,7 @@ namespace DS2S_META.Randomizer.Placement
     internal class PlacementManager
     {
         // Fields
-        internal IEnumerable<Diset> Disets { get; set; }
+        internal List<Diset> Disets { get; set; }
         internal Presanitizer Scope { get; set; }
         internal Steiner Steiner { get; set; }
         internal List<Restriction> Restrictions;
@@ -39,7 +39,7 @@ namespace DS2S_META.Randomizer.Placement
         private static Randomization? RecentBestRdz;
         internal List<Randomization> ReservedRdzs;
         internal static List<int> VanItems;
-
+        public bool IsRaceMode = true;
 
         // Enums/definitions
         internal static List<PICKUPTYPE> FullySafeFlags = new()
@@ -83,7 +83,7 @@ namespace DS2S_META.Randomizer.Placement
             //{ 60355000, FullySafeFlags },    // Aged Feather
             //{ 40420000, FullySafeFlags },    // Silvercat Ring
         };
-        private static readonly Dictionary<ITEMID, IEnumerable<int>> MultiKeyTriggers = new()
+        private static readonly Dictionary<ITEMID, List<int>> MultiKeyTriggers = new()
         {
             { ITEMID.TORCH,              IntArray(3) },
             { ITEMID.SOULOFAGIANT,       IntArray(3) },
@@ -92,7 +92,7 @@ namespace DS2S_META.Randomizer.Placement
             { ITEMID.FRAGRANTBRANCH,     IntArray(3, 10) },
             { ITEMID.SMELTERWEDGE,       IntArray(11) },
         };
-        private static IEnumerable<int> IntArray(params int[] values) { return  values; }
+        private static List<int> IntArray(params int[] values) { return values.ToList(); }
         internal List<Randomization> RdzMajors;
         internal static List<eItemType> RequiredTypes = new() { eItemType.SPELLS, eItemType.WEAPON1, eItemType.WEAPON2 }; // todecprecate?
         internal static Dictionary<int, int> LinkedDrops = new()
@@ -102,7 +102,7 @@ namespace DS2S_META.Randomizer.Placement
 
 
         // Constructor
-        public PlacementManager(Presanitizer scope, IEnumerable<Restriction> restrictions) 
+        public PlacementManager(Presanitizer scope, List<Restriction> restrictions) 
         {
             Scope = scope;
             Restrictions = restrictions.ToList();
@@ -126,15 +126,27 @@ namespace DS2S_META.Randomizer.Placement
             var flcopy = LTR.Select(di => di.Clone()).ToList();
 
             // Partition into KeyTypes, ReqNonKeys and Generic Loot-To-Randomize:
-            var keys = flcopy.Where(di => di.IsKeyType).ToList();                                  // Keys
-            var flNoKeys = flcopy.Except(keys);
+            List<DropInfo> truekeys = new(); // empty in non-race mode so they're placed alongside trashkeys
+            if (IsRaceMode)
+            {
+                truekeys = flcopy.Where(di => RandoLogicHelper.TRUEKEYS.Cast<int>().Contains(di.ItemID)).ToList();
+                int N = 5;
+                var firstNbranch = flcopy.FilterByItem(ITEMID.FRAGRANTBRANCH).Take(N).ToList();
+                var firstNlockstone = flcopy.FilterByItem(ITEMID.PHARROSLOCKSTONE).Take(N).ToList();
+                truekeys.AddRange(firstNbranch);
+                truekeys.AddRange(firstNlockstone);
+            }
+
+            var trashkeys = flcopy.Except(truekeys).Where(di => di.IsKeyType).ToList();                         // Keys
+            var flNoKeys = flcopy.Except(truekeys).Except(trashkeys);
             var reqs = flNoKeys.Where(di => IsRequiredType(di.ItemID) || IsRestrictedItem(di.ItemID)).ToList(); // Reqs
             var gens = flNoKeys.Except(reqs).ToList();                                           // Generics
 
             // Create group objects for placement
             Disets = new List<Diset>()
             {
-                FromKeys(keys),
+                FromTrueKeys(truekeys),
+                FromTrashKeys(trashkeys),
                 FromReqs(reqs),
                 FromGens(gens),
             };
@@ -189,22 +201,51 @@ namespace DS2S_META.Randomizer.Placement
         private void PlaceSet(Diset diset)
         {
             // Slightly extra logic when diset.IsKeys is true. See updatefornewkey
-
             // Get fresh copies
-            var ld = new List<DropInfo>(diset.Data.ToList()); // ld: list of DropInfos
+            var ld = new List<DropInfo>(diset.Data); // ld: list of DropInfos
+
+            var ldtest = ld.RandomElement();
             var availrdzs = GetRemainingRdz();
+
+            // speed things up
+            if (IsRaceMode && diset.IsTrueKeys)
+                availrdzs = RdzMajors;
+            else if ((diset.IsTrueKeys && !IsRaceMode) || diset.IsTrashKeys)
+                availrdzs = availrdzs.FilterByPickupType(FullySafeFlags).ToList();
+            else if (diset.IsReqs)
+                availrdzs = availrdzs.FilterByPickupType(HalfSafe).ToList();
+
+            // for resolving key softlocks only
+            List<DropInfo> delayitems = new();
 
             while (ld.Any())
             {
                 // Draw next thing to place
                 var di = ld.RandomElement();
 
+
                 // Special case logic (removes from avail after completion)
-                if (HandledAsVanilla(di, availrdzs, diset.IsKeys)) 
-                    continue;
+                if (HandledAsVanilla(di, availrdzs, diset.IsKeys, out var vanrdzs))
+                {
+                    foreach (var vanrdz in vanrdzs)
+                    {
+                        if (vanrdz.IsSaturated())
+                            availrdzs.Remove(vanrdz);
+
+                        continue;
+                    }
+                }
 
                 // Normal key logic:
                 var rdz = FindElligibleRdz(di, diset.Type, availrdzs, out var placeres);
+                if (diset.IsTrueKeys && placeres != null && placeres.DelayKey)
+                {
+                    delayitems.Add(di);
+                    if (!ld.Except(delayitems).Any())
+                        throw new Exception("Softlock not even resolvable with delayed key placement");
+                    continue; // otherwise keep trying
+                } else
+                    delayitems = new(); // make sure to clear this after resolution
 
                 // Handle early placement failure to distance checks:
                 bool distfail = placeres?.IsDistanceSoftFail == true;
@@ -212,7 +253,14 @@ namespace DS2S_META.Randomizer.Placement
                     continue; // try to delay until no choices left
 
                 // Solution found (or compromise reached)
-                PlaceIt(rdz, di, availrdzs, diset.IsKeys);
+                var bsaturated = PlaceIt(rdz, di, diset.IsKeys);
+                ld.Remove(di); // placed
+                if (bsaturated)
+                {
+                    // rdz complete:
+                    rdz.MarkHandled();
+                    availrdzs.Remove(rdz);
+                }
             }
         }
         //
@@ -238,7 +286,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopCopies()
         {
             // Maughlin / Gilligan / Gavlan
-            var fillbycopy = PTF.OfType<ShopRdz>()
+            var fillbycopy = PTF.OfType<ShopRdz>().ToList()
                                  .FilterByTaskType(RDZ_TASKTYPE.FILL_BY_COPY).ToList();
             var shops = PTF.OfType<ShopRdz>();
 
@@ -260,7 +308,7 @@ namespace DS2S_META.Randomizer.Placement
         }
         internal void FixNormalTrade()
         {
-            var normal_trades = PTF.OfType<ShopRdz>()
+            var normal_trades = PTF.OfType<ShopRdz>().ToList()
                                    .FilterByTaskType(RDZ_TASKTYPE.UNLOCKTRADE).ToList();
             foreach (var shp in normal_trades)
             {
@@ -272,7 +320,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopSustains()
         {
             // Don't allow these events to be disabled
-            var sustain_shops = PTF.OfType<ShopRdz>()
+            var sustain_shops = PTF.OfType<ShopRdz>().ToList()
                                    .FilterByTaskType(RDZ_TASKTYPE.SHOPSUSTAIN).ToList();
             foreach (var shp in sustain_shops)
             {
@@ -283,7 +331,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopTradeCopies()
         {
             // Ornifex (non-free)
-            var fillbycopy = PTF.OfType<ShopRdz>()
+            var fillbycopy = PTF.OfType<ShopRdz>().ToList()
                                 .FilterByTaskType(RDZ_TASKTYPE.TRADE_SHOP_COPY).ToList();
             var filled_shops = PTF.OfType<ShopRdz>();
 
@@ -310,7 +358,7 @@ namespace DS2S_META.Randomizer.Placement
         {
             // This is just a Normal Trade Fix but where we additionally 0 the price
             // Ornifex First Trade (ensure free)
-            var shops_makefree = PTF.OfType<ShopRdz>()
+            var shops_makefree = PTF.OfType<ShopRdz>().ToList()
                                     .FilterByTaskType(RDZ_TASKTYPE.FREETRADE).ToList();
             foreach (var shp in shops_makefree)
             {
@@ -323,7 +371,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopsToRemove()
         {
             // Ornifex First Trade (ensure free)
-            var shops_toremove = PTF.OfType<ShopRdz>()
+            var shops_toremove = PTF.OfType<ShopRdz>().ToList()
                                     .FilterByTaskType(RDZ_TASKTYPE.SHOPREMOVE);
 
             foreach (var shp in shops_toremove)
@@ -334,7 +382,7 @@ namespace DS2S_META.Randomizer.Placement
         }
         internal void FixLotCopies()
         {
-            var fillbycopy = PTF.OfType<LotRdz>()
+            var fillbycopy = PTF.OfType<LotRdz>().ToList()
                                  .FilterByTaskType(RDZ_TASKTYPE.LINKEDSLAVE).OfType<LotRdz>().ToList();
             foreach (var lot in fillbycopy)
             {
@@ -348,12 +396,13 @@ namespace DS2S_META.Randomizer.Placement
             }
         }
         //
-        private bool HandledAsVanilla(DropInfo di, List<Randomization> availrdzs, bool iskey)
+        private bool HandledAsVanilla(DropInfo di, List<Randomization> availrdzs, bool iskey, out List<Randomization> rdzs)
         {
+            rdzs = new();
             if (!IsVanillaRestricted(di.ItemID))
                 return false;
 
-            var rdzs = availrdzs.FilterByVanillaItem(di.ItemID);
+            rdzs = availrdzs.FilterByVanillaItem(di.ItemID);
             bool canplaceall = rdzs.All(r => CanPlaceVanillaKey(r, di));
 
             // This is the "DELAY_VANLOCKED" situation. Kept in list for future reattempt.
@@ -362,7 +411,7 @@ namespace DS2S_META.Randomizer.Placement
 
             // Can place key in (all its) Vanilla locations
             foreach (var r in rdzs)
-                PlaceIt(r, di, availrdzs, iskey); // remove from availrdz
+                PlaceIt(r, di, iskey); // remove from availrdz
             return true;
         }
         private List<Randomization> GetRemainingRdz()
@@ -370,27 +419,25 @@ namespace DS2S_META.Randomizer.Placement
             // see what's left and get a copy of that list
             return new List<Randomization>(PTF.Where(rdz => !rdz.IsHandled));
         }
-        private void PlaceIt(Randomization rdz, DropInfo di, List<Randomization> availrdz, bool iskey)
+        private bool PlaceIt(Randomization rdz, DropInfo di, bool iskey)
         {
-            if (iskey) PlaceKey(rdz, di, availrdz);
-            else PlaceItem(rdz, di, availrdz);
+            if (iskey) 
+                return PlaceKey(rdz, di);
+            else 
+                return PlaceItem(rdz, di);
         }
-        private void PlaceKey(Randomization rdz, DropInfo di, List<Randomization> availrdz)
+        private bool PlaceKey(Randomization rdz, DropInfo di)
         {
-            PlaceItem(rdz, di, availrdz);
+            var res = PlaceItem(rdz, di);
             UpdateForNewKey(rdz, (ITEMID)di.ItemID); // update softlock stuff
+            return res;
         }
-        private static void PlaceItem(Randomization rdz, DropInfo di, List<Randomization> availrdz)
+        private static bool PlaceItem(Randomization rdz, DropInfo di)
         {
             // "Fix di, add di to rdz, remove rdz from availrdz if it saturates"
             FixInfusReinf(di);
             rdz.AddShuffledItem(di);
-            if (!rdz.IsSaturated())
-                return;
-
-            // rdz complete:
-            rdz.MarkHandled();
-            availrdz.Remove(rdz);
+            return rdz.IsSaturated();
         }
         //
         private static void FixInfusReinf(DropInfo di)
@@ -462,6 +509,13 @@ namespace DS2S_META.Randomizer.Placement
             }
 
             // rip
+            if (stype == SetType.TrueKeys)
+            {
+                bestPlaceRes = new PlaceResult();
+                bestPlaceRes.MarkAsDelay();
+                return availrdzs.First(); // see if we can place it later after more keys are unlocked
+            }
+
             throw new Exception("True softlock: nowhere to place without breaking conditions");
         }
         private static void ResetMinMaxElligible()
@@ -601,8 +655,7 @@ namespace DS2S_META.Randomizer.Placement
             //    - Category: GeneralItems
 
             // Racemode special:
-            var isRaceMode = true;
-            if (isRaceMode && st == SetType.Keys)
+            if (IsRaceMode && st == SetType.TrueKeys)
             {
                 if (RdzMajors.Contains(rdz))
                     return CategoryRes.RaceKeyPass;
@@ -625,7 +678,7 @@ namespace DS2S_META.Randomizer.Placement
             if (IsRestrictedItem(di.ItemID))
                 return FullySafeFlags; // front-end specified items
 
-            if (st == SetType.Keys)
+            if (st == SetType.TrueKeys || st == SetType.TrashKeys)
                 return FullySafeFlags;
             if (st == SetType.Reqs) 
                 return HalfSafe;
@@ -681,11 +734,20 @@ namespace DS2S_META.Randomizer.Placement
         internal static bool SatisfiesMajorCondition(Randomization rdz)
         {
             // todo define/read UI settings
+            if (rdz.HasPickupType(PICKUPTYPE.NGPLUS))
+                return false;
 
             // do fastest queries first for efficiency
             bool isboss = rdz.HasPickupType(PICKUPTYPE.BOSS);
             bool issafe = rdz.HasPickupType(FullySafeFlags);
             if (!(isboss || issafe)) return false; // volatile or uninterested
+
+            if (rdz is LotRdz)
+            {
+                LotRdz lrdz = (LotRdz)rdz;
+                if (lrdz.HasVanillaAnyItemID(RandoLogicHelper.TRUEKEYS))
+                    return true;
+            }
 
             // add more logic here as you see fit
             var majoritems = new List<ITEMID>() { ITEMID.ESTUSSHARD, ITEMID.BONEDUST, ITEMID.FRAGRANTBRANCH };
@@ -722,6 +784,9 @@ namespace DS2S_META.Randomizer.Placement
                 triggerkey = (KEYID)(int)keyid; // convert enum
                 return true; // add it
             }
+
+            if (!ismultikey)
+                return false; // already hit the interesting count above
             
             // Multikeys:
             var triggers = MultiKeyTriggers[keyid];
