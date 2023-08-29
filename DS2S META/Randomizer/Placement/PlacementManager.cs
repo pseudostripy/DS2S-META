@@ -181,7 +181,9 @@ namespace DS2S_META.Randomizer.Placement
 
             // Place everything
             foreach (var diset in Disets)
+            {
                 PlaceSet(diset);
+            }
         }
         private void FillLeftovers()
         {
@@ -225,27 +227,33 @@ namespace DS2S_META.Randomizer.Placement
 
 
                 // Special case logic (removes from avail after completion)
-                if (HandledAsVanilla(di, availrdzs, diset.IsKeys, out var vanrdzs))
+                if (!diset.IsGens)
                 {
-                    foreach (var vanrdz in vanrdzs)
+                    if (HandledAsVanilla(di, availrdzs, diset.IsKeys, out var vanrdzs))
                     {
-                        if (vanrdz.IsSaturated())
-                            availrdzs.Remove(vanrdz);
-
-                        continue;
+                        foreach (var vanrdz in vanrdzs)
+                        {
+                            if (vanrdz.IsSaturated())
+                                availrdzs.Remove(vanrdz);
+                            continue;
+                        }
                     }
                 }
+                    
 
                 // Normal key logic:
                 var rdz = FindElligibleRdz(di, diset.Type, availrdzs, out var placeres);
-                if (diset.IsTrueKeys && placeres != null && placeres.DelayKey)
+                if (diset.IsTrueKeys) // special case when there's limited slots that might run into softlocks
                 {
-                    delayitems.Add(di);
-                    if (!ld.Except(delayitems).Any())
-                        throw new Exception("Softlock not even resolvable with delayed key placement");
-                    continue; // otherwise keep trying
-                } else
-                    delayitems = new(); // make sure to clear this after resolution
+                    if (placeres != null && placeres.DelayKey)
+                    {
+                        delayitems.Add(di);
+                        if (!ld.Except(delayitems).Any())
+                            throw new Exception("Softlock not even resolvable with delayed key placement");
+                        continue; // otherwise keep trying
+                    } else
+                        delayitems = new(); // make sure to clear this after resolution
+                } 
 
                 // Handle early placement failure to distance checks:
                 bool distfail = placeres?.IsDistanceSoftFail == true;
@@ -483,6 +491,11 @@ namespace DS2S_META.Randomizer.Placement
                 rdzs.Remove(rdz); // don't choose again
 
                 // Is is a good rdz to use?
+                // By definition, any restrictions (in any way) will apply to reqs items+, so gens don't need to bother with checks for better performance.
+                if (stype == SetType.Gens)
+                    return rdz;
+
+                // Otherwise we have checks to do...
                 var placeres = GetPlacementResult(rdz, di, stype);
 
                 // Bad rdz: keep trying

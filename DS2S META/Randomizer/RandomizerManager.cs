@@ -61,10 +61,8 @@ namespace DS2S_META.Randomizer
             SetupRestrictions();    // reload from UI
 
             // DoRandomize:
+
             Placer = new PlacementManager(Scope, Restrictions);
-
-           
-
             Placer.Randomize();
             CharCreation.Randomize();
 

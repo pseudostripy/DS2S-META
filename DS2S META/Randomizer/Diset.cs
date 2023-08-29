@@ -22,6 +22,7 @@ namespace DS2S_META.Randomizer
         public bool IsTrueKeys => Type == SetType.TrueKeys;
         public bool IsTrashKeys => Type == SetType.TrashKeys;
         public bool IsReqs => Type == SetType.Reqs;
+        public bool IsGens => Type == SetType.Gens;
 
         // Constructors
         public Diset(SetType type, List<DropInfo> data) 
