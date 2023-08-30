@@ -31,6 +31,10 @@ namespace DS2S_META.Randomizer.Placement
         private List<Randomization> PTF => Scope.AllPtf;
         internal List<int> KeysPlacedSoFar = new();
 
+        // performance boosts:
+        private Dictionary<int, ItemRow> ItemRows;
+
+
         // Internal and Volatile!
         private static int MinElligDist;
         private static int MaxElligDist;
@@ -182,7 +186,11 @@ namespace DS2S_META.Randomizer.Placement
             // Place everything
             foreach (var diset in Disets)
             {
+                var watch = System.Diagnostics.Stopwatch.StartNew();
                 PlaceSet(diset);
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                var temp = 1;
             }
         }
         private void FillLeftovers()
@@ -477,13 +485,15 @@ namespace DS2S_META.Randomizer.Placement
         // Elligibility results
         private Randomization FindElligibleRdz(DropInfo di, SetType stype, List<Randomization> availrdzs, out PlaceResult? bestPlaceRes)
         {
-            // Find an Rdz (at random) satisfying all constraints.
             bestPlaceRes = null;
-            ResetMinMaxElligible();
+            if (stype == SetType.Gens)
+                return availrdzs.RandomElement();
 
+            // Find an Rdz (at random) satisfying all constraints.
+            ResetMinMaxElligible();
             // List of remaining spots to search through
             var rdzs = new List<Randomization>(availrdzs); // take a copy
-
+            
             while (rdzs.Any())
             {
                 // Choose random rdz for item:

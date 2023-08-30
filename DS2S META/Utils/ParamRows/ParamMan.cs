@@ -44,7 +44,7 @@ namespace DS2S_META.Utils
             public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
             public const string ARMOR_REINFORCE = "ARMOR_REINFORCE_PARAM";
             public const string ARMOR = "ARMOR_PARAM";
-            
+
             // Names different from underlying DEF
             public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
             public const string ITEM_LOT_CHR = "ITEM_LOT_CHR";
@@ -135,7 +135,7 @@ namespace DS2S_META.Utils
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
         // Rows shorthand
-        public static List<ItemRow> ItemRows => ItemParam.AsRows<ItemRow>().ToList();
+        public static Dictionary<int, ItemRow> ItemRows { get; set; }
         public static List<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
         public static List<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>().ToList();
         public static List<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>().ToList();
@@ -145,6 +145,7 @@ namespace DS2S_META.Utils
         {
             Hook = hook; // needed?
             GetParams(Hook.IsVanilla);
+             ItemRows = ItemParam.AsRows<ItemRow>().ToDictionary(ir => ir.ItemID, ir => ir);
             IsLoaded = true;
         }
         public static void Uninitialise()

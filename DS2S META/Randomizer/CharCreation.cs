@@ -32,7 +32,7 @@ namespace DS2S_META.Randomizer
         static CharCreation()
         {
             // Define lists that can be used for CharCreation random draws
-            allItems = ParamMan.ItemRows.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
+            allItems = ParamMan.ItemRows.Values.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
             //
             consumables = allItems.FilterByType(eItemType.CONSUMABLE)
                                     .FilterOutUsage(ITEMUSAGE.ITEMUSAGEKEY, ITEMUSAGE.BOSSSOULUSAGE).ToList();
