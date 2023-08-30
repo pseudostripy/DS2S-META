@@ -29,7 +29,7 @@ namespace DS2S_META.Randomizer
         internal List<Restriction> Restrictions;
         internal Presanitizer Scope;
         internal PlacementManager Placer;
-
+        internal bool IsRaceMode { get; set; }
         
         
         // Constructors:
@@ -63,7 +63,7 @@ namespace DS2S_META.Randomizer
             SetupRestrictions();    // reload from UI
 
             // DoRandomize:
-            Placer = new PlacementManager(Scope, Restrictions);
+            Placer = new PlacementManager(Scope, Restrictions, IsRaceMode);
             Placer.Randomize();
             CharCreation.Randomize();
 

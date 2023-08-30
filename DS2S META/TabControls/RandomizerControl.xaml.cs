@@ -68,7 +68,7 @@ namespace DS2S_META
         private enum RANDOPROCTYPE { Rand, Unrand, Rerand }
         private async void rando_core_process(RANDOPROCTYPE rpt)
         {
-            randomizerSetup();
+            RandomizerSetup();
             CreateItemRestrictions();
 
             // Inform user of progress..
@@ -121,13 +121,17 @@ namespace DS2S_META
         }
         
 
-        private bool randomizerSetup()
+        private bool RandomizerSetup()
         {
             if (!EnsureHooked())
                 return false;
 
             if (!RM.IsInitialized)
                 RM.Initalize(Hook);
+
+            // Get updated settings:
+            var vm = (RandoSettingsViewModel)DataContext;
+            RM.IsRaceMode = vm.RaceMode;
 
             // Warn user about the incoming warp
             // hook.Loaded = true when in game (false on load screens)

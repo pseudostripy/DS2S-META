@@ -43,7 +43,7 @@ namespace DS2S_META.Randomizer.Placement
         private static Randomization? RecentBestRdz;
         internal List<Randomization> ReservedRdzs;
         internal static List<int> VanItems;
-        public bool IsRaceMode = true;
+        public bool IsRaceMode { get; set; }
 
         // Enums/definitions
         internal static List<PICKUPTYPE> FullySafeFlags = new()
@@ -106,10 +106,11 @@ namespace DS2S_META.Randomizer.Placement
 
 
         // Constructor
-        public PlacementManager(Presanitizer scope, List<Restriction> restrictions) 
+        public PlacementManager(Presanitizer scope, List<Restriction> restrictions, bool isRaceMode) 
         {
             Scope = scope;
             Restrictions = restrictions.ToList();
+            IsRaceMode = isRaceMode;
             CreateDisets();
             CreateRdzMajors();
             Steiner = new Steiner(this, scope);
@@ -185,13 +186,7 @@ namespace DS2S_META.Randomizer.Placement
 
             // Place everything
             foreach (var diset in Disets)
-            {
-                var watch = System.Diagnostics.Stopwatch.StartNew();
                 PlaceSet(diset);
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                var temp = 1;
-            }
         }
         private void FillLeftovers()
         {
@@ -213,8 +208,6 @@ namespace DS2S_META.Randomizer.Placement
             // Slightly extra logic when diset.IsKeys is true. See updatefornewkey
             // Get fresh copies
             var ld = new List<DropInfo>(diset.Data); // ld: list of DropInfos
-
-            var ldtest = ld.RandomElement();
             var availrdzs = GetRemainingRdz();
 
             // speed things up
