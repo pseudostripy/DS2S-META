@@ -83,7 +83,7 @@ namespace DS2S_META.Randomizer
         }
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new($"{ParamID}: {VanillaShop?.ParamDesc}{Environment.NewLine}");
+            StringBuilder sb = new($"{ParamID}: {CasualItemSet.ShopData[ParamID].Description}{Environment.NewLine}");
 
             // Display empty lots
             if (ShuffledShop == null || ShuffledShop.ItemID == 0)

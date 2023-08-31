@@ -15,5 +15,24 @@ namespace DS2S_META.Randomizer
         {
             IsDropTable = false;
         }
+
+        internal override string GetNeatDescription()
+        {
+            StringBuilder sb = new($"{ParamID}: {CasualItemSet.LotData[ParamID].Description}{Environment.NewLine}");
+
+            // Display empty lots
+            if (ShuffledLot == null || ShuffledLot.NumDrops == 0)
+                return sb.Append("\tEMPTY").ToString();
+
+            for (int i = 0; i < ShuffledLot.NumDrops; i++)
+            {
+                sb.Append($"\t{ShuffledLot.Items[i].AsMetaName()}");
+                sb.Append($" x{ShuffledLot.Quantities[i]}");
+                sb.Append(Environment.NewLine);
+            }
+
+            // Remove final newline:
+            return sb.ToString().TrimEnd('\r', '\n');
+        }
     }
 }

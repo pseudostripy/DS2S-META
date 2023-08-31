@@ -17,7 +17,7 @@ namespace DS2S_META.Randomizer
 
         internal override string GetNeatDescription()
         {
-            StringBuilder sb = new($"{ParamID}: {RandoDesc}{Environment.NewLine}");
+            StringBuilder sb = new($"{ParamID}: {CasualItemSet.DropData[ParamID].Description}{Environment.NewLine}");
 
             // Display empty lots
             if (ShuffledLot == null || ShuffledLot.NumDrops == 0)

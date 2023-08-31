@@ -30,6 +30,7 @@ namespace DS2S_META.Randomizer
         internal Presanitizer Scope;
         internal PlacementManager Placer;
         internal bool IsRaceMode { get; set; }
+        internal bool IsRandomSeed { get; set; } = false; 
         
         
         // Constructors:
@@ -169,13 +170,14 @@ namespace DS2S_META.Randomizer
         }
 
         // Utility:
+        private string randomGenerationInfo => IsRandomSeed ? ", generated randomly" : ", input manually";
         internal void PrintKeysNeat()
         {
             // Prep:
             List<string> lines = new()
             {
                 // Intro line
-                $"Printing key locations for seed {CurrSeed}",
+                $"Printing key locations for seed {CurrSeed}{randomGenerationInfo}",
                 "---------------------------------------------"
             };
 
@@ -206,7 +208,7 @@ namespace DS2S_META.Randomizer
             List<string> lines = new()
             {
                 // Intro line
-                $"Printing items at all locations for seed {CurrSeed}",
+                $"Printing items at all locations for seed {CurrSeed}{randomGenerationInfo}",
                 "---------------------------------------------",
 
                 // World placements:
@@ -218,14 +220,14 @@ namespace DS2S_META.Randomizer
             // Shops:
             lines.Add("");
             lines.Add("Shops:");
-            foreach (var rdz in Scope.AllPtf.OfType<ShopRdz>())
-                lines.Add(rdz.GetNeatDescription());
+            foreach (var sdz in Scope.AllPtf.OfType<ShopRdz>())
+                lines.Add(sdz.GetNeatDescription());
 
             // Enemy drops:
             lines.Add("");
             lines.Add("Enemy Drops:");
-            foreach (var ldz in Scope.AllPtf.OfType<DropRdz>())
-                lines.Add(ldz.GetNeatDescription());
+            foreach (var ddz in Scope.AllPtf.OfType<DropRdz>())
+                lines.Add(ddz.GetNeatDescription());
 
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());

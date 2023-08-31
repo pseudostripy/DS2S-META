@@ -1329,7 +1329,7 @@ namespace DS2S_META.Randomizer
 
 
                 // Iron Keep:
-                { 305000, BossInfo(MapArea.IronKeep, "[IronKeep] Smelter demon drop", KL(KEYID.ROTUNDA)) },
+                { 305000, BossInfo(MapArea.IronKeep, "[IronKeep] Smelter Demon drop", KL(KEYID.ROTUNDA)) },
                 { 607000, BossInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop", KL(KEYID.ROTUNDA)) },
                 { 607001, BossNGPlusInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop in NG+", KL(KEYID.ROTUNDA)) },
                 { 1772000, NpcInfo(MapArea.IronKeep, "[IronKeep] Gift from Magerold after spending 16000 souls", KL(KEYID.ROTUNDA)) },
@@ -1864,7 +1864,7 @@ namespace DS2S_META.Randomizer
                 // DLC2:
                 { 675000, BossInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop", KL(KEYID.DLC2)) },
                 { 675010, BossNGPlusInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop in NG+", KL(KEYID.DLC2)) },
-                { 305010, BossInfo(MapArea.BrumeTower, "[DLC2] Blue Smelter demon drop", KL(KEYID.BLUESMELTER)) },
+                { 305010, BossInfo(MapArea.BrumeTower, "[DLC2] Blue Smelter Demon drop", KL(KEYID.BLUESMELTER)) },
                 { 680000, BossInfo(MapArea.BrumeTower, "[DLC2] Sir Alonne drop", KL(KEYID.ALONNE)) },
                 { 60019000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Smelter Wedge x6: Very first ash pile before the first chain bridge", KL(KEYID.DLC2)) },
                 { 50367140, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Baneful Bird Ring: on railing on top of the tower next to the Throne Floor bonfire requiring elevator", KL(KEYID.FUME)) },

@@ -56,10 +56,12 @@ namespace DS2S_META
         private void btnRerandomize_Click(object sender, RoutedEventArgs e)
         {
             PopulateNewSeed();
+            RM.IsRandomSeed = true;
             rando_core_process(RANDOPROCTYPE.Rerand);
         }
         private void btnRandomize_Click(object sender, RoutedEventArgs e)
         {
+            RM.IsRandomSeed = false;
             if (IsRandomized)
                 rando_core_process(RANDOPROCTYPE.Unrand);
             else
