@@ -1952,6 +1952,23 @@ namespace DS2S_META
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
+
+        public void SetNoDeath()
+        {
+            if (Hooked)
+            {
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, 1);
+            }
+        }
+
+        public void SetYesDeath()
+        {
+            if (Hooked)
+            {
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, -99999);
+            }
+        }
+
         public int HealthMax
         {
             get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;

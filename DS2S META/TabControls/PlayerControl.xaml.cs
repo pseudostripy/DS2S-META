@@ -204,6 +204,11 @@ namespace DS2S_META
             //manage unknown warps and current warps that are not in filter
             var bonfireID = Hook.LastBonfireID;
 
+            if(cbxNoDeath.IsChecked == true)
+            {
+                Hook.SetNoDeath();
+            }
+
             if (LastSetBonfire == null)
                 return;
 
@@ -277,6 +282,12 @@ namespace DS2S_META
         public void ToggleOHKO()
         {
             cbxOHKO.IsChecked = !cbxOHKO.IsChecked;
+            cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
+        }
+
+        public void ToggleNoDeath()
+        {
+            cbxNoDeath.IsChecked = !cbxNoDeath.IsChecked;
         }
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
@@ -295,6 +306,30 @@ namespace DS2S_META
             byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
             Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
             rapierrow.WriteRow();
+        }
+
+        private void cbxFistOHKO_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!Hook.Hooked)
+                return; // first call
+
+            float dmgmod;
+            if (cbxFistOHKO.IsChecked == true)
+                dmgmod = 1000;
+            else
+                dmgmod = 1;
+
+            // Write to memory
+            var fistrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)3400000) as WeaponRow ?? throw new NullReferenceException(); // Rapier
+            var F = fistrow.Param.Fields[34];
+            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
+            Array.Copy(dmgbytes, 0, fistrow.RowBytes, F.FieldOffset, F.FieldLength);
+            fistrow.WriteRow();
+        }
+
+        private void cbxNoDeath_UnChecked(object sender, RoutedEventArgs e)
+        {
+            Hook.SetYesDeath();
         }
         public void DeltaHeight(float delta)
         {

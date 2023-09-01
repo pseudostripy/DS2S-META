@@ -10,12 +10,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="692.468" d:DesignWidth="429.026" Background="LightGray">
     <Grid Grid.Row="0" Grid.RowSpan="2" Margin="10,0,10,47">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="247*"/>
+            <ColumnDefinition Width="163*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition x:Name="StatusRow" Height="*"/>
             <RowDefinition Height="1.3*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="0,0,0,10" VerticalAlignment="Stretch" >
+        <StackPanel Margin="0,0,0,10" Grid.ColumnSpan="2" >
             <Label Content="Status"/>
             <Border BorderBrush="Gray" BorderThickness="1" >
                 <StackPanel Margin="5,5,5,5">
@@ -53,7 +57,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <StackPanel Margin="0,0,0,10" Grid.Row="1" VerticalAlignment="Stretch">
+        <StackPanel Margin="0,0,0,10" Grid.Row="1" Grid.ColumnSpan="2">
             <Label Content="Position"/>
             <Border BorderBrush="Gray" BorderThickness="1" >
                 <StackPanel Margin="5,5,5,5">
@@ -127,7 +131,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <StackPanel Margin="0,0,0,10" Grid.Row="2" VerticalAlignment="Stretch">
+        <StackPanel Margin="0,0,0,10" Grid.Row="2" Grid.ColumnSpan="2">
             <Label Content="Misc"/>
             <Border BorderBrush="Gray" BorderThickness="1">
                 <StackPanel Margin="5">
@@ -172,6 +176,8 @@
                         <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="False" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                         <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.DisableAI}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="False" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                         <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3" Width="100" />
+                        <CheckBox x:Name="cbxFistOHKO" Content="Fist OHKO" IsChecked="False" Checked="cbxFistOHKO_Checked" Unchecked="cbxFistOHKO_Checked" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <CheckBox x:Name="cbxNoDeath" Content="No Death" IsChecked="False" Unchecked="cbxNoDeath_UnChecked" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding ElementName=PlayerCon Hook.Hooked}" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <wpfTool:DecimalUpDown Value="{Binding SpeedValue, Mode=TwoWay, Source={x:Static p:Settings.Default}, 
                     UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
