@@ -166,15 +166,8 @@ namespace DS2S_META.Randomizer.Placement
         {
             PlaceSets();
             FillLeftovers();
-            //
             HandleTrivialities();
             FixShopEvents();
-            FixShopCopies();
-            FixNormalTrade();
-            FixShopSustains();
-            FixShopTradeCopies();
-            FixFreeTrade();
-            FixShopsToRemove();
 
             // Sanity checks
             if (PTF.Where(rdz => !rdz.IsHandled).Any()) throw new Exception("Something not completed");
@@ -299,17 +292,10 @@ namespace DS2S_META.Randomizer.Placement
                                  .FilterByTaskType(RDZ_TASKTYPE.FILL_BY_COPY).ToList();
             var shops = PTF.OfType<ShopRdz>();
 
-            //// Define shops that need handling:
-            //var LEvents = ShopRules.GetLinkedEvents();
-            //var shopcopies = LEvents.Where(lev => lev.IsCopy && !lev.IsTrade);
-
-
             foreach (var shp in fillbycopy)
             {
-                //var LE = shopcopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
                 var shop_to_copy = shops.First(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID);
-                //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
-
+                
                 // Fill by copy:
                 shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
                 shp.MarkHandled();
@@ -317,7 +303,7 @@ namespace DS2S_META.Randomizer.Placement
         }
         internal void FixNormalTrade()
         {
-            var normal_trades = PTF.OfType<ShopRdz>().ToList()
+            var normal_trades = Scope.FullListRdz.OfType<ShopRdz>().ToList()
                                    .FilterByTaskType(RDZ_TASKTYPE.UNLOCKTRADE).ToList();
             foreach (var shp in normal_trades)
             {
@@ -344,16 +330,10 @@ namespace DS2S_META.Randomizer.Placement
                                 .FilterByTaskType(RDZ_TASKTYPE.TRADE_SHOP_COPY).ToList();
             var filled_shops = PTF.OfType<ShopRdz>();
 
-            //// Define shops that need handling:
-            //var LEvents = ShopRules.GetLinkedEvents();
-            //var tradecopies = LEvents.Where(lev => lev.IsCopy && lev.IsTrade);
-
             foreach (var shp in fillbycopy)
             {
-                //var LE = tradecopies.FirstOrDefault(lev => lev.FillByCopy == shp.UniqueParamID) ?? throw new Exception("Cannot find linked event");
                 var shop_to_copy = filled_shops.Where(srdz => srdz.UniqueParamID == shp?.RandoInfo?.RefInfoID).First();
-                //.FirstOrDefault() ?? throw new Exception("Cannot find shop to copy from");
-
+                
                 // Fill by copy:
                 shp.ShuffledShop.CopyCoreValuesFrom(shop_to_copy.ShuffledShop);
 
@@ -386,6 +366,7 @@ namespace DS2S_META.Randomizer.Placement
             foreach (var shp in shops_toremove)
             {
                 shp.ZeroiseShuffledShop();
+                shp.ShuffledShop.EnableFlag = -1;
                 shp.MarkHandled();
             }
         }

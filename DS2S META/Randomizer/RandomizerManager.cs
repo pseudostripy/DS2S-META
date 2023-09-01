@@ -151,21 +151,21 @@ namespace DS2S_META.Randomizer
         }
         internal void WriteShuffledLots()
         {
-            var shuffledlots = Scope.AllPtf.OfType<LotRdz>()
+            var shuffledlots = Scope.FullListRdz.OfType<LotRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllLots(shuffledlots);
         }
         internal void WriteShuffledDrops()
         {
-            var shuffleddrops = Scope.AllPtf.OfType<DropRdz>()
+            var shuffleddrops = Scope.FullListRdz.OfType<DropRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();
             WriteAllDrops(shuffleddrops);
         }
         internal void WriteShuffledShops()
         {
-            var shuffledshops = Scope.AllPtf.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
+            var shuffledshops = Scope.FullListRdz.OfType<ShopRdz>().Select(sdz => sdz.ShuffledShop).ToList();
             WriteAllShops(shuffledshops);
         }
 
