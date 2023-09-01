@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,8 +30,8 @@ namespace DS2S_META.Utils
     public class ItemRow : Param.Row
     {
         // Misc Fields:
-        internal string MetaItemName;
         internal int ItemID;
+        internal string MetaItemName => ItemID.AsMetaName();
 
         // Behind-fields:
         private int _iconID;
@@ -145,33 +146,14 @@ namespace DS2S_META.Utils
                 WriteAt(24, BitConverter.GetBytes((byte)value));
             }
         }
+        internal bool HasName => MetaItemName != string.Empty;
+        internal bool IsWeaponType => ItemType == eItemType.WEAPON1 || ItemType == eItemType.WEAPON2;
 
         // Linked Params:
         internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);
         internal ArmorRow? ArmorRow => ParamMan.GetLink<ArmorRow>(ParamMan.ArmorParam, ArmorID);
         internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
         internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
-
-
-        // Useful properties:
-        private List<eItemType> WepSpellsArmour = new() 
-        { eItemType.WEAPON1, 
-          eItemType.WEAPON2, 
-          eItemType.HEADARMOUR,
-          eItemType.CHESTARMOUR,
-          eItemType.GAUNTLETS,
-          eItemType.LEGARMOUR,
-          eItemType.SPELLS,
-        };
-        internal bool NeedsMadeUnique => WepSpellsArmour.Contains(ItemType);
-
-        public enum Offsets
-        {
-            ItemUsageID  = 0x44,
-            MaxHeld      = 0x4A,
-            BaseBuyPrice = 0x30,
-            ItemType     = 0x4F,
-        }
 
         // Constructor:
         public ItemRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
@@ -192,20 +174,21 @@ namespace DS2S_META.Utils
         }
         private int GetItemID()
         {
-            // is this how they do it?
-            if (WeaponID != -1)
-                return WeaponID;
-            if (ArmorID != -1)
-                return ArmorID;
-            if (AmmunitionID != -1)
-                return AmmunitionID;
-            if (RingID != -1)
-                return RingID;
-            if (SpellID != -1)
-                return SpellID;
-            if (GestureID != -1)
-                return GestureID;
-            return ID; // consumables are here I think
+            return ID;
+            //// is this how they do it?
+            //if (WeaponID != -1)
+            //    return WeaponID;
+            //if (ArmorID != -1)
+            //    return ArmorID;
+            //if (AmmunitionID != -1)
+            //    return AmmunitionID;
+            //if (RingID != -1)
+            //    return RingID;
+            //if (SpellID != -1)
+            //    return SpellID;
+            //if (GestureID != -1)
+            //    return GestureID;
+            //return ID; // consumables are here I think
         }
         public List<DS2SInfusion> GetInfusionList()
         {
@@ -213,6 +196,18 @@ namespace DS2S_META.Utils
             if (WeaponID == -1 || WeaponRow == null)
                 return new List<DS2SInfusion>() { DS2SInfusion.Infusions[0] };
             return WeaponRow.GetInfusionList();
+        }
+
+        // To improve
+        internal int GetItemMaxUpgrade()
+        {
+            // Wrapper similar to the DS2Item class call in Hook.
+            return ItemType switch
+            {
+                eItemType.WEAPON1 or eItemType.WEAPON2 => WeaponRow?.MaxUpgrade ?? 0,
+                eItemType.HEADARMOUR or eItemType.CHESTARMOUR or eItemType.GAUNTLETS or eItemType.LEGARMOUR => ArmorRow?.ArmorReinforceRow?.MaxReinforceLevel ?? 0,
+                _ => 0
+            };
         }
     }
 }

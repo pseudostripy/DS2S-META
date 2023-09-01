@@ -32,7 +32,7 @@ namespace DS2S_META
         // Setup stuff:
         public override void InitTab()
         {
-            cmbCategory.ItemsSource = DS2SItemCategory.All;
+            cmbCategory.ItemsSource = DS2Resource.ItemCategories;
             cmbCategory.SelectedIndex = 0;
             FilterItems();
             InventoryTimer.Interval = 100;
@@ -179,7 +179,7 @@ namespace DS2S_META
             if (ds2item == null)
                 return false;
 
-            if (TryGetItem(ds2item.ID, out item))
+            if (TryGetItem(ds2item.ItemId, out item))
                 return true;
             return false;
         }
@@ -193,7 +193,7 @@ namespace DS2S_META
                 return false;
             };
 
-            item = ParamMan.GetItemFromID(id); // get weapon
+            item = id.TryAsItemRow(); // get weapon
             return item != null;
         }
 
@@ -287,7 +287,7 @@ namespace DS2S_META
                 var infuidval = infusion.AsByte();
                  
 
-                Hook.GiveItem(ds2item.ID, quanval, upgrval, infuidval);
+                Hook.GiveItem(ds2item.ItemId, quanval, upgrval, infuidval);
                 if (!Properties.Settings.Default.UpdateMaxLive)
                     HandleMaxAvailable();
             }

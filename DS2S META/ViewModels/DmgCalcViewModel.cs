@@ -24,7 +24,7 @@ namespace DS2S_META.ViewModels
         // Constructor
         public DmgCalcViewModel()
         {
-            var wepCat = DS2SItemCategory.AllWeapons;
+            var wepCat = DS2Resource.Weapons;
             wepCat.Sort();
             _weaponList = new ObservableCollection<DS2SItem>(wepCat); // alphabetical
             _infusionList = new ObservableCollection<DS2SInfusion>(new List<DS2SInfusion>());
@@ -67,7 +67,7 @@ namespace DS2S_META.ViewModels
 
         private void UpdateWepStats()
         {
-            WepSel = ParamMan.GetWeaponFromID(SelectedItem?.itemID);
+            WepSel = ParamMan.GetWeaponFromID(SelectedItem?.ItemId);
             NudUpgrMax = WepSel?.MaxUpgrade ?? 0;
 
             var inflist = WepSel?.GetInfusionList();

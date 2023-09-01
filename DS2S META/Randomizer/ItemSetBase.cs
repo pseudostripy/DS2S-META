@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using DS2S_META.Utils.ParamRows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,124 +24,7 @@ namespace DS2S_META.Randomizer
 
     internal abstract class ItemSetBase
     {
-        // All others are simply the NGplus paramID rounded to nearest 10
-        internal List<LinkNGDrop> LinkedNGs = new() { new LinkNGDrop(675000, 675010) };
-        internal List<LinkedDrop> LinkedDrops = new()
-        {
-            StraightCopy(318000, 60008000), // Pursuer Fight/Platform
-        }; // LinkedLots..
-
-        internal static LinkedDrop StraightCopy(int id1, int id2)
-        {
-            return new LinkedDrop(id1, id2);
-        }
-
         // Other Logic related things:
-        internal static List<PICKUPTYPE> BanKeyTypes = new()
-        {
-            PICKUPTYPE.NPC,
-            PICKUPTYPE.VOLATILE,
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.COVENANTEASY,
-            PICKUPTYPE.COVENANTHARD,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.NGPLUS,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.WOODCHEST,
-            PICKUPTYPE.SHOP,        // For now
-            PICKUPTYPE.EVSHOP,      // For now
-            PICKUPTYPE.ENEMYDROP,   // For now
-            PICKUPTYPE.GUARANTEEDENEMYDROP,   // For now
-            PICKUPTYPE.CROWS,
-        };
-
-        internal static List<PICKUPTYPE> FullySafeFlags = new()
-        {
-           PICKUPTYPE.NONVOLATILE,
-           PICKUPTYPE.BOSS,
-           PICKUPTYPE.METALCHEST,
-         };
-        internal static List<PICKUPTYPE> HalfSafe = new()
-        {
-           PICKUPTYPE.NONVOLATILE,
-           PICKUPTYPE.BOSS,
-           PICKUPTYPE.GUARANTEEDENEMYDROP,
-           PICKUPTYPE.WOODCHEST,
-           PICKUPTYPE.METALCHEST,
-           PICKUPTYPE.SHOP, // not evshop though
-         };
-
-        internal static Dictionary<eItemType, List<PICKUPTYPE>> ItemAllowTypes = new()
-        {
-            { eItemType.RING, HalfSafe },
-            { eItemType.SPELLS, HalfSafe },
-        };
-
-        internal static Dictionary<int, List<PICKUPTYPE>> ManuallyRequiredItemsTypeRules = new()
-        {
-            // Add here / refactor as required.
-            //{ 60155000, FullySafeFlags },    // Estus Flask
-            { 0x039B89C8, FullySafeFlags },  // Estus Flask Shard
-            { 0x039B8DB0, FullySafeFlags },  // Sublime Bone Dust
-            //{ 05400000, FullySafeFlags },    // Pyromancy Flame
-            //{ 05410000, FullySafeFlags },    // Dark Pyromancy Flame 
-            //{ 60355000, FullySafeFlags },    // Aged Feather
-            //{ 40420000, FullySafeFlags },    // Silvercat Ring
-        };
-
-
-        internal static List<PICKUPTYPE> BanGeneralTypes = new()
-        {
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.COVENANTHARD, // To split into cheap/annoying
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.CROWS, // handled separately
-        };
-        internal List<PICKUPTYPE> BanFromLoot = new()
-        {
-            // List of places where loot cannot come from:
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
-        };
-        internal List<PICKUPTYPE> BanFromBeingRandomized = new()
-        {
-            // List of places where loot cannot come from:
-            PICKUPTYPE.EXOTIC,
-            PICKUPTYPE.CRAMMED,
-            PICKUPTYPE.UNRESOLVED,
-            PICKUPTYPE.REMOVED,
-            PICKUPTYPE.LINKEDSLAVE,
-            PICKUPTYPE.COVENANTHARD,
-        };
-
-        internal List<int> CrowDuplicates = new()
-        {
-            // Prism: keep C loot:
-            50000300, // B loot from prism
-            50000301, // A loot from prism
-            50000302, // S loot from prism
-
-            // Small silky: keep B loot:
-            50000001, // A loot from small silky
-            50000002, // S loot from small silky
-            50000003, // C loot from small silky
-
-            // Silky: keep A loot
-            50000100, // B loot from silky
-            50000102, // S loot from silky
-            50000103, // C loot from silky
-
-            // Petrified: keep S loot
-            50000200, // B loot from petrified
-            50000201, // A loot from petrified
-            50000203, // C loot from petrified
-        };
-        
         internal static List<DropInfo> FillerItems = new()
         {
             new DropInfo(0x0393AE10, 3), // Lifegem
@@ -349,15 +233,7 @@ namespace DS2S_META.Randomizer
             KEYID.NADALIAFRAGMENT,
             KEYID.PHARROSLOCKSTONE,
         };
-        internal string GetDesc(int paramid)
-        {
-            bool found = Dold.ContainsKey(paramid);
-            if (!found)
-                return "";
-
-            return Dold[paramid].Description?? "";
-        }
-
+        
         // Overloads for quick construction, single or no key requirements:
         internal static RandoInfo ShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -371,34 +247,34 @@ namespace DS2S_META.Randomizer
         internal static RandoInfo ShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
         internal static RandoInfo EvShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.SHOPSUSTAIN, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
         internal static RandoInfo TradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.UNLOCKTRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.UNLOCKTRADE, kso);
         }
         internal static RandoInfo FreeTradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.FREETRADE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.FREETRADE, kso);
         }
         internal static RandoInfo TradeShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // awkward Ornifex things
-            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_STATUS.TRADE_SHOP_COPY, refid, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.TRADE_SHOP_COPY, refid, kso);
         }
         internal static RandoInfo ShopRemoveInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.SHOPREMOVE, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPREMOVE, kso);
         }
         internal static RandoInfo ShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // not randomized, just copied from copyfromID
-            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_STATUS.FILL_BY_COPY, refid, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.FILL_BY_COPY, refid, kso);
         }
         internal static RandoInfo NpcInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -446,7 +322,7 @@ namespace DS2S_META.Randomizer
         }
         internal static RandoInfo CrowsInfo(MapArea area, string desc, List<KeySet> kso)
         {
-            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_STATUS.CROWS, kso);
+            return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_TASKTYPE.CROWS, kso);
         }
         internal static RandoInfo UnresolvedInfo(MapArea area, string desc, List<KeySet> kso)
         {
@@ -479,45 +355,97 @@ namespace DS2S_META.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, int toCopyID, List<KeySet> kso)
+        internal static RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, List<KeySet> kso)
         {
-            // This is essentially a flag on top of safeinfo
+            // This method doesn't do anything different (it's caught during Presanitizer instead),
+            // but is here so that it can be obvious within CasualItemSet that it's a special case.
             return new RandoInfo(area, desc, pickuptype, kso);
         }
+        //
+        internal static RandoInfo EnemyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // these will be converted do GUARANTEEDENEMYDROP during Presanitization if required.
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYDROP, kso);
+        }
+        internal static RandoInfo EnemyNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), kso);
+        }
+        internal static RandoInfo EnemyRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTDROP, kso);
+        }
+        internal static RandoInfo EnemyRegistNpc(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTNPC, kso);
+        }
+        internal static RandoInfo EnemyRegistInvasion(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTINVASION, kso);
+        }
+        internal static RandoInfo EnemyRegistSummon(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTSUMMON, PICKUPTYPE.BADREGISTDROP), kso);
+        }
+        internal static RandoInfo EnemyRegistNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // lots of enemies can share these tables
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.NGPLUS), kso);
+        }
+        internal static RandoInfo EnemyRegistJourneyPlus(MapArea area, string desc, List<KeySet> kso)
+        {
+            // For enemies that *only* spawn on second journey, not via ascetic
+            return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.JOURNEYPLUS), kso);
+        }
+        internal static RandoInfo UnreachableDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // for things the player isn't expected to be able to kill?
+            return new RandoInfo(area, desc, PICKUPTYPE.BADENEMYDROP, kso);
+        }
+        internal static RandoInfo UnreachableRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // for things the player isn't expected to be able to kill?
+            return new RandoInfo(area, desc, PICKUPTYPE.BADREGISTDROP, kso);
+        }
+        internal static RandoInfo MemeCopyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        {
+            // e.g things with identical enemies with identical drops, but in
+            // different itemlot tables.
+            return new RandoInfo(area, desc, PICKUPTYPE.BADENEMYDROP, kso);
+        }
+
 
         // Utility shorthand methods (for common purposes):
         internal static PICKUPTYPE[] TypeArray(params PICKUPTYPE[] types)
         {
             return types;
         }
-        
-        internal void AppendKvp(KeyValuePair<int, RandoInfo> kvp) 
-        {
-            Dold.Add(kvp.Key, kvp.Value);
-        }
 
         
-        internal static bool IsPlaced(KEYID kid, List<int> placedSoFar)
-        {
-            return placedSoFar.Contains((int)kid);
-        }
-        internal void FixGUID_AddRandoInfo(List<Randomization> rdzs)
-        {
-            foreach (var rdz in rdzs)
-            {
-                if (Dold.TryGetValue(rdz.UniqueParamID, out var randoinfo))
-                {
-                    rdz.RandoInfo = randoinfo; // store link
-                    D.Add(rdz.GUID, randoinfo);
-                }
+
+
+        
+        //internal void FixGUID_AddRandoInfo(List<Randomization> rdzs)
+        //{
+        //    foreach (var rdz in rdzs)
+        //    {
+        //        if (Dold.TryGetValue(rdz.UniqueParamID, out var randoinfo))
+        //        {
+        //            rdz.RandoInfo = randoinfo; // store link
+        //            D.Add(rdz.GUID, randoinfo);
+        //        }
                     
-            }
-        }
+        //    }
+        //}
 
-        // To implement:
-        protected Dictionary<int, RandoInfo> Dold = new();
-        internal Dictionary<string, RandoInfo> D = new();
-        internal abstract void SetupItemSet();
+        // To remove?:
+        //protected Dictionary<int, RandoInfo> Dold = new();
+        //internal Dictionary<string, RandoInfo> D = new();
+        //internal abstract void SetupItemSet();
 
 
     }

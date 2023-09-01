@@ -42,7 +42,7 @@ namespace DS2S_META.Utils
 
 
 
-        private bool GetBit(byte bitfield, int bitindex)
+        private static bool GetBit(byte bitfield, int bitindex)
         {
             return ((bitfield >> bitindex) & 1) == 1;
         }

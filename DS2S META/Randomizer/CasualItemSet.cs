@@ -1,6 +1,9 @@
-﻿using System;
+﻿using DS2S_META.Randomizer;
+using Octokit;
+using System;
 using System.Collections.Generic;
 using System.Configuration.Internal;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,2263 +32,3131 @@ namespace DS2S_META.Randomizer
 
     internal class CasualItemSet : ItemSetBase
     {
-        internal CasualItemSet()
+        // Inevitable memes with ParamId collisions. Gonna try to keep separate
+        public static Dictionary<int, RandoInfo> LotData; // "GeneralisedLot" (loot or drops)
+        public static Dictionary<int, RandoInfo> ShopData; // Shops
+        internal static Dictionary<int, RandoInfo> DropData { get; private set; } // Drops
+
+
+        static CasualItemSet()
         {
-            SetupItemSet();
+            LotData = SetupLootInfoDictionary();    // Lots
+            DropData = SetupDropsDictionary();      // Drops
+            ShopData = SetupShopsDictionary();      // Shops
         }
 
-        internal override void SetupItemSet()
-        {
-            SetupLootInfoDictionary();  // add Lots
-            SetupShopsDictionary();     // add Shops
-        }
-
-        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE)
-        {
-            // Shorthand wrapper:
-            var test = RandoLogicHelper.KeyLogic(keyid);
-            return test;
-        }
+        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE) => RandoLogicHelper.KeyLogic(keyid);
         
-        
-        internal void SetupShopsDictionary()
+        internal static Dictionary<int, RandoInfo> SetupShopsDictionary()
         {
-            Dold.Add(1, ShopRemoveInfo(MapArea.Undefined, "UNKNOWN", KL() ));
-            Dold.Add(30700000, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Claymore", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700001, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Greatsword", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700300, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Magic Barrier", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700600, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Gold Pine Resin", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700601, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Lightning Urn", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700602, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Destructive Greatarrow", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700002, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Sword", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700003, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Scimitar", KL(KEYID.HEADVENGARL)));
-            Dold.Add(30700100, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Shield", KL(KEYID.HEADVENGARL)));
+            Dictionary<int, RandoInfo> d = new()
+            {
+                {        1, ShopRemoveInfo(MapArea.Undefined, "UNKNOWN", KL()) },
+                { 30700000, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Claymore", KL(KEYID.HEADVENGARL)) },
+                { 30700001, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Greatsword", KL(KEYID.HEADVENGARL)) },
+                { 30700300, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Magic Barrier", KL(KEYID.HEADVENGARL)) },
+                { 30700600, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Gold Pine Resin", KL(KEYID.HEADVENGARL)) },
+                { 30700601, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Lightning Urn", KL(KEYID.HEADVENGARL)) },
+                { 30700602, ShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Destructive Greatarrow", KL(KEYID.HEADVENGARL)) },
+                { 30700002, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Sword", KL(KEYID.HEADVENGARL)) },
+                { 30700003, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Scimitar", KL(KEYID.HEADVENGARL)) },
+                { 30700100, EvShopInfo(MapArea.ShadedWoods, "[Head of Vengarl] Red Rust Shield", KL(KEYID.HEADVENGARL)) },
 
-            Dold.Add(50600300, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Spear", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600301, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Vortex", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600302, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Appease", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600303, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Warmth", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600401, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Ring of Thorns + 1", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600600, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Human Effigy", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600601, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Elizabeth Mushroom", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600602, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Dark Arrow", KL(KEYID.AGDAYNE)));
-            Dold.Add(50600603, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Dark Bolt", KL(KEYID.AGDAYNE)));
+                { 50600300, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Spear", KL(KEYID.AGDAYNE)) },
+                { 50600301, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Vortex", KL(KEYID.AGDAYNE)) },
+                { 50600302, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Soul Appease", KL(KEYID.AGDAYNE)) },
+                { 50600303, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Warmth", KL(KEYID.AGDAYNE)) },
+                { 50600401, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Ring of Thorns + 1", KL(KEYID.AGDAYNE)) },
+                { 50600600, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Human Effigy", KL(KEYID.AGDAYNE)) },
+                { 50600601, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Elizabeth Mushroom", KL(KEYID.AGDAYNE)) },
+                { 50600602, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Dark Arrow", KL(KEYID.AGDAYNE)) },
+                { 50600603, ShopInfo(MapArea.UndeadCrypt, "[Grave Warden Agdayne] Dark Bolt", KL(KEYID.AGDAYNE)) },
 
-            Dold.Add(70400000, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Reinforced Club", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400001, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Claws", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400002, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Whip", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400003, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Wooden Shield", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400200, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Thief Mask", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400201, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Armor", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400202, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Gloves", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400203, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Boots", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400500, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Ladder Miniature", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400600, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Aromatic Ooze", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400601, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Lacerating Knife", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400602, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Bleeding Serum", KL(KEYID.GILLIGAN)));
-            Dold.Add(70400004, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Reinforced Club", 70400000, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400005, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Claws", 70400001, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400006, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Whip", 70400002, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400007, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Wooden Shield", 70400003, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400204, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Thief Mask", 70400200, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400205, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Armor", 70400201, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400206, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Gloves", 70400202, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400207, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Boots", 70400203, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400501, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Ladder Miniature", 70400500, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400603, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Aromatic Ooze", 70400600, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400604, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Lacerating Knife", 70400601, KL(KEYID.GILLIGAN)));
-            Dold.Add(70400605, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Bleeding Serum", 70400602, KL(KEYID.GILLIGAN)));
+                { 70400000, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Reinforced Club", KL(KEYID.GILLIGAN)) },
+                { 70400001, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Claws", KL(KEYID.GILLIGAN)) },
+                { 70400002, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Whip", KL(KEYID.GILLIGAN)) },
+                { 70400003, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Wooden Shield", KL(KEYID.GILLIGAN)) },
+                { 70400200, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Thief Mask", KL(KEYID.GILLIGAN)) },
+                { 70400201, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Armor", KL(KEYID.GILLIGAN)) },
+                { 70400202, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Gloves", KL(KEYID.GILLIGAN)) },
+                { 70400203, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Black Leather Boots", KL(KEYID.GILLIGAN)) },
+                { 70400500, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Ladder Miniature", KL(KEYID.GILLIGAN)) },
+                { 70400600, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Aromatic Ooze", KL(KEYID.GILLIGAN)) },
+                { 70400601, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Lacerating Knife", KL(KEYID.GILLIGAN)) },
+                { 70400602, ShopInfo(MapArea.EarthenPeak, "[Laddersmith Gilligan - 1] Bleeding Serum", KL(KEYID.GILLIGAN)) },
+                { 70400004, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Reinforced Club", 70400000, KL(KEYID.GILLIGAN)) },
+                { 70400005, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Claws", 70400001, KL(KEYID.GILLIGAN)) },
+                { 70400006, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Whip", 70400002, KL(KEYID.GILLIGAN)) },
+                { 70400007, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Wooden Shield", 70400003, KL(KEYID.GILLIGAN)) },
+                { 70400204, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Thief Mask", 70400200, KL(KEYID.GILLIGAN)) },
+                { 70400205, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Armor", 70400201, KL(KEYID.GILLIGAN)) },
+                { 70400206, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Gloves", 70400202, KL(KEYID.GILLIGAN)) },
+                { 70400207, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Black Leather Boots", 70400203, KL(KEYID.GILLIGAN)) },
+                { 70400501, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Ladder Miniature", 70400500, KL(KEYID.GILLIGAN)) },
+                { 70400603, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Aromatic Ooze", 70400600, KL(KEYID.GILLIGAN)) },
+                { 70400604, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Lacerating Knife", 70400601, KL(KEYID.GILLIGAN)) },
+                { 70400605, ShopCopy(MapArea.EarthenPeak, "[Laddersmith Gilligan - 2] Bleeding Serum", 70400602, KL(KEYID.GILLIGAN)) },
 
-            Dold.Add(72110000, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Flamberge", KL(KEYID.WELLAGER)));
-            Dold.Add(72110001, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lucerne", KL(KEYID.WELLAGER)));
-            Dold.Add(72110400, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Bracing Knuckle Ring + 1", KL(KEYID.WELLAGER)));
-            Dold.Add(72110600, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Old Radiant Lifegem", KL(KEYID.WELLAGER)));
-            Dold.Add(72110601, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Wilted Dusk Herb", KL(KEYID.WELLAGER)));
-            Dold.Add(72110602, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Divine Blessing", KL(KEYID.WELLAGER)));
-            Dold.Add(72110603, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Repair Powder", KL(KEYID.WELLAGER)));
-            Dold.Add(72110604, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Magic Arrow", KL(KEYID.WELLAGER)));
-            Dold.Add(72110605, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lightning Arrow", KL(KEYID.WELLAGER)));
-            Dold.Add(72110606, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Magic Bolt", KL(KEYID.WELLAGER)));
-            Dold.Add(72110607, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lightning Bolt", KL(KEYID.WELLAGER)));
-            Dold.Add(72110002, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Black Flamestone Dagger", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110003, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Yellow Quartz Longsword", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110004, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Bound Hand Axe", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110005, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Homunculus Mace", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110006, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Transgressor's Staff", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110100, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Black Flamestone Parma", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110101, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Yellow Quartz Shield", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110102, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Bound Wooden Shield", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110103, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Homunculus Wooden Shield", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110104, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Transgressor's Leather Shield", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110105, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Longsword", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(72110007, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Curved Twinblade", KL(KEYID.WELLAGER)));
-            Dold.Add(72110008, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Crescent Sickle", KL(KEYID.WELLAGER)));
-            Dold.Add(72110300, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Wrath of the Gods", KL(KEYID.WELLAGER)));
-            Dold.Add(72110301, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Bountiful Sunlight", KL(KEYID.WELLAGER)));
-            Dold.Add(72110302, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Great Chaos Fireball", KL(KEYID.WELLAGER)));
-            Dold.Add(72110303, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Spirit Tree Shield", KL(KEYID.WELLAGER)));
+                { 72110000, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Flamberge", KL(KEYID.WELLAGER)) },
+                { 72110001, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lucerne", KL(KEYID.WELLAGER)) },
+                { 72110400, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Bracing Knuckle Ring + 1", KL(KEYID.WELLAGER)) },
+                { 72110600, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Old Radiant Lifegem", KL(KEYID.WELLAGER)) },
+                { 72110601, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Wilted Dusk Herb", KL(KEYID.WELLAGER)) },
+                { 72110602, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Divine Blessing", KL(KEYID.WELLAGER)) },
+                { 72110603, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Repair Powder", KL(KEYID.WELLAGER)) },
+                { 72110604, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Magic Arrow", KL(KEYID.WELLAGER)) },
+                { 72110605, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lightning Arrow", KL(KEYID.WELLAGER)) },
+                { 72110606, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Magic Bolt", KL(KEYID.WELLAGER)) },
+                { 72110607, ShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager] Lightning Bolt", KL(KEYID.WELLAGER)) },
+                { 72110002, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Black Flamestone Dagger", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110003, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Yellow Quartz Longsword", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110004, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Bound Hand Axe", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110005, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Homunculus Mace", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110006, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Transgressor's Staff", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110100, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Black Flamestone Parma", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110101, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Yellow Quartz Shield", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110102, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Bound Wooden Shield", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110103, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Homunculus Wooden Shield", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110104, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Transgressor's Leather Shield", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110105, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - Looking Glass Knight] Longsword", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 72110007, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Curved Twinblade", KL(KEYID.WELLAGER)) },
+                { 72110008, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Crescent Sickle", KL(KEYID.WELLAGER)) },
+                { 72110300, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Wrath of the Gods", KL(KEYID.WELLAGER)) },
+                { 72110301, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Bountiful Sunlight", KL(KEYID.WELLAGER)) },
+                { 72110302, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Great Chaos Fireball", KL(KEYID.WELLAGER)) },
+                { 72110303, EvShopInfo(MapArea.DrangleicCastle, "[Chancellor Wellager - NG + 2] Spirit Tree Shield", KL(KEYID.WELLAGER)) },
 
-            Dold.Add(72500300, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Cast Light", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500301, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Dark Orb", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500302, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Dark Hail", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500303, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Darkstorm", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500304, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Profound Still", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500600, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Human Effigy", KL(KEYID.DARKLURKER)));
-            Dold.Add(72500601, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Bonfire Ascetic", KL(KEYID.DARKLURKER)));
+                { 72500300, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Cast Light", KL(KEYID.DARKLURKER)) },
+                { 72500301, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Dark Orb", KL(KEYID.DARKLURKER)) },
+                { 72500302, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Dark Hail", KL(KEYID.DARKLURKER)) },
+                { 72500303, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Darkstorm", KL(KEYID.DARKLURKER)) },
+                { 72500304, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Profound Still", KL(KEYID.DARKLURKER)) },
+                { 72500600, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Human Effigy", KL(KEYID.DARKLURKER)) },
+                { 72500601, ShopInfo(MapArea.Quantum, "[Darkdiver Grandahl] Bonfire Ascetic", KL(KEYID.DARKLURKER)) },
 
-            Dold.Add(72600400, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan - No - man's Wharf] Ring of Giants", KL(KEYID.GAVLAN)));
-            Dold.Add(72600600, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Moss", KL(KEYID.GAVLAN)));
-            Dold.Add(72600601, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Rotten Pine Resin", KL(KEYID.GAVLAN)));
-            Dold.Add(72600602, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Throwing Knife", KL(KEYID.GAVLAN)));
-            Dold.Add(72600603, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Arrow", KL(KEYID.GAVLAN)));
-            Dold.Add(72600401, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Harvest Valley] Ring of Giants", 72600400, KL(KEYID.GAVLAN)));
-            Dold.Add(72600402, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Ring of Giants", 72600400, KL(KEYID.GAVLAN)));
-            Dold.Add(72600604, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Moss", 72600600, KL(KEYID.GAVLAN)));
-            Dold.Add(72600605, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Rotten Pine Resin", 72600601, KL(KEYID.GAVLAN)));
-            Dold.Add(72600606, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Throwing Knife", 72600602, KL(KEYID.GAVLAN)));
-            Dold.Add(72600607, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Arrow", 72600603, KL(KEYID.GAVLAN)));
+                { 72600400, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan - No - man's Wharf] Ring of Giants", KL(KEYID.GAVLAN)) },
+                { 72600600, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Moss", KL(KEYID.GAVLAN)) },
+                { 72600601, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Rotten Pine Resin", KL(KEYID.GAVLAN)) },
+                { 72600602, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Throwing Knife", KL(KEYID.GAVLAN)) },
+                { 72600603, ShopInfo(MapArea.NoMansWharf, "[Lonesome Gavlan] Poison Arrow", KL(KEYID.GAVLAN)) },
+                { 72600401, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Harvest Valley] Ring of Giants", 72600400, KL(KEYID.GAVLAN)) },
+                { 72600402, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Ring of Giants", 72600400, KL(KEYID.GAVLAN)) },
+                { 72600604, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Moss", 72600600, KL(KEYID.GAVLAN)) },
+                { 72600605, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Rotten Pine Resin", 72600601, KL(KEYID.GAVLAN)) },
+                { 72600606, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Throwing Knife", 72600602, KL(KEYID.GAVLAN)) },
+                { 72600607, ShopCopy(MapArea.NoMansWharf, "[Lonesome Gavlan - Doors of Pharros] Poison Arrow", 72600603, KL(KEYID.GAVLAN)) },
 
-            Dold.Add(75400000, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Broken Straight Sword", KL()));
-            Dold.Add(75400001, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Hand Axe", KL()));
-            Dold.Add(75400002, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Club", KL()));
-            Dold.Add(75400003, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Caestus", KL()));
-            Dold.Add(75400200, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Hat", KL()));
-            Dold.Add(75400201, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Coat", KL()));
-            Dold.Add(75400202, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Gloves", KL()));
-            Dold.Add(75400203, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Boots", KL()));
-            Dold.Add(75400300, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Soul Arrow", KL()));
-            Dold.Add(75400301, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Heal", KL()));
-            Dold.Add(75400500, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Lenigrast's Key", KL()));
-            Dold.Add(75400603, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Amber Herb", KL()));
-            Dold.Add(75400604, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Throwing Knife", KL()));
-            Dold.Add(75400605, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Witching Urn", KL()));
-            Dold.Add(75400606, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Firebomb", KL()));
-            Dold.Add(75400607, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Human Effigy", KL()));
-            Dold.Add(75400608, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Pharros' Lockstone", KL()));
-            Dold.Add(75400615, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Fragrant Branch of Yore", KL()));
+                { 75400000, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Broken Straight Sword", KL()) },
+                { 75400001, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Hand Axe", KL()) },
+                { 75400002, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Club", KL()) },
+                { 75400003, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Caestus", KL()) },
+                { 75400200, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Hat", KL()) },
+                { 75400201, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Coat", KL()) },
+                { 75400202, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Gloves", KL()) },
+                { 75400203, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Traveling Merchant Boots", KL()) },
+                { 75400300, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Soul Arrow", KL()) },
+                { 75400301, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Heal", KL()) },
+                { 75400500, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Lenigrast's Key", KL()) },
+                { 75400603, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Amber Herb", KL()) },
+                { 75400604, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Throwing Knife", KL()) },
+                { 75400605, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Witching Urn", KL()) },
+                { 75400606, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Firebomb", KL()) },
+                { 75400607, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Human Effigy", KL()) },
+                { 75400608, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Pharros' Lockstone", KL()) },
+                { 75400615, ShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Fragrant Branch of Yore", KL()) },
 
-            Dold.Add(75400602, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Radiant Lifegem", KL())); // After Sinner
-            Dold.Add(75400004, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Darkdrift", KL(KEYID.AGDAYNE)));
-            Dold.Add(75400204, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Agdayne's Black Robe", KL(KEYID.AGDAYNE)));
-            Dold.Add(75400205, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Agdayne's Cuffs", KL(KEYID.AGDAYNE)));
-            Dold.Add(75400206, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chainmail", KL(KEYID.CREIGHTON)));
-            Dold.Add(75400207, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chain Gloves", KL(KEYID.CREIGHTON)));
-            Dold.Add(75400208, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chain Leggings", KL(KEYID.CREIGHTON)));
-            Dold.Add(75400100, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Parma", KL()));
-            Dold.Add(75400209, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Knight Helm", KL()));
-            Dold.Add(75400210, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Armor", KL()));
-            Dold.Add(75400211, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Gauntlets", KL()));
-            Dold.Add(75400212, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Boots", KL()));
-            Dold.Add(75400213, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Helm", KL()));
-            Dold.Add(75400214, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Armor", KL()));
-            Dold.Add(75400215, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Gloves", KL()));
-            Dold.Add(75400216, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Trousers", KL()));
-            Dold.Add(75400101, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Shield", KL()));
-            Dold.Add(75400217, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Cale the Cartographer] Cale's Leather Armor", KL()));
-            Dold.Add(75400218, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Cale the Cartographer] Cale's Shoes", KL()));
-            Dold.Add(75400219, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Vest", KL()));
-            Dold.Add(75400220, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Gloves", KL()));
-            Dold.Add(75400221, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Trousers", KL()));
-            Dold.Add(75400005, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Mirrah Greatsword", KL()));
-            Dold.Add(75400222, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Robes", KL(KEYID.STRAID))); // loosely
-            Dold.Add(75400223, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Gloves", KL(KEYID.STRAID)));
-            Dold.Add(75400224, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Boots", KL(KEYID.STRAID)));
-            Dold.Add(75400225, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Hood", KL()));
-            Dold.Add(75400226, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Dress", KL()));
-            Dold.Add(75400227, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Long Gloves", KL()));
-            Dold.Add(75400228, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Trousers", KL()));
-            Dold.Add(75400229, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Hood", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400230, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Robes", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400231, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Gloves", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400232, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Boots", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400233, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Robe", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(75400234, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Gloves", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(75400235, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Boots", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(75400236, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Titchy Gren] Nahr Alma Robes", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400006, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Titchy Gren] Scythe of Nahr Alma", KL(KEYID.ROTUNDA)));
-            Dold.Add(75400237, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Helm", KL()));
-            Dold.Add(75400238, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Armor", KL()));
-            Dold.Add(75400239, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Manifers", KL()));
-            Dold.Add(75400240, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Leggings", KL()));
-            Dold.Add(75400007, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Manscorpion Tark] Black Scorpion Stinger", KL(KEYID.SHADEDWOODS)));
-            Dold.Add(75400600, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Lifegem", KL()));
-            Dold.Add(75400609, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
-            Dold.Add(75400601, ShopRemoveInfo(MapArea.FOFG, "Melentia - Lifegems after LG", KL()));
-            Dold.Add(75400610, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
-            Dold.Add(75400611, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
-            Dold.Add(75400612, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
-            Dold.Add(75400613, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
-            Dold.Add(75400614, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()));
+                { 75400602, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia] Radiant Lifegem", KL()) }, // After Sinner
+                { 75400004, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Darkdrift", KL(KEYID.AGDAYNE)) },
+                { 75400204, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Agdayne's Black Robe", KL(KEYID.AGDAYNE)) },
+                { 75400205, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Grave Warden Agdayne] Agdayne's Cuffs", KL(KEYID.AGDAYNE)) },
+                { 75400206, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chainmail", KL(KEYID.CREIGHTON)) },
+                { 75400207, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chain Gloves", KL(KEYID.CREIGHTON)) },
+                { 75400208, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Creighton the Wanderer] Creighton's Chain Leggings", KL(KEYID.CREIGHTON)) },
+                { 75400100, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Parma", KL()) },
+                { 75400209, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Knight Helm", KL()) },
+                { 75400210, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Armor", KL()) },
+                { 75400211, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Gauntlets", KL()) },
+                { 75400212, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Benhart of Jugo] Benhart's Boots", KL()) },
+                { 75400213, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Helm", KL()) },
+                { 75400214, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Armor", KL()) },
+                { 75400215, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Gloves", KL()) },
+                { 75400216, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Trousers", KL()) },
+                { 75400101, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Mild Mannered Pate] Pate's Shield", KL()) },
+                { 75400217, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Cale the Cartographer] Cale's Leather Armor", KL()) },
+                { 75400218, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Cale the Cartographer] Cale's Shoes", KL()) },
+                { 75400219, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Vest", KL()) },
+                { 75400220, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Gloves", KL()) },
+                { 75400221, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Lucatiel's Trousers", KL()) },
+                { 75400005, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Lucatiel of Mirrah] Mirrah Greatsword", KL()) },
+                { 75400222, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Robes", KL(KEYID.STRAID)) }, // loosely
+                { 75400223, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Gloves", KL(KEYID.STRAID)) },
+                { 75400224, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Straid of Olaphis] Black Boots", KL(KEYID.STRAID)) },
+                { 75400225, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Hood", KL()) },
+                { 75400226, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Dress", KL()) },
+                { 75400227, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Long Gloves", KL()) },
+                { 75400228, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Licia of Lindeldt] Saint's Trousers", KL()) },
+                { 75400229, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Hood", KL(KEYID.ROTUNDA)) },
+                { 75400230, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Robes", KL(KEYID.ROTUNDA)) },
+                { 75400231, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Gloves", KL(KEYID.ROTUNDA)) },
+                { 75400232, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Felkin the Outcast] Hexer's Boots", KL(KEYID.ROTUNDA)) },
+                { 75400233, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Robe", KL(KEYID.ALDIASKEEP)) },
+                { 75400234, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Gloves", KL(KEYID.ALDIASKEEP)) },
+                { 75400235, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Royal Sorcerer Navlaan] Chaos Boots", KL(KEYID.ALDIASKEEP)) },
+                { 75400236, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Titchy Gren] Nahr Alma Robes", KL(KEYID.ROTUNDA)) },
+                { 75400006, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Titchy Gren] Scythe of Nahr Alma", KL(KEYID.ROTUNDA)) },
+                { 75400237, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Helm", KL()) },
+                { 75400238, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Armor", KL()) },
+                { 75400239, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Manifers", KL()) },
+                { 75400240, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Blue Sentinel Targray] Targray's Leggings", KL()) },
+                { 75400007, EvShopInfo(MapArea.FOFG, "[Merchant Hag Melentia - Manscorpion Tark] Black Scorpion Stinger", KL(KEYID.SHADEDWOODS)) },
+                { 75400600, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Lifegem", KL()) },
+                { 75400609, ShopSustain(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
+                { 75400601, ShopRemoveInfo(MapArea.FOFG, "Melentia - Lifegems after LG", KL()) },
+                { 75400610, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
+                { 75400611, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
+                { 75400612, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
+                { 75400613, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
+                { 75400614, ShopRemoveInfo(MapArea.FOFG, "[Merchant Hag Melentia] Brightbug", KL()) },
 
-            Dold.Add(75600600, ShopInfo(MapArea.Quantum, "[The Rat King] Common Fruit", KL()));
-            Dold.Add(75600601, ShopInfo(MapArea.Quantum, "[The Rat King] Red Leech Troches", KL()));
-            Dold.Add(75600602, ShopInfo(MapArea.Quantum, "[The Rat King] Triclops Snake Troches", KL()));
-            Dold.Add(75600603, ShopInfo(MapArea.Quantum, "[The Rat King] Dung Pie", KL()));
-            Dold.Add(75600604, ShopInfo(MapArea.Quantum, "[The Rat King] Corrosive Urn", KL()));
+                { 75600600, ShopInfo(MapArea.Quantum, "[The Rat King] Common Fruit", KL()) },
+                { 75600601, ShopInfo(MapArea.Quantum, "[The Rat King] Red Leech Troches", KL()) },
+                { 75600602, ShopInfo(MapArea.Quantum, "[The Rat King] Triclops Snake Troches", KL()) },
+                { 75600603, ShopInfo(MapArea.Quantum, "[The Rat King] Dung Pie", KL()) },
+                { 75600604, ShopInfo(MapArea.Quantum, "[The Rat King] Corrosive Urn", KL()) },
 
-            Dold.Add(76100000, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Iron Parma", KL()));
-            Dold.Add(76100001, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Silver Eagle Kite Shield", KL()));
-            Dold.Add(76100002, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Twin Dragon Greatshield", KL()));
-            Dold.Add(76100200, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Standard Helm", KL()));
-            Dold.Add(76100201, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Armor", KL()));
-            Dold.Add(76100202, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Gauntlets", KL()));
-            Dold.Add(76100203, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Boots", KL()));
-            Dold.Add(76100204, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Helm", KL()));
-            Dold.Add(76100205, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Armor", KL()));
-            Dold.Add(76100206, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Gloves", KL()));
-            Dold.Add(76100207, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Boots", KL()));
-            Dold.Add(76100208, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Armor", KL()));
-            Dold.Add(76100209, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Gloves", KL()));
-            Dold.Add(76100210, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Boots", KL()));
-            Dold.Add(76100211, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Helm", KL()));
-            Dold.Add(76100212, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Armor", KL()));
-            Dold.Add(76100213, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Gauntlet", KL()));
-            Dold.Add(76100214, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Leggings", KL()));
-            Dold.Add(76100215, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Helm", KL()));
-            Dold.Add(76100216, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Armor", KL()));
-            Dold.Add(76100217, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Gloves", KL()));
-            Dold.Add(76100218, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Leggings", KL()));
-            Dold.Add(76100219, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Helm", 76100211, KL()));
-            Dold.Add(76100220, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Armor", 76100212, KL()));
-            Dold.Add(76100221, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Gauntlets", 76100213, KL()));
-            Dold.Add(76100222, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Leggings", 76100214, KL()));
-            Dold.Add(76100223, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Helm", 76100215, KL()));
-            Dold.Add(76100224, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Armor", 76100216, KL()));
-            Dold.Add(76100225, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Gloves", 76100217, KL()));
-            Dold.Add(76100226, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Leggings", 76100218, KL()));
-            Dold.Add(76100227, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Helm", KL()));
-            Dold.Add(76100228, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Armor", KL()));
-            Dold.Add(76100229, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Gauntlets", KL()));
-            Dold.Add(76100230, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Leggings", KL()));
-            Dold.Add(76100235, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Helm", KL(KEYID.IRONKEEP)));
-            Dold.Add(76100236, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Armor", KL(KEYID.IRONKEEP)));
-            Dold.Add(76100237, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Gauntlets", KL(KEYID.IRONKEEP)));
-            Dold.Add(76100238, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Leggings", KL(KEYID.IRONKEEP)));
-            Dold.Add(76100239, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Mask", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(76100240, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Armor", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(76100241, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Gauntlets", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(76100242, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Leggings", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(76100243, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Mask", KL(KEYID.SINNERSRISE)));
-            Dold.Add(76100244, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Straightjacket", KL(KEYID.SINNERSRISE)));
-            Dold.Add(76100245, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Handcuffs", KL(KEYID.SINNERSRISE)));
-            Dold.Add(76100246, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Skirt", KL(KEYID.SINNERSRISE)));
-            Dold.Add(76100247, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Helm", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76100248, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Armor", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76100249, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Gauntlets", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76100250, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Leggings", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76100251, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Helm", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100252, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Armor", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100253, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Gauntlets", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100254, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Leggings", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100255, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Helm", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100256, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Armor", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100257, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Gauntlets", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100258, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Leggings", KL(KEYID.THRONEWANT)));
-            Dold.Add(76100259, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 3] Moon Butterfly Hat", KL()));
-            Dold.Add(76100260, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Wings", KL()));
-            Dold.Add(76100261, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Cuffs", KL()));
-            Dold.Add(76100262, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Skirt", KL()));
-            Dold.Add(76100263, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Helm", KL(KEYID.DLC3)));
-            Dold.Add(76100264, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Armor", KL(KEYID.DLC3)));
-            Dold.Add(76100265, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Gauntlets", KL(KEYID.DLC3)));
-            Dold.Add(76100266, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Leggings", KL(KEYID.DLC3)));
+                { 76100000, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Iron Parma", KL()) },
+                { 76100001, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Silver Eagle Kite Shield", KL()) },
+                { 76100002, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Twin Dragon Greatshield", KL()) },
+                { 76100200, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Standard Helm", KL()) },
+                { 76100201, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Armor", KL()) },
+                { 76100202, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Gauntlets", KL()) },
+                { 76100203, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Hard Leather Boots", KL()) },
+                { 76100204, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Helm", KL()) },
+                { 76100205, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Armor", KL()) },
+                { 76100206, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Gloves", KL()) },
+                { 76100207, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Falconer Boots", KL()) },
+                { 76100208, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Armor", KL()) },
+                { 76100209, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Gloves", KL()) },
+                { 76100210, ShopInfo(MapArea.Majula, "[Maughlin the Armourer] Infantry Boots", KL()) },
+                { 76100211, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Helm", KL()) },
+                { 76100212, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Armor", KL()) },
+                { 76100213, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Gauntlet", KL()) },
+                { 76100214, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Leggings", KL()) },
+                { 76100215, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Helm", KL()) },
+                { 76100216, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Armor", KL()) },
+                { 76100217, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Gloves", KL()) },
+                { 76100218, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Leggings", KL()) },
+                { 76100219, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Helm", 76100211, KL()) },
+                { 76100220, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Armor", 76100212, KL()) },
+                { 76100221, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Gauntlets", 76100213, KL()) },
+                { 76100222, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Royal Soldier Leggings", 76100214, KL()) },
+                { 76100223, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Helm", 76100215, KL()) },
+                { 76100224, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Armor", 76100216, KL()) },
+                { 76100225, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Gloves", 76100217, KL()) },
+                { 76100226, ShopCopy(MapArea.Majula, "[Maughlin the Armourer - 1000 Souls] Elite Knight Leggings", 76100218, KL()) },
+                { 76100227, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Helm", KL()) },
+                { 76100228, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Armor", KL()) },
+                { 76100229, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Gauntlets", KL()) },
+                { 76100230, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls] Alva Leggings", KL()) },
+                { 76100235, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Helm", KL(KEYID.IRONKEEP)) },
+                { 76100236, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Armor", KL(KEYID.IRONKEEP)) },
+                { 76100237, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Gauntlets", KL(KEYID.IRONKEEP)) },
+                { 76100238, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Smelter Demon] Smelter Demon Leggings", KL(KEYID.IRONKEEP)) },
+                { 76100239, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Mask", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 76100240, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Armor", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 76100241, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Gauntlets", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 76100242, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Looking Glass Knight] Looking Glass Leggings", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 76100243, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Mask", KL(KEYID.SINNERSRISE)) },
+                { 76100244, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Straightjacket", KL(KEYID.SINNERSRISE)) },
+                { 76100245, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Handcuffs", KL(KEYID.SINNERSRISE)) },
+                { 76100246, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Lost Sinner] Penal Skirt", KL(KEYID.SINNERSRISE)) },
+                { 76100247, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Helm", KL(KEYID.UNDEADCRYPT)) },
+                { 76100248, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Armor", KL(KEYID.UNDEADCRYPT)) },
+                { 76100249, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Gauntlets", KL(KEYID.UNDEADCRYPT)) },
+                { 76100250, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Velstadt] Velstadt's Leggings", KL(KEYID.UNDEADCRYPT)) },
+                { 76100251, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Helm", KL(KEYID.THRONEWANT)) },
+                { 76100252, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Armor", KL(KEYID.THRONEWANT)) },
+                { 76100253, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Gauntlets", KL(KEYID.THRONEWANT)) },
+                { 76100254, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Defender Leggings", KL(KEYID.THRONEWANT)) },
+                { 76100255, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Helm", KL(KEYID.THRONEWANT)) },
+                { 76100256, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Armor", KL(KEYID.THRONEWANT)) },
+                { 76100257, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Gauntlets", KL(KEYID.THRONEWANT)) },
+                { 76100258, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Thorne Defenders] Throne Watcher Leggings", KL(KEYID.THRONEWANT)) },
+                { 76100259, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 3] Moon Butterfly Hat", KL()) },
+                { 76100260, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Wings", KL()) },
+                { 76100261, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Cuffs", KL()) },
+                { 76100262, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - 15000 Souls, NG + 2] Moon Butterfly Skirt", KL()) },
+                { 76100263, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Helm", KL(KEYID.DLC3)) },
+                { 76100264, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Armor", KL(KEYID.DLC3)) },
+                { 76100265, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Gauntlets", KL(KEYID.DLC3)) },
+                { 76100266, EvShopInfo(MapArea.Majula, "[Maughlin the Armourer - Burnt Ivory King, 50 Loyce Souls] Ivory King Leggings", KL(KEYID.DLC3)) },
 
-            Dold.Add(76200300, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Soul Appease", KL(KEYID.CHLOANNE)));
-            Dold.Add(76200301, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Dead Again", KL(KEYID.CHLOANNE)));
-            Dold.Add(76200606, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Slab after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200607, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Twinklings after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200608, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 PDB after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200609, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Faintstones after Velsadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200610, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Boltstones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200611, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Firedrake stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200612, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Darknight stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200613, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Poison stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200614, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Bleed stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200615, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Raw stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200616, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Magic stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200617, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Old Mundane stones after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200618, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Bonfire Ascetic", KL()));
-            Dold.Add(76200600, ShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Titanite shards", KL(KEYID.CHLOANNE)));
-            Dold.Add(76200602, EvShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Large Shards after OIK", KL(KEYID.IRONKEEP)));
-            Dold.Add(76200604, EvShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Chunks after Velstadt", KL(KEYID.UNDEADCRYPT)));
-            Dold.Add(76200601, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Titanite shards after OIK", KL(KEYID.CHLOANNE)));
-            Dold.Add(76200603, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Large Shards after Mirror Knight", KL(KEYID.MIRRORKNIGHTEVENT)));
-            Dold.Add(76200605, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Chunks after Nash", KL(KEYID.CREDITS)));
+                { 76200300, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Soul Appease", KL(KEYID.CHLOANNE)) },
+                { 76200301, ShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Dead Again", KL(KEYID.CHLOANNE)) },
+                { 76200606, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Slab after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200607, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Twinklings after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200608, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 PDB after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200609, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Faintstones after Velsadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200610, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Boltstones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200611, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Firedrake stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200612, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Darknight stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200613, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Poison stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200614, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Bleed stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200615, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Raw stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200616, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Magic stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200617, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 3 Old Mundane stones after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200618, EvShopInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] 1 Bonfire Ascetic", KL()) },
+                { 76200600, ShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Titanite shards", KL(KEYID.CHLOANNE)) },
+                { 76200602, EvShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Large Shards after OIK", KL(KEYID.IRONKEEP)) },
+                { 76200604, EvShopSustain(MapArea.HarvestValley, "[Stone Trader Chloanne] 10 Chunks after Velstadt", KL(KEYID.UNDEADCRYPT)) },
+                { 76200601, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Titanite shards after OIK", KL(KEYID.CHLOANNE)) },
+                { 76200603, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Large Shards after Mirror Knight", KL(KEYID.MIRRORKNIGHTEVENT)) },
+                { 76200605, ShopRemoveInfo(MapArea.HarvestValley, "[Stone Trader Chloanne] Inf Chunks after Nash", KL(KEYID.CREDITS)) },
 
-            Dold.Add(76300300, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fireball", KL()));
-            Dold.Add(76300301, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fire Orb", KL()));
-            Dold.Add(76300302, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Combustion", KL()));
-            Dold.Add(76300303, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Poison Mist", KL()));
-            Dold.Add(76300304, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Flash Sweat", KL()));
-            Dold.Add(76300305, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Iron Flesh", KL()));
-            Dold.Add(76300400, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Flame Quartz Ring", KL()));
-            Dold.Add(76300401, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Thunder Quartz Ring", KL()));
-            Dold.Add(76300402, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Dark Quartz Ring", KL()));
-            Dold.Add(76300600, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Blue Burr", KL()));
-            Dold.Add(76300601, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Yellow Burr", KL()));
-            Dold.Add(76300602, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Orange Burr", KL()));
-            Dold.Add(76300603, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fire Seed", KL()));
+                { 76300300, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fireball", KL()) },
+                { 76300301, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fire Orb", KL()) },
+                { 76300302, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Combustion", KL()) },
+                { 76300303, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Poison Mist", KL()) },
+                { 76300304, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Flash Sweat", KL()) },
+                { 76300305, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Iron Flesh", KL()) },
+                { 76300400, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Flame Quartz Ring", KL()) },
+                { 76300401, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Thunder Quartz Ring", KL()) },
+                { 76300402, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Dark Quartz Ring", KL()) },
+                { 76300600, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Blue Burr", KL()) },
+                { 76300601, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Yellow Burr", KL()) },
+                { 76300602, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Small Orange Burr", KL()) },
+                { 76300603, ShopInfo(MapArea.Majula, "[Rosabeth of Melfia] Fire Seed", KL()) },
 
-            Dold.Add(76400000, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Longsword", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400001, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Broadsword", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400002, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Estoc", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400003, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Rapier", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400004, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Falchion", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400005, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Battle Axe", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400006, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Mace", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400007, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Spear", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400600, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Wood Arrow", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400601, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Iron Arrow", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400602, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Wood Bolt", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400603, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Heavy Bolt", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400604, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Titanite Shard", KL(KEYID.BLACKSMITH)));
-            Dold.Add(76400605, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Repair Powder", KL(KEYID.BLACKSMITH)));
+                { 76400000, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Longsword", KL(KEYID.BLACKSMITH)) },
+                { 76400001, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Broadsword", KL(KEYID.BLACKSMITH)) },
+                { 76400002, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Estoc", KL(KEYID.BLACKSMITH)) },
+                { 76400003, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Rapier", KL(KEYID.BLACKSMITH)) },
+                { 76400004, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Falchion", KL(KEYID.BLACKSMITH)) },
+                { 76400005, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Battle Axe", KL(KEYID.BLACKSMITH)) },
+                { 76400006, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Mace", KL(KEYID.BLACKSMITH)) },
+                { 76400007, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Spear", KL(KEYID.BLACKSMITH)) },
+                { 76400600, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Wood Arrow", KL(KEYID.BLACKSMITH)) },
+                { 76400601, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Iron Arrow", KL(KEYID.BLACKSMITH)) },
+                { 76400602, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Wood Bolt", KL(KEYID.BLACKSMITH)) },
+                { 76400603, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Heavy Bolt", KL(KEYID.BLACKSMITH)) },
+                { 76400604, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Titanite Shard", KL(KEYID.BLACKSMITH)) },
+                { 76400605, ShopInfo(MapArea.Majula, "[Blacksmith Lenigrast] Repair Powder", KL(KEYID.BLACKSMITH)) },
 
-            Dold.Add(76430600, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Arrow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430601, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Arrow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430602, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Bolt", KL(KEYID.MCDUFF)));
-            Dold.Add(76430603, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Heavy Bolt", KL(KEYID.MCDUFF)));
-            Dold.Add(76430604, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Greatarrow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430605, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Repair Powder", KL(KEYID.MCDUFF)));
-            Dold.Add(76430606, ShopInfo(MapArea.TheLostBastille, "[EX blacksmith] light powder of repair", KL(KEYID.MCDUFF)));
-            Dold.Add(76430000, ShopSustain(MapArea.TheLostBastille, "[Steady Hand McDuff] Royal Kite Shield", KL(KEYID.MCDUFF)));
-            Dold.Add(76430001, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KL(KEYID.MCDUFF)));
-            Dold.Add(76430002, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KL(KEYID.MCDUFF)));
-            Dold.Add(76430003, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Winged Spear", KL(KEYID.MCDUFF)));
-            Dold.Add(76430004, ShopSustain(MapArea.TheLostBastille, "[EX blacksmith] size", KL(KEYID.MCDUFF)));
-            Dold.Add(76430005, ShopSustain(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430006, ShopSustain(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430100, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KL(KEYID.MCDUFF)));
-            Dold.Add(76430007, ShopRemoveInfo(MapArea.TheLostBastille, "[EX blacksmith] sword", KL(KEYID.MCDUFF)));
-            Dold.Add(76430008, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KL(KEYID.MCDUFF)));
-            Dold.Add(76430009, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KL(KEYID.MCDUFF)));
-            Dold.Add(76430010, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Windspear", KL(KEYID.MCDUFF)));
-            Dold.Add(76430011, ShopRemoveInfo(MapArea.TheLostBastille, "[EX blacksmith] size", KL(KEYID.MCDUFF)));
-            Dold.Add(76430012, ShopRemoveInfo(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430013, ShopRemoveInfo(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KL(KEYID.MCDUFF)));
-            Dold.Add(76430102, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KL(KEYID.MCDUFF)));
+                { 76430600, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Arrow", KL(KEYID.MCDUFF)) },
+                { 76430601, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Arrow", KL(KEYID.MCDUFF)) },
+                { 76430602, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Wood Bolt", KL(KEYID.MCDUFF)) },
+                { 76430603, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Heavy Bolt", KL(KEYID.MCDUFF)) },
+                { 76430604, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Iron Greatarrow", KL(KEYID.MCDUFF)) },
+                { 76430605, ShopInfo(MapArea.TheLostBastille, "[Steady Hand McDuff] Repair Powder", KL(KEYID.MCDUFF)) },
+                { 76430606, ShopInfo(MapArea.TheLostBastille, "[EX blacksmith] light powder of repair", KL(KEYID.MCDUFF)) },
+                { 76430000, ShopSustain(MapArea.TheLostBastille, "[Steady Hand McDuff] Royal Kite Shield", KL(KEYID.MCDUFF)) },
+                { 76430001, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KL(KEYID.MCDUFF)) },
+                { 76430002, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KL(KEYID.MCDUFF)) },
+                { 76430003, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Winged Spear", KL(KEYID.MCDUFF)) },
+                { 76430004, ShopSustain(MapArea.TheLostBastille, "[EX blacksmith] size", KL(KEYID.MCDUFF)) },
+                { 76430005, ShopSustain(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KL(KEYID.MCDUFF)) },
+                { 76430006, ShopSustain(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KL(KEYID.MCDUFF)) },
+                { 76430100, ShopSustain(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KL(KEYID.MCDUFF)) },
+                { 76430007, ShopRemoveInfo(MapArea.TheLostBastille, "[EX blacksmith] sword", KL(KEYID.MCDUFF)) },
+                { 76430008, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Busted Sword", KL(KEYID.MCDUFF)) },
+                { 76430009, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Great Axe", KL(KEYID.MCDUFF)) },
+                { 76430010, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Windspear", KL(KEYID.MCDUFF)) },
+                { 76430011, ShopRemoveInfo(MapArea.TheLostBastille, "[EX blacksmith] size", KL(KEYID.MCDUFF)) },
+                { 76430012, ShopRemoveInfo(MapArea.TheLostBastille, " 【BLACKSMITH】Longbow", KL(KEYID.MCDUFF)) },
+                { 76430013, ShopRemoveInfo(MapArea.TheLostBastille, "[BLACKSMITH] Light Crossbow", KL(KEYID.MCDUFF)) },
+                { 76430102, ShopRemoveInfo(MapArea.TheLostBastille, "[EX Blacksmith] Cavalry Kite Shield", KL(KEYID.MCDUFF)) },
 
-            Dold.Add(76600000, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Sorcerer's Staff", KL()));
-            Dold.Add(76600400, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Spell Quartz Ring", KL()));
-            Dold.Add(76600401, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Clear Bluestone Ring", KL()));
-            Dold.Add(76600600, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Amber Herb", KL()));
-            Dold.Add(76600601, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Twilight Herb", KL()));
-            Dold.Add(76600602, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Simpleton's Spice", KL()));
-            Dold.Add(76600300, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Arrow", KL()));
-            Dold.Add(76600301, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Soul Arrow", KL()));
-            Dold.Add(76600302, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Heavy Soul Arrow", KL()));
-            Dold.Add(76600303, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Heavy Soul Arrow", KL()));
-            Dold.Add(76600304, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Shockwave", KL()));
-            Dold.Add(76600305, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Spear Barrage", KL()));
-            Dold.Add(76600306, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Magic Weapon", KL()));
-            Dold.Add(76600307, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Yearn", KL()));
-            Dold.Add(76600308, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Arrow", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600309, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Great Soul Arrow", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600310, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Heavy Soul Arrow", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600311, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Great Heavy Soul Arrow", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600312, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Shockwave", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600313, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Spear Barrage", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600314, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Magic Weapon", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76600315, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Yearn", KL(KEYID.SHRINEOFWINTER)));
+                { 76600000, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Sorcerer's Staff", KL()) },
+                { 76600400, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Spell Quartz Ring", KL()) },
+                { 76600401, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Clear Bluestone Ring", KL()) },
+                { 76600600, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Amber Herb", KL()) },
+                { 76600601, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Twilight Herb", KL()) },
+                { 76600602, ShopInfo(MapArea.NoMansWharf, "[Carhillion of the Fold] Simpleton's Spice", KL()) },
+                { 76600300, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Arrow", KL()) },
+                { 76600301, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Soul Arrow", KL()) },
+                { 76600302, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Heavy Soul Arrow", KL()) },
+                { 76600303, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Great Heavy Soul Arrow", KL()) },
+                { 76600304, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Shockwave", KL()) },
+                { 76600305, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Soul Spear Barrage", KL()) },
+                { 76600306, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Magic Weapon", KL()) },
+                { 76600307, ShopSustain(MapArea.NoMansWharf, "[Carhillion of the Fold] Yearn", KL()) },
+                { 76600308, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Arrow", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600309, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Great Soul Arrow", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600310, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Heavy Soul Arrow", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600311, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Great Heavy Soul Arrow", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600312, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Shockwave", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600313, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Soul Spear Barrage", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600314, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Magic Weapon", KL(KEYID.SHRINEOFWINTER)) },
+                { 76600315, ShopRemoveInfo(MapArea.NoMansWharf, "[Carhillion of the Fold - Shrine of Winter] Yearn", KL(KEYID.SHRINEOFWINTER)) },
 
-            Dold.Add(76800300, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Homing Soul Arrow", KL(KEYID.STRAID)));
-            Dold.Add(76800301, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Resplendent Life", KL(KEYID.STRAID)));
-            Dold.Add(76800303, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Unveil", KL(KEYID.STRAID)));
-            Dold.Add(76800305, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Lingering Flame", KL(KEYID.STRAID)));
-            Dold.Add(76800306, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Flame Swathe", KL(KEYID.STRAID)));
-            Dold.Add(76800307, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Orb", KL(KEYID.STRAID)));
-            Dold.Add(76800308, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Hail", KL(KEYID.STRAID)));
-            Dold.Add(76800309, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Fog", KL(KEYID.STRAID)));
-            Dold.Add(76800310, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Affinity", KL(KEYID.STRAID)));
-            Dold.Add(76800311, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Strong Magic Shield", KL(KEYID.STRAID)));
-            Dold.Add(76800312, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Cast Light", KL(KEYID.STRAID)));
-            Dold.Add(76800400, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Ring of Knowledge", KL(KEYID.STRAID)));
-            Dold.Add(76800401, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Lingering Dragoncrest Ring", KL(KEYID.STRAID)));
-            Dold.Add(76800600, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Rouge Water", KL(KEYID.STRAID)));
-            Dold.Add(76800302, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Undead Crypt] Great Lightning Spear", KL(KEYID.STRAID)));
-            Dold.Add(76800304, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Undead Crypt] Sunlight Blade", KL(KEYID.STRAID)));
-            Dold.Add(76800000, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Greatsword of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800001, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Scythe of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800200, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 1 Forlorn] Hood of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800201, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 4 Forlorn] Armor of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800202, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 2 Forlorn] Gauntlets of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800203, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 3 Forlorn] Leggings of the Forlorn", KL(KEYID.STRAID)));
-            Dold.Add(76800402, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Forlorn related", KL(KEYID.STRAID)));
-            Dold.Add(76801000, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Ultra Greatsword", KL(KEYID.STRAID)));
-            Dold.Add(76801001, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Greatshield", KL(KEYID.STRAID)));
-            Dold.Add(76801002, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Last Giant] Giant Stone Axe", KL(KEYID.STRAID)));
-            Dold.Add(76801003, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider's Halberd", KL(KEYID.STRAID)));
-            Dold.Add(76801004, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Bow", KL(KEYID.STRAID)));
-            Dold.Add(76801005, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Twinblade", KL(KEYID.STRAID)));
-            Dold.Add(76801006, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Greatshield", KL(KEYID.STRAID)));
-            Dold.Add(76801007, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Warped Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801008, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Barbed Club", KL(KEYID.STRAID)));
-            Dold.Add(76801009, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Arced Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801010, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Chariot Lance", KL(KEYID.STRAID)));
-            Dold.Add(76801011, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Shield Crossbow", KL(KEYID.STRAID)));
-            Dold.Add(76801012, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Roaring Halberd", KL(KEYID.STRAID)));
-            Dold.Add(76801013, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Bone Scythe", KL(KEYID.STRAID)));
-            Dold.Add(76801014, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Mytha, the Baneful Queen Soul] Mytha's Bent Blade", KL(KEYID.STRAID)));
-            Dold.Add(76801015, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Smelter Demon Soul] Smelter Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801016, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Demon of Song Soul] Spotted Whip", KL(KEYID.STRAID)));
-            Dold.Add(76801017, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Belfry Gargoyle Soul] Gargoyle Bident", KL(KEYID.STRAID)));
-            Dold.Add(76801100, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Ruin Sentinel Soul] Heavy Homing Soul Arrow", KL(KEYID.STRAID)));
-            Dold.Add(76801101, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Vanguard Soul] Toxic Mist", KL(KEYID.STRAID)));
-            Dold.Add(76801102, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Scorpioness Najka Soul] Soul Shower", KL(KEYID.STRAID)));
-            Dold.Add(76801103, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Authority Soul] Acid Surge", KL(KEYID.STRAID)));
-            Dold.Add(76801104, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Velstadt] Sacred Oath", KL(KEYID.STRAID)));
-            Dold.Add(76801105, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Giant Lord Soul] Repel", KL(KEYID.STRAID)));
-            Dold.Add(76801106, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KL(KEYID.STRAID)));
-            Dold.Add(76801107, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Witch Soul] Flame Weapon", KL(KEYID.STRAID)));
-            Dold.Add(76801108, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old King Soul] Blinding Bolt", KL(KEYID.STRAID)));
-            Dold.Add(76801109, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Dead One Soul] Numbness", KL(KEYID.STRAID)));
-            Dold.Add(76801110, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Paledrake Soul] Crystal Soul Spear", KL(KEYID.STRAID)));
-            Dold.Add(76801111, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Nadalia, Bride of Ash] Outcry", KL(KEYID.STRAID)));
-            Dold.Add(76801200, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Ultra Greatsword", KL(KEYID.STRAID)));
-            Dold.Add(76801201, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Greatshield", KL(KEYID.STRAID)));
-            Dold.Add(76801202, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Last Giant] Giant Stone Axe", KL(KEYID.STRAID)));
-            Dold.Add(76801203, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider's Halberd", KL(KEYID.STRAID)));
-            Dold.Add(76801204, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Bow", KL(KEYID.STRAID)));
-            Dold.Add(76801205, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Twinblade", KL(KEYID.STRAID)));
-            Dold.Add(76801206, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Greatshield", KL(KEYID.STRAID)));
-            Dold.Add(76801207, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Warped Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801208, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Barbed Club", KL(KEYID.STRAID)));
-            Dold.Add(76801209, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Arced Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801210, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Chariot Lance", KL(KEYID.STRAID)));
-            Dold.Add(76801211, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Shield Crossbow", KL(KEYID.STRAID)));
-            Dold.Add(76801212, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Roaring Halberd", KL(KEYID.STRAID)));
-            Dold.Add(76801213, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Bone Scythe", KL(KEYID.STRAID)));
-            Dold.Add(76801214, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Mytha, the Baneful Queen Soul] Mytha's Bent Blade", KL(KEYID.STRAID)));
-            Dold.Add(76801215, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Smelter Demon Soul] Smelter Sword", KL(KEYID.STRAID)));
-            Dold.Add(76801216, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Demon of Song Soul] Spotted Whip", KL(KEYID.STRAID)));
-            Dold.Add(76801217, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Belfry Gargoyle Soul] Gargoyle Bident", KL(KEYID.STRAID)));
-            Dold.Add(76801300, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Ruin Sentinel Soul] Heavy Homing Soul Arrow", KL(KEYID.STRAID)));
-            Dold.Add(76801301, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Vanguard Soul] Toxic Mist", KL(KEYID.STRAID)));
-            Dold.Add(76801302, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Scorpioness Najka Soul] Soul Shower", KL(KEYID.STRAID)));
-            Dold.Add(76801303, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Authority Soul] Acid Surge", KL(KEYID.STRAID)));
-            Dold.Add(76801304, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Velstadt] Sacred Oath", KL(KEYID.STRAID)));
-            Dold.Add(76801305, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Giant Lord Soul] Repel", KL(KEYID.STRAID)));
-            Dold.Add(76801306, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KL(KEYID.STRAID)));
+                { 76800300, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Homing Soul Arrow", KL(KEYID.STRAID)) },
+                { 76800301, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Resplendent Life", KL(KEYID.STRAID)) },
+                { 76800303, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Unveil", KL(KEYID.STRAID)) },
+                { 76800305, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Lingering Flame", KL(KEYID.STRAID)) },
+                { 76800306, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Flame Swathe", KL(KEYID.STRAID)) },
+                { 76800307, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Orb", KL(KEYID.STRAID)) },
+                { 76800308, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Hail", KL(KEYID.STRAID)) },
+                { 76800309, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Dark Fog", KL(KEYID.STRAID)) },
+                { 76800310, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Affinity", KL(KEYID.STRAID)) },
+                { 76800311, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Strong Magic Shield", KL(KEYID.STRAID)) },
+                { 76800312, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Cast Light", KL(KEYID.STRAID)) },
+                { 76800400, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Ring of Knowledge", KL(KEYID.STRAID)) },
+                { 76800401, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Lingering Dragoncrest Ring", KL(KEYID.STRAID)) },
+                { 76800600, ShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Rouge Water", KL(KEYID.STRAID)) },
+                { 76800302, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Undead Crypt] Great Lightning Spear", KL(KEYID.STRAID)) },
+                { 76800304, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Undead Crypt] Sunlight Blade", KL(KEYID.STRAID)) },
+                { 76800000, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Greatsword of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800001, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 5 Forlorn] Scythe of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800200, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 1 Forlorn] Hood of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800201, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 4 Forlorn] Armor of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800202, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 2 Forlorn] Gauntlets of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800203, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - 3 Forlorn] Leggings of the Forlorn", KL(KEYID.STRAID)) },
+                { 76800402, EvShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis] Forlorn related", KL(KEYID.STRAID)) },
+                { 76801000, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Ultra Greatsword", KL(KEYID.STRAID)) },
+                { 76801001, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Greatshield", KL(KEYID.STRAID)) },
+                { 76801002, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Last Giant] Giant Stone Axe", KL(KEYID.STRAID)) },
+                { 76801003, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider's Halberd", KL(KEYID.STRAID)) },
+                { 76801004, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Bow", KL(KEYID.STRAID)) },
+                { 76801005, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Twinblade", KL(KEYID.STRAID)) },
+                { 76801006, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Greatshield", KL(KEYID.STRAID)) },
+                { 76801007, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Warped Sword", KL(KEYID.STRAID)) },
+                { 76801008, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Barbed Club", KL(KEYID.STRAID)) },
+                { 76801009, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Arced Sword", KL(KEYID.STRAID)) },
+                { 76801010, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Chariot Lance", KL(KEYID.STRAID)) },
+                { 76801011, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Shield Crossbow", KL(KEYID.STRAID)) },
+                { 76801012, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Roaring Halberd", KL(KEYID.STRAID)) },
+                { 76801013, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Bone Scythe", KL(KEYID.STRAID)) },
+                { 76801014, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Mytha, the Baneful Queen Soul] Mytha's Bent Blade", KL(KEYID.STRAID)) },
+                { 76801015, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Smelter Demon Soul] Smelter Sword", KL(KEYID.STRAID)) },
+                { 76801016, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Demon of Song Soul] Spotted Whip", KL(KEYID.STRAID)) },
+                { 76801017, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Belfry Gargoyle Soul] Gargoyle Bident", KL(KEYID.STRAID)) },
+                { 76801100, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Ruin Sentinel Soul] Heavy Homing Soul Arrow", KL(KEYID.STRAID)) },
+                { 76801101, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Vanguard Soul] Toxic Mist", KL(KEYID.STRAID)) },
+                { 76801102, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Scorpioness Najka Soul] Soul Shower", KL(KEYID.STRAID)) },
+                { 76801103, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Authority Soul] Acid Surge", KL(KEYID.STRAID)) },
+                { 76801104, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Velstadt] Sacred Oath", KL(KEYID.STRAID)) },
+                { 76801105, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Giant Lord Soul] Repel", KL(KEYID.STRAID)) },
+                { 76801106, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KL(KEYID.STRAID)) },
+                { 76801107, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Witch Soul] Flame Weapon", KL(KEYID.STRAID)) },
+                { 76801108, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old King Soul] Blinding Bolt", KL(KEYID.STRAID)) },
+                { 76801109, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Dead One Soul] Numbness", KL(KEYID.STRAID)) },
+                { 76801110, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Old Paledrake Soul] Crystal Soul Spear", KL(KEYID.STRAID)) },
+                { 76801111, TradeShopInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Nadalia, Bride of Ash] Outcry", KL(KEYID.STRAID)) },
+                { 76801200, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Ultra Greatsword", KL(KEYID.STRAID)) },
+                { 76801201, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Pursuer] Pursuer's Greatshield", KL(KEYID.STRAID)) },
+                { 76801202, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of the Last Giant] Giant Stone Axe", KL(KEYID.STRAID)) },
+                { 76801203, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider's Halberd", KL(KEYID.STRAID)) },
+                { 76801204, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Bow", KL(KEYID.STRAID)) },
+                { 76801205, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Twinblade", KL(KEYID.STRAID)) },
+                { 76801206, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Dragonrider Soul] Dragonrider Greatshield", KL(KEYID.STRAID)) },
+                { 76801207, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Warped Sword", KL(KEYID.STRAID)) },
+                { 76801208, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Barbed Club", KL(KEYID.STRAID)) },
+                { 76801209, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Flexile Sentry Soul] Arced Sword", KL(KEYID.STRAID)) },
+                { 76801210, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Chariot Lance", KL(KEYID.STRAID)) },
+                { 76801211, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Executioner's Chariot Soul] Shield Crossbow", KL(KEYID.STRAID)) },
+                { 76801212, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Roaring Halberd", KL(KEYID.STRAID)) },
+                { 76801213, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Skeleton Lord's Soul] Bone Scythe", KL(KEYID.STRAID)) },
+                { 76801214, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Mytha, the Baneful Queen Soul] Mytha's Bent Blade", KL(KEYID.STRAID)) },
+                { 76801215, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Smelter Demon Soul] Smelter Sword", KL(KEYID.STRAID)) },
+                { 76801216, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Demon of Song Soul] Spotted Whip", KL(KEYID.STRAID)) },
+                { 76801217, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Belfry Gargoyle Soul] Gargoyle Bident", KL(KEYID.STRAID)) },
+                { 76801300, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Ruin Sentinel Soul] Heavy Homing Soul Arrow", KL(KEYID.STRAID)) },
+                { 76801301, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Vanguard Soul] Toxic Mist", KL(KEYID.STRAID)) },
+                { 76801302, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Scorpioness Najka Soul] Soul Shower", KL(KEYID.STRAID)) },
+                { 76801303, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Royal Rat Authority Soul] Acid Surge", KL(KEYID.STRAID)) },
+                { 76801304, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Soul of Velstadt] Sacred Oath", KL(KEYID.STRAID)) },
+                { 76801305, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Giant Lord Soul] Repel", KL(KEYID.STRAID)) },
+                { 76801306, ShopRemoveInfo(MapArea.TheLostBastille, "[Straid of Olaphis - Darklurker Soul] Lifedrain Patch", KL(KEYID.STRAID)) },
 
-            Dold.Add(76900000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Cleric's Sacred Chime", KL()));
-            Dold.Add(76900400, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Ring of Prayer", KL()));
-            Dold.Add(76900300, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Heal", KL()));
-            Dold.Add(76900301, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Med Heal", KL()));
-            Dold.Add(76900302, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Great Heal Excerpt", KL()));
-            Dold.Add(76900303, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Replenishment", KL()));
-            Dold.Add(76900304, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Resplendent Life", KL()));
-            Dold.Add(76900305, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Caressing Prayer", KL()));
-            Dold.Add(76900306, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Force", KL()));
-            Dold.Add(76900307, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Lightning Spear", KL()));
-            Dold.Add(76900308, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Homeward", KL()));
-            Dold.Add(76900309, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Guidance", KL()));
-            Dold.Add(76900310, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Heal", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900311, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Med Heal", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900312, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Great Heal Excerpt", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900313, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Replenishment", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900314, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Resplendent Life", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900315, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Caressing Prayer", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900316, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Force", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900317, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Lightning Spear", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900318, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Homeward", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(76900319, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Guidance", KL(KEYID.SHRINEOFWINTER)));
+                { 76900000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Cleric's Sacred Chime", KL()) },
+                { 76900400, ShopInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Ring of Prayer", KL()) },
+                { 76900300, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Heal", KL()) },
+                { 76900301, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Med Heal", KL()) },
+                { 76900302, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Great Heal Excerpt", KL()) },
+                { 76900303, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Replenishment", KL()) },
+                { 76900304, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Resplendent Life", KL()) },
+                { 76900305, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Caressing Prayer", KL()) },
+                { 76900306, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Force", KL()) },
+                { 76900307, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Lightning Spear", KL()) },
+                { 76900308, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Homeward", KL()) },
+                { 76900309, ShopSustain(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt] Guidance", KL()) },
+                { 76900310, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Heal", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900311, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Med Heal", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900312, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Great Heal Excerpt", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900313, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Replenishment", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900314, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Resplendent Life", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900315, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Caressing Prayer", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900316, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Force", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900317, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Lightning Spear", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900318, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Homeward", KL(KEYID.SHRINEOFWINTER)) },
+                { 76900319, ShopRemoveInfo(MapArea.HeidesTowerOfFlame, "[Licia of Lindeldt - Shrine of Winter] Guidance", KL(KEYID.SHRINEOFWINTER)) },
 
-            Dold.Add(77000000, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Staff", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000001, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Chime", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000002, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Chaos Rapier", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000100, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Chaos Shield", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000300, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Orb", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000301, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Weapon", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000302, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Flesh", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000303, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Weapon", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000304, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Magic Barrier", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000305, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Soul", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000306, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Great Resonant Soul", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000400, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Ring of Life Protection", KL(KEYID.ROTUNDA)));
-            Dold.Add(77000600, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Pine Resin", KL(KEYID.ROTUNDA)));
+                { 77000000, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Staff", KL(KEYID.ROTUNDA)) },
+                { 77000001, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Archdrake Chime", KL(KEYID.ROTUNDA)) },
+                { 77000002, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Chaos Rapier", KL(KEYID.ROTUNDA)) },
+                { 77000100, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Chaos Shield", KL(KEYID.ROTUNDA)) },
+                { 77000300, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Orb", KL(KEYID.ROTUNDA)) },
+                { 77000301, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Weapon", KL(KEYID.ROTUNDA)) },
+                { 77000302, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Flesh", KL(KEYID.ROTUNDA)) },
+                { 77000303, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Weapon", KL(KEYID.ROTUNDA)) },
+                { 77000304, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Magic Barrier", KL(KEYID.ROTUNDA)) },
+                { 77000305, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Resonant Soul", KL(KEYID.ROTUNDA)) },
+                { 77000306, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Great Resonant Soul", KL(KEYID.ROTUNDA)) },
+                { 77000400, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Ring of Life Protection", KL(KEYID.ROTUNDA)) },
+                { 77000600, ShopInfo(MapArea.HuntsmansCopse, "[Felkin the Outcast] Dark Pine Resin", KL(KEYID.ROTUNDA)) },
 
-            Dold.Add(77100200, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Moon Hat", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100201, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Robe", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100202, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Gauntlets", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100203, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Bottoms", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100204, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Hat", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100205, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Robe", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100206, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Gloves", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100207, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Trousers", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100300, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Great Magic Weapon", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100301, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Strong Magic Shield", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100400, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Thunder Quartz Ring + 2", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100500, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Bonfire Ascetic", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100600, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Dragon Charm", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100601, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Crimson Water", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100602, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Lightning Greatarrow", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100603, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Fire Greatarrow", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(77100604, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Destructive Greatarrow", KL(KEYID.ALDIASKEEP)));
+                { 77100200, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Moon Hat", KL(KEYID.ALDIASKEEP)) },
+                { 77100201, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Robe", KL(KEYID.ALDIASKEEP)) },
+                { 77100202, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Gauntlets", KL(KEYID.ALDIASKEEP)) },
+                { 77100203, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Astrologist's Bottoms", KL(KEYID.ALDIASKEEP)) },
+                { 77100204, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Hat", KL(KEYID.ALDIASKEEP)) },
+                { 77100205, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Robe", KL(KEYID.ALDIASKEEP)) },
+                { 77100206, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Gloves", KL(KEYID.ALDIASKEEP)) },
+                { 77100207, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Black Witch Trousers", KL(KEYID.ALDIASKEEP)) },
+                { 77100300, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Great Magic Weapon", KL(KEYID.ALDIASKEEP)) },
+                { 77100301, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Strong Magic Shield", KL(KEYID.ALDIASKEEP)) },
+                { 77100400, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Thunder Quartz Ring + 2", KL(KEYID.ALDIASKEEP)) },
+                { 77100500, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Bonfire Ascetic", KL(KEYID.ALDIASKEEP)) },
+                { 77100600, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Dragon Charm", KL(KEYID.ALDIASKEEP)) },
+                { 77100601, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Crimson Water", KL(KEYID.ALDIASKEEP)) },
+                { 77100602, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Lightning Greatarrow", KL(KEYID.ALDIASKEEP)) },
+                { 77100603, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Fire Greatarrow", KL(KEYID.ALDIASKEEP)) },
+                { 77100604, ShopInfo(MapArea.AldiasKeep, "[Royal Sorcerer Navlaan] Destructive Greatarrow", KL(KEYID.ALDIASKEEP)) },
 
-            Dold.Add(77200200, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Spiked Bandit Helm", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200201, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Armor", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200202, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Gauntlets", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200203, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Boots", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200204, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Cap", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200205, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Robes", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200206, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Gloves", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200207, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Tights", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200300, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Soul Arrow", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200301, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Great Soul Arrow", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200302, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Heavy Soul Arrow", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200303, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Great Heavy Soul Arrow", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200304, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Dark Hail", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200305, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Darkstorm", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200306, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Fall Control", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200400, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Cursebite Ring", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200500, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Hello Carving", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200501, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Thank You Carving", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200502, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] I'm Sorry Carving", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200503, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Very Good! Carving", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200600, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Green Blossom", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200601, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Charcoal Pine Resin", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200602, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Black Firebomb", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200603, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Rusted Coin", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200604, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Repair Powder", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200605, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Human Effigy", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200606, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Fragrant Branch of Yore", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200208, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Helm", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200209, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Armor", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200210, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Gauntlets", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200211, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Leggings", KL(KEYID.IRONKEEP)));
-            Dold.Add(77200212, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Helm", KL(KEYID.FUME)));
-            Dold.Add(77200213, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Armor", KL(KEYID.FUME)));
-            Dold.Add(77200214, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Gauntlets", KL(KEYID.FUME)));
-            Dold.Add(77200215, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Leggings", KL(KEYID.FUME)));
-            Dold.Add(77200216, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Helm", KL(KEYID.ALONNE)));
-            Dold.Add(77200217, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Armor", KL(KEYID.ALONNE)));
-            Dold.Add(77200218, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Gauntlets", KL(KEYID.ALONNE)));
-            Dold.Add(77200219, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Leggings", KL(KEYID.ALONNE)));
+                { 77200200, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Spiked Bandit Helm", KL(KEYID.IRONKEEP)) },
+                { 77200201, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Armor", KL(KEYID.IRONKEEP)) },
+                { 77200202, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Gauntlets", KL(KEYID.IRONKEEP)) },
+                { 77200203, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Bandit Boots", KL(KEYID.IRONKEEP)) },
+                { 77200204, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Cap", KL(KEYID.IRONKEEP)) },
+                { 77200205, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Robes", KL(KEYID.IRONKEEP)) },
+                { 77200206, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Gloves", KL(KEYID.IRONKEEP)) },
+                { 77200207, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Jester's Tights", KL(KEYID.IRONKEEP)) },
+                { 77200300, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Soul Arrow", KL(KEYID.IRONKEEP)) },
+                { 77200301, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Great Soul Arrow", KL(KEYID.IRONKEEP)) },
+                { 77200302, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Heavy Soul Arrow", KL(KEYID.IRONKEEP)) },
+                { 77200303, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Great Heavy Soul Arrow", KL(KEYID.IRONKEEP)) },
+                { 77200304, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Dark Hail", KL(KEYID.IRONKEEP)) },
+                { 77200305, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Darkstorm", KL(KEYID.IRONKEEP)) },
+                { 77200306, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Fall Control", KL(KEYID.IRONKEEP)) },
+                { 77200400, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Cursebite Ring", KL(KEYID.IRONKEEP)) },
+                { 77200500, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Hello Carving", KL(KEYID.IRONKEEP)) },
+                { 77200501, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Thank You Carving", KL(KEYID.IRONKEEP)) },
+                { 77200502, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] I'm Sorry Carving", KL(KEYID.IRONKEEP)) },
+                { 77200503, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Very Good! Carving", KL(KEYID.IRONKEEP)) },
+                { 77200600, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Green Blossom", KL(KEYID.IRONKEEP)) },
+                { 77200601, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Charcoal Pine Resin", KL(KEYID.IRONKEEP)) },
+                { 77200602, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Black Firebomb", KL(KEYID.IRONKEEP)) },
+                { 77200603, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Rusted Coin", KL(KEYID.IRONKEEP)) },
+                { 77200604, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Repair Powder", KL(KEYID.IRONKEEP)) },
+                { 77200605, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Human Effigy", KL(KEYID.IRONKEEP)) },
+                { 77200606, ShopInfo(MapArea.IronKeep, "[Magerold of Lanafir] Fragrant Branch of Yore", KL(KEYID.IRONKEEP)) },
+                { 77200208, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Helm", KL(KEYID.IRONKEEP)) },
+                { 77200209, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Armor", KL(KEYID.IRONKEEP)) },
+                { 77200210, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Gauntlets", KL(KEYID.IRONKEEP)) },
+                { 77200211, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - NG + 2] Dragonrider Leggings", KL(KEYID.IRONKEEP)) },
+                { 77200212, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Helm", KL(KEYID.FUME)) },
+                { 77200213, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Armor", KL(KEYID.FUME)) },
+                { 77200214, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Gauntlets", KL(KEYID.FUME)) },
+                { 77200215, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Fume Knight] Raime's Leggings", KL(KEYID.FUME)) },
+                { 77200216, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Helm", KL(KEYID.ALONNE)) },
+                { 77200217, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Armor", KL(KEYID.ALONNE)) },
+                { 77200218, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Gauntlets", KL(KEYID.ALONNE)) },
+                { 77200219, EvShopInfo(MapArea.IronKeep, "[Magerold of Lanafir - Sir Alonne] Alonne's Leggings", KL(KEYID.ALONNE)) },
 
 
-            Dold.Add(77600000, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Monastery Scimitar", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600001, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Manikin Claws", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600002, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Manikin Knife", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600003, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Lion Greataxe", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600004, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Silverblack Sickle", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600300, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Homing Soul Arrow", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600301, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Homing Soulmass", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600302, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fall Control", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600600, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Flame Butterfly", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600601, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fire Arrow", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600602, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fire Bolt", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600603, ShopSustain(MapArea.Tseldora, "[Weaponsmith Ornifex] Green Blossom", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600604, ShopSustain(MapArea.Tseldora, "[Weaponsmith Ornifex] Amber Herb", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600605, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Nashandra] Green Blossom", KL(KEYID.ORNIFEX)));
-            Dold.Add(77600606, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Nashandra] Twilight Herb", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601000, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", 77602000, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601001, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", 77602001, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601002, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", 77602002, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601003, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", 77602003, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601004, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", 77602004, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601005, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", 77602005, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601006, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", 77602006, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601007, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", 77602007, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601008, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", 77602008, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601009, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", 77602009, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601010, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", 77602010, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601011, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", 77602011, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601012, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", 77602012, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601013, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", 77602013, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601014, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", 77602014, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601015, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", 77602015, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601016, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", 77602016, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601017, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", 77602017, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601018, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", 77602018, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601019, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", 77602019, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601020, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", 77602020, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601021, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", 77602021, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601022, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Paledrake Soul] Moonlight Greatsword", 77602022, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601023, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dead One Soul] Crypt Blacksword", 77602023, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601024, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Witch Soul] Chaos Blade", 77602024, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601025, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old King Soul] Dragonslayer Greatbow", 77602025, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601026, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", 77602026, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601027, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Elana, Squalid Queen] Wrathful Axe", 77602027, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601028, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nadalia, Bride of Ash] Chime of Screams", 77602028, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601029, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Sword", 77602029, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601030, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Ultra Greatsword", 77602030, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601031, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sir Alonne] Bewitched Alonne Sword", 77602031, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601032, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Smelter Demon Soul] Aged Smelter Sword", 77602032, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601033, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Aava, the King's Pet] Ivory Straight Sword", 77602033, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601034, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Zallen, the King's Pet] Loyce Shield", 77602034, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601035, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Lud, the King's Pet] Loyce Greatsword", 77602035, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601036, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Ivory King] Ivory King Ultra Greatsword", 77602036, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601037, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Alsanna, Silent Oracle] Eleum Loyce", 77602037, KL(KEYID.ORNIFEX)));
-            Dold.Add(77601100, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601101, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601102, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601103, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601104, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601105, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601106, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601107, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601108, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601109, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601110, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601111, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601112, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601113, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601114, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601115, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601116, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601117, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601118, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601119, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601120, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77601121, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602000, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602001, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602002, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602003, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602004, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602005, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602006, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602007, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602008, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602009, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602010, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602011, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602012, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602013, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602014, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602015, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602016, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602017, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602018, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602019, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602020, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602021, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602022, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Paledrake Soul] Moonlight Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602023, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dead One Soul] Crypt Blacksword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602024, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Witch Soul] Chaos Blade", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602025, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old King Soul] Dragonslayer Greatbow", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602026, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602027, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602028, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nadalia, Bride of Ash] Chime of Screams", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602029, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602030, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602031, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sir Alonne] Bewitched Alonne Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602032, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Smelter Demon Soul] Aged Smelter Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602033, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Aava, the King's Pet] Ivory Straight Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602034, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Zallen, the King's Pet] Loyce Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602035, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Lud, the King's Pet] Loyce Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602036, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Ivory King] Ivory King Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602037, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Alsanna, Silent Oracle] Eleum Loyce", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602100, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602101, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602102, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602103, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602104, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602105, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602106, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602107, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602108, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602109, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602110, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602111, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602112, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602113, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602114, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602115, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602116, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602117, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602118, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602119, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602120, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)));
-            Dold.Add(77602121, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)));
-            
-            Dold.Add(77700200, ShopInfo(MapArea.Majula, "[Cat] Cat Pants", KL(KEYID.BRANCH)));
-            Dold.Add(77700400, ShopInfo(MapArea.Majula, "[Cat] Silver Cat ring", KL()));
-            Dold.Add(77700401, ShopInfo(MapArea.Majula, "[Cat] Redeye ring", KL()));
-            Dold.Add(77700402, ShopInfo(MapArea.Majula, "[Cat] Name-engraved ring", KL()));
-            Dold.Add(77700403, ShopInfo(MapArea.Majula, "[Cat] Ring of Whispers", KL()));
-            Dold.Add(77700404, ShopInfo(MapArea.Majula, "[Cat] Ring of the Evil Eye", KL()));
-            Dold.Add(77700600, ShopSustain(MapArea.Majula, "[Cat] Prism stone", KL()));
-            Dold.Add(77700601, ShopSustain(MapArea.Majula, "[Cat] Alluring skull", KL()));
-            Dold.Add(77700602, ShopSustain(MapArea.Majula, "[Cat] Lloyd's talisman", KL()));
-            Dold.Add(77700603, ShopSustain(MapArea.Majula, "[Cat] Homeward bones", KL()));
-            Dold.Add(77700604, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Prism Stones after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(77700605, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Alluring skulls after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(77700606, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Lloyd's Amulet after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)));
-            Dold.Add(77700607, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Homeward bones after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)));
+                { 77600000, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Monastery Scimitar", KL(KEYID.ORNIFEX)) },
+                { 77600001, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Manikin Claws", KL(KEYID.ORNIFEX)) },
+                { 77600002, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Manikin Knife", KL(KEYID.ORNIFEX)) },
+                { 77600003, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Lion Greataxe", KL(KEYID.ORNIFEX)) },
+                { 77600004, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Silverblack Sickle", KL(KEYID.ORNIFEX)) },
+                { 77600300, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Homing Soul Arrow", KL(KEYID.ORNIFEX)) },
+                { 77600301, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Homing Soulmass", KL(KEYID.ORNIFEX)) },
+                { 77600302, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fall Control", KL(KEYID.ORNIFEX)) },
+                { 77600600, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Flame Butterfly", KL(KEYID.ORNIFEX)) },
+                { 77600601, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fire Arrow", KL(KEYID.ORNIFEX)) },
+                { 77600602, ShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex] Fire Bolt", KL(KEYID.ORNIFEX)) },
+                { 77600603, ShopSustain(MapArea.Tseldora, "[Weaponsmith Ornifex] Green Blossom", KL(KEYID.ORNIFEX)) },
+                { 77600604, ShopSustain(MapArea.Tseldora, "[Weaponsmith Ornifex] Amber Herb", KL(KEYID.ORNIFEX)) },
+                { 77600605, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Nashandra] Green Blossom", KL(KEYID.ORNIFEX)) },
+                { 77600606, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Nashandra] Twilight Herb", KL(KEYID.ORNIFEX)) },
+                { 77601000, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", 77602000, KL(KEYID.ORNIFEX)) },
+                { 77601001, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", 77602001, KL(KEYID.ORNIFEX)) },
+                { 77601002, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", 77602002, KL(KEYID.ORNIFEX)) },
+                { 77601003, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", 77602003, KL(KEYID.ORNIFEX)) },
+                { 77601004, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", 77602004, KL(KEYID.ORNIFEX)) },
+                { 77601005, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", 77602005, KL(KEYID.ORNIFEX)) },
+                { 77601006, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", 77602006, KL(KEYID.ORNIFEX)) },
+                { 77601007, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", 77602007, KL(KEYID.ORNIFEX)) },
+                { 77601008, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", 77602008, KL(KEYID.ORNIFEX)) },
+                { 77601009, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", 77602009, KL(KEYID.ORNIFEX)) },
+                { 77601010, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", 77602010, KL(KEYID.ORNIFEX)) },
+                { 77601011, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", 77602011, KL(KEYID.ORNIFEX)) },
+                { 77601012, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", 77602012, KL(KEYID.ORNIFEX)) },
+                { 77601013, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", 77602013, KL(KEYID.ORNIFEX)) },
+                { 77601014, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", 77602014, KL(KEYID.ORNIFEX)) },
+                { 77601015, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", 77602015, KL(KEYID.ORNIFEX)) },
+                { 77601016, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", 77602016, KL(KEYID.ORNIFEX)) },
+                { 77601017, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", 77602017, KL(KEYID.ORNIFEX)) },
+                { 77601018, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", 77602018, KL(KEYID.ORNIFEX)) },
+                { 77601019, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", 77602019, KL(KEYID.ORNIFEX)) },
+                { 77601020, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", 77602020, KL(KEYID.ORNIFEX)) },
+                { 77601021, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", 77602021, KL(KEYID.ORNIFEX)) },
+                { 77601022, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Paledrake Soul] Moonlight Greatsword", 77602022, KL(KEYID.ORNIFEX)) },
+                { 77601023, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dead One Soul] Crypt Blacksword", 77602023, KL(KEYID.ORNIFEX)) },
+                { 77601024, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Witch Soul] Chaos Blade", 77602024, KL(KEYID.ORNIFEX)) },
+                { 77601025, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Old King Soul] Dragonslayer Greatbow", 77602025, KL(KEYID.ORNIFEX)) },
+                { 77601026, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", 77602026, KL(KEYID.ORNIFEX)) },
+                { 77601027, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Elana, Squalid Queen] Wrathful Axe", 77602027, KL(KEYID.ORNIFEX)) },
+                { 77601028, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nadalia, Bride of Ash] Chime of Screams", 77602028, KL(KEYID.ORNIFEX)) },
+                { 77601029, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Sword", 77602029, KL(KEYID.ORNIFEX)) },
+                { 77601030, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Ultra Greatsword", 77602030, KL(KEYID.ORNIFEX)) },
+                { 77601031, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sir Alonne] Bewitched Alonne Sword", 77602031, KL(KEYID.ORNIFEX)) },
+                { 77601032, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Smelter Demon Soul] Aged Smelter Sword", 77602032, KL(KEYID.ORNIFEX)) },
+                { 77601033, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Aava, the King's Pet] Ivory Straight Sword", 77602033, KL(KEYID.ORNIFEX)) },
+                { 77601034, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Zallen, the King's Pet] Loyce Shield", 77602034, KL(KEYID.ORNIFEX)) },
+                { 77601035, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Lud, the King's Pet] Loyce Greatsword", 77602035, KL(KEYID.ORNIFEX)) },
+                { 77601036, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Ivory King] Ivory King Ultra Greatsword", 77602036, KL(KEYID.ORNIFEX)) },
+                { 77601037, TradeShopCopy(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Alsanna, Silent Oracle] Eleum Loyce", 77602037, KL(KEYID.ORNIFEX)) },
+                { 77601100, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)) },
+                { 77601101, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)) },
+                { 77601102, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)) },
+                { 77601103, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)) },
+                { 77601104, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)) },
+                { 77601105, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)) },
+                { 77601106, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601107, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)) },
+                { 77601108, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)) },
+                { 77601109, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)) },
+                { 77601110, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601111, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)) },
+                { 77601112, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)) },
+                { 77601113, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601114, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601115, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)) },
+                { 77601116, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)) },
+                { 77601117, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)) },
+                { 77601118, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601119, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)) },
+                { 77601120, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77601121, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602000, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)) },
+                { 77602001, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)) },
+                { 77602002, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)) },
+                { 77602003, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)) },
+                { 77602004, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)) },
+                { 77602005, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)) },
+                { 77602006, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602007, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)) },
+                { 77602008, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)) },
+                { 77602009, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)) },
+                { 77602010, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602011, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602012, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)) },
+                { 77602013, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602014, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602015, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)) },
+                { 77602016, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)) },
+                { 77602017, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)) },
+                { 77602018, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602019, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602020, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602021, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602022, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Paledrake Soul] Moonlight Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602023, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dead One Soul] Crypt Blacksword", KL(KEYID.ORNIFEX)) },
+                { 77602024, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Witch Soul] Chaos Blade", KL(KEYID.ORNIFEX)) },
+                { 77602025, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old King Soul] Dragonslayer Greatbow", KL(KEYID.ORNIFEX)) },
+                { 77602026, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", KL(KEYID.ORNIFEX)) },
+                { 77602027, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sinh, the Slumbering Dragon] Yorgh's Spear", KL(KEYID.ORNIFEX)) },
+                { 77602028, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nadalia, Bride of Ash] Chime of Screams", KL(KEYID.ORNIFEX)) },
+                { 77602029, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Sword", KL(KEYID.ORNIFEX)) },
+                { 77602030, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Fume Knight] Fume Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602031, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Sir Alonne] Bewitched Alonne Sword", KL(KEYID.ORNIFEX)) },
+                { 77602032, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Smelter Demon Soul] Aged Smelter Sword", KL(KEYID.ORNIFEX)) },
+                { 77602033, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Aava, the King's Pet] Ivory Straight Sword", KL(KEYID.ORNIFEX)) },
+                { 77602034, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Zallen, the King's Pet] Loyce Shield", KL(KEYID.ORNIFEX)) },
+                { 77602035, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Lud, the King's Pet] Loyce Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602036, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Ivory King] Ivory King Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602037, FreeTradeShopInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Alsanna, Silent Oracle] Eleum Loyce", KL(KEYID.ORNIFEX)) },
+                { 77602100, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Dragonslayer Soul] Dragonslayer Spear", KL(KEYID.ORNIFEX)) },
+                { 77602101, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Lost Sinner] Lost Sinner's Sword", KL(KEYID.ORNIFEX)) },
+                { 77602102, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Old Iron King Soul] Iron King Hammer", KL(KEYID.ORNIFEX)) },
+                { 77602103, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Rotten] Butcher's Knife", KL(KEYID.ORNIFEX)) },
+                { 77602104, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider's Silk", KL(KEYID.ORNIFEX)) },
+                { 77602105, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the Duke's Dear Freja] Spider Fang", KL(KEYID.ORNIFEX)) },
+                { 77602106, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] Thorned Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602107, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Looking Glass Knight Soul] King's Mirror", KL(KEYID.ORNIFEX)) },
+                { 77602108, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Velstadt] Sacred Chime Hammer", KL(KEYID.ORNIFEX)) },
+                { 77602109, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] Ruler's Sword", KL(KEYID.ORNIFEX)) },
+                { 77602110, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602111, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of the King] King's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602112, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Spitfire Spear", KL(KEYID.ORNIFEX)) },
+                { 77602113, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Guardian Dragon Soul] Drakewing Ultra Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602114, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Ancient Dragon Soul] Curved Dragon Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602115, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Scythe of Want", KL(KEYID.ORNIFEX)) },
+                { 77602116, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Chime of Want", KL(KEYID.ORNIFEX)) },
+                { 77602117, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Soul of Nashandra] Bow of Want", KL(KEYID.ORNIFEX)) },
+                { 77602118, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602119, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Defender Soul] Defender's Shield", KL(KEYID.ORNIFEX)) },
+                { 77602120, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher Greatsword", KL(KEYID.ORNIFEX)) },
+                { 77602121, ShopRemoveInfo(MapArea.Tseldora, "[Weaponsmith Ornifex - Throne Watcher Soul] Watcher's Shield", KL(KEYID.ORNIFEX)) },
 
-            Dold.Add(78300000, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Scythe", KL(KEYID.TITCHY)));
-            Dold.Add(78300001, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Priest's Chime", KL(KEYID.TITCHY)));
-            Dold.Add(78300300, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Firestorm", KL(KEYID.TITCHY)));
-            Dold.Add(78300301, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Combustion", KL(KEYID.TITCHY)));
-            Dold.Add(78300302, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Fire Whip", KL(KEYID.TITCHY)));
-            Dold.Add(78300400, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Delicate String", KL(KEYID.TITCHY)));
-            Dold.Add(78300600, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Red Sign Soapstone", KL(KEYID.TITCHY)));
-            Dold.Add(78300601, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Silver Talisman", KL(KEYID.TITCHY)));
-            Dold.Add(78300602, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Hexing Urn", KL(KEYID.TITCHY)));
-            Dold.Add(78300603, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Cracked Red Eye Orb", KL(KEYID.TITCHY)));
-            Dold.Add(78300200, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone Crown", KL(KEYID.TITCHY)));
-            Dold.Add(78300201, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Robe", KL(KEYID.TITCHY)));
-            Dold.Add(78300202, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Cuffs", KL(KEYID.TITCHY)));
-            Dold.Add(78300203, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Skirt", KL(KEYID.TITCHY)));
-            Dold.Add(78300204, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Helm", KL(KEYID.EXECUTIONERSET)));
-            Dold.Add(78300205, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Armor", KL(KEYID.EXECUTIONERSET)));
-            Dold.Add(78300206, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Gauntlets", KL(KEYID.EXECUTIONERSET)));
-            Dold.Add(78300207, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Leggings", KL(KEYID.EXECUTIONERSET)));
-            Dold.Add(78300604, ShopCopy(MapArea.UndeadPurgatory, "[Titchy Gren] Inf Cracked Red Eye Orb in NG+", 78300603, KL(KEYID.TITCHY)));
+                { 77700200, ShopInfo(MapArea.Majula, "[Cat] Cat Pants", KL(KEYID.BRANCH)) },
+                { 77700400, ShopInfo(MapArea.Majula, "[Cat] Silver Cat ring", KL()) },
+                { 77700401, ShopInfo(MapArea.Majula, "[Cat] Redeye ring", KL()) },
+                { 77700402, ShopInfo(MapArea.Majula, "[Cat] Name-engraved ring", KL()) },
+                { 77700403, ShopInfo(MapArea.Majula, "[Cat] Ring of Whispers", KL()) },
+                { 77700404, ShopInfo(MapArea.Majula, "[Cat] Ring of the Evil Eye", KL()) },
+                { 77700600, ShopSustain(MapArea.Majula, "[Cat] Prism stone", KL()) },
+                { 77700601, ShopSustain(MapArea.Majula, "[Cat] Alluring skull", KL()) },
+                { 77700602, ShopSustain(MapArea.Majula, "[Cat] Lloyd's talisman", KL()) },
+                { 77700603, ShopSustain(MapArea.Majula, "[Cat] Homeward bones", KL()) },
+                { 77700604, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Prism Stones after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)) },
+                { 77700605, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Alluring skulls after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)) },
+                { 77700606, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Lloyd's Amulet after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)) },
+                { 77700607, ShopRemoveInfo(MapArea.Majula, "[Cat] Inf Homeward bones after Shrine of Winter", KL(KEYID.SHRINEOFWINTER)) },
 
-            Dold.Add(78400200, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Headpiece", KL(KEYID.BRANCH)));
-            Dold.Add(78400201, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Robe", KL(KEYID.BRANCH)));
-            Dold.Add(78400202, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Gloves", KL(KEYID.BRANCH)));
-            Dold.Add(78400203, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Skirt", KL(KEYID.BRANCH)));
-            Dold.Add(78400400, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Poisonbite Ring", KL(KEYID.BRANCH)));
-            Dold.Add(78400401, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Bloodbite Ring", KL(KEYID.BRANCH)));
-            Dold.Add(78400402, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Cursebite Ring", KL(KEYID.BRANCH)));
-            Dold.Add(78400600, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Dark Troches", KL(KEYID.BRANCH)));
-            Dold.Add(78400300, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KL(KEYID.BRANCH)));
-            Dold.Add(78400301, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KL(KEYID.BRANCH)));
-            Dold.Add(78400302, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KL(KEYID.BRANCH)));
-            Dold.Add(78400303, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KL(KEYID.BRANCH)));
-            Dold.Add(78400304, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KL(KEYID.BRANCH)));
-            Dold.Add(78400305, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KL(KEYID.BRANCH)));
-            Dold.Add(78400306, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KL(KEYID.BRANCH)));
-            Dold.Add(78400307, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KL(KEYID.BRANCH)));
-            // unsure what event causes these right now
-            Dold.Add(78400308, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KL(KEYID.BRANCH)));
-            Dold.Add(78400309, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KL(KEYID.BRANCH)));
-            Dold.Add(78400310, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KL(KEYID.BRANCH)));
-            Dold.Add(78400311, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KL(KEYID.BRANCH)));
-            Dold.Add(78400312, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KL(KEYID.BRANCH)));
-            Dold.Add(78400313, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KL(KEYID.BRANCH)));
-            Dold.Add(78400314, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KL(KEYID.BRANCH)));
-            Dold.Add(78400315, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KL(KEYID.BRANCH)));
+                { 78300000, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Scythe", KL(KEYID.TITCHY)) },
+                { 78300001, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Priest's Chime", KL(KEYID.TITCHY)) },
+                { 78300300, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Firestorm", KL(KEYID.TITCHY)) },
+                { 78300301, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Great Combustion", KL(KEYID.TITCHY)) },
+                { 78300302, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Fire Whip", KL(KEYID.TITCHY)) },
+                { 78300400, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Delicate String", KL(KEYID.TITCHY)) },
+                { 78300600, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Red Sign Soapstone", KL(KEYID.TITCHY)) },
+                { 78300601, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Silver Talisman", KL(KEYID.TITCHY)) },
+                { 78300602, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Hexing Urn", KL(KEYID.TITCHY)) },
+                { 78300603, ShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren] Cracked Red Eye Orb", KL(KEYID.TITCHY)) },
+                { 78300200, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone Crown", KL(KEYID.TITCHY)) },
+                { 78300201, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Robe", KL(KEYID.TITCHY)) },
+                { 78300202, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Cuffs", KL(KEYID.TITCHY)) },
+                { 78300203, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Skeleton Lords] Bone King Skirt", KL(KEYID.TITCHY)) },
+                { 78300204, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Helm", KL(KEYID.EXECUTIONERSET)) },
+                { 78300205, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Armor", KL(KEYID.EXECUTIONERSET)) },
+                { 78300206, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Gauntlets", KL(KEYID.EXECUTIONERSET)) },
+                { 78300207, EvShopInfo(MapArea.UndeadPurgatory, "[Titchy Gren - Shrine of Winter] Executioner Leggings", KL(KEYID.EXECUTIONERSET)) },
+                { 78300604, ShopCopy(MapArea.UndeadPurgatory, "[Titchy Gren] Inf Cracked Red Eye Orb in NG+", 78300603, KL(KEYID.TITCHY)) },
 
-            Dold.Add(78500000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Morning Star", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500001, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Halberd", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500300, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Emit Force", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500301, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Heavenly Thunder", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500600, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Monastery Charm", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500601, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Holy Water Urn", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500602, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Boltstone", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(78500603, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Cracked Blue Eye Orb", KL(KEYID.TOKENOFFIDELITY)));
+                { 78400200, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Headpiece", KL(KEYID.BRANCH)) },
+                { 78400201, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Robe", KL(KEYID.BRANCH)) },
+                { 78400202, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Gloves", KL(KEYID.BRANCH)) },
+                { 78400203, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] White Priest Skirt", KL(KEYID.BRANCH)) },
+                { 78400400, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Poisonbite Ring", KL(KEYID.BRANCH)) },
+                { 78400401, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Bloodbite Ring", KL(KEYID.BRANCH)) },
+                { 78400402, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Cursebite Ring", KL(KEYID.BRANCH)) },
+                { 78400600, ShopInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Dark Troches", KL(KEYID.BRANCH)) },
+                { 78400300, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KL(KEYID.BRANCH)) },
+                { 78400301, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KL(KEYID.BRANCH)) },
+                { 78400302, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KL(KEYID.BRANCH)) },
+                { 78400303, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KL(KEYID.BRANCH)) },
+                { 78400304, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KL(KEYID.BRANCH)) },
+                { 78400305, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KL(KEYID.BRANCH)) },
+                { 78400306, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KL(KEYID.BRANCH)) },
+                { 78400307, ShopSustain(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KL(KEYID.BRANCH)) },
+                // unsure what event causes these right now
+                { 78400308, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Great Heal", KL(KEYID.BRANCH)) },
+                { 78400309, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Replenishment", KL(KEYID.BRANCH)) },
+                { 78400310, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Caressing Prayer", KL(KEYID.BRANCH)) },
+                { 78400311, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Force", KL(KEYID.BRANCH)) },
+                { 78400312, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Emit Force", KL(KEYID.BRANCH)) },
+                { 78400313, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Heavenly Thunder", KL(KEYID.BRANCH)) },
+                { 78400314, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Perseverance", KL(KEYID.BRANCH)) },
+                { 78400315, ShopRemoveInfo(MapArea.Tseldora, "[Cromwell the Pardoner] Scraps of Life", KL(KEYID.BRANCH)) },
 
+                { 78500000, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Morning Star", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500001, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Halberd", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500300, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Emit Force", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500301, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Heavenly Thunder", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500600, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Monastery Charm", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500601, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Holy Water Urn", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500602, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Boltstone", KL(KEYID.TOKENOFFIDELITY)) },
+                { 78500603, ShopInfo(MapArea.HeidesTowerOfFlame, "[Blue Sentinel Targray] Cracked Blue Eye Orb", KL(KEYID.TOKENOFFIDELITY)) }
+            };
+            return d;
         }
 
         // Main info setup (no skips):
-        internal void SetupLootInfoDictionary()
+        internal static Dictionary<int, RandoInfo> SetupLootInfoDictionary()
         {
-            // Misc:
-            Dold.Add(1726000, NpcInfo(MapArea.Quantum, "[Misc] Gift from Gavlan after spending 16000 souls", KL()));
-            Dold.Add(1752010, NpcInfo(MapArea.Quantum, "[Misc] Gift from Lucatiel after speaking to her the second time", KL()));
-            Dold.Add(1752020, NpcInfo(MapArea.Quantum, "[Misc] Gift from Lucatiel after speaking to her the third time", KL()));
-            Dold.Add(1754000, NpcInfo(MapArea.FOFG, "[Misc] Gift from Melentia after spending 10000 souls", KL()));
-            Dold.Add(1766000, NpcInfo(MapArea.NoMansWharf, "[Misc] Gift from Carhillion when over 30INT", KL()));
-            Dold.Add(1769000, NpcInfo(MapArea.HeidesTowerOfFlame, "[Misc] Gift from Licia when over 30FTH", KL()));
-            Dold.Add(1753020, CovFineInfo(MapArea.Quantum, "[Misc] Bell Keepers join", KL(KEYID.BELLKEEPERSCOV)));
-            Dold.Add(2004011, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 1st rank reward", KL(KEYID.BELLKEEPERSCOV)));
-            Dold.Add(2004012, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 2nd rank reward", KL(KEYID.BELLKEEPERSCOV)));
-            Dold.Add(2004013, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 3rd rank reward", KL(KEYID.BELLKEEPERSCOV)));
-            Dold.Add(2005000, CovFineInfo(MapArea.Quantum, "[Misc] Rat King covenant join", KL()));
-            Dold.Add(2005011, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 1st rank reward", KL()));
-            Dold.Add(2005012, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 2nd rank reward", KL()));
-            Dold.Add(2005013, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 3rd rank reward", KL()));
-            Dold.Add(60006000, NpcInfo(MapArea.HeidesTowerOfFlame, "[Misc] Reward for killing Licia using the Crushed Eye Orb", KL(KEYID.LICIAINVASION)));
-            Dold.Add(60015000, SafeInfo(MapArea.BrumeTower, "[Misc] Full Soul of Nadalia, Bride of Ash after combining fragments", KL(KEYID.NADALIAFULL)));
+            Dictionary<int, RandoInfo> d = new()
+            {
+                // Misc:
+                { 1726000, NpcInfo(MapArea.Quantum, "[Misc] Gift from Gavlan after spending 16000 souls", KL()) },
+                { 1752010, NpcInfo(MapArea.Quantum, "[Misc] Gift from Lucatiel after speaking to her the second time", KL()) },
+                { 1752020, NpcInfo(MapArea.Quantum, "[Misc] Gift from Lucatiel after speaking to her the third time", KL()) },
+                { 1754000, NpcInfo(MapArea.FOFG, "[Misc] Gift from Melentia after spending 10000 souls", KL()) },
+                { 1766000, NpcInfo(MapArea.NoMansWharf, "[Misc] Gift from Carhillion when over 30INT", KL()) },
+                { 1769000, NpcInfo(MapArea.HeidesTowerOfFlame, "[Misc] Gift from Licia when over 30FTH", KL()) },
+                { 1753020, CovFineInfo(MapArea.Quantum, "[Misc] Bell Keepers join", KL(KEYID.BELLKEEPERSCOV)) },
+                { 2004011, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 1st rank reward", KL(KEYID.BELLKEEPERSCOV)) },
+                { 2004012, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 2nd rank reward", KL(KEYID.BELLKEEPERSCOV)) },
+                { 2004013, CovInfo(MapArea.Quantum, "[Misc] Bell Keepers 3rd rank reward", KL(KEYID.BELLKEEPERSCOV)) },
+                { 2005000, CovFineInfo(MapArea.Quantum, "[Misc] Rat King covenant join", KL()) },
+                { 2005011, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 1st rank reward", KL()) },
+                { 2005012, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 2nd rank reward", KL()) },
+                { 2005013, CovInfo(MapArea.Quantum, "[Misc] Rat King covenant 3rd rank reward", KL()) },
+                { 60006000, NpcInfo(MapArea.HeidesTowerOfFlame, "[Misc] Reward for killing Licia using the Crushed Eye Orb", KL(KEYID.LICIAINVASION)) },
+                { 60015000, SafeInfo(MapArea.BrumeTower, "[Misc] Full Soul of Nadalia, Bride of Ash after combining fragments", KL(KEYID.NADALIAFULL)) },
 
-            // Crows Nest:
-            Dold.Add(50000000, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000001, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000002, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Small Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000003, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Small Smooth and Silky Stone table at crows", KL()));
-            //
-            Dold.Add(50000100, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (6 active) for the Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000101, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (all active) for the Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000102, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Smooth and Silky Stone table at crows", KL()));
-            Dold.Add(50000103, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Smooth and Silky Stone table at crows", KL()));
-            //
-            Dold.Add(50000200, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (none active) for the Petrified Something table at crows", KL()));
-            Dold.Add(50000201, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (none active) for the Petrified Something table at crows", KL()));
-            Dold.Add(50000202, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Petrified Something table at crows", KL()));
-            Dold.Add(50000203, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Petrified Something table at crows", KL()));
-            //
-            Dold.Add(50000300, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (none active) for the Prism Stone table at crows", KL()));
-            Dold.Add(50000301, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (none active) for the Prism Stone table at crows", KL()));
-            Dold.Add(50000302, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (none active) for the Prism Stone table at crows", KL()));
-            Dold.Add(50000303, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (all active) for the Prism Stone table at crows", KL()));
+                // Crows Nest:
+                { 50000000, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows", KL()) },
+                { 50000001, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (all active) for the Small Smooth and Silky Stone table at crows", KL()) },
+                { 50000002, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Small Smooth and Silky Stone table at crows", KL()) },
+                { 50000003, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Small Smooth and Silky Stone table at crows", KL()) },
+                //
+                { 50000100, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (6 active) for the Smooth and Silky Stone table at crows", KL()) },
+                { 50000101, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (all active) for the Smooth and Silky Stone table at crows", KL()) },
+                { 50000102, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Smooth and Silky Stone table at crows", KL()) },
+                { 50000103, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Smooth and Silky Stone table at crows", KL()) },
+                //
+                { 50000200, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (none active) for the Petrified Something table at crows", KL()) },
+                { 50000201, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (none active) for the Petrified Something table at crows", KL()) },
+                { 50000202, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (7 active) for the Petrified Something table at crows", KL()) },
+                { 50000203, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (none active) for the Petrified Something table at crows", KL()) },
+                //
+                { 50000300, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] First set of 10 drops (none active) for the Prism Stone table at crows", KL()) },
+                { 50000301, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Second set of 10 drops (none active) for the Prism Stone table at crows", KL()) },
+                { 50000302, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Third set of 10 drops (none active) for the Prism Stone table at crows", KL()) },
+                { 50000303, CrowsInfo(MapArea.ThingsBetwixt, "[Crows] Fourth set of 10 drops (all active) for the Prism Stone table at crows", KL()) },
 
-            // Things Betwixt:
-            Dold.Add(1705000, NpcInfo(MapArea.ThingsBetwixt, "[Betwixt] Gift from the fire keepers after getting the King's Ring", KL(KEYID.DRANGLEIC)));
-            Dold.Add(1723000, NpcInfo(MapArea.ThingsBetwixt, "[Betwixt] Gift from Milibeth after killing 3 hippos", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(10025010, WChestInfo(MapArea.ThingsBetwixt, "[Betwixt] Wooden chest at the attic of Fire Keeper's cottage", KL()));
-            Dold.Add(10026000, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] On the right side ledge before Fire Keeper's cottage", KL()));
-            Dold.Add(10026001, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] On the right side ledge before Fire Keeper's cottage in NG+", KL()));
-            Dold.Add(10026020, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Guarded by hippo before Fire Keeper's cottage", KL()));
-            Dold.Add(10026030, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Under waterfall", KL()));
-            Dold.Add(10026031, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Under waterfall in NG+", KL()));
-            Dold.Add(10026040, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] One ledge down from the crow nest", KL()));
-            Dold.Add(10026050, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Vanilla Cart Soul: Behind the wagon next to bonfire", KL()));
-            Dold.Add(10026060, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Behind a door in small alcove", KL()));
-            Dold.Add(10026070, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] On path after the backstab tutorial", KL()));
-            Dold.Add(10026080, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Next to fog gate and archer", KL()));
-            Dold.Add(10026090, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Other side of the jumpable gap", KL()));
-            Dold.Add(10026100, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] In the basilisk pit", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(60008100, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Pursuer drop", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(60008110, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Pursuer drop in NG+", KL(KEYID.TENBRANCHLOCK)));
+                // Things Betwixt:
+                { 1705000, NpcInfo(MapArea.ThingsBetwixt, "[Betwixt] Gift from the fire keepers after getting the King's Ring", KL(KEYID.DRANGLEIC)) },
+                { 1723000, NpcInfo(MapArea.ThingsBetwixt, "[Betwixt] Gift from Milibeth after killing 3 hippos", KL(KEYID.TENBRANCHLOCK)) },
+                { 10025010, WChestInfo(MapArea.ThingsBetwixt, "[Betwixt] Wooden chest at the attic of Fire Keeper's cottage", KL()) },
+                { 10026000, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] On the right side ledge before Fire Keeper's cottage", KL()) },
+                { 10026001, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] On the right side ledge before Fire Keeper's cottage in NG+", KL()) },
+                { 10026020, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Guarded by hippo before Fire Keeper's cottage", KL()) },
+                { 10026030, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Under waterfall", KL()) },
+                { 10026031, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Under waterfall in NG+", KL()) },
+                { 10026040, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] One ledge down from the crow nest", KL()) },
+                { 10026050, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Vanilla Cart Soul: Behind the wagon next to bonfire", KL()) },
+                { 10026060, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Behind a door in small alcove", KL()) },
+                { 10026070, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] On path after the backstab tutorial", KL()) },
+                { 10026080, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Next to fog gate and archer", KL()) },
+                { 10026090, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Other side of the jumpable gap", KL()) },
+                { 10026100, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] In the basilisk pit", KL(KEYID.TENBRANCHLOCK)) },
+                { 60008100, SafeInfo(MapArea.ThingsBetwixt, "[Betwixt] Pursuer drop", KL(KEYID.TENBRANCHLOCK)) },
+                { 60008110, NGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Pursuer drop in NG+", KL(KEYID.TENBRANCHLOCK)) },
 
-            // Majula:
-            Dold.Add(1700000, NpcInfo(MapArea.Majula, "[Majula] Vanilla Estus: Gift from the Emerald Herald", KL()));
-            Dold.Add(1704000, NpcInfo(MapArea.EarthenPeak, "[Majula] Gift from Gilligan after buying the longest ladders", KL(KEYID.ROTUNDA)));
-            Dold.Add(1741000, NpcInfo(MapArea.Majula, "[Majula] Gift from Saulden after 100 deaths", KL()));
-            Dold.Add(1741010, NpcInfo(MapArea.Majula, "[Majula] Gift from Saulden after bringing 4 people to Majula", KL()));
-            Dold.Add(1751010, NpcInfo(MapArea.FOFG, "[Majula] Gift from Cale after lighting all fires in the map", KL()));
-            Dold.Add(1761000, NpcInfo(MapArea.Majula, "[Majula] Gift from Maughlin after spending 15000 souls and then speaking to him with no souls", KL()));
-            Dold.Add(1762000, NpcInfo(MapArea.HarvestValley, "[Majula] Gift from Chloanne after spending 20000 souls", KL(KEYID.ROTUNDA)));
-            Dold.Add(1763000, NpcInfo(MapArea.Majula, "[Majula] Gift from Rosabeth after unpetrifying her", KL(KEYID.BRANCH)));
-            Dold.Add(1764000, NpcInfo(MapArea.Majula, "[Majula] Gift from Lenigrast after spending 8000 souls on upgrades", KL(KEYID.BLACKSMITH)));
-            Dold.Add(2001000, CovFineInfo(MapArea.Majula, "[Majula] Way of Blue join", KL()));
-            Dold.Add(2001011, CovInfo(MapArea.Majula, "[Majula] Way of Blue 1st rank reward", KL()));
-            Dold.Add(2001012, CovInfo(MapArea.Majula, "[Majula] Way of Blue 2nd rank reward", KL()));
-            Dold.Add(2001013, CovInfo(MapArea.Majula, "[Majula] Way of Blue 3rd rank reward", KL()));
-            Dold.Add(2009000, CovFineInfo(MapArea.Majula, "[Majula] Company of Champions join", KL()));
-            Dold.Add(2009011, CovInfo(MapArea.Majula, "[Majula] Company of Champions 1st rank reward", KL()));
-            Dold.Add(2009012, CovInfo(MapArea.Majula, "[Majula] Company of Champions 2nd rank reward", KL()));
-            Dold.Add(2009013, CovInfo(MapArea.Majula, "[Majula] Company of Champions 3rd rank reward", KL()));
-            Dold.Add(10045000, WChestInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer", KL()));
-            Dold.Add(10045001, WChestNGPlusInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer in NG+1", KL()));
-            Dold.Add(10045002, WChestNGPlusInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer in NG+2", KL()));
-            Dold.Add(10045010, WChestInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Majula mansion", KL(KEYID.MANSION)));
-            Dold.Add(10045040, WChestInfo(MapArea.Majula, "[Majula] Wooden chest in Lenigrast's workshop", KL(KEYID.BLACKSMITH)));
-            Dold.Add(10045060, MChestInfo(MapArea.Majula, "[Majula] Metal chest on the way towards forest", KL()));
-            Dold.Add(10045070, MChestInfo(MapArea.Majula, "[Majula] Metal chest in staircase towards Heide's Tower of Flame", KL()));
-            Dold.Add(10045600, MChestInfo(MapArea.Majula, "[Majula] Metal chest in Cale's house basement", KL(KEYID.MANSION)));
-            Dold.Add(10046000, SafeInfo(MapArea.Majula, "[Majula] Majula well", KL()));
-            Dold.Add(10046010, SafeInfo(MapArea.Majula, "[Majula] Under the tree on the way from Things Betwixt", KL()));
-            Dold.Add(10046020, SafeInfo(MapArea.Majula, "[Majula] Drop from cliff (near Vanilla binos)", KL()));
-            Dold.Add(10046030, SafeInfo(MapArea.Majula, "[Majula] Vanilla Binos: Drop from cliff and end of the path", KL()));
-            Dold.Add(10046040, SafeInfo(MapArea.Majula, "[Majula] Next to Lenigrast's workshop", KL()));
-            Dold.Add(10046070, SafeInfo(MapArea.Majula, "[Majula] Corpse in Cale's house basement", KL(KEYID.MANSION)));
-            Dold.Add(10046100, SafeInfo(MapArea.Majula, "[Majula] Library room in Cale's house", KL(KEYID.MANSION)));
-            Dold.Add(10046110, SafeInfo(MapArea.Majula, "[Majula] Next to Champion's covenant", KL()));
-            Dold.Add(10046120, SafeInfo(MapArea.Majula, "[Majula] Tent next to cat Shalquoir", KL()));
-            Dold.Add(10296000, SafeInfo(MapArea.Majula, "[Majula] In small room next to petrified Rosabeth", KL()));
-            Dold.Add(10296010, SafeInfo(MapArea.Majula, "[Majula] Corpse next to Benhart", KL()));
+                // Majula:
+                { 1700000, NpcInfo(MapArea.Majula, "[Majula] Vanilla Estus: Gift from the Emerald Herald", KL()) },
+                { 1704000, NpcInfo(MapArea.EarthenPeak, "[Majula] Gift from Gilligan after buying the longest ladders", KL(KEYID.ROTUNDA)) },
+                { 1741000, NpcInfo(MapArea.Majula, "[Majula] Gift from Saulden after 100 deaths", KL()) },
+                { 1741010, NpcInfo(MapArea.Majula, "[Majula] Gift from Saulden after bringing 4 people to Majula", KL()) },
+                { 1751010, NpcInfo(MapArea.FOFG, "[Majula] Gift from Cale after lighting all fires in the map", KL()) },
+                { 1761000, NpcInfo(MapArea.Majula, "[Majula] Gift from Maughlin after spending 15000 souls and then speaking to him with no souls", KL()) },
+                { 1762000, NpcInfo(MapArea.HarvestValley, "[Majula] Gift from Chloanne after spending 20000 souls", KL(KEYID.ROTUNDA)) },
+                { 1763000, NpcInfo(MapArea.Majula, "[Majula] Gift from Rosabeth after unpetrifying her", KL(KEYID.BRANCH)) },
+                { 1764000, NpcInfo(MapArea.Majula, "[Majula] Gift from Lenigrast after spending 8000 souls on upgrades", KL(KEYID.BLACKSMITH)) },
+                { 2001000, CovFineInfo(MapArea.Majula, "[Majula] Way of Blue join", KL()) },
+                { 2001011, CovInfo(MapArea.Majula, "[Majula] Way of Blue 1st rank reward", KL()) },
+                { 2001012, CovInfo(MapArea.Majula, "[Majula] Way of Blue 2nd rank reward", KL()) },
+                { 2001013, CovInfo(MapArea.Majula, "[Majula] Way of Blue 3rd rank reward", KL()) },
+                { 2009000, CovFineInfo(MapArea.Majula, "[Majula] Company of Champions join", KL()) },
+                { 2009011, CovInfo(MapArea.Majula, "[Majula] Company of Champions 1st rank reward", KL()) },
+                { 2009012, CovInfo(MapArea.Majula, "[Majula] Company of Champions 2nd rank reward", KL()) },
+                { 2009013, CovInfo(MapArea.Majula, "[Majula] Company of Champions 3rd rank reward", KL()) },
+                { 10045000, WChestInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer", KL()) },
+                { 10045001, WChestNGPlusInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer in NG+1", KL()) },
+                { 10045002, WChestNGPlusInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Maughlin the Armorer in NG+2", KL()) },
+                { 10045010, WChestInfo(MapArea.Majula, "[Majula] Wooden chest on the attic of Majula mansion", KL(KEYID.MANSION)) },
+                { 10045040, WChestInfo(MapArea.Majula, "[Majula] Wooden chest in Lenigrast's workshop", KL(KEYID.BLACKSMITH)) },
+                { 10045060, MChestInfo(MapArea.Majula, "[Majula] Metal chest on the way towards forest", KL()) },
+                { 10045070, MChestInfo(MapArea.Majula, "[Majula] Metal chest in staircase towards Heide's Tower of Flame", KL()) },
+                { 10045600, MChestInfo(MapArea.Majula, "[Majula] Metal chest in Cale's house basement", KL(KEYID.MANSION)) },
+                { 10046000, SafeInfo(MapArea.Majula, "[Majula] Majula well", KL()) },
+                { 10046010, SafeInfo(MapArea.Majula, "[Majula] Under the tree on the way from Things Betwixt", KL()) },
+                { 10046020, SafeInfo(MapArea.Majula, "[Majula] Drop from cliff (near Vanilla binos)", KL()) },
+                { 10046030, SafeInfo(MapArea.Majula, "[Majula] Vanilla Binos: Drop from cliff and end of the path", KL()) },
+                { 10046040, SafeInfo(MapArea.Majula, "[Majula] Next to Lenigrast's workshop", KL()) },
+                { 10046070, SafeInfo(MapArea.Majula, "[Majula] Corpse in Cale's house basement", KL(KEYID.MANSION)) },
+                { 10046100, SafeInfo(MapArea.Majula, "[Majula] Library room in Cale's house", KL(KEYID.MANSION)) },
+                { 10046110, SafeInfo(MapArea.Majula, "[Majula] Next to Champion's covenant", KL()) },
+                { 10046120, SafeInfo(MapArea.Majula, "[Majula] Tent next to cat Shalquoir", KL()) },
+                { 10296000, SafeInfo(MapArea.Majula, "[Majula] In small room next to petrified Rosabeth", KL()) },
+                { 10296010, SafeInfo(MapArea.Majula, "[Majula] Corpse next to Benhart", KL()) },
 
-            // Forest of Fallen Giants:
-            Dold.Add(309600, BossInfo(MapArea.FOFG, "[FOFG] Last Giant drop", KL()));
-            Dold.Add(318000, BossInfo(MapArea.FOFG, "[FOFG] Pursuer (in the proper arena) drop", KL(KEYID.SOLDIER)));
-            Dold.Add(60008000, LinkedSlave(MapArea.FOFG, "[FOFG] Pursuer (on the platform) drop", PICKUPTYPE.BOSS, 318000, KL()));
-            Dold.Add(10105020, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate", KL()));
-            Dold.Add(10105021, WChestNGPlusInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate in NG+", KL()));
-            Dold.Add(10106110, SafeInfo(MapArea.FOFG, "[FOFG] Corpse in the watery cave in the beginning of the area", KL()));
-            Dold.Add(10106000, SafeInfo(MapArea.FOFG, "[FOFG] At the end of the small stream", KL()));
-            Dold.Add(10106230, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()));
-            Dold.Add(10106260, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()));
-            Dold.Add(10106280, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()));
-            Dold.Add(10106580, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()));
-            Dold.Add(10106590, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()));
-            Dold.Add(10106200, SafeInfo(MapArea.FOFG, "[FOFG] On upper ledge of the circular room before the first fog gate", KL()));
-            Dold.Add(10106170, SafeInfo(MapArea.FOFG, "[FOFG] On higher level requiring a jump from area before first fog gate", KL()));
-            Dold.Add(1744020, NpcInfo(MapArea.FOFG, "[FOFG] Gift from Pate after escaping the gate trap room", KL()));
-            Dold.Add(1751000, NpcInfo(MapArea.FOFG, "[FOFG] Gift from Cale when talking to him", KL()));
-            Dold.Add(10105010, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest in upper floor of cardinal tower", KL()));
-            Dold.Add(10105070, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in upper floor of cardinal tower", KL()));
-            Dold.Add(10106050, SafeInfo(MapArea.FOFG, "[FOFG] Drop onto tree branch from upper floor of Cardinal Tower", KL()));
-            Dold.Add(10105030, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the side room under the ballista-trap", KL()));
-            Dold.Add(10105040, WChestInfo(MapArea.FOFG, "[FOFG] Trapped wooden chest under the ballista-trap", KL()));
-            Dold.Add(10105041, WChestNGPlusInfo(MapArea.FOFG, "[FOFG] Trapped wooden chest under the ballista-trap in NG+", KL()));
-            Dold.Add(10105050, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest in a side corridor on the way to the king's door", KL(KEYID.SOLDIER)));
-            Dold.Add(10105080, MChestInfo(MapArea.FOFG, "[FOFG] First metal chest behind Pharros' contraption under the ballista-trap", KL(KEYID.PHARROS)));
-            Dold.Add(10105090, MChestInfo(MapArea.FOFG, "[FOFG] Second metal chest behind Pharros' contraption under the ballista-trap", KL(KEYID.PHARROS)));
-            Dold.Add(10105100, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the guard room over the barrel courtyard", KL()));
-            Dold.Add(10105110, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the top-level of Salamander pit", KL()));
-            Dold.Add(10105120, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10105130, MChestInfo(MapArea.FOFG, "[FOFG] Vanilla fire longsword: Metal chest in the tunnel where you get fireballed by a salamander", KL()));
-            Dold.Add(10105140, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest behind a illusory wall after the gate trap room", KL()));
-            Dold.Add(10105150, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest next to king's door", KL(KEYID.SOLDIER)));
-            Dold.Add(10106010, SafeInfo(MapArea.FOFG, "[FOFG] First corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10106030, SafeInfo(MapArea.FOFG, "[FOFG] Next to turtle in seashore hall", KL()));
-            Dold.Add(10106060, SafeInfo(MapArea.FOFG, "[FOFG] Behind a shelf in small side room after the first fog gate", KL()));
-            Dold.Add(10106061, NGPlusInfo(MapArea.FOFG, "[FOFG] Behind a shelf in small side room after the first fog gate in NG+", KL()));
-            Dold.Add(10106270, SafeInfo(MapArea.FOFG, "[FOFG] On ledge near the scaffolding in front of Cardinal Tower", KL()));
-            Dold.Add(10106070, SafeInfo(MapArea.FOFG, "[FOFG] In the beginning of the dark skeleton tunnel", KL(KEYID.SOLDIER)));
-            Dold.Add(10106080, SafeInfo(MapArea.FOFG, "[FOFG] At the end of the dark skeleton tunnel", KL(KEYID.SOLDIER)));
-            Dold.Add(10106090, SafeInfo(MapArea.FOFG, "[FOFG] Above the door leading to Pursuer arena", KL()));
-            Dold.Add(10106100, SafeInfo(MapArea.FOFG, "[FOFG] On the huge sword", KL()));
-            Dold.Add(10106120, SafeInfo(MapArea.FOFG, "[FOFG] In the small stone house near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(60002000, VolInfo(MapArea.FOFG, "[FOFG] Vanilla Seed of a Tree of Giants: on the tree near Solider's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10106130, SafeInfo(MapArea.FOFG, "[FOFG] Next to ruined house by water near Soldier's Rest", KL()));
-            Dold.Add(10106140, SafeInfo(MapArea.FOFG, "[FOFG] Behind the soldier that stands on tree root and throws fire bombs just before Cardinal Tower", KL()));
-            Dold.Add(10106150, SafeInfo(MapArea.FOFG, "[FOFG] Just before Cale on boulder path", KL()));
-            Dold.Add(10106160, SafeInfo(MapArea.FOFG, "[FOFG] At corridor after the gate trap", KL()));
-            Dold.Add(10106180, SafeInfo(MapArea.FOFG, "[FOFG] Behind the stairs outside the ballista trap room", KL()));
-            Dold.Add(10106190, SafeInfo(MapArea.FOFG, "[FOFG] Behind the giant-tree in the middle courtyard", KL()));
-            Dold.Add(10106210, SafeInfo(MapArea.FOFG, "[FOFG] On a giant tree root", KL()));
-            Dold.Add(10106220, SafeInfo(MapArea.FOFG, "[FOFG] On the wall after climbing the ladder near a Giant", KL()));
-            Dold.Add(10106240, SafeInfo(MapArea.FOFG, "[FOFG] In the round tower where you drop from a tree root", KL()));
-            Dold.Add(10106250, SafeInfo(MapArea.FOFG, "[FOFG] Lower end of dead end stairs near the seaside fog gate", KL()));
-            Dold.Add(10106300, SafeInfo(MapArea.FOFG, "[FOFG] On the other end of the small bridge going over the fire area", KL()));
-            Dold.Add(10106310, SafeInfo(MapArea.FOFG, "[FOFG] In small tunnel guarded by turtle", KL()));
-            Dold.Add(10106320, SafeInfo(MapArea.FOFG, "[FOFG] On ledge next to Cale", KL()));
-            Dold.Add(10106321, NGPlusInfo(MapArea.FOFG, "[FOFG] On ledge next to Cale in NG+", KL()));
-            Dold.Add(10106340, SafeInfo(MapArea.FOFG, "[FOFG] On floor in the salamander pit", KL()));
-            Dold.Add(10106350, SafeInfo(MapArea.FOFG, "[FOFG] First corpse in the lower fire area", KL()));
-            Dold.Add(10106360, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse in the lower fire area", KL()));
-            Dold.Add(10106370, SafeInfo(MapArea.FOFG, "[FOFG] Just before pursuer arena", KL(KEYID.SOLDIER)));
-            Dold.Add(10106371, NGPlusInfo(MapArea.FOFG, "[FOFG] Just before pursuer arena in NG+", KL(KEYID.SOLDIER)));
-            Dold.Add(10106380, SafeInfo(MapArea.FOFG, "[FOFG] On topmost ledge of the circular room", KL()));
-            Dold.Add(10106290, SafeInfo(MapArea.FOFG, "[FOFG] Vanilla Drangleic set: In a crevasse in floor near the eagles nest", KL(KEYID.SOLDIER)));
-            Dold.Add(10106390, SafeInfo(MapArea.FOFG, "[FOFG] Behind corner outside cardinal tower", KL()));
-            Dold.Add(10106400, SafeInfo(MapArea.FOFG, "[FOFG] In front of the pile of garbage that blocks the big gate to the fire area", KL()));
-            Dold.Add(10106410, SafeInfo(MapArea.FOFG, "[FOFG] Next to upper level of the elevator", KL()));
-            Dold.Add(10106420, SafeInfo(MapArea.FOFG, "[FOFG] On scaffolding near the Place Unbeknownst bonfire", KL(KEYID.PLACEUNBENKNOWNST)));
-            Dold.Add(10106430, SafeInfo(MapArea.FOFG, "[FOFG] Next to portcullis near Soldier's rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10106440, SafeInfo(MapArea.FOFG, "[FOFG] In the middle of the ballista trap area", KL()));
-            Dold.Add(10106450, SafeInfo(MapArea.FOFG, "[FOFG] In the middle of the ballista trap area", KL()));
-            Dold.Add(10106460, SafeInfo(MapArea.FOFG, "[FOFG] First corpse in the upper fire area", KL()));
-            Dold.Add(10106470, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse in the upper fire area", KL()));
-            Dold.Add(10106480, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse in the upper fire area", KL()));
-            Dold.Add(10106490, SafeInfo(MapArea.FOFG, "[FOFG] Behind the wagon at Cardinal Tower upper floor", KL()));
-            Dold.Add(10106500, SafeInfo(MapArea.FOFG, "[FOFG] On wooden floor boards above the guard room over the courtyard", KL()));
-            Dold.Add(10106510, SafeInfo(MapArea.FOFG, "[FOFG] Corpse next to king's door", KL(KEYID.SOLDIER)));
-            Dold.Add(10106520, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse on the platform where you meet pursuer for first time", KL()));
-            Dold.Add(10106530, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse on the platform where you meet pursuer for first time", KL()));
-            Dold.Add(10106540, SafeInfo(MapArea.FOFG, "[FOFG] Fourth corpse on the platform where you meet pursuer for first time", KL()));
-            Dold.Add(10106550, SafeInfo(MapArea.FOFG, "[FOFG] First corpse on the platform where you meet pursuer for first time", KL()));
-            Dold.Add(10106560, SafeInfo(MapArea.FOFG, "[FOFG] At the hole in the wall before cardinal tower", KL()));
-            Dold.Add(10106570, SafeInfo(MapArea.FOFG, "[FOFG] Behind a table at cardinal tower upper floor", KL()));
-            Dold.Add(10106600, SafeInfo(MapArea.FOFG, "[FOFG] Under a tree above the small tunnel guarded by turtle", KL()));
-            Dold.Add(10106610, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10106620, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10106630, SafeInfo(MapArea.FOFG, "[FOFG] Fourth corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)));
-            
-            // Heide's Tower of Flame:
-            Dold.Add(611000, BossInfo(MapArea.HeidesTowerOfFlame, "[Heides] Dragonrider boss drop", KL()));
-            Dold.Add(625000, BossInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Dragonslayer boss drop", KL()));
-            Dold.Add(10305010, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest behind petrified hollow after Dragonrider", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(10305020, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Vanilla bone dust: Metal chest guarded by syan soldier after Dragonrider", KL()));
-            Dold.Add(10306000, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In alcove, far end of top floor after Dragonrider", KL()));
-            Dold.Add(10306010, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Corpse on railing, far end of top floor after Dragonrider", KL()));
-            Dold.Add(10306020, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In alcove, far end of top floor after Dragonrider", KL()));
-            Dold.Add(10306030, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On railing behind petrified hollow", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(10315000, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Dragonrider", KL()));
-            Dold.Add(10315001, MChestNGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Dragonrider in NG+", KL()));
-            Dold.Add(10316010, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On the railing near first bonfire", KL()));
-            Dold.Add(10316040, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Under the spiral staircase after Dragonrider", KL()));
-            Dold.Add(10316041, NGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Under the spiral staircase after Dragonrider in NG+", KL()));
-            Dold.Add(10316050, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On the ledge on the way towards the cathedral", KL()));
-            Dold.Add(10316090, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In the waterway from Majula", KL()));
-            Dold.Add(10316100, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On a corpse near the first lever", KL()));
-            Dold.Add(10316101, NGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] On a corpse near the first lever in NG+", KL()));
-            Dold.Add(2002000, CovFineInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels join", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(2002011, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 1st rank reward", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(2002012, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 2nd rank reward", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(2002013, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 3rd rank reward", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(1785040, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Gift from Blue Sentinel Targray after getting to 3rd rank in the Blue Sentinels", KL(KEYID.TOKENOFFIDELITY)));
-            Dold.Add(10315010, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest after Old Dragonslayer", KL()));
-            Dold.Add(10315020, WChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Wooden chest after Old Dragonslayer", KL()));
-            Dold.Add(10315030, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Old Dragonslayer", KL()));
-            Dold.Add(10316110, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Next to metal chest before Old Dragonslayer", KL()));
+                // Forest of Fallen Giants:
+                { 309600, BossInfo(MapArea.FOFG, "[FOFG] Last Giant drop", KL()) },
+                { 318000, BossInfo(MapArea.FOFG, "[FOFG] Pursuer (in the proper arena) drop", KL(KEYID.SOLDIER)) },
+                { 60008000, LinkedSlave(MapArea.FOFG, "[FOFG] Pursuer (on the platform) drop", PICKUPTYPE.BOSS, KL()) },
+                { 10105020, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate", KL()) },
+                { 10105021, WChestNGPlusInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate in NG+", KL()) },
+                { 10106110, SafeInfo(MapArea.FOFG, "[FOFG] Corpse in the watery cave in the beginning of the area", KL()) },
+                { 10106000, SafeInfo(MapArea.FOFG, "[FOFG] At the end of the small stream", KL()) },
+                { 10106230, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()) },
+                { 10106260, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()) },
+                { 10106280, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()) },
+                { 10106580, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()) },
+                { 10106590, SafeInfo(MapArea.FOFG, "[FOFG] A corpse in the circular room before the first fog gate", KL()) },
+                { 10106200, SafeInfo(MapArea.FOFG, "[FOFG] On upper ledge of the circular room before the first fog gate", KL()) },
+                { 10106170, SafeInfo(MapArea.FOFG, "[FOFG] On higher level requiring a jump from area before first fog gate", KL()) },
+                { 1744020, NpcInfo(MapArea.FOFG, "[FOFG] Gift from Pate after escaping the gate trap room", KL()) },
+                { 1751000, NpcInfo(MapArea.FOFG, "[FOFG] Gift from Cale when talking to him", KL()) },
+                { 10105010, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest in upper floor of cardinal tower", KL()) },
+                { 10105070, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in upper floor of cardinal tower", KL()) },
+                { 10106050, SafeInfo(MapArea.FOFG, "[FOFG] Drop onto tree branch from upper floor of Cardinal Tower", KL()) },
+                { 10105030, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the side room under the ballista-trap", KL()) },
+                { 10105040, WChestInfo(MapArea.FOFG, "[FOFG] Trapped wooden chest under the ballista-trap", KL()) },
+                { 10105041, WChestNGPlusInfo(MapArea.FOFG, "[FOFG] Trapped wooden chest under the ballista-trap in NG+", KL()) },
+                { 10105050, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest in a side corridor on the way to the king's door", KL(KEYID.SOLDIER)) },
+                { 10105080, MChestInfo(MapArea.FOFG, "[FOFG] First metal chest behind Pharros' contraption under the ballista-trap", KL(KEYID.PHARROS)) },
+                { 10105090, MChestInfo(MapArea.FOFG, "[FOFG] Second metal chest behind Pharros' contraption under the ballista-trap", KL(KEYID.PHARROS)) },
+                { 10105100, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the guard room over the barrel courtyard", KL()) },
+                { 10105110, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest in the top-level of Salamander pit", KL()) },
+                { 10105120, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10105130, MChestInfo(MapArea.FOFG, "[FOFG] Vanilla fire longsword: Metal chest in the tunnel where you get fireballed by a salamander", KL()) },
+                { 10105140, MChestInfo(MapArea.FOFG, "[FOFG] Metal chest behind a illusory wall after the gate trap room", KL()) },
+                { 10105150, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest next to king's door", KL(KEYID.SOLDIER)) },
+                { 10106010, SafeInfo(MapArea.FOFG, "[FOFG] First corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10106030, SafeInfo(MapArea.FOFG, "[FOFG] Next to turtle in seashore hall", KL()) },
+                { 10106060, SafeInfo(MapArea.FOFG, "[FOFG] Behind a shelf in small side room after the first fog gate", KL()) },
+                { 10106061, NGPlusInfo(MapArea.FOFG, "[FOFG] Behind a shelf in small side room after the first fog gate in NG+", KL()) },
+                { 10106270, SafeInfo(MapArea.FOFG, "[FOFG] On ledge near the scaffolding in front of Cardinal Tower", KL()) },
+                { 10106070, SafeInfo(MapArea.FOFG, "[FOFG] In the beginning of the dark skeleton tunnel", KL(KEYID.SOLDIER)) },
+                { 10106080, SafeInfo(MapArea.FOFG, "[FOFG] At the end of the dark skeleton tunnel", KL(KEYID.SOLDIER)) },
+                { 10106090, SafeInfo(MapArea.FOFG, "[FOFG] Above the door leading to Pursuer arena", KL()) },
+                { 10106100, SafeInfo(MapArea.FOFG, "[FOFG] On the huge sword", KL()) },
+                { 10106120, SafeInfo(MapArea.FOFG, "[FOFG] In the small stone house near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 60002000, VolInfo(MapArea.FOFG, "[FOFG] Vanilla Seed of a Tree of Giants: on the tree near Solider's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10106130, SafeInfo(MapArea.FOFG, "[FOFG] Next to ruined house by water near Soldier's Rest", KL()) },
+                { 10106140, SafeInfo(MapArea.FOFG, "[FOFG] Behind the soldier that stands on tree root and throws fire bombs just before Cardinal Tower", KL()) },
+                { 10106150, SafeInfo(MapArea.FOFG, "[FOFG] Just before Cale on boulder path", KL()) },
+                { 10106160, SafeInfo(MapArea.FOFG, "[FOFG] At corridor after the gate trap", KL()) },
+                { 10106180, SafeInfo(MapArea.FOFG, "[FOFG] Behind the stairs outside the ballista trap room", KL()) },
+                { 10106190, SafeInfo(MapArea.FOFG, "[FOFG] Behind the giant-tree in the middle courtyard", KL()) },
+                { 10106210, SafeInfo(MapArea.FOFG, "[FOFG] On a giant tree root", KL()) },
+                { 10106220, SafeInfo(MapArea.FOFG, "[FOFG] On the wall after climbing the ladder by Memory of Vammar", KL()) },
+                { 10106240, SafeInfo(MapArea.FOFG, "[FOFG] In the round tower where you drop from a tree root", KL()) },
+                { 10106250, SafeInfo(MapArea.FOFG, "[FOFG] Lower end of dead end stairs near the seaside fog gate", KL()) },
+                { 10106300, SafeInfo(MapArea.FOFG, "[FOFG] On the other end of the small bridge going over the fire area", KL()) },
+                { 10106310, SafeInfo(MapArea.FOFG, "[FOFG] In small tunnel guarded by turtle", KL()) },
+                { 10106320, SafeInfo(MapArea.FOFG, "[FOFG] On ledge next to Cale", KL()) },
+                { 10106321, NGPlusInfo(MapArea.FOFG, "[FOFG] On ledge next to Cale in NG+", KL()) },
+                { 10106340, SafeInfo(MapArea.FOFG, "[FOFG] On floor in the salamander pit", KL()) },
+                { 10106350, SafeInfo(MapArea.FOFG, "[FOFG] First corpse in the lower fire area", KL()) },
+                { 10106360, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse in the lower fire area", KL()) },
+                { 10106370, SafeInfo(MapArea.FOFG, "[FOFG] Just before pursuer arena", KL(KEYID.SOLDIER)) },
+                { 10106371, NGPlusInfo(MapArea.FOFG, "[FOFG] Just before pursuer arena in NG+", KL(KEYID.SOLDIER)) },
+                { 10106380, SafeInfo(MapArea.FOFG, "[FOFG] On topmost ledge of the circular room", KL()) },
+                { 10106290, SafeInfo(MapArea.FOFG, "[FOFG] Vanilla Drangleic set: In a crevasse in floor near the eagles nest", KL(KEYID.SOLDIER)) },
+                { 10106390, SafeInfo(MapArea.FOFG, "[FOFG] Behind corner outside cardinal tower", KL()) },
+                { 10106400, SafeInfo(MapArea.FOFG, "[FOFG] In front of the pile of garbage that blocks the big gate to the fire area", KL()) },
+                { 10106410, SafeInfo(MapArea.FOFG, "[FOFG] Next to upper level of the elevator", KL()) },
+                { 10106420, SafeInfo(MapArea.FOFG, "[FOFG] On scaffolding near the Place Unbeknownst bonfire", KL(KEYID.PLACEUNBENKNOWNST)) },
+                { 10106430, SafeInfo(MapArea.FOFG, "[FOFG] Next to portcullis near Soldier's rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10106440, SafeInfo(MapArea.FOFG, "[FOFG] In the middle of the ballista trap area", KL()) },
+                { 10106450, SafeInfo(MapArea.FOFG, "[FOFG] In the middle of the ballista trap area", KL()) },
+                { 10106460, SafeInfo(MapArea.FOFG, "[FOFG] First corpse in the upper fire area", KL()) },
+                { 10106470, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse in the upper fire area", KL()) },
+                { 10106480, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse in the upper fire area", KL()) },
+                { 10106490, SafeInfo(MapArea.FOFG, "[FOFG] Behind the wagon at Cardinal Tower upper floor", KL()) },
+                { 10106500, SafeInfo(MapArea.FOFG, "[FOFG] On wooden floor boards above the guard room over the courtyard", KL()) },
+                { 10106510, SafeInfo(MapArea.FOFG, "[FOFG] Corpse next to king's door", KL(KEYID.SOLDIER)) },
+                { 10106520, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse on the platform where you meet pursuer for first time", KL()) },
+                { 10106530, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse on the platform where you meet pursuer for first time", KL()) },
+                { 10106540, SafeInfo(MapArea.FOFG, "[FOFG] Fourth corpse on the platform where you meet pursuer for first time", KL()) },
+                { 10106550, SafeInfo(MapArea.FOFG, "[FOFG] First corpse on the platform where you meet pursuer for first time", KL()) },
+                { 10106560, SafeInfo(MapArea.FOFG, "[FOFG] At the hole in the wall before cardinal tower", KL()) },
+                { 10106570, SafeInfo(MapArea.FOFG, "[FOFG] Behind a table at cardinal tower upper floor", KL()) },
+                { 10106600, SafeInfo(MapArea.FOFG, "[FOFG] Under a tree above the small tunnel guarded by turtle", KL()) },
+                { 10106610, SafeInfo(MapArea.FOFG, "[FOFG] Second corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10106620, SafeInfo(MapArea.FOFG, "[FOFG] Third corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
+                { 10106630, SafeInfo(MapArea.FOFG, "[FOFG] Fourth corpse at rooftop near Soldier's Rest bonfire", KL(KEYID.SOLDIER)) },
 
-            // No Man's Wharf:
-            Dold.Add(303300, BossInfo(MapArea.NoMansWharf, "[Wharf] Flexile Sentry drop", KL()));
-            Dold.Add(10185000, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest in the first house in Wharf", KL()));
-            Dold.Add(10185001, WChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest in the first house in Wharf in NG+", KL()));
-            Dold.Add(10185030, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest on the 2nd floor of the house next to central courtyard", KL()));
-            Dold.Add(10185040, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in house next to central courtyard", KL()));
-            Dold.Add(10185050, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the topmost house with dark stalkers", KL()));
-            Dold.Add(10185060, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the secret alcove in the poison jar room", KL()));
-            Dold.Add(10185070, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan", KL()));
-            Dold.Add(10185071, MChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan NG+", KL()));
-            Dold.Add(10185080, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan", KL()));
-            Dold.Add(10185081, WChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan in NG+", KL()));
-            Dold.Add(10185100, WChestInfo(MapArea.NoMansWharf, "[Wharf] Trapped wooden chest in the topmost house with dark stalkers", KL()));
-            Dold.Add(10185110, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the poison jar room", KL()));
-            Dold.Add(10185120, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest after Flexile Sentry", KL()));
-            Dold.Add(10186000, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse on top balcony in the first building on left", KL()));
-            Dold.Add(10186010, SafeInfo(MapArea.NoMansWharf, "[Wharf] On tipped boat in water", KL()));
-            Dold.Add(10186020, SafeInfo(MapArea.NoMansWharf, "[Wharf] In staircase in a house after the ship-calling bell", KL()));
-            Dold.Add(10186021, NGPlusInfo(MapArea.NoMansWharf, "[Wharf] In staircase in a house after the ship-calling bell in NG+", KL()));
-            Dold.Add(10186030, SafeInfo(MapArea.NoMansWharf, "[Wharf] Behind a shelf in alcove", KL()));
-            Dold.Add(10186050, SafeInfo(MapArea.NoMansWharf, "[Wharf] In the shallow water", KL()));
-            Dold.Add(10186070, SafeInfo(MapArea.NoMansWharf, "[Wharf] In the house under the Pharros' contraption", KL()));
-            Dold.Add(10186071, NGPlusInfo(MapArea.NoMansWharf, "[Wharf] In the house under the Pharros' contraption in NG+", KL()));
-            Dold.Add(10186100, SafeInfo(MapArea.NoMansWharf, "[Wharf] On the roof of the house under the Pharros' contraption", KL()));
-            Dold.Add(10186110, SafeInfo(MapArea.NoMansWharf, "[Wharf] On the high ledge", KL()));
-            Dold.Add(10186120, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()));
-            Dold.Add(10186130, SafeInfo(MapArea.NoMansWharf, "[Wharf] Rooftop after the ship-calling bell", KL()));
-            Dold.Add(10186140, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()));
-            Dold.Add(10186150, SafeInfo(MapArea.NoMansWharf, "[Wharf] Vanilla dark pine resin: in the left house before the first stairs", KL()));
-            Dold.Add(10186160, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()));
-            Dold.Add(10186170, SafeInfo(MapArea.NoMansWharf, "[Wharf] In alcove behind the poison jars", KL()));
+                // Heide's Tower of Flame:
+                { 611000, BossInfo(MapArea.HeidesTowerOfFlame, "[Heides] Dragonrider boss drop", KL()) },
+                { 625000, BossInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Dragonslayer boss drop", KL()) },
+                { 10305010, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest behind petrified hollow after Dragonrider", KL(KEYID.TENBRANCHLOCK)) },
+                { 10305020, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Vanilla bone dust: Metal chest guarded by syan soldier after Dragonrider", KL()) },
+                { 10306000, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In alcove, far end of top floor after Dragonrider", KL()) },
+                { 10306010, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Corpse on railing, far end of top floor after Dragonrider", KL()) },
+                { 10306020, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In alcove, far end of top floor after Dragonrider", KL()) },
+                { 10306030, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On railing behind petrified hollow", KL(KEYID.TENBRANCHLOCK)) },
+                { 10315000, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Dragonrider", KL()) },
+                { 10315001, MChestNGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Dragonrider in NG+", KL()) },
+                { 10316010, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On the railing near first bonfire", KL()) },
+                { 10316040, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Under the spiral staircase after Dragonrider", KL()) },
+                { 10316041, NGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Under the spiral staircase after Dragonrider in NG+", KL()) },
+                { 10316050, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On the ledge on the way towards the cathedral", KL()) },
+                { 10316090, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] In the waterway from Majula", KL()) },
+                { 10316100, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] On a corpse near the first lever", KL()) },
+                { 10316101, NGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] On a corpse near the first lever in NG+", KL()) },
+                { 2002000, CovFineInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels join", KL(KEYID.TOKENOFFIDELITY)) },
+                { 2002011, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 1st rank reward", KL(KEYID.TOKENOFFIDELITY)) },
+                { 2002012, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 2nd rank reward", KL(KEYID.TOKENOFFIDELITY)) },
+                { 2002013, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Blue sentinels 3rd rank reward", KL(KEYID.TOKENOFFIDELITY)) },
+                { 1785040, CovInfo(MapArea.HeidesTowerOfFlame, "[Heides] Gift from Blue Sentinel Targray after getting to 3rd rank in the Blue Sentinels", KL(KEYID.TOKENOFFIDELITY)) },
+                { 10315010, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest after Old Dragonslayer", KL()) },
+                { 10315020, WChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Wooden chest after Old Dragonslayer", KL()) },
+                { 10315030, MChestInfo(MapArea.HeidesTowerOfFlame, "[Heides] Metal chest before Old Dragonslayer", KL()) },
+                { 10316110, SafeInfo(MapArea.HeidesTowerOfFlame, "[Heides] Next to metal chest before Old Dragonslayer", KL()) },
 
-            // Lost Bastille:
-            Dold.Add(10166460, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell at top of elevator ride after Flexile", KL()));
-            Dold.Add(10166470, SafeInfo(MapArea.TheLostBastille, "[Bastille] In hidden tunnel after riding down on top of the elevator after Flexile", KL()));
-            Dold.Add(10166300, SafeInfo(MapArea.TheLostBastille, "[Bastille] Cell near Exile Holding Cells bonfire", KL()));
-            Dold.Add(10166310, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a room with explosive hollows near Antiquated door", KL()));
-            Dold.Add(10166010, SafeInfo(MapArea.TheLostBastille, "[Bastille] On top of the scaffolding in dog courtyard", KL()));
-            Dold.Add(10166070, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla gold pine resin: on the left-hand-side on the way to McDuff", KL()));
-            Dold.Add(10165240, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest next to Lucatiel", KL()));
-            Dold.Add(10166420, SafeInfo(MapArea.TheLostBastille, "[Bastille] Upper floor of tower above Lucatiel", KL()));
-            Dold.Add(10166421, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] Upper floor of tower above Lucatiel in NG+", KL()));
-            Dold.Add(10165160, WChestInfo(MapArea.TheLostBastille, "[Bastille] First wooden chest in McDuff's workshop", KL()));
-            Dold.Add(10165170, WChestInfo(MapArea.TheLostBastille, "[Bastille] Second wooden chest in McDuff's workshop", KL()));
-            Dold.Add(10165180, WChestInfo(MapArea.TheLostBastille, "[Bastille] Third wooden chest in McDuff's workshop", KL()));
-            Dold.Add(10165190, WChestInfo(MapArea.TheLostBastille, "[Bastille] Fourth wooden chest in McDuff's workshop", KL()));
-            Dold.Add(10165150, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest in McDuff's workshop", KL(KEYID.TORCH)));
-            Dold.Add(1764300,  NpcInfo(MapArea.TheLostBastille, "[Bastille] Given to you after spending 12k on upgrades/infusions at Mcduff", KL(KEYID.DULLEMBER)));
-            //
-            Dold.Add(10165140, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest where Pursuer attacks near the Tower Apart", KL(KEYID.SOLDIER)));
-            Dold.Add(10166080, SafeInfo(MapArea.TheLostBastille, "[Bastille] On ledge near tower apart bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10165250, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla effigies: metal chest next to Tower Apart bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10165260, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla: Dull ember: metal chest next to Tower Apart bonfire", KL(KEYID.SOLDIER)));
-            Dold.Add(10166020, SafeInfo(MapArea.TheLostBastille, "[Bastille] Item hidden immediately behind door after Servants' Quarters bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10166030, SafeInfo(MapArea.TheLostBastille, "[Bastille] End of the rubble path, on mid-level above dog/Pursuer courtyard", KL()));
-            Dold.Add(10166050, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse up the ladder, looking into Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166100, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse behind illusory wall in Sentinel's room", KL(KEYID.BRANCH)));
-            Dold.Add(10166150, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell in the narrow corridor after Sentinels", KL(KEYID.BRANCH)));
-            //
-            Dold.Add(325000, BossInfo(MapArea.TheLostBastille, "[Bastille] Ruin sentinels drop", KL(KEYID.BRANCH)));
-            Dold.Add(10166320, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell before Sentinels", KL(KEYID.BRANCH)));
-            Dold.Add(10166270, SafeInfo(MapArea.TheLostBastille, "[Bastille] At bottom of ladder before ruin sentinels", KL(KEYID.BRANCH)));
-            Dold.Add(10166000, SafeInfo(MapArea.TheLostBastille, "[Bastille] On upper ledge in Sentinel's room", KL(KEYID.BRANCH)));
-            Dold.Add(10165040, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from stairs after Sentinels", KL(KEYID.BRANCH)));
-            Dold.Add(10165210, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Hush: metal chest behind illusory wall in Sentinel's room", KL(KEYID.BRANCH)));
-            Dold.Add(10166370, SafeInfo(MapArea.TheLostBastille, "[Bastille] On opposite roof (jump) after Servants' Quarters", KL(KEYID.BRANCH)));
-            Dold.Add(10165041, WChestNGPlusInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from stairs after Sentinels in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10165050, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla estus shard: metal chest behind in the dog/Pursuer courtyard", KL()));
-            Dold.Add(10165080, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from Sentinel's room", KL(KEYID.BRANCH)));
-            Dold.Add(10165130, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest in the room under Servants' Quarters bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10166380, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the room under the Servants' Quarters bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10166180, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Bastille Key: on ledge behind boxes, turn left after Servants' Quarters door", KL(KEYID.BRANCH)));
-            Dold.Add(10166290, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla flame butterflies: on roof after Servants' Quarters", KL(KEYID.BRANCH)));
-            //
-            Dold.Add(10166490, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the well", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166430, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Archdrake shield: Blow up wall by Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165010, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind Pharros' contraption in Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165000, MChestInfo(MapArea.TheLostBastille, "[Bastille] First metal chest in Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165020, MChestInfo(MapArea.TheLostBastille, "[Bastille] Second metal chest near in Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165070, MChestInfo(MapArea.TheLostBastille, "[Bastille] Third metal chest in Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165110, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest next to elevator in Pharros/elevator room", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166410, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla ascetic: on ledge halfway up elevator shaft", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166130, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse at top of elevator", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166480, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the corridor after one illusory wall, two level's below Straid", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166200, SafeInfo(MapArea.TheLostBastille, "[Bastille] End of the path after double illusory wall above dog/Pursuer courtyard", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166260, SafeInfo(MapArea.TheLostBastille, "[Bastille] On corpse after jumping gap after the illusory wall", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166040, SafeInfo(MapArea.TheLostBastille, "[Bastille] On a corpse at the end of a long thin ledge above Mcduff's workshop", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166440, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell next to Straid's cell", KL(KEYID.SINNERSCELLS)));
-            Dold.Add(10166441, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] In a cell next to straid's cell in NG+", KL(KEYID.BASTILLEKEY)));
-            Dold.Add(1768000, NpcInfo(MapArea.TheLostBastille, "[Bastille] Gift from Straid after trading 4 boss souls", KL(KEYID.STRAID)));
-            Dold.Add(10166190, SafeInfo(MapArea.TheLostBastille, "[Bastille] Behind the corner at beginning of the bridge to Sinner's Rise", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166191, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] Behind the corner at beginning of the bridge to Sinner's Rise in NG+", KL(KEYID.SINNERSRISE)));
+                // No Man's Wharf:
+                { 303300, BossInfo(MapArea.NoMansWharf, "[Wharf] Flexile Sentry drop", KL()) },
+                { 10185000, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest in the first house in Wharf", KL()) },
+                { 10185001, WChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest in the first house in Wharf in NG+", KL()) },
+                { 10185030, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest on the 2nd floor of the house next to central courtyard", KL()) },
+                { 10185040, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in house next to central courtyard", KL()) },
+                { 10185050, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the topmost house with dark stalkers", KL()) },
+                { 10185060, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the secret alcove in the poison jar room", KL()) },
+                { 10185070, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan", KL()) },
+                { 10185071, MChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Metal chest behind illusory wall underneath Wharf Gavlan NG+", KL()) },
+                { 10185080, WChestInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan", KL()) },
+                { 10185081, WChestNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Wooden chest behind illusory wall underneath Wharf Gavlan in NG+", KL()) },
+                { 10185100, WChestInfo(MapArea.NoMansWharf, "[Wharf] Trapped wooden chest in the topmost house with dark stalkers", KL()) },
+                { 10185110, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest in the poison jar room", KL()) },
+                { 10185120, MChestInfo(MapArea.NoMansWharf, "[Wharf] Metal chest after Flexile Sentry", KL()) },
+                { 10186000, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse on top balcony in the first building on left", KL()) },
+                { 10186010, SafeInfo(MapArea.NoMansWharf, "[Wharf] On tipped boat in water", KL()) },
+                { 10186020, SafeInfo(MapArea.NoMansWharf, "[Wharf] In staircase in a house after the ship-calling bell", KL()) },
+                { 10186021, NGPlusInfo(MapArea.NoMansWharf, "[Wharf] In staircase in a house after the ship-calling bell in NG+", KL()) },
+                { 10186030, SafeInfo(MapArea.NoMansWharf, "[Wharf] Behind a shelf in alcove", KL()) },
+                { 10186050, SafeInfo(MapArea.NoMansWharf, "[Wharf] In the shallow water", KL()) },
+                { 10186070, SafeInfo(MapArea.NoMansWharf, "[Wharf] In the house under the Pharros' contraption", KL()) },
+                { 10186071, NGPlusInfo(MapArea.NoMansWharf, "[Wharf] In the house under the Pharros' contraption in NG+", KL()) },
+                { 10186100, SafeInfo(MapArea.NoMansWharf, "[Wharf] On the roof of the house under the Pharros' contraption", KL()) },
+                { 10186110, SafeInfo(MapArea.NoMansWharf, "[Wharf] On the high ledge", KL()) },
+                { 10186120, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()) },
+                { 10186130, SafeInfo(MapArea.NoMansWharf, "[Wharf] Rooftop after the ship-calling bell", KL()) },
+                { 10186140, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()) },
+                { 10186150, SafeInfo(MapArea.NoMansWharf, "[Wharf] Vanilla dark pine resin: in the left house before the first stairs", KL()) },
+                { 10186160, SafeInfo(MapArea.NoMansWharf, "[Wharf] Corpse in the secret alcove of the poison jar room", KL()) },
+                { 10186170, SafeInfo(MapArea.NoMansWharf, "[Wharf] In alcove behind the poison jars", KL()) },
 
-            // Belfry Luna:
-            Dold.Add(324000, BossInfo(MapArea.BelfryLuna, "[BelfryLuna] Belfry Gargoyles drop", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(324001, BossNGPlusInfo(MapArea.BelfryLuna, "[BelfryLuna] Belfry Gargoyles drop in NG+", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10165200, WChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Wooden chest at topmost floor", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10165220, MChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Metal chest after dropping through hole from 2nd floor", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10165230, MChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Metal chest after Gargoyles", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166140, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] On railing 2nd floor", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166160, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] Corpse after dropping through hole from 2nd floor", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166170, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] Corpse on topmost floor", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166250, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] At lower level in pit after Gargoyles", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166390, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] At upper level in pit after Gargoyles", KL(KEYID.BELFRYLUNA)));
-            Dold.Add(10166400, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] On ledge at Gargoyle arena", KL(KEYID.BELFRYLUNA)));
+                // Lost Bastille:
+                { 10166460, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell at top of elevator ride after Flexile", KL()) },
+                { 10166470, SafeInfo(MapArea.TheLostBastille, "[Bastille] In hidden tunnel after riding down on top of the elevator after Flexile", KL()) },
+                { 10166300, SafeInfo(MapArea.TheLostBastille, "[Bastille] Cell near Exile Holding Cells bonfire", KL()) },
+                { 10166310, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a room with explosive hollows near Antiquated door", KL()) },
+                { 10166010, SafeInfo(MapArea.TheLostBastille, "[Bastille] On top of the scaffolding in dog courtyard", KL()) },
+                { 10166070, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla gold pine resin: on the left-hand-side on the way to McDuff", KL()) },
+                { 10165240, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest next to Lucatiel", KL()) },
+                { 10166420, SafeInfo(MapArea.TheLostBastille, "[Bastille] Upper floor of tower above Lucatiel", KL()) },
+                { 10166421, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] Upper floor of tower above Lucatiel in NG+", KL()) },
+                { 10165160, WChestInfo(MapArea.TheLostBastille, "[Bastille] First wooden chest in McDuff's workshop", KL()) },
+                { 10165170, WChestInfo(MapArea.TheLostBastille, "[Bastille] Second wooden chest in McDuff's workshop", KL()) },
+                { 10165180, WChestInfo(MapArea.TheLostBastille, "[Bastille] Third wooden chest in McDuff's workshop", KL()) },
+                { 10165190, WChestInfo(MapArea.TheLostBastille, "[Bastille] Fourth wooden chest in McDuff's workshop", KL()) },
+                { 10165150, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest in McDuff's workshop", KL(KEYID.TORCH)) },
+                { 1764300, NpcInfo(MapArea.TheLostBastille, "[Bastille] Given to you after spending 12k on upgrades/infusions at Mcduff", KL(KEYID.DULLEMBER)) },
+                //
+                { 10165140, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest where Pursuer attacks near the Tower Apart", KL(KEYID.SOLDIER)) },
+                { 10166080, SafeInfo(MapArea.TheLostBastille, "[Bastille] On ledge near tower apart bonfire", KL(KEYID.SOLDIER)) },
+                { 10165250, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla effigies: metal chest next to Tower Apart bonfire", KL(KEYID.SOLDIER)) },
+                { 10165260, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla: Dull ember: metal chest next to Tower Apart bonfire", KL(KEYID.SOLDIER)) },
+                { 10166020, SafeInfo(MapArea.TheLostBastille, "[Bastille] Item hidden immediately behind door after Servants' Quarters bonfire", KL(KEYID.BRANCH)) },
+                { 10166030, SafeInfo(MapArea.TheLostBastille, "[Bastille] End of the rubble path, on mid-level above dog/Pursuer courtyard", KL()) },
+                { 10166050, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse up the ladder, looking into Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10166100, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse behind illusory wall in Sentinel's room", KL(KEYID.BRANCH)) },
+                { 10166150, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell in the narrow corridor after Sentinels", KL(KEYID.BRANCH)) },
+                //
+                { 325000, BossInfo(MapArea.TheLostBastille, "[Bastille] Ruin sentinels drop", KL(KEYID.BRANCH)) },
+                { 10166320, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell before Sentinels", KL(KEYID.BRANCH)) },
+                { 10166270, SafeInfo(MapArea.TheLostBastille, "[Bastille] At bottom of ladder before ruin sentinels", KL(KEYID.BRANCH)) },
+                { 10166000, SafeInfo(MapArea.TheLostBastille, "[Bastille] On upper ledge in Sentinel's room", KL(KEYID.BRANCH)) },
+                { 10165040, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from stairs after Sentinels", KL(KEYID.BRANCH)) },
+                { 10165210, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Hush: metal chest behind illusory wall in Sentinel's room", KL(KEYID.BRANCH)) },
+                { 10166370, SafeInfo(MapArea.TheLostBastille, "[Bastille] On opposite roof (jump) after Servants' Quarters", KL(KEYID.BRANCH)) },
+                { 10165041, WChestNGPlusInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from stairs after Sentinels in NG+", KL(KEYID.BRANCH)) },
+                { 10165050, MChestInfo(MapArea.TheLostBastille, "[Bastille] Vanilla estus shard: metal chest behind in the dog/Pursuer courtyard", KL()) },
+                { 10165080, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind illusory wall from Sentinel's room", KL(KEYID.BRANCH)) },
+                { 10165130, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest in the room under Servants' Quarters bonfire", KL(KEYID.BRANCH)) },
+                { 10166380, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the room under the Servants' Quarters bonfire", KL(KEYID.BRANCH)) },
+                { 10166180, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Bastille Key: on ledge behind boxes, turn left after Servants' Quarters door", KL(KEYID.BRANCH)) },
+                { 10166290, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla flame butterflies: on roof after Servants' Quarters", KL(KEYID.BRANCH)) },
+                //
+                { 10166490, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the well", KL(KEYID.SINNERSRISE)) },
+                { 10166430, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla Archdrake shield: Blow up wall by Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10165010, WChestInfo(MapArea.TheLostBastille, "[Bastille] Wooden chest behind Pharros' contraption in Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10165000, MChestInfo(MapArea.TheLostBastille, "[Bastille] First metal chest in Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10165020, MChestInfo(MapArea.TheLostBastille, "[Bastille] Second metal chest near in Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10165070, MChestInfo(MapArea.TheLostBastille, "[Bastille] Third metal chest in Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10165110, MChestInfo(MapArea.TheLostBastille, "[Bastille] Metal chest next to elevator in Pharros/elevator room", KL(KEYID.SINNERSRISE)) },
+                { 10166410, SafeInfo(MapArea.TheLostBastille, "[Bastille] Vanilla ascetic: on ledge halfway up elevator shaft", KL(KEYID.SINNERSRISE)) },
+                { 10166130, SafeInfo(MapArea.TheLostBastille, "[Bastille] Corpse at top of elevator", KL(KEYID.SINNERSRISE)) },
+                { 10166480, SafeInfo(MapArea.TheLostBastille, "[Bastille] In the corridor after one illusory wall, two level's below Straid", KL(KEYID.SINNERSRISE)) },
+                { 10166200, SafeInfo(MapArea.TheLostBastille, "[Bastille] End of the path after double illusory wall above dog/Pursuer courtyard", KL(KEYID.SINNERSRISE)) },
+                { 10166260, SafeInfo(MapArea.TheLostBastille, "[Bastille] On corpse after jumping gap after the illusory wall", KL(KEYID.SINNERSRISE)) },
+                { 10166040, SafeInfo(MapArea.TheLostBastille, "[Bastille] On a corpse at the end of a long thin ledge above Mcduff's workshop", KL(KEYID.SINNERSRISE)) },
+                { 10166440, SafeInfo(MapArea.TheLostBastille, "[Bastille] In a cell next to Straid's cell", KL(KEYID.SINNERSCELLS)) },
+                { 10166441, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] In a cell next to straid's cell in NG+", KL(KEYID.BASTILLEKEY)) },
+                { 1768000, NpcInfo(MapArea.TheLostBastille, "[Bastille] Gift from Straid after trading 4 boss souls", KL(KEYID.STRAID)) },
+                { 10166190, SafeInfo(MapArea.TheLostBastille, "[Bastille] Behind the corner at beginning of the bridge to Sinner's Rise", KL(KEYID.SINNERSRISE)) },
+                { 10166191, NGPlusInfo(MapArea.TheLostBastille, "[Bastille] Behind the corner at beginning of the bridge to Sinner's Rise in NG+", KL(KEYID.SINNERSRISE)) },
 
-            // Sinner's Rise:
-            Dold.Add(626000, BossInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner drop", KL(KEYID.SINNERSRISE)));
-            Dold.Add(626001, BossNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner drop in NG+", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10165120, MChestInfo(MapArea.SinnersRise, "[SinnersRise] Metal chest after the lost sinner", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166060, SafeInfo(MapArea.SinnersRise, "[SinnersRise] On small ledge very near bonfire", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166090, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Right side just after bottom of elevator", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166110, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Item in elevator shaft, drop off early", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166120, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Left side just after bottom of elevator", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166230, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Behind illusory wall at right side just after elevator", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166280, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In open cell left side lower level", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166330, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In locked cell left side upper level", KL(KEYID.SINNERSCELLS)));
-            Dold.Add(10166350, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In right side oil-sconce room just before the Sinner", KL(KEYID.SINNERSCELLS)));
-            Dold.Add(10166360, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Left side just before the Sinner", KL(KEYID.SINNERSRISE)));
-            Dold.Add(10166450, SafeInfo(MapArea.SinnersRise, "[SinnersRise] On ledge outside tower at top of elevator", KL(KEYID.SINNERSRISE)));
+                // Belfry Luna:
+                { 324000, BossInfo(MapArea.BelfryLuna, "[BelfryLuna] Belfry Gargoyles drop", KL(KEYID.BELFRYLUNA)) },
+                { 324001, BossNGPlusInfo(MapArea.BelfryLuna, "[BelfryLuna] Belfry Gargoyles drop in NG+", KL(KEYID.BELFRYLUNA)) },
+                { 10165200, WChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Wooden chest at topmost floor", KL(KEYID.BELFRYLUNA)) },
+                { 10165220, MChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Metal chest after dropping through hole from 2nd floor", KL(KEYID.BELFRYLUNA)) },
+                { 10165230, MChestInfo(MapArea.BelfryLuna, "[BelfryLuna] Metal chest after Gargoyles", KL(KEYID.BELFRYLUNA)) },
+                { 10166140, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] On railing 2nd floor", KL(KEYID.BELFRYLUNA)) },
+                { 10166160, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] Corpse after dropping through hole from 2nd floor", KL(KEYID.BELFRYLUNA)) },
+                { 10166170, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] Corpse on topmost floor", KL(KEYID.BELFRYLUNA)) },
+                { 10166250, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] At lower level in pit after Gargoyles", KL(KEYID.BELFRYLUNA)) },
+                { 10166390, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] At upper level in pit after Gargoyles", KL(KEYID.BELFRYLUNA)) },
+                { 10166400, SafeInfo(MapArea.BelfryLuna, "[BelfryLuna] On ledge at Gargoyle arena", KL(KEYID.BELFRYLUNA)) },
 
-            // The Pit:
-            Dold.Add(10045020, MChestInfo(MapArea.ThePit, "[Pit] First metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)));
-            Dold.Add(10045030, MChestInfo(MapArea.ThePit, "[Pit] Third metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)));
-            Dold.Add(10045050, MChestInfo(MapArea.ThePit, "[Pit] Second metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)));
-            Dold.Add(10046140, SafeInfo(MapArea.ThePit, "[Pit] Vanilla DLC1 key: corpse behind the forgotten door", KL(KEYID.FORGOTTEN)));
-            Dold.Add(10046130, SafeInfo(MapArea.ThePit, "[Pit] First board in the pit", KL()));
-            Dold.Add(10046060, SafeInfo(MapArea.ThePit, "[Pit] Second board in the pit", KL()));
-            Dold.Add(10046050, SafeInfo(MapArea.ThePit, "[Pit] Third board in the pit", KL()));
-            Dold.Add(10046090, SafeInfo(MapArea.ThePit, "[Pit] Fourth board in the pit", KL()));
-            Dold.Add(10046150, SafeInfo(MapArea.ThePit, "[Pit] Vanilla homeward bone: entrance to corridor before bridge crystal lizard", KL()));
-            Dold.Add(10345000, MChestInfo(MapArea.ThePit, "[Pit] Metal chest after jumping across the wooden bridge in the circular room with explosive hollows", KL()));
-            Dold.Add(10345020, MChestInfo(MapArea.ThePit, "[Pit] Vanilla bone dust: metal chest guarded by syan soldier", KL()));
-            Dold.Add(10346000, SafeInfo(MapArea.ThePit, "[Pit] First corpse on scaffolding before the Gutter", KL()));
-            Dold.Add(10346010, SafeInfo(MapArea.ThePit, "[Pit] Second corpse on scaffolding before the Gutter", KL()));
-            Dold.Add(10346090, SafeInfo(MapArea.ThePit, "[Pit] On the higher bridge  of the circular room after Rat Vanguard", KL()));
-            Dold.Add(10346091, NGPlusInfo(MapArea.ThePit, "[Pit] On the higher bridge of the circular room after Rat Vanguard in NG+", KL()));
-            Dold.Add(10346070, SafeInfo(MapArea.ThePit, "[Pit] First corpse in the circular room", KL()));
-            Dold.Add(10346110, SafeInfo(MapArea.ThePit, "[Pit] Second corpse in the circular room with explosive hollows", KL()));
-            Dold.Add(10346100, SafeInfo(MapArea.ThePit, "[Pit] On a small unconnected ledge offset from the wooden bridge in the circular room", KL()));
-            Dold.Add(10345010, WChestInfo(MapArea.ThePit, "[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter", KL()));
+                // Sinner's Rise:
+                { 626000, BossInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner drop", KL(KEYID.SINNERSRISE)) },
+                { 626001, BossNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner drop in NG+", KL(KEYID.SINNERSRISE)) },
+                { 10165120, MChestInfo(MapArea.SinnersRise, "[SinnersRise] Metal chest after the lost sinner", KL(KEYID.SINNERSRISE)) },
+                { 10166060, SafeInfo(MapArea.SinnersRise, "[SinnersRise] On small ledge very near bonfire", KL(KEYID.SINNERSRISE)) },
+                { 10166090, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Right side just after bottom of elevator", KL(KEYID.SINNERSRISE)) },
+                { 10166110, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Item in elevator shaft, drop off early", KL(KEYID.SINNERSRISE)) },
+                { 10166120, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Left side just after bottom of elevator", KL(KEYID.SINNERSRISE)) },
+                { 10166230, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Behind illusory wall at right side just after elevator", KL(KEYID.SINNERSRISE)) },
+                { 10166280, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In open cell left side lower level", KL(KEYID.SINNERSRISE)) },
+                { 10166330, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In locked cell left side upper level", KL(KEYID.SINNERSCELLS)) },
+                { 10166350, SafeInfo(MapArea.SinnersRise, "[SinnersRise] In right side oil-sconce room just before the Sinner", KL(KEYID.SINNERSCELLS)) },
+                { 10166360, SafeInfo(MapArea.SinnersRise, "[SinnersRise] Left side just before the Sinner", KL(KEYID.SINNERSRISE)) },
+                { 10166450, SafeInfo(MapArea.SinnersRise, "[SinnersRise] On ledge outside tower at top of elevator", KL(KEYID.SINNERSRISE)) },
 
-            // Grave of Saints:
-            Dold.Add(226100, BossInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Royal rat vanguard drop", KL()));
-            Dold.Add(10346020, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 2nd floor on other side of the drawbridges", KL(KEYID.PHARROS)));
-            Dold.Add(10346030, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the first circular room of Grave of Saints", KL()));
-            Dold.Add(10346031, NGPlusInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the first circular room of Grave of Saints in NG+", KL()));
-            Dold.Add(10346040, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 2nd floor left side next to table", KL()));
-            Dold.Add(10346050, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 1st floor on other side of the drawbridges", KL(KEYID.PHARROS)));
-            Dold.Add(10346060, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the middle circle of the circular room, after Rat Vanguard", KL()));
-            Dold.Add(10346080, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 1st floor left side", KL()));
+                // The Pit:
+                { 10045020, MChestInfo(MapArea.ThePit, "[Pit] First metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)) },
+                { 10045030, MChestInfo(MapArea.ThePit, "[Pit] Third metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)) },
+                { 10045050, MChestInfo(MapArea.ThePit, "[Pit] Second metal chest behind the forgotten door", KL(KEYID.FORGOTTEN)) },
+                { 10046140, SafeInfo(MapArea.ThePit, "[Pit] Vanilla DLC1 key: corpse behind the forgotten door", KL(KEYID.FORGOTTEN)) },
+                { 10046130, SafeInfo(MapArea.ThePit, "[Pit] First board in the pit", KL()) },
+                { 10046060, SafeInfo(MapArea.ThePit, "[Pit] Second board in the pit", KL()) },
+                { 10046050, SafeInfo(MapArea.ThePit, "[Pit] Third board in the pit", KL()) },
+                { 10046090, SafeInfo(MapArea.ThePit, "[Pit] Fourth board in the pit", KL()) },
+                { 10046150, SafeInfo(MapArea.ThePit, "[Pit] Vanilla homeward bone: entrance to corridor before bridge crystal lizard", KL()) },
+                { 10345000, MChestInfo(MapArea.ThePit, "[Pit] Metal chest after jumping across the wooden bridge in the circular room with explosive hollows", KL()) },
+                { 10345020, MChestInfo(MapArea.ThePit, "[Pit] Vanilla bone dust: metal chest guarded by syan soldier", KL()) },
+                { 10346000, SafeInfo(MapArea.ThePit, "[Pit] First corpse on scaffolding before the Gutter", KL()) },
+                { 10346010, SafeInfo(MapArea.ThePit, "[Pit] Second corpse on scaffolding before the Gutter", KL()) },
+                { 10346090, SafeInfo(MapArea.ThePit, "[Pit] On the higher bridge  of the circular room after Rat Vanguard", KL()) },
+                { 10346091, NGPlusInfo(MapArea.ThePit, "[Pit] On the higher bridge of the circular room after Rat Vanguard in NG+", KL()) },
+                { 10346070, SafeInfo(MapArea.ThePit, "[Pit] First corpse in the circular room", KL()) },
+                { 10346110, SafeInfo(MapArea.ThePit, "[Pit] Second corpse in the circular room with explosive hollows", KL()) },
+                { 10346100, SafeInfo(MapArea.ThePit, "[Pit] On a small unconnected ledge offset from the wooden bridge in the circular room", KL()) },
+                { 10345010, WChestInfo(MapArea.ThePit, "[Pit] Vanilla token of spite: wooden chest under the scaffolding before the Gutter", KL()) },
 
-            // The Gutter:
-            Dold.Add(10256220, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to upper gutter bonfire", KL()));
-            Dold.Add(10256250, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in lower level near the ring of torches", KL()));
-            Dold.Add(10256000, SafeInfo(MapArea.TheGutter, "[Gutter] Urn behind the forgotten door", KL()));
-            Dold.Add(10256410, SafeInfo(MapArea.TheGutter, "[Gutter] First corpse in top level; near Jeff jump", KL()));
-            Dold.Add(10256420, SafeInfo(MapArea.TheGutter, "[Gutter] Second corpse in top level; near Jeff jump", KL()));
-            Dold.Add(10256430, SafeInfo(MapArea.TheGutter, "[Gutter] Third corpse in top level; near Jeff jump", KL()));
-            Dold.Add(10256440, SafeInfo(MapArea.TheGutter, "[Gutter] Fourth corpse in top level; near Jeff jump", KL()));
-            Dold.Add(10256450, SafeInfo(MapArea.TheGutter, "[Gutter] Fifth corpse in top level; near Jeff jump", KL()));
-            Dold.Add(10255010, WChestInfo(MapArea.TheGutter, "[Gutter] Wooden chest on top of small structure in the end of the first long bridge", KL()));
-            Dold.Add(10255110, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest in the base of the tower where the zip-line starts", KL()));
-            Dold.Add(10256030, SafeInfo(MapArea.TheGutter, "[Gutter] Urn inside a small structure on top of the tower where the zip-line starts", KL()));
-            Dold.Add(10256060, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in top level near the three torches side by side", KL()));
-            Dold.Add(10256090, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in lower level of the structure where second long bridge ends", KL()));
-            Dold.Add(10255040, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest near where Melinda the Butcher invades", KL()));
-            Dold.Add(10256230, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in area with tar pits", KL()));
-            Dold.Add(10256240, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to upper gutter bonfire on a little bit higher ledge", KL()));
-            Dold.Add(10256260, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in the 2nd floor of the tower where the zip-line starts", KL()));
-            Dold.Add(10256270, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to hanging poison statue in the base of the tower where the zip-line starts", KL()));
-            Dold.Add(10256280, SafeInfo(MapArea.TheGutter, "[Gutter] Urn on top of the tower where the zip-line starts", KL()));
-            Dold.Add(10256290, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in tight corner on middle level of the tower where the zip-line starts", KL()));
-            Dold.Add(10256330, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in wooden floor in multiple ladders area", KL()));
-            Dold.Add(10256400, SafeInfo(MapArea.TheGutter, "[Gutter] Corpse on top of the tower where the zip-line starts", KL()));
-            Dold.Add(10255100, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest in the cave with corrosive bugs", KL()));
-            Dold.Add(10256310, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in between the fog gate and the ant queen", KL()));
-            Dold.Add(10256170, SafeInfo(MapArea.TheGutter, "[Gutter] First urn behind the ant queen", KL()));
-            Dold.Add(10256300, SafeInfo(MapArea.TheGutter, "[Gutter] Second urn behind the ant queen", KL()));
-            Dold.Add(10256320, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in the area with multiple ladders", KL()));
-            Dold.Add(10255030, WChestInfo(MapArea.TheGutter, "[Gutter] Wooden chest on ledge in multiple ladders area", KL()));
-            Dold.Add(10256340, SafeInfo(MapArea.TheGutter, "[Gutter] First urn at the bottom of the multiple ladders area", KL()));
-            Dold.Add(10256130, SafeInfo(MapArea.TheGutter, "[Gutter] Second urn at the bottom of the multiple ladders area", KL()));
-            Dold.Add(10256160, SafeInfo(MapArea.TheGutter, "[Gutter] Before the entrance to the Black Gulch", KL()));
-            
-            // Black Gulch
-            Dold.Add(10255130, MChestInfo(MapArea.BlackGulch, "[Gulch] Vanilla shotel: metal chest in the side tunnel before the worms", KL()));
-            Dold.Add(10256370, SafeInfo(MapArea.BlackGulch, "[Gulch] First urn in the front of the worms", KL()));
-            Dold.Add(10256380, SafeInfo(MapArea.BlackGulch, "[Gulch] Second urn in the front of the worms", KL()));
-            Dold.Add(10256390, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn in the wide area before the rotten", KL()));
-            Dold.Add(10255050, WChestInfo(MapArea.BlackGulch, "[Gulch] Wooden chest in the side tunnel after the worms", KL()));
-            Dold.Add(10255090, MChestInfo(MapArea.BlackGulch, "[Gulch] Metal chest in side room next to Gulch Giants", KL()));
-            Dold.Add(10256350, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn at the bottom of the elevator near Gulch Giants", KL()));
-            Dold.Add(60001000, SafeInfo(MapArea.BlackGulch, "[Gulch] Drop from Gulch giants", KL()));
-            Dold.Add(10256360, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn next to the second bonfire", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(326000, BossInfo(MapArea.BlackGulch, "[Gulch] The Rotten drop", KL()));
-            Dold.Add(326001, BossNGPlusInfo(MapArea.BlackGulch, "[Gulch] The Rotten drop in NG+", KL()));
-            Dold.Add(10256500, VolInfo(MapArea.BlackGulch, "[Gulch] Dropped from rotten's arm", KL())); // who knows what category this is
-            Dold.Add(10256210, SafeInfo(MapArea.BlackGulch, "[Gulch] In the fire in the Rotten arena", KL()));
-            Dold.Add(10255120, MChestInfo(MapArea.BlackGulch, "[Gulch] Metal chest after the Rotten", KL()));
+                // Grave of Saints:
+                { 226100, BossInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Royal rat vanguard drop", KL()) },
+                { 10346020, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 2nd floor on other side of the drawbridges", KL(KEYID.PHARROS)) },
+                { 10346030, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the first circular room of Grave of Saints", KL()) },
+                { 10346031, NGPlusInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the first circular room of Grave of Saints in NG+", KL()) },
+                { 10346040, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 2nd floor left side next to table", KL()) },
+                { 10346050, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 1st floor on other side of the drawbridges", KL(KEYID.PHARROS)) },
+                { 10346060, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] In the middle circle of the circular room, after Rat Vanguard", KL()) },
+                { 10346080, SafeInfo(MapArea.GraveOfSaints, "[GraveOfSaints] 1st floor left side", KL()) },
 
-            // Huntman's Copse:
-            Dold.Add(154000, BossInfo(MapArea.HuntsmansCopse, "[Copse] Skeleton Lords drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(154001, BossNGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Skeleton Lords drop in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(1770000, NpcInfo(MapArea.HuntsmansCopse, "[Copse] Gift from Felkin when over 20INT and 20FTH", KL(KEYID.ROTUNDA)));
-            Dold.Add(10046080, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On ground after rotating rotunda towards Huntsman's Copse", KL(KEYID.ROTUNDA)));
-            Dold.Add(10235010, MChestInfo(MapArea.HuntsmansCopse, "[Copse] Metal chest in the cave with the giant basilisk", KL(KEYID.ROTUNDA)));
-            Dold.Add(10235020, MChestInfo(MapArea.HuntsmansCopse, "[Copse] Metal chest in a round hut where you drop from above", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236000, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On ledge right above the Bridge Approach bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236020, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Next to a big cliff face guarded by a sickle undead", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236021, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Next to a big cliff face guarded by a sickle undead in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236030, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path before the first stone bridge", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236040, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a ledge on the way to Executioner's Chariot", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236050, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Corpse in the necromancer cave closest to the Undead Lockaway bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236060, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On small ledge with a necromancer", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236070, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236071, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236080, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the roof of the room with the big circular hole in the beginning of the area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236090, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Round hut next to a big cliff face", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236100, SafeInfo(MapArea.HuntsmansCopse, "[Copse] First corpse in a round hut where you drop from above", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236110, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Second corpse in a round hut where you drop from above", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236120, SafeInfo(MapArea.HuntsmansCopse, "[Copse] In the room with the big circular hole in the beginning of the area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236130, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path after the first stone bridge", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236131, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path after the first stone bridge in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236140, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Next to portcullis in the necromancer cave", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236150, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Vanilla Token of Fidelity: on the pillar under the Chariot bridge", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236160, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Where Merciless Roenna invades", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236170, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a small ledge where you drop from the area where Merciless Roenna invades", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236230, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Round hut on the way to Skeleton Lords", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236240, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the side ledge just before Executioner's Chariot boss", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236250, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On lower end of the elevator from the cave with the giant basilisk", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236260, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a stone bridge in the cave with the giant basilisk", KL(KEYID.ROTUNDA)));
-            Dold.Add(10236270, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a stone pillar inside the necromancer cave", KL(KEYID.ROTUNDA)));
+                // The Gutter:
+                { 10256220, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to upper gutter bonfire", KL()) },
+                { 10256250, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in lower level near the ring of torches", KL()) },
+                { 10256000, SafeInfo(MapArea.TheGutter, "[Gutter] Urn behind the forgotten door", KL()) },
+                { 10256410, SafeInfo(MapArea.TheGutter, "[Gutter] First corpse in top level; near Jeff jump", KL()) },
+                { 10256420, SafeInfo(MapArea.TheGutter, "[Gutter] Second corpse in top level; near Jeff jump", KL()) },
+                { 10256430, SafeInfo(MapArea.TheGutter, "[Gutter] Third corpse in top level; near Jeff jump", KL()) },
+                { 10256440, SafeInfo(MapArea.TheGutter, "[Gutter] Fourth corpse in top level; near Jeff jump", KL()) },
+                { 10256450, SafeInfo(MapArea.TheGutter, "[Gutter] Fifth corpse in top level; near Jeff jump", KL()) },
+                { 10255010, WChestInfo(MapArea.TheGutter, "[Gutter] Wooden chest on top of small structure in the end of the first long bridge", KL()) },
+                { 10255110, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest in the base of the tower where the zip-line starts", KL()) },
+                { 10256030, SafeInfo(MapArea.TheGutter, "[Gutter] Urn inside a small structure on top of the tower where the zip-line starts", KL()) },
+                { 10256060, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in top level near the three torches side by side", KL()) },
+                { 10256090, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in lower level of the structure where second long bridge ends", KL()) },
+                { 10255040, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest near where Melinda the Butcher invades", KL()) },
+                { 10256230, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in area with tar pits", KL()) },
+                { 10256240, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to upper gutter bonfire on a little bit higher ledge", KL()) },
+                { 10256260, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in the 2nd floor of the tower where the zip-line starts", KL()) },
+                { 10256270, SafeInfo(MapArea.TheGutter, "[Gutter] Urn next to hanging poison statue in the base of the tower where the zip-line starts", KL()) },
+                { 10256280, SafeInfo(MapArea.TheGutter, "[Gutter] Urn on top of the tower where the zip-line starts", KL()) },
+                { 10256290, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in tight corner on middle level of the tower where the zip-line starts", KL()) },
+                { 10256330, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in wooden floor in multiple ladders area", KL()) },
+                { 10256400, SafeInfo(MapArea.TheGutter, "[Gutter] Corpse on top of the tower where the zip-line starts", KL()) },
+                { 10255100, MChestInfo(MapArea.TheGutter, "[Gutter] Metal chest in the cave with corrosive bugs", KL()) },
+                { 10256310, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in between the fog gate and the ant queen", KL()) },
+                { 10256170, SafeInfo(MapArea.TheGutter, "[Gutter] First urn behind the ant queen", KL()) },
+                { 10256300, SafeInfo(MapArea.TheGutter, "[Gutter] Second urn behind the ant queen", KL()) },
+                { 10256320, SafeInfo(MapArea.TheGutter, "[Gutter] Urn in the area with multiple ladders", KL()) },
+                { 10255030, WChestInfo(MapArea.TheGutter, "[Gutter] Wooden chest on ledge in multiple ladders area", KL()) },
+                { 10256340, SafeInfo(MapArea.TheGutter, "[Gutter] First urn at the bottom of the multiple ladders area", KL()) },
+                { 10256130, SafeInfo(MapArea.TheGutter, "[Gutter] Second urn at the bottom of the multiple ladders area", KL()) },
+                { 10256160, SafeInfo(MapArea.TheGutter, "[Gutter] Before the entrance to the Black Gulch", KL()) },
 
-            // Chariot Arena:
-            Dold.Add(619100, BossInfo(MapArea.UndeadPurgatory, "[Chariot] Executioner's Chariot drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(619101, BossNGPlusInfo(MapArea.UndeadPurgatory, "[Chariot] Executioner's Chariot drop in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(2003000, CovFineInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood join", KL(KEYID.TITCHY)));
-            Dold.Add(2003011, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 1st rank reward", KL(KEYID.TITCHY)));
-            Dold.Add(2003012, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 2nd rank reward", KL(KEYID.TITCHY)));
-            Dold.Add(2003013, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 3rd rank reward", KL(KEYID.TITCHY)));
-            Dold.Add(1783040, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Gift from Titchy Gren after Brotherhood of Blood Rank 3", KL(KEYID.TITCHY)));
-            Dold.Add(10236010, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Above the stairs leading to the bonfire", KL(KEYID.UNDEADPURGATORY)));
-            Dold.Add(10236180, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] First corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)));
-            Dold.Add(10236190, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Second corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)));
-            Dold.Add(10236200, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Third corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)));
-            Dold.Add(10236210, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Fourth corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)));
-            Dold.Add(10236220, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Fifth corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)));
+                // Black Gulch
+                { 10255130, MChestInfo(MapArea.BlackGulch, "[Gulch] Vanilla shotel: metal chest in the side tunnel before the worms", KL()) },
+                { 10256370, SafeInfo(MapArea.BlackGulch, "[Gulch] First urn in the front of the worms", KL()) },
+                { 10256380, SafeInfo(MapArea.BlackGulch, "[Gulch] Second urn in the front of the worms", KL()) },
+                { 10256390, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn in the wide area before the rotten", KL()) },
+                { 10255050, WChestInfo(MapArea.BlackGulch, "[Gulch] Wooden chest in the side tunnel after the worms", KL()) },
+                { 10255090, MChestInfo(MapArea.BlackGulch, "[Gulch] Metal chest in side room next to Gulch Giants", KL()) },
+                { 10256350, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn at the bottom of the elevator near Gulch Giants", KL()) },
+                { 60001000, SafeInfo(MapArea.BlackGulch, "[Gulch] Drop from Gulch giants", KL()) },
+                { 10256360, SafeInfo(MapArea.BlackGulch, "[Gulch] Urn next to the second bonfire", KL(KEYID.TENBRANCHLOCK)) },
+                { 326000, BossInfo(MapArea.BlackGulch, "[Gulch] The Rotten drop", KL()) },
+                { 326001, BossNGPlusInfo(MapArea.BlackGulch, "[Gulch] The Rotten drop in NG+", KL()) },
+                { 10256500, VolInfo(MapArea.BlackGulch, "[Gulch] Dropped from rotten's arm", KL()) }, // who knows what category this is
+                { 10256210, SafeInfo(MapArea.BlackGulch, "[Gulch] In the fire in the Rotten arena", KL()) },
+                { 10255120, MChestInfo(MapArea.BlackGulch, "[Gulch] Metal chest after the Rotten", KL()) },
 
-            // Harvest Valley:
-            Dold.Add(2007000, CovFineInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun join", KL(KEYID.ROTUNDA)));
-            Dold.Add(2007011, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 1st rank reward", KL(KEYID.ROTUNDA)));
-            Dold.Add(2007012, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 2nd rank reward", KL(KEYID.ROTUNDA)));
-            Dold.Add(2007013, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 3rd rank reward", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175020, WChestInfo(MapArea.HarvestValley, "[HarvestValley] Wooden chest inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175021, WChestNGPlusInfo(MapArea.HarvestValley, "[HarvestValley] Wooden chest inside the small cave where you meet Gavlan in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175030, MChestInfo(MapArea.HarvestValley, "[HarvestValley] Metal chest next to ladders leading down into the poison filled tunnel", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175110, MChestInfo(MapArea.HarvestValley, "[HarvestValley] Metal chest inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176000, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176020, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge before the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176030, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge right after the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176060, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On upper end of the ladders before the gate guarded by desert sorceress", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176070, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176080, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176090, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176130, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176160, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176180, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176200, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176210, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel closer to Earthen Peak end", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176220, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176221, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176230, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176231, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176250, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176260, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176270, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176280, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176290, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176300, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176340, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel closer to Earthen Peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176350, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before Earthen Peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176370, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176390, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge after the tunnel leading away from the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176400, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176410, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel further Earthen Peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176460, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176461, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176470, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176480, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176490, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the middle of the area with multiple sickle undeads", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176500, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176510, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176520, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176530, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176540, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176550, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176560, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176570, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176580, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176590, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176600, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176610, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176620, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)));
+                // Huntman's Copse:
+                { 154000, BossInfo(MapArea.HuntsmansCopse, "[Copse] Skeleton Lords drop", KL(KEYID.ROTUNDA)) },
+                { 154001, BossNGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Skeleton Lords drop in NG+", KL(KEYID.ROTUNDA)) },
+                { 1770000, NpcInfo(MapArea.HuntsmansCopse, "[Copse] Gift from Felkin when over 20INT and 20FTH", KL(KEYID.ROTUNDA)) },
+                { 10046080, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On ground after rotating rotunda towards Huntsman's Copse", KL(KEYID.ROTUNDA)) },
+                { 10235010, MChestInfo(MapArea.HuntsmansCopse, "[Copse] Metal chest in the cave with the giant basilisk", KL(KEYID.ROTUNDA)) },
+                { 10235020, MChestInfo(MapArea.HuntsmansCopse, "[Copse] Metal chest in a round hut where you drop from above", KL(KEYID.ROTUNDA)) },
+                { 10236000, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On ledge right above the Bridge Approach bonfire", KL(KEYID.ROTUNDA)) },
+                { 10236020, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Next to a big cliff face guarded by a sickle undead", KL(KEYID.ROTUNDA)) },
+                { 10236021, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Next to a big cliff face guarded by a sickle undead in NG+", KL(KEYID.ROTUNDA)) },
+                { 10236030, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path before the first stone bridge", KL(KEYID.ROTUNDA)) },
+                { 10236040, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a ledge on the way to Executioner's Chariot", KL(KEYID.ROTUNDA)) },
+                { 10236050, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Corpse in the necromancer cave closest to the Undead Lockaway bonfire", KL(KEYID.ROTUNDA)) },
+                { 10236060, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On small ledge with a necromancer", KL(KEYID.ROTUNDA)) },
+                { 10236070, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area", KL(KEYID.ROTUNDA)) },
+                { 10236071, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] Hanging on the side of the big circular hole in the room in the beginning of the area in NG+", KL(KEYID.ROTUNDA)) },
+                { 10236080, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the roof of the room with the big circular hole in the beginning of the area", KL(KEYID.ROTUNDA)) },
+                { 10236090, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Round hut next to a big cliff face", KL(KEYID.ROTUNDA)) },
+                { 10236100, SafeInfo(MapArea.HuntsmansCopse, "[Copse] First corpse in a round hut where you drop from above", KL(KEYID.ROTUNDA)) },
+                { 10236110, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Second corpse in a round hut where you drop from above", KL(KEYID.ROTUNDA)) },
+                { 10236120, SafeInfo(MapArea.HuntsmansCopse, "[Copse] In the room with the big circular hole in the beginning of the area", KL(KEYID.ROTUNDA)) },
+                { 10236130, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path after the first stone bridge", KL(KEYID.ROTUNDA)) },
+                { 10236131, NGPlusInfo(MapArea.HuntsmansCopse, "[Copse] On the left side of the path after the first stone bridge in NG+", KL(KEYID.ROTUNDA)) },
+                { 10236140, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Next to portcullis in the necromancer cave", KL(KEYID.ROTUNDA)) },
+                { 10236150, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Vanilla Token of Fidelity: on the pillar under the Chariot bridge", KL(KEYID.ROTUNDA)) },
+                { 10236160, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Where Merciless Roenna invades", KL(KEYID.ROTUNDA)) },
+                { 10236170, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a small ledge where you drop from the area where Merciless Roenna invades", KL(KEYID.ROTUNDA)) },
+                { 10236230, SafeInfo(MapArea.HuntsmansCopse, "[Copse] Round hut on the way to Skeleton Lords", KL(KEYID.ROTUNDA)) },
+                { 10236240, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On the side ledge just before Executioner's Chariot boss", KL(KEYID.ROTUNDA)) },
+                { 10236250, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On lower end of the elevator from the cave with the giant basilisk", KL(KEYID.ROTUNDA)) },
+                { 10236260, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a stone bridge in the cave with the giant basilisk", KL(KEYID.ROTUNDA)) },
+                { 10236270, SafeInfo(MapArea.HuntsmansCopse, "[Copse] On a stone pillar inside the necromancer cave", KL(KEYID.ROTUNDA)) },
 
-            // Earthern Peak:
-            Dold.Add(500000, BossInfo(MapArea.EarthenPeak, "[EarthernPeak] Covetous Demon drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(501000, BossInfo(MapArea.EarthenPeak, "[EarthernPeak] Mytha, the Baneful Queen drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(501001, BossNGPlusInfo(MapArea.EarthenPeak, "[EarthernPeak] Mytha, the Baneful Queen drop in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(1744010, NpcInfo(MapArea.EarthenPeak, "[EarthernPeak] Gift from Pate if player has summoned him to the Last Giant fight", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175040, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Wooden chest on a lower side ledge of the main hall", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175050, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Wooden chest behind illusory wall in the top floor", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175060, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in side room where you need to jump before Covetous Demon", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175070, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Trapped wooden chest in side room before Covetous Demon", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175090, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Trapped wooden chest next to two desert sorceress", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175120, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest on the other side of a jumpable gap", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175130, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest behind Pharros contraption in the lowest level next to Lucatiel", KL(KEYID.ROTUNDAPHARROS)));
-            Dold.Add(10175140, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in a small room behind a locked door next to Pate (need to drop from above)", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175150, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in a bigger room behind a locked door next to pate (need to drop from above)", KL(KEYID.ROTUNDA)));
-            Dold.Add(10175160, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest on upper end of the raisable wooden platform", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176010, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] On a broken bridge part with manikin in the central hall", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176040, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Vanilla Spell Quartz +1: behind illusory wall on Mytha's foggate level near the ladders", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176050, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Under the raisable wooden platform", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176100, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In a poison filled corridor in the lowest level", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176110, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In a narrow crevasse right before Covetous Demon", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176120, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In the corner of the first room after Covetous bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176140, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] On a ledge where you need to buy ladders from gilligan", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176150, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Outside of the wooden breakable railing", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176170, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse on the other side of a jumpable gap", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176171, NGPlusInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse on the other side of a jumpable gap in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176190, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse in side room where you need to jump before Covetous Demon", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176420, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] One floor up from the second bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176430, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] One floor up from the second bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176440, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Next to mimic on upper floor", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176450, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In the poison pool just before mytha", KL(KEYID.ROTUNDA)));
-            Dold.Add(10176630, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Short corridor with poison on floor", KL(KEYID.ROTUNDA)));
+                // Chariot Arena:
+                { 619100, BossInfo(MapArea.UndeadPurgatory, "[Chariot] Executioner's Chariot drop", KL(KEYID.ROTUNDA)) },
+                { 619101, BossNGPlusInfo(MapArea.UndeadPurgatory, "[Chariot] Executioner's Chariot drop in NG+", KL(KEYID.ROTUNDA)) },
+                { 2003000, CovFineInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood join", KL(KEYID.TITCHY)) },
+                { 2003011, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 1st rank reward", KL(KEYID.TITCHY)) },
+                { 2003012, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 2nd rank reward", KL(KEYID.TITCHY)) },
+                { 2003013, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Brotherhood of Blood 3rd rank reward", KL(KEYID.TITCHY)) },
+                { 1783040, CovInfo(MapArea.UndeadPurgatory, "[Chariot] Gift from Titchy Gren after Brotherhood of Blood Rank 3", KL(KEYID.TITCHY)) },
+                { 10236010, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Above the stairs leading to the bonfire", KL(KEYID.UNDEADPURGATORY)) },
+                { 10236180, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] First corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)) },
+                { 10236190, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Second corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)) },
+                { 10236200, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Third corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)) },
+                { 10236210, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Fourth corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)) },
+                { 10236220, SafeInfo(MapArea.UndeadPurgatory, "[Chariot] Fifth corpse in the Chariot arena", KL(KEYID.UNDEADPURGATORY)) },
 
+                // Harvest Valley:
+                { 2007000, CovFineInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun join", KL(KEYID.ROTUNDA)) },
+                { 2007011, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 1st rank reward", KL(KEYID.ROTUNDA)) },
+                { 2007012, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 2nd rank reward", KL(KEYID.ROTUNDA)) },
+                { 2007013, CovInfo(MapArea.HarvestValley, "[HarvestValley] Heirs of the Sun 3rd rank reward", KL(KEYID.ROTUNDA)) },
+                { 10175020, WChestInfo(MapArea.HarvestValley, "[HarvestValley] Wooden chest inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)) },
+                { 10175021, WChestNGPlusInfo(MapArea.HarvestValley, "[HarvestValley] Wooden chest inside the small cave where you meet Gavlan in NG+", KL(KEYID.ROTUNDA)) },
+                { 10175030, MChestInfo(MapArea.HarvestValley, "[HarvestValley] Metal chest next to ladders leading down into the poison filled tunnel", KL(KEYID.ROTUNDA)) },
+                { 10175110, MChestInfo(MapArea.HarvestValley, "[HarvestValley] Metal chest inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)) },
+                { 10176000, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176020, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge before the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176030, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge right after the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176060, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On upper end of the ladders before the gate guarded by desert sorceress", KL(KEYID.ROTUNDA)) },
+                { 10176070, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)) },
+                { 10176080, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176090, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)) },
+                { 10176130, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)) },
+                { 10176160, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse behind a plank wall you need a mounted overseer to break", KL(KEYID.ROTUNDA)) },
+                { 10176180, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse inside the small cave where you meet Gavlan", KL(KEYID.ROTUNDA)) },
+                { 10176200, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176210, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel closer to Earthen Peak end", KL(KEYID.ROTUNDA)) },
+                { 10176220, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak", KL(KEYID.ROTUNDA)) },
+                { 10176221, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] In a small poison filled alcove from the poison area in front of Earthen Peak in NG+", KL(KEYID.ROTUNDA)) },
+                { 10176230, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176231, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area in NG+", KL(KEYID.ROTUNDA)) },
+                { 10176250, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176260, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176270, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176280, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176290, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176300, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176340, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel closer to Earthen Peak", KL(KEYID.ROTUNDA)) },
+                { 10176350, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before Earthen Peak", KL(KEYID.ROTUNDA)) },
+                { 10176370, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
+                { 10176390, SafeInfo(MapArea.HarvestValley, "[HarvestValley] On a ledge after the tunnel leading away from the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176400, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176410, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the poison filled tunnel further Earthen Peak", KL(KEYID.ROTUNDA)) },
+                { 10176460, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176461, NGPlusInfo(MapArea.HarvestValley, "[HarvestValley] In a tunnel leading away from the area with multiple sickle undeads in NG+", KL(KEYID.ROTUNDA)) },
+                { 10176470, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176480, SafeInfo(MapArea.HarvestValley, "[HarvestValley] Behind a plank wall in the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176490, SafeInfo(MapArea.HarvestValley, "[HarvestValley] In the middle of the area with multiple sickle undeads", KL(KEYID.ROTUNDA)) },
+                { 10176500, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176510, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176520, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176530, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176540, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176550, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176560, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176570, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the first poison area", KL(KEYID.ROTUNDA)) },
+                { 10176580, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
+                { 10176590, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
+                { 10176600, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
+                { 10176610, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
+                { 10176620, SafeInfo(MapArea.HarvestValley, "[HarvestValley] A corpse in the poison area before earthen peak", KL(KEYID.ROTUNDA)) },
 
-            // Iron Keep:
-            Dold.Add(305000, BossInfo(MapArea.IronKeep, "[IronKeep] Smelter demon drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(607000, BossInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop", KL(KEYID.ROTUNDA)));
-            Dold.Add(607001, BossNGPlusInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(1772000, NpcInfo(MapArea.IronKeep, "[IronKeep] Gift from Magerold after spending 16000 souls", KL(KEYID.ROTUNDA)));
-            Dold.Add(2008000, CovFineInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants join", KL(KEYID.DRAGONCOVENANT)));
-            Dold.Add(2008011, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 1st rank reward", KL(KEYID.DRAGONCOVENANT)));
-            Dold.Add(2008012, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 2nd rank reward", KL(KEYID.DRAGONCOVENANT)));
-            Dold.Add(2008013, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 3rd rank reward", KL(KEYID.DRAGONCOVENANT)));
-            Dold.Add(10195000, WChestInfo(MapArea.IronKeep, "[IronKeep] Wooden chest at upper level of the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195001, WChestNGPlusInfo(MapArea.IronKeep, "[IronKeep] Wooden chest at upper level of the room with changing platforms in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195030, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest next to Pharros contraption after Dull ember jump, in the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195040, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest next to archer on upper left side of the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195090, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest at the top of the high tower with a hole in the middle of it", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195100, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest in lava at right side of the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195110, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest in lava in the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195140, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest immediately after Smelter demon", KL(KEYID.ROTUNDA)));
-            Dold.Add(10195150, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest after Old Iron King", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196030, SafeInfo(MapArea.IronKeep, "[IronKeep] On lower left side of the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196040, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse at the top of the high tower with three Alonne captains", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196050, SafeInfo(MapArea.IronKeep, "[IronKeep] Under the fire of bull statues before Old Iron King", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196060, SafeInfo(MapArea.IronKeep, "[IronKeep] On pilar on right side of the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196070, SafeInfo(MapArea.IronKeep, "[IronKeep] Behind ladder after furnace in the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196080, SafeInfo(MapArea.IronKeep, "[IronKeep] Under the fire of bull statue in the first hall", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196090, SafeInfo(MapArea.IronKeep, "[IronKeep] On ledge above the first hall", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196100, SafeInfo(MapArea.IronKeep, "[IronKeep] On crisscrossing platforms in a hole in the middle of the high tower", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196110, SafeInfo(MapArea.IronKeep, "[IronKeep] On a central platform in the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196111, NGPlusInfo(MapArea.IronKeep, "[IronKeep] On a central platform in the room with changing platforms in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196120, SafeInfo(MapArea.IronKeep, "[IronKeep] On right side of the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196130, SafeInfo(MapArea.IronKeep, "[IronKeep] Next to fog gate in the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196140, SafeInfo(MapArea.IronKeep, "[IronKeep] On lava on the right of bridge by first bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196150, SafeInfo(MapArea.IronKeep, "[IronKeep] Behind illusory wall next to ballista", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196160, SafeInfo(MapArea.IronKeep, "[IronKeep] On broken stairs in the first big lava room", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196170, SafeInfo(MapArea.IronKeep, "[IronKeep] Vanilla covetous gold ring: in large smelting pot hanging above bridges", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196180, SafeInfo(MapArea.IronKeep, "[IronKeep] On lava next to the first bonfire", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196190, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse in lava in the room with changing platforms", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196210, SafeInfo(MapArea.IronKeep, "[IronKeep] Inside the central kiln", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196211, NGPlusInfo(MapArea.IronKeep, "[IronKeep] Inside the central kiln in NG+", KL(KEYID.ROTUNDA)));
-            Dold.Add(10196220, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse at the top of the high tower with three Alonne captains", KL(KEYID.ROTUNDA)));
-
-            // Belfry Sol:
-            Dold.Add(10195130, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest next to Belfry Sol bonfire", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10196000, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Behind the Belfry, near the lever in Belfry Sol", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10196010, SafeInfo(MapArea.BelfrySol, "[BelfrySol] On the far side of the sloped roof in Belfry Sol", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10196020, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Next to the ladder near the exit of Belfry Sol", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10195120, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest immediately after completing Belfy Sol", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10196200, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Corpse at bottom of stairs after Belfy Sol exit", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10195050, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest behind illusory wall after Belfry Sol exit", KL(KEYID.BELFRYSOL)));
-            Dold.Add(10195060, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest behind illusory wall after Belfry Sol exit", KL(KEYID.BELFRYSOL)));
-
-            // Shaded Woods:
-            Dold.Add(10295000, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest next to the Old Akelarre bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10296020, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse in the room above the Old Akelarre bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326000, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On ledge left side of the path to Ruined Fork Road bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326110, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On the path to Ruined Fork Road bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326270, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse getting eaten by goblins just before Ruined Fork Road bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326280, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse getting eaten by goblins just before the Ruined Fork Road bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326170, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla RTSR: in the mud next to hippo", KL(KEYID.BRANCH)));
-            Dold.Add(10326020, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On a ledge on left side of the path between Ruined Fork Road bonfire and Shrine of Winter", KL(KEYID.BRANCH)));
-            Dold.Add(10326260, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On a wall along the path after Shrine of Winter", KL(KEYID.DRANGLEIC)));
-            Dold.Add(10326030, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Golden Falcon shield: in front of the ruined gate just before Shrine of Winter", KL(KEYID.BRANCH)));
-            Dold.Add(10325020, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Chlo +1: metal chest on left side of the fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10325050, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Old Sun ring: metal chest on right side of the fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10325080, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Clear Bluetone +1: metal chest next to a big tree in fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10326060, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse just before the stone circle next to Head of Vengarl", KL(KEYID.BRANCH)));
-            Dold.Add(1307000, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from Head of Vengarl after exhausting his dialogue", KL(KEYID.BRANCH)));
-            Dold.Add(10326240, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Behind the stone circle by Head of Vengarl", KL(KEYID.BRANCH)));
-            Dold.Add(10326070, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a tree in fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10326080, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a big tree in fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10326081, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a big tree in fog area in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10326090, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse in the middle of the fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10326100, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse on right side of the fog area", KL(KEYID.BRANCH)));
-            Dold.Add(10326101, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse on right side of the fog area in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10326220, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Behind the ruined gate, to the right after Shrine of Winter", KL(KEYID.DRANGLEIC)));
-            //
-            Dold.Add(1502000, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from Manscorpion Tark after defeating Najka", KL(KEYID.TARK)));
-            Dold.Add(1502010, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from manscorpion Tark after defeating Freja", KL(KEYID.TARK)));
-            Dold.Add(10325000, WChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest on lower floor of the main Shaded Ruins bridge", KL(KEYID.BRANCH)));
-            Dold.Add(10325001, WChestNGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest On lower floor of the main Shaded Ruins bridge in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10325010, WChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest on upper floor of the main Shaded Ruins bridge", KL(KEYID.BRANCH)));
-            Dold.Add(10325030, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest on upper area by Manscorpion tark", KL(KEYID.BRANCH)));
-            Dold.Add(10325060, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest next to Darkdiver Grandahl", KL(KEYID.BRANCH)));
-            Dold.Add(10325110, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla BKH: metal chest under the main Shaded Ruins bridge", KL(KEYID.BRANCH)));
-            Dold.Add(10325120, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla bone dust: metal chest in area behind two petrified statues", KL(KEYID.BRANCH)));
-            Dold.Add(10326010, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Left of the building leading to Manscorpion Tark", KL(KEYID.BRANCH)));
-            Dold.Add(10326040, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On 2nd floor of the area with many lion warriors", KL(KEYID.BRANCH)));
-            Dold.Add(10326120, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On ledge next to the exit from the corrosive puddles area", KL(KEYID.BRANCH)));
-            Dold.Add(10326130, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On upper floor above Shaded Ruins bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10326140, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Cave on right side of the door to Ornifex", KL(KEYID.BRANCH)));
-            Dold.Add(10326141, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Cave on right side of the door to Ornifex in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10326150, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to chest in area behind two petrified statues and Vengarl's body", KL(KEYID.BRANCH)));
-            Dold.Add(10326160, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Room where Ornifex is locked", KL(KEYID.ORNIFEX)));
-            Dold.Add(10326180, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On collapsed stairs next to Creighton", KL(KEYID.BRANCH)));
-            Dold.Add(10326190, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to the big collapsing floor", KL(KEYID.BRANCH)));
-            Dold.Add(10326191, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to the big collapsing floor in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10326210, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On lower floor of the building leading to Manscorpion Tark", KL(KEYID.BRANCH)));
-            Dold.Add(10326200, VolInfo(MapArea.ShadedWoods, "[ShadedWoods] On tree in Najka's arena", KL(KEYID.BRANCH)));
-            Dold.Add(503000, BossInfo(MapArea.ShadedWoods, "[ShadedWoods] Scorpioness Najka drop", KL(KEYID.BRANCH)));
-            Dold.Add(503001, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Scorpioness Najka drop in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10326250, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On the path after Shrine of Winter", KL(KEYID.DRANGLEIC)));
-            //
-            Dold.Add(10325100, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest blocked by petrified statue", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(10326230, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Next to Vengarl's body", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(10325040, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest in room blocked by petrified statue", KL(KEYID.TENBRANCHLOCK)));
-            Dold.Add(60009000, VolInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Fang Key: drop from the petrified lion warrior by the tree bridge", KL(KEYID.TENBRANCHLOCK)));
-
-            // Doors of Pharros:
-            Dold.Add(223500, BossInfo(MapArea.DoorsOfPharros, "[Pharros] Royal Rat Authority drop", KL(KEYID.BRANCH)));
-            Dold.Add(10335000, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in room after using top Pharros contraption and dropping down near the toxic rats", KL(KEYID.BRANCHMEMEPHARROS)));
-            Dold.Add(10335010, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla chunk/pdb: trapped wooden chest, after climbing ladder and jumping gap", KL(KEYID.BRANCH)));
-            Dold.Add(10335020, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Trapped wooden chest behind (floor) Pharros contraption in the upper level", KL(KEYID.BRANCHMEMEPHARROS)));
-            Dold.Add(10335021, WChestNGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] Trapped wooden chest behind (floor) Pharros contraption in the upper level in NG+", KL(KEYID.BRANCHMEMEPHARROS)));
-            Dold.Add(10335030, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in an alcove guarded by dwarf in the beginning of the long stairs to Brightstone", KL(KEYID.BRANCH)));
-            Dold.Add(10335031, WChestNGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in an alcove guarded by dwarf in the beginning of the long stairs to Brightstone in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10335040, MChestInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla Santier's spear: metal chest behind three-part Pharros door in the lower level", KL(KEYID.BRANCHMEMEPHARROS)));
-            Dold.Add(10336000, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In water before the first bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10336010, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In the room with Gavlan", KL(KEYID.BRANCH)));
-            Dold.Add(10336011, NGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] In the room with Gavlan in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10336020, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Corpse, behind three-part Pharros' door in the upper level", KL(KEYID.BRANCHMEMEPHARROS)));
-            Dold.Add(10336040, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In water in the far side of the first (lower) big hall", KL(KEYID.BRANCH)));
-            Dold.Add(10336041, NGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] In water in the big hall right after Gyrm's Respite bonfire in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10336050, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla Gyrm axe: corpse on a middle-level ledge in the first room", KL(KEYID.BRANCH)));
-            Dold.Add(10336060, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] On ledge after climbing the ladder up from the water", KL(KEYID.BRANCH)));
-            Dold.Add(10336070, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Upper level, hidden behind small stairs near Rat Authrotiy", KL(KEYID.BRANCH)));
-            Dold.Add(10336080, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] On 2nd floor next to dwarf statues", KL(KEYID.BRANCH)));
-
-            // Brightstone Cove Tseldora:
-            Dold.Add(106000, BossInfo(MapArea.Tseldora, "[Tseldora] Prowling Magus and Congregation drop", KL(KEYID.BRANCH)));
-            Dold.Add(603000, BossInfo(MapArea.Tseldora, "[Tseldora] Duke's Dear Freja drop", KL(KEYID.BRANCH)));
-            Dold.Add(603001, BossNGPlusInfo(MapArea.Tseldora, "[Tseldora] Duke's Dear Freja drop in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(1742000, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Pate or Creighton when helping in the fight against the other", KL(KEYID.BRANCH)));
-            Dold.Add(1742010, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Creighton when helping in the fight against Pate", KL(KEYID.BRANCH)));
-            Dold.Add(1784000, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Cromwell when over 35FTH", KL(KEYID.BRANCH)));
-            Dold.Add(10145060, WChestInfo(MapArea.Tseldora, "[Tseldora] Spider-trapped wooden chest before Congregation", KL(KEYID.BRANCH)));
-            Dold.Add(10145061, WChestNGPlusInfo(MapArea.Tseldora, "[Tseldora] Spider-trapped wooden chest before Congregation in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10145070, WChestInfo(MapArea.Tseldora, "[Tseldora] Wooden chest in Tseldora den", KL(KEYID.TSELDORADEN)));
-            Dold.Add(10145080, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest in Tseldora den", KL(KEYID.TSELDORADEN)));
-            Dold.Add(10145110, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest in secret alcove behind shelf in room next to Ornifex's Tseldora room", KL(KEYID.BRANCH)));
-            Dold.Add(10145120, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest on lowerable platform", KL(KEYID.BRANCH)));
-            Dold.Add(10145130, MChestInfo(MapArea.Tseldora, "[Tseldora] Vanilla BKUGS: metal chest behind locked door in pickaxe room", KL(KEYID.TSELDORAVAULT)));
-            Dold.Add(10146000, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind a bench in the pickaxe room", KL(KEYID.BRANCH)));
-            Dold.Add(10146010, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in Ornifex's Tseldora room", KL(KEYID.BRANCH)));
-            Dold.Add(10146030, SafeInfo(MapArea.Tseldora, "[Tseldora] On balcony of the house just before the spiky mining field", KL(KEYID.BRANCH)));
-            Dold.Add(10146040, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla Priestess set: hanging from window behind illusory wall before Congregation", KL(KEYID.BRANCH)));
-            Dold.Add(10146050, SafeInfo(MapArea.Tseldora, "[Tseldora] Hanging on side of the well in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146051, NGPlusInfo(MapArea.Tseldora, "[Tseldora] Hanging on side of the well in falconer camp in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10146060, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146110, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146140, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146150, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146070, SafeInfo(MapArea.Tseldora, "[Tseldora] On ledge before the first spider-decorated door", KL(KEYID.BRANCH)));
-            Dold.Add(10146080, SafeInfo(MapArea.Tseldora, "[Tseldora] Under the stairs next to Chapel Threshold bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10146090, SafeInfo(MapArea.Tseldora, "[Tseldora] On ledge above the sand whirlpool", KL(KEYID.BRANCH)));
-            Dold.Add(10146100, SafeInfo(MapArea.Tseldora, "[Tseldora] On roof of a house next to the sand whirlpool", KL(KEYID.BRANCH)));
-            Dold.Add(10146120, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: on ledge guarded by parasitized undead", KL(KEYID.BRANCH)));
-            Dold.Add(10146130, SafeInfo(MapArea.Tseldora, "[Tseldora] In the well in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146160, SafeInfo(MapArea.Tseldora, "[Tseldora] On path under the first boulder", KL(KEYID.BRANCH)));
-            Dold.Add(10146170, SafeInfo(MapArea.Tseldora, "[Tseldora] Room on upper floor from Lower Brightstone Cove bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10146180, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: in back room between the two sand areas", KL(KEYID.BRANCH)));
-            Dold.Add(10146181, NGPlusInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: in back room between the two sand areas in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10146190, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind shelf in Ornifex's Tseldora room", KL(KEYID.BRANCH)));
-            Dold.Add(10146200, SafeInfo(MapArea.Tseldora, "[Tseldora] In a house next to the sand whirlpool", KL(KEYID.BRANCH)));
-            Dold.Add(10146210, SafeInfo(MapArea.Tseldora, "[Tseldora] In a house in cliffside above the sand whirlpool", KL(KEYID.BRANCH)));
-            Dold.Add(10146230, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn next to the ruined house in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146020, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)));
-            Dold.Add(10146240, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)));
-            Dold.Add(10146250, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)));
-            Dold.Add(10146260, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)));
-            Dold.Add(10146270, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)));
-            Dold.Add(10146280, SafeInfo(MapArea.Tseldora, "[Tseldora] In the right side alcove of the pickaxe room", KL(KEYID.BRANCH)));
-            Dold.Add(10146290, SafeInfo(MapArea.Tseldora, "[Tseldora] On top of the wooden tower in falconer camp", KL(KEYID.BRANCH)));
-            Dold.Add(10146300, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the first room on a way from doors of pharros", KL(KEYID.BRANCH)));
-            Dold.Add(10146310, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the first room after Chapel Threshold bonfire", KL(KEYID.BRANCH)));
-            Dold.Add(10146320, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla CPRx3: in urn in room with Pate/Creighton fight", KL(KEYID.BRANCH)));
-            Dold.Add(10146220, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla torch: on mini staircase in room after Pate/Creighton fight", KL(KEYID.BRANCH)));
-            Dold.Add(10146330, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn on middle level of the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146340, SafeInfo(MapArea.Tseldora, "[Tseldora] On middle level of the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146350, SafeInfo(MapArea.Tseldora, "[Tseldora] On spider web in the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146360, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind pilar in the lowest level of the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146370, SafeInfo(MapArea.Tseldora, "[Tseldora] Under spider web in the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146380, SafeInfo(MapArea.Tseldora, "[Tseldora] On middle level of the web room before Freja", KL(KEYID.BRANCH)));
-            Dold.Add(10146381, NGPlusInfo(MapArea.Tseldora, "[Tseldora] On middle level of the final hall before Freja in NG+", KL(KEYID.BRANCH)));
-            Dold.Add(10146390, SafeInfo(MapArea.Tseldora, "[Tseldora] Next to a boulder in the beginning of the area", KL(KEYID.BRANCH)));
-            Dold.Add(10146400, SafeInfo(MapArea.Tseldora, "[Tseldora] On ground close to the sand whirlpool", KL(KEYID.BRANCH)));
-            Dold.Add(10146410, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse in the spiky mining field", KL(KEYID.BRANCH)));
-            Dold.Add(10146420, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse in the spiky mining field", KL(KEYID.BRANCH)));
-            Dold.Add(10146480, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn next to Congregation foggate", KL(KEYID.BRANCH)));
-            Dold.Add(10146490, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn on right side when leaving Congregation fight", KL(KEYID.BRANCH)));
-            Dold.Add(10146500, VolInfo(MapArea.Tseldora, "[Tseldora] Vanilla Pickaxe: Guide a pig from the campsite to Lower Tseldora and let it eat mushrooms", KL(KEYID.BRANCH)));
-            Dold.Add(10146510, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the 2nd floor of a house just before the spiky mining field", KL(KEYID.BRANCH)));
-            Dold.Add(10146520, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the pickaxe room", KL(KEYID.BRANCH)));
-            Dold.Add(60005000, SafeInfo(MapArea.Tseldora, "[Tseldora] From the Ancient dragon corpse in the memory after Freja", KL(KEYID.DRAGONMEMORY)));
-
-            // Drangleic Castle / Throne of Want:
-            Dold.Add(309610, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Twin Dragonriders drop", KL(KEYID.DRANGLEIC)));
-            Dold.Add(332000, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Throne Watcher and Defender drop", KL(KEYID.THRONEWANT)));
-            Dold.Add(332001, BossNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Throne Watcher and Defender drop in NG+", KL(KEYID.THRONEWANT)));
-            Dold.Add(627000, BossVolInfo(MapArea.DrangleicCastle, "[Drangleic] Nashandra drop", KL(KEYID.CREDITS)));
-            Dold.Add(2006000, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark join", KL(KEYID.DARKLURKER)));
-            Dold.Add(2006011, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark, one dungeon cleared", KL(KEYID.DARKLURKER)));
-            Dold.Add(2006012, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark, three dungeons cleared", KL(KEYID.DARKLURKER)));
-            Dold.Add(506100, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Darklurker drop", KL(KEYID.DARKLURKER))); // can get locked if you kill Grandahl
-            Dold.Add(2006013, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Reward for Rank 3 Darklurker covenant", KL(KEYID.DARKLURKER))); // Missed in original rando.
-            Dold.Add(1725000, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KL(KEYID.DARKLURKER)));
-            Dold.Add(1721000, NpcSafeInfo(MapArea.DrangleicCastle, "[Drangleic] Gift from Chancellor Wellager after defeating the Giant Lord", KL(KEYID.WELLAGERQUEST)));
-            Dold.Add(1760200, NpcInfo(MapArea.DrangleicCastle, "[Drangleic] Gift when releasing Milfanito from highest tower up the Drangleic elevator", KL(KEYID.BDSM)));
-            Dold.Add(20215000, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest one level down from the Forgotten Chamber bonfire", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215010, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in acid pool", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215011, WChestNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in acid pool in NG+", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215020, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla dark arrows: wooden chest right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215021, WChestNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla dark arrows: wooden chest right after the multi-door Sentinel room in NG+", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215050, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215130, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216000, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215070, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the desert sorceress room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215080, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest on the right side of the Drangleic gate", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215090, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the upper level of the Drangleic Executioner Chariot room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215060, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the embedded room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215100, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest (left) in the embedded room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215110, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the embedded room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215120, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in room after the soul-catching golem", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215140, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in room after the soul-catching golem", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215160, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla bone dust: metal chest on left-hand side behind Wellager", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215170, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in the poison dart trap room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216010, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla Faraam set: in the cave next to the entrance to the Dark Chasm", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216020, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216021, NGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room in NG+", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216030, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla elizabeth mushroom: in acid pool", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216050, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Next to Forgotten Chamber bonfire", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216090, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla holy water urns: behind a rock on the path towards Drangleic castle", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216100, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Corpse in the desert sorceress room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216110, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla DLC3 key: in front of the stairs right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216040, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216130, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20216140, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)));
-            Dold.Add(504000, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Looking Glass Knight drop", KL(KEYID.AMANA)));
-            Dold.Add(504001, BossNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Looking Glass Knight drop in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20215150, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla ascetic chest: metal chest after Looking Glass Knight", KL(KEYID.AMANA)));
-            Dold.Add(20216060, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)));
-            Dold.Add(20216061, NGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20216070, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)));
-            Dold.Add(20216120, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)));
-            Dold.Add(20216080, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla skulls: first right side in Mirror Knight approach corridor", KL(KEYID.AMANA)));
-
-            // Shrine of Amana:
-            Dold.Add(602000, BossInfo(MapArea.ShrineOfAmana, "[Amana] Demon of Song drop", KL(KEYID.AMANA)));
-            Dold.Add(1760010, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire", KL(KEYID.AMANA)));
-            Dold.Add(1760000, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire after defeating Demon of song", KL(KEYID.AMANA)));
-            Dold.Add(1760020, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire after releasing the Milfanito in Drangleic castle", KL(KEYID.AMANA)));
-            Dold.Add(1760110, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire", KL(KEYID.AMANA)));
-            Dold.Add(1760100, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire after defeating Demon of song", KL(KEYID.AMANA)));
-            Dold.Add(1760120, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire after releasing the Milfanito in Drangleic castle", KL(KEYID.AMANA)));
-            Dold.Add(20115000, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest on side path right through door a few steps below the first bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20115010, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest submerged in water immediately left from the bottom of the first staircase", KL(KEYID.AMANA)));
-            Dold.Add(20115020, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water on left before the first fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20115030, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest behind the first hut", KL(KEYID.AMANA)));
-            Dold.Add(20115040, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in cave before the first fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20115050, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt", KL(KEYID.AMANA)));
-            Dold.Add(20115051, WChestNGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20115060, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla sunlight blade: metal chest in the end of the narrow underwater walkway", KL(KEYID.AMANA)));
-            Dold.Add(20115080, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in water side from the second hut", KL(KEYID.AMANA)));
-            Dold.Add(20115090, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Helix Halberd: metal chest behind a Pharros contraption near the Crumbled Ruins bonfire", KL(KEYID.AMANAPHARROS)));
-            Dold.Add(20115070, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KL(KEYID.VENDRICK)));
-            Dold.Add(20115500, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Soul of the King: on a throne behind a door that opens after defeating Vendrick", KL(KEYID.VENDRICK)));
-            Dold.Add(20116000, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On narrow walkway just after Rhoy's Resting Place bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116010, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Under the circular staircase in the beginning of the area", KL(KEYID.AMANA)));
-            Dold.Add(20116011, NGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Under the circular staircase in the beginning of the area in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20116030, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the end of the narrow underwater walkway", KL(KEYID.AMANA)));
-            Dold.Add(20116040, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Near the half circle of pillars", KL(KEYID.AMANA)));
-            Dold.Add(20116060, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116070, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116080, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116090, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Behind a fallen pilar next to the circle of pillars after the Rhoy's Resting place bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116100, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Next to torch before the demon of song", KL(KEYID.AMANA)));
-            Dold.Add(20116130, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Corpse hanging from branch in the beginning of the area", KL(KEYID.AMANA)));
-            Dold.Add(20116140, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On narrow walkway to the right of the second fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20116150, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Behind roots before the first bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20116120, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20116020, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20116160, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20116170, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut", KL(KEYID.AMANA)));
-            Dold.Add(20116171, NGPlusInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20116210, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut", KL(KEYID.AMANA)));
-            Dold.Add(20116190, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On rising-beam to the left of the second fog gate", KL(KEYID.AMANA)));
-            Dold.Add(20116200, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Life Ring +2: in a cave behind roots with a hippo", KL(KEYID.AMANA)));
-            Dold.Add(20116220, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On small island surrounding by lizardmen, left side of the path before the first hut", KL(KEYID.AMANA)));
-            Dold.Add(20116110, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In cave under the stairs leading down from the praying Milfanito", KL(KEYID.AMANABRANCH)));
-            Dold.Add(20115100, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in left-side water at bottom of stairs by the praying Milfanito", KL(KEYID.AMANABRANCH)));
-            Dold.Add(20115110, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in right-side water at bottom of stairs by the praying Milfanito", KL(KEYID.AMANABRANCH)));
-
-            // Undead Crypt:
-            Dold.Add(333000, BossInfo(MapArea.UndeadCrypt, "[Crypt] Velstadt drop", KL(KEYID.AMANA)));
-            Dold.Add(333001, BossNGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Velstadt drop in NG+", KL(KEYID.AMANA)));
-            Dold.Add(1506000, NpcInfo(MapArea.UndeadCrypt, "[Crypt] Gift from Agdayne after getting King's Ring", KL(KEYID.AGDAYNEGIFT)));
-            Dold.Add(20245000, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest near the torch that lights up the big statues", KL(KEYID.AMANA)));
-            Dold.Add(20245010, WChestInfo(MapArea.UndeadCrypt, "[Crypt] Wooden chest on left side of the doorway leading to the great hall and Velstadt", KL(KEYID.AMANA)));
-            Dold.Add(20245020, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest on balcony of the second graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20245030, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Vanilla Crushed Eye Orb: metal chest above the bridge after Agdayne", KL(KEYID.AMANA)));
-            Dold.Add(20245040, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest behind a illusory wall and a Pharros contraption from the third graveyard room", KL(KEYID.AMANAPHARROS)));
-            Dold.Add(20245050, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest behind a illusory wall from the room where Nameless Usurper invades", KL(KEYID.AMANA)));
-            Dold.Add(20245070, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)));
-            Dold.Add(20245080, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)));
-            Dold.Add(20245090, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)));
-            Dold.Add(20245100, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)));
-            Dold.Add(20246000, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Right side of the stairs next to Undead Crypt Entrance bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20246010, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Next to Agdayne", KL(KEYID.AMANA)));
-            Dold.Add(20246011, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Next to Agdayne in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20246030, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Under the bridge leading from Agdayne to the second bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20246040, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246050, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246070, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In side tunnel of the third graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246100, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In small room above the second bonfire", KL(KEYID.AMANA)));
-            Dold.Add(20246110, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246111, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20246120, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246121, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20246130, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In room where Nameless Usurper invades", KL(KEYID.AMANA)));
-            Dold.Add(20246140, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In room where Nameless Usurper invades", KL(KEYID.AMANA)));
-            Dold.Add(20246150, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the third graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246151, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the third graveyard room in NG+", KL(KEYID.AMANA)));
-            Dold.Add(20246180, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246190, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246200, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246210, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246220, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)));
-            Dold.Add(20246500, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Vanilla King's Ring: looted from Vendrick's armor", KL(KEYID.AMANA)));
-
-            // Aldia's Keep
-            Dold.Add(212000, BossInfo(MapArea.AldiasKeep, "[AldiasKeep] Guardian Dragon drop", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(1752000, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Lucatiel if she has survived at least three summons", KL(KEYID.LUCATIELFULLQUEST)));
-            Dold.Add(1771010, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Ladder Miniature", KL(KEYID.NAVLANQUEST)));
-            Dold.Add(1771020, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Cale's Helm", KL(KEYID.NAVLANQUEST)));
-            Dold.Add(1771030, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Sunset Staff", KL(KEYID.NAVLANQUEST)));
-            Dold.Add(1771040, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Aged Feather", KL(KEYID.NAVLANQUEST)));
-            Dold.Add(1771000, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after completing all assassination jobs", KL(KEYID.NAVLANQUEST)));
-            Dold.Add(10155000, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in a side corridor next to the mirror room", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10155010, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in a side corridor next to the giant basilisk", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10155020, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest behind the breakable chained door", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10155030, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in the mirror room", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156000, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In front of the skeleton dragon", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156010, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the mirror room", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156030, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Under a table in the long corridor", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156031, NGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] Under a table in the long corridor in NG+", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156040, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Inside a barrel in the corner in side room with caged Gargoyle", KL(KEYID.ALDIASLAB)));
-            Dold.Add(10156140, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] On table in side room with caged Gargoyle", KL(KEYID.ALDIASLAB)));
-            Dold.Add(10156050, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Room just before Guardian dragon, where the second ogre breaks through", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156060, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In front of the giant basilisk", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156130, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Behind a shelf in the potion room", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156070, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156100, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156160, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156161, NGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool in NG+", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156020, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Vanilla alluring skulls: in the Foregarden courtyard", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156080, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the Foregarden courtyard", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156170, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the Foregarden courtyard", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156090, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] To the right at the start of the Foregarden courtyard stairs", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156180, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the water-feature in the middle of the stairs approaching Aslatiel", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156190, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the left side of the front door, before Aslatiel", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156200, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Stuck in a mirror in the mirror room", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10156150, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Just before the elevator to the dragon aerie", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(60050000, VolInfo(MapArea.AldiasKeep, "[AldiasKeep] Drop from the skeleton Dragon after defeating four Forlorns", KL(KEYID.FOURFORLORN)));
-
-            // Dragon Aerie:
-            Dold.Add(1701000, NpcInfo(MapArea.DragonAerie, "[Aerie] Gift from the Emerald Herald", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276010, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276020, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276030, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276120, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276040, SafeInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276041, NGPlusInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest in NG+", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276190, SafeInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276060, SafeInfo(MapArea.DragonAerie, "[Aerie] Near the hollow priest by the second dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276061, NGPlusInfo(MapArea.DragonAerie, "[Aerie] Near the hollow priest by the second dragon nest in NG+", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276180, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the second dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276080, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the second dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276070, SafeInfo(MapArea.DragonAerie, "[Aerie] In the middle of Aerie, at the end of one of the rope bridges, near multiple exploding hollows", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276000, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge before the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276050, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge before the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276090, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276100, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276110, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276170, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276130, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge close to the zip-line start", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276160, SafeInfo(MapArea.DragonAerie, "[Aerie] On a stone pillar you need to drop to from the zip-line", KL(KEYID.ALDIASKEEP)));
-
-            // Dragon Shrine:
-            Dold.Add(600000, BossInfo(MapArea.DragonShrine, "[DragonShrine] Ancient dragon drop", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(1787000, NpcInfo(MapArea.DragonShrine, "[DragonShrine] Gift from ancient dragon when speaking to him", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275000, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest in a side room right after the bonfire", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275060, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest behind the Pharros contraption under the staircase", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275010, WChestInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on right side of the stairs, towards petrified egg door", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275020, WChestInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275021, WChestNGPlusInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper in NG+", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276140, SafeInfo(MapArea.DragonShrine, "[DragonShrine] On a corpse hanging off the ledge in the watchtower", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275030, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest on a ledge that you jump to from the watchtower", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275040, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Vanilla Third Dragon Ring: metal chest just past petrified egg door", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275050, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest on outer ledge next to the petrified egg", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10275070, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest next to the petrified egg", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(10276150, SafeInfo(MapArea.DragonShrine, "[DragonShrine] On a corpse in the corner before petrified egg door", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(60003000, SafeInfo(MapArea.DragonShrine, "[DragonShrine] Vanilla Petrified Egg: Near the invader in Dragon Shrine", KL(KEYID.ALDIASKEEP))); // Petrified Egg pickup
-
-            // Memories of Jeigh (Giant Lord):
-            Dold.Add(309700, BossInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Giant Lord drop", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(309701, BossNGPlusInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Giant Lord drop in NG+", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(60004000, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Vanilla Soul of a Giant: Giant corpse at end of all memories", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106100, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] First left in Giant Lord's memory", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(20106110, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] On the battlefield, just before Giant Lord", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(20106111, NGPlusInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] On the battlefield, just before Giant Lord in NG+", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(20106120, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Up the second set of stairs in the Giant Lord memory", KL(KEYID.MEMORYJEIGH)));
-
-            // Memory of Orro
-            Dold.Add(1743000, NpcInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Gift from Benhart if he has survived at least three summons", KL(KEYID.BENHARTFULLQUEST)));
-            Dold.Add(20105020, WChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Trapped wooden chest behind a Pharros' contraption on the second floor", KL(KEYID.ORROPHARROS)));
-            Dold.Add(20105030, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KL(KEYID.ORROPHARROS)));
-            Dold.Add(20105040, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KL(KEYID.ORROPHARROS)));
-            Dold.Add(20105050, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest in the room where you need to drop the crane", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20105060, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest in the room where you need to drop the crane", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106050, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] In the corner of the second floor room of the entrace stairs", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106070, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On the bridge above courtyard", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106080, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] In the corner of the courtyard", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106090, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] At the side of the center of the courtyard", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106130, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On the roof looking onto courtyard after climbing ladder", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106140, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On scaffolding after climbing a ladder from the courtyard", KL(KEYID.MEMORYORRO)));
-            Dold.Add(20106141, NGPlusInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On scaffolding after climbing a ladder from the courtyard in NG+", KL(KEYID.MEMORYORRO)));
-
-            // Memory of Vammar
-            Dold.Add(1724000, NpcInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Gift from Captain Drummond after defeating Giant lord", KL(KEYID.MEMORYJEIGH)));
-            Dold.Add(20105000, WChestInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Wooden chest in side room opposite Captain Drummond", KL(KEYID.ASHENMIST)));
-            Dold.Add(20105001, WChestNGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Wooden chest in side room opposite Captain Drummond in NG+", KL(KEYID.ASHENMIST)));
-            Dold.Add(20105010, MChestInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Metal chest in the corner of the main battlefield area", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106000, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Behind a corner in the first corridor after Drummond", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106010, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106011, NGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield in NG+", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106020, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] In the corner of the roof", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106030, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Vanilla Giant Warrior Club: in the far right corner of the main battlefield area", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106040, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] At the top of the final stairs in Memory of Vammar", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106060, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Next to the stairs just before the end of Memory of Vammar", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106061, NGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Next to the stairs just before the end of Memory of Vammar in NG+", KL(KEYID.ASHENMIST)));
-            Dold.Add(20106150, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] In the corner of the last platform in Memory of Vammar", KL(KEYID.ASHENMIST)));
-
-            // DLC1:
-            Dold.Add(682000, BossInfo(MapArea.DragonsSanctum, "[DLC1] Elana, Squalid Queen drop", KL(KEYID.ELANA)));
-            Dold.Add(681000, BossInfo(MapArea.DragonsSanctum, "[DLC1] Sinh, the Slumbering Dragon drop", KL(KEYID.ELANA)));
-            Dold.Add(862000, BossInfo(MapArea.CaveOfTheDead, "[DLC1] Gank Squad drop", KL(KEYID.GANKSQUAD)));
-            Dold.Add(862001, BossNGPlusInfo(MapArea.CaveOfTheDead, "[DLC1] Gank Squad drop in NG+", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356130, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the corner of a corridor just after the DLC1 opening door", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356000, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the top of the first building by Photoshop Jump", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356010, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the first corrosive bug room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356020, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Beneath the switch in front of you directly after Photoshop Jump, near stairs", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356030, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge outside the first corrosive bug room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356140, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge one stairs down from the Sanctum Walk bonfire", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356160, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge next to the two first raising towers", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356560, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Vanilla Dark Quartz +3: on top of a stationary tower in the first raising tower area", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356400, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On top of a raising tower in the first area", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356170, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Hanging from the ledge on the far side just below the first raising towers", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356190, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge in the second corrosive bug room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356590, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the first poison statue clump", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356600, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the first poison statue clump", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356050, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On outer ledge of the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356040, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Stationary tower next to the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356200, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the base of the tower with the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356060, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the path next to the row of raising towers below Tower of Prayer", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356220, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the path next to the row of raising towers below Tower of Prayer", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356570, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of one of the raising towers next to Tower of Prayer", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356580, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of one of the raising towers next to Tower of Prayer", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356410, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of the raising tower that creates the path to the whipping tree", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356380, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the whipping tree", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356530, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the whipping tree", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356240, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the lower elevator room that connects to the Cave of the Dead", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356250, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the bridge which Sinh fireballs leading to the Dragon's Sanctum", KL(KEYID.DLC1KEY)));
-            
-            Dold.Add(50356430, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla 20k/Dragon Charms: in small room that opens from button in the beginning of Sanctum", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355050, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the first two ghosts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355250, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355260, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355270, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355280, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355010, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Trapped wooden chest close to the first rotating door", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355350, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in room that opens from ceiling button close to the first rotating door", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356260, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the room with the first rotating door", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356280, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356290, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356300, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356310, SafeInfo(MapArea.DragonsSanctum, "[DLC1] On the stairs in the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355090, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Flynn's Ring: in a metal chest in the room up the ladder above the bug room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356270, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla repair powder: where you drop back to the corridor after Flynn's Ring", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356090, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)));
-            Dold.Add(50356100, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)));
-            Dold.Add(50355020, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Wooden chest in the room after the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)));
-            Dold.Add(50355030, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Wooden chest in the room after the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)));
-            Dold.Add(50355060, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Puzzling Sword: metal chest in the room after the spike trapped stairs", KL(KEYID.PUZZLINGSWORD)));
-            Dold.Add(50356320, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356330, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356340, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356350, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355120, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Dragon Stone: metal chest in room opened by single button next to the spiky field", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356420, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Sanctum Crossbow: next to the Hidden Sanctum Chamber bonfire", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355110, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Trapped wooden chest next to the entrance to the ghost armor room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355070, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest next to the entrance to the ghost armor room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356630, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Gank Squad Key: In the ghost armor room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356640, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the ghost armor room", KL(KEYID.DLC1KEY)));
-            Dold.Add(50355130, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Denial: metal chest behind the rotating door next to the spiky field", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356360, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Corpse near the stairs before Jester Thomas invades", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356370, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356440, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356650, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356660, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356510, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla DBGS: near the bottom of the elevator that takes you to Elana's bridge", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356150, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Just before the bridge activated by Dragon Stone, near the elevator shortcut back to start", KL(KEYID.DLC1KEY)));
-            Dold.Add(50356450, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In corridor one level up from Sanctum Interior bonfire", KL(KEYID.ELANA)));
-            Dold.Add(50356460, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)));
-            Dold.Add(50356470, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)));
-            Dold.Add(50356480, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)));
-            Dold.Add(50356490, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)));
-            Dold.Add(50356500, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)));
-            Dold.Add(50356520, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the room with many opened chests one level down from Sanctum Interior bonfire", KL(KEYID.ELANA)));
-            Dold.Add(50356540, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In Sinh's arena", KL(KEYID.ELANA)));
-            Dold.Add(60020000, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Crown: in Sinh's arena after defeating him", KL(KEYID.ELANA)));
-            Dold.Add(50355190, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with Eternal Sanctum key", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355200, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355210, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355220, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355230, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355240, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Sanctum ShieLd: metal chest in the topmost room (up ladder on the way to Gank Squad)", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356390, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Hanging from ledge in the middle level of the elevator that connects to the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355180, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla Flower Skirt: metal chest after Gank Squad fight", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356610, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla brightbugs: in the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356620, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla ascetics: in the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356670, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] In the lower level of the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355140, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Metal chest in the middle level of the elevator that connects to the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50355150, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Metal chest in the Cave of the Dead", KL(KEYID.GANKSQUAD)));
-            Dold.Add(50356210, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Corpse after Gank Squad fight", KL(KEYID.GANKSQUAD)));
-
-            // DLC2:
-            Dold.Add(675000, BossInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop", KL(KEYID.DLC2)));
-            Dold.Add(675010, BossNGPlusInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop in NG+", KL(KEYID.DLC2)));
-            Dold.Add(305010, BossInfo(MapArea.BrumeTower, "[DLC2] Blue Smelter demon drop", KL(KEYID.BLUESMELTER)));
-            Dold.Add(680000, BossInfo(MapArea.BrumeTower, "[DLC2] Sir Alonne drop", KL(KEYID.ALONNE)));
-            Dold.Add(60019000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Smelter Wedge x6: Very first ash pile before the first chain bridge", KL(KEYID.DLC2)));
-            Dold.Add(50367140, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Baneful Bird Ring: on railing on top of the tower next to the Throne Floor bonfire requiring elevator", KL(KEYID.FUME)));
-            Dold.Add(50366340, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Dex Ring: in the end of the stairs by the first Ashen Idol at the top of the tower", KL(KEYID.DLC2)));
-            Dold.Add(50366020, SafeInfo(MapArea.BrumeTower, "[DLC2] On the topmost round platform of the central pillar", KL(KEYID.DLC2)));
-            Dold.Add(50366360, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar close to the top of the tower", KL(KEYID.DLC2)));
-            Dold.Add(50366380, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar close to the top of the tower", KL(KEYID.DLC2)));
-            Dold.Add(50366350, SafeInfo(MapArea.BrumeTower, "[DLC2] In first (top) ash ledge beneath the chain; near a gate", KL(KEYID.DLC2)));
-            Dold.Add(50368000, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue in the first (top) ash-covered ledge beneath the chain", KL(KEYID.DLC2)));
-            Dold.Add(50366030, SafeInfo(MapArea.BrumeTower, "[DLC2] On a corpose underneath the first chain towards Throne Floor bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50365000, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest just above the second Ashen Idol guarded by possessed armor", KL(KEYID.DLC2)));
-            Dold.Add(50366900, SafeInfo(MapArea.BrumeTower, "[DLC2] In the first area with Cask Runners", KL(KEYID.DLC2)));
-            Dold.Add(50365010, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest outside just before the Upper Floor bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50366000, SafeInfo(MapArea.BrumeTower, "[DLC2] In the corner of small room next to the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50365560, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest up the ladder from the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50366370, SafeInfo(MapArea.BrumeTower, "[DLC2] In a corridor up the ladder from the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50366390, SafeInfo(MapArea.BrumeTower, "[DLC2] On ledge next to the Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50365500, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50365510, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50365090, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest in a side corridor next to the Upper Floor bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50366260, SafeInfo(MapArea.BrumeTower, "[DLC2] In Lever Room with the third Ashen Idol and multiple other enemies", KL(KEYID.DLC2)));
-            Dold.Add(50366440, SafeInfo(MapArea.BrumeTower, "[DLC2] On a corpse, up a ladder from Lever Room (third Ashen Idol)", KL(KEYID.DLC2)));
-            Dold.Add(50366280, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)));
-            Dold.Add(50366300, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)));
-            Dold.Add(50366310, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)));
-            Dold.Add(50366320, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)));
-            Dold.Add(50366480, SafeInfo(MapArea.BrumeTower, "[DLC2] On ledge with two Fume Sorcerers above the outside ash field", KL(KEYID.DLC2)));
-            Dold.Add(50368020, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on ledge after the second Ashen Idol", KL(KEYID.DLC2)));
-            Dold.Add(50368030, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50368040, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50368050, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50366510, SafeInfo(MapArea.BrumeTower, "[DLC2] In corner just before the chain bridge to the tower where Maldron invades", KL(KEYID.DLC2)));
-            Dold.Add(50365700, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest next to Maldron", KL(KEYID.DLC2)));
-            Dold.Add(50366810, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar of the tower where Maldron invades", KL(KEYID.DLC2)));
-            Dold.Add(50368060, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue at the bottom of the tower where Maldron invades", KL(KEYID.DLC2)));
-            Dold.Add(50366820, SafeInfo(MapArea.BrumeTower, "[DLC2] In the stairs of the tower where Maldron invades", KL(KEYID.DLC2)));
-            Dold.Add(50366800, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the bottom of the tower where Maldron invades", KL(KEYID.DLC2)));
-            Dold.Add(50366170, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Spell Quartz +3: in the corner next to Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50366580, SafeInfo(MapArea.BrumeTower, "[DLC2] In the room immediately after the Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50365540, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Catarina Set: metal chest behind explodable wall in the corridor with Fume Sorcerers", KL(KEYID.DLC2)));
-            Dold.Add(50365590, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla PDBx8 :Metal chest behind explodable wall in the corridor with Fume Sorcerers", KL(KEYID.DLC2)));
-            Dold.Add(50366570, SafeInfo(MapArea.BrumeTower, "[DLC2] In the shortcut between the tower where Scorching Iron Scepter is and the Foyer bonfire", KL(KEYID.DLC2)));
-            Dold.Add(50367090, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom above the Quicksword Rachel invasion", KL(KEYID.DLC2)));
-            Dold.Add(50367100, SafeInfo(MapArea.BrumeTower, "[DLC2] In the curved corridor with crawlers before Quicksword Rachel", KL(KEYID.DLC2)));
-            Dold.Add(50367110, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom next to the room where Quicksword Rachel invades", KL(KEYID.DLC2)));
-            Dold.Add(50367120, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom next to the room where Quicksword Rachel invades", KL(KEYID.DLC2)));
-            Dold.Add(60014000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Scorching Scepter: bottom floor of side tower after Foyer", KL(KEYID.DLC2)));
-            Dold.Add(50366830, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366850, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366860, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366870, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366710, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366720, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50368070, SafeInfo(MapArea.BrumeTower, "[DLC2] In ash statue in area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)));
-            Dold.Add(50366210, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Tower Key: corpse on the cliff edge of ash area one level below Foyer bonfire", KL(KEYID.FUME)));
-            Dold.Add(50365680, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Strength Ring: netal chest on the top floor of the multi-level room", KL(KEYID.FUME)));
-            Dold.Add(50366760, SafeInfo(MapArea.BrumeTower, "[DLC2] In the lower room of the multi-level room on the way to Fume Knight", KL(KEYID.FUME)));
-            Dold.Add(50365080, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Sorcery Clutch Ring: metal chest in a side room above Fume's elevator", KL(KEYID.FUME)));
-            Dold.Add(50368010, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on the left side of the Fume Knight arena", KL(KEYID.FUME)));
-            Dold.Add(50368080, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on the right side of the Fume Knight arena", KL(KEYID.FUME)));
-            Dold.Add(60016000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Crown: in ash pile after defeating Fume Knight", KL(KEYID.FUME)));
-            Dold.Add(50365020, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Life Ring +3: metal chest next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50365550, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Pilgrim's Spontoon (Pseudo jumps): metal chest in a small room where you need to jump from an elevator next to the Upper floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50366240, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50366250, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50367130, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50366880, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50366890, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50365690, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind illusory wall from the elevator shaft going up from the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50365580, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla brightbugs: metal chest in room with lizard; jump from the elevator going up from Foyer", KL(KEYID.FUME)));
-            Dold.Add(50366070, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Simpleton's Ring: on outside ledge accessed from a room with a rotating fiery bull statue next to the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50366530, SafeInfo(MapArea.BrumeTower, "[DLC2] In front of a rotating fiery bull statue in a room next to the Upper Floor bonfire", KL(KEYID.FUME)));
-            Dold.Add(50365650, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the upper floor of curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)));
-            Dold.Add(50366680, SafeInfo(MapArea.BrumeTower, "[DLC2] In the lower floor of curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)));
-            Dold.Add(50366700, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Dispelling Ring +1: behind explodable wall the curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)));
-            Dold.Add(50365570, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50366520, SafeInfo(MapArea.BrumeTower, "[DLC2] On altar in the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50365030, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest in the left of the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50366740, SafeInfo(MapArea.BrumeTower, "[DLC2] One elevator up from the Iron Passage bonfire", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367010, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell on the right just before the first gate of Iron Passage", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367020, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell just before the second gate of Iron Passage", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367030, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell just before the second gate", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367040, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the first big room after passing through first gate", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367050, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the second big room after passing through first gate and dropping", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50366980, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the third big room after passing through the second gate", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50366990, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the third big room after passing through the second gate", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367000, SafeInfo(MapArea.IronPassage, "[DLC2] On lower level of the third big room before Blue Smelter", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50367060, SafeInfo(MapArea.IronPassage, "[DLC2] Right after the Blue Smelter Demon", KL(KEYID.BLUESMELTER)));
-            Dold.Add(50366910, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)));
-            Dold.Add(50366920, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)));
-            Dold.Add(50366930, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)));
-            Dold.Add(50366940, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On side alcove on the left side of the first hall", KL(KEYID.ALONNE)));
-            Dold.Add(50366950, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the second hall in Alonne memory", KL(KEYID.ALONNE)));
-            Dold.Add(50366970, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the second hall in Alonne memory", KL(KEYID.ALONNE)));
-            Dold.Add(50366960, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On side alcove on the lower level of the second hall", KL(KEYID.ALONNE)));
-            Dold.Add(60013000, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On throne after Sir Alonne", KL(KEYID.ALONNE)));
-            Dold.Add(60012100, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the top of the tower next to the Throne Floor bonfire", KL(KEYID.ALLWEDGES)));
-            Dold.Add(60012000, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol (the second ashen idol from the top of the tower)", KL(KEYID.ALLWEDGES)));
-            Dold.Add(60012050, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the Lever Rooom with multiple other enemies", KL(KEYID.ALLWEDGES)));
-            Dold.Add(60012080, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen idol in the tower where Maldron invades", KL(KEYID.ALLWEDGES)));
-            Dold.Add(60012010, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
-            Dold.Add(60012020, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
-            Dold.Add(60012030, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the right side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
-            Dold.Add(60012040, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the right side of the Fume Knight arena", KL(KEYID.FUMEIDOL)));
-            Dold.Add(60012060, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol down the stairs from the Smelter Throne bonfire", KL(KEYID.FUMETOWERIDOL)));
-            Dold.Add(60012070, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the dark curse area next to Foyer bonfire", KL(KEYID.SMELTERIDOL)));
-            Dold.Add(60012090, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on ledge behind a door on the same level as the Upper floor bonfire", KL(KEYID.FUMEIDOL)));
-
-            // DLC3:
-            Dold.Add(679000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Aava, the King's Pet drop", KL(KEYID.DLC3)));
-            Dold.Add(690000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Ivory King drop", KL(KEYID.DLC3)));
-            Dold.Add(679010, BossInfo(MapArea.FrigidOutskirts, "[DLC3] Lud and Zallen drop", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50375710, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Vessel Shield: netal chest after Aava", KL(KEYID.DLC3)));
-            Dold.Add(1788000, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 5 Loyce souls", KL(KEYID.DLC3)));
-            Dold.Add(1788010, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 15 Loyce souls", KL(KEYID.DLC3)));
-            Dold.Add(1788020, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 35 Loyce souls", KL(KEYID.DLC3)));
-            Dold.Add(1788030, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 50 Loyce souls; or killing her", KL(KEYID.DLC3)));
-            Dold.Add(60031000, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Crown: in the Ivory King arena after defeating him", KL(KEYID.DLC3)));
-            Dold.Add(50376340, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In a corner of the first room right from the Outer Wall bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376410, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In a narrow corridor in the beginning of the area", KL(KEYID.DLC3)));
-            Dold.Add(50376350, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In an area with ice dogs in the beginning", KL(KEYID.DLC3)));
-            Dold.Add(50376050, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Under the stairs before the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376750, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376760, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376070, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In small room right after the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376060, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Under ice in the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376010, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50375510, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50375520, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50375540, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)));
-            Dold.Add(50376000, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Near Vanilla Dark Clutch On snowy ledge accessed by dropping from the roof before fountain square", KL(KEYID.DLC3)));
-            Dold.Add(50376080, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Dark Clutch Ring: under a tree accessed by dropping from the roof before fountain square", KL(KEYID.DLC3)));
-            Dold.Add(50376090, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Old Bell Helm: on ledge at the end of the path on left side before Abandoned Dwelling bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376580, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In the right side of the cave opened by lighting torches", KL(KEYID.DLC3CAVE)));
-            Dold.Add(50376300, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Garrison Ward Key: guarded by Flexile Sentry in the cave opened by lighting torches", KL(KEYID.DLC3CAVE)));
-            Dold.Add(50376570, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Behind illusory wall in the left side of the cave opened by lighting torches", KL(KEYID.DLC3CAVE)));
-            Dold.Add(50376540, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Ring of the Embedded: On a snow ledge after a narrow gap between buildings after Abandoned Dwelling bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376530, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On a higher part of the courtyard after Abandoned Dwelling bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376100, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the courtyard after Abandoned Dwelling bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376110, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Radiants: next to a Rampart Golem by the lever to Outer Wall", KL(KEYID.DLC3)));
-            Dold.Add(50375580, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375590, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375600, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375610, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376120, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the main ballista bridge", KL(KEYID.DLC3)));
-            Dold.Add(50376130, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the main ballista bridge", KL(KEYID.DLC3)));
-            Dold.Add(50376140, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the main ballista bridge", KL(KEYID.DLC3)));
-            Dold.Add(50375550, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Elizabeth Mushrooms: metal chest at the end of the main ballista bridge", KL()));
-            Dold.Add(50375530, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest behind the elevator full of coffins", KL(KEYID.DLC3)));
-            Dold.Add(50376560, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On upper floor behind the elevator full of coffins", KL(KEYID.DLC3)));
-            Dold.Add(50375740, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest behind Pharros contraption on the ballista bridge", KL(KEYID.DLC3PHARROS)));
-            Dold.Add(50376590, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On lower floor of the tower with the invisible ladder", KL(KEYID.DLC3)));
-            Dold.Add(50376360, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On middle floor balcony of the tower with the invisible ladder", KL(KEYID.DLC3)));
-            Dold.Add(50375640, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest on top floor of the tower with the invisible ladder", KL(KEYID.DLC3)));
-            Dold.Add(50376150, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Next to a Rampart Golem near the tower with the invisible ladder", KL(KEYID.DLC3)));
-            Dold.Add(50376370, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In small room between stairs leading to the Eye of the Priestess", KL(KEYID.DLC3)));
-            Dold.Add(50375500, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Eye of the Priestess: on altar", KL(KEYID.DLC3)));
-            Dold.Add(50376160, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Just before the fog gate leading to the Inner Wall bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50376170, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Just before the fog gate leading to the Inner Wall bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375690, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest under ice in the first room of Inner Wall", KL(KEYID.DLC3)));
-            Dold.Add(50376600, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In the large empty room in the middle floor of Inner Wall", KL(KEYID.DLC3)));
-            Dold.Add(50375700, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest surrounded by three Frozen Golems on upper floor of Inner Wall", KL(KEYID.DLC3)));
-            Dold.Add(50375730, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest in the corridor where Holy Knight Aurheim invades", KL(KEYID.DLC3)));
-            Dold.Add(50376380, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In a dead end corridor in Inner Wall near the Eleum Knight and by the illusory wall", KL(KEYID.DLC3)));
-            Dold.Add(50375670, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest behind Inner Wall illusory near route back to bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375660, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Vanilla Fire Clutch Ring: metal chest behind Inner Wall illusory wall and up stairs", KL(KEYID.DLC3)));
-            Dold.Add(50376510, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On upper floor balcony of the (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)));
-            Dold.Add(50376770, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Next to the shortcut door up a ladder in multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)));
-            Dold.Add(50376400, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On lower-middle floor balcony of the (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)));
-            Dold.Add(50375680, WChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Wooden chest on bottom floor of (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)));
-            Dold.Add(50376310, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Guarded by three hedgehogs at the start of the Lower Garrison area", KL(KEYID.DLC3)));
-            Dold.Add(50376320, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Guarded by three hedgehogs just at the start of the Lower Garrison area", KL(KEYID.DLC3)));
-            Dold.Add(50376180, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Before Hexer Nicolai invades behind a pillar near hedgehogs", KL(KEYID.DLC3)));
-            Dold.Add(50376190, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Where Hexer Nicolai invades guarded by a hedgehog", KL(KEYID.DLC3)));
-            Dold.Add(50376660, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Where Hexer Nicolai invades, near the shortcut back to the Lower Garrison courtyard", KL(KEYID.DLC3)));
-            Dold.Add(50376200, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Hanging from ledge near Lower Garrison bonfire", KL(KEYID.DLC3)));
-            Dold.Add(50375560, MChestInfo(MapArea.FrozenEleumLoyce,"[DLC3] Metal chest on upper level of the Lower Garrison courtyard", KL(KEYID.DLC3)));
-            Dold.Add(50376520, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] Hanging from the ledge outside the tower of the Eleum Knight near snowball start", KL(KEYID.DLC3)));
-            Dold.Add(50376610, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376620, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376630, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376670, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376680, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376690, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)));
-            Dold.Add(50376640, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On a corpse by hedgehogs and frozen golems on the way to snowball", KL(KEYID.DLC3)));
-            Dold.Add(50376650, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On a corpse by hedgehogs and frozen golems on the way to snowball", KL(KEYID.DLC3)));
-            Dold.Add(50376420, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)));
-            Dold.Add(50376430, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)));
-            Dold.Add(50376440, SafeInfo(MapArea.FrozenEleumLoyce,"[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)));
-            Dold.Add(50376730, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Under the coffin you ride in on in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376740, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In one of the coffins at the start of Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376220, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In the first house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376450, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Outside the first house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376230, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Between the first and the second house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376460, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Between the second and the third house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376470, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In the third house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)));
-            Dold.Add(50376710, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] On ledge just before bridge to Lud and Zallen", KL(KEYID.FRIGIDOUTSKIRTS)));
+                // Earthern Peak:
+                { 500000, BossInfo(MapArea.EarthenPeak, "[EarthernPeak] Covetous Demon drop", KL(KEYID.ROTUNDA)) },
+                { 501000, BossInfo(MapArea.EarthenPeak, "[EarthernPeak] Mytha, the Baneful Queen drop", KL(KEYID.ROTUNDA)) },
+                { 501001, BossNGPlusInfo(MapArea.EarthenPeak, "[EarthernPeak] Mytha, the Baneful Queen drop in NG+", KL(KEYID.ROTUNDA)) },
+                { 1744010, NpcInfo(MapArea.EarthenPeak, "[EarthernPeak] Gift from Pate if player has summoned him to the Last Giant fight", KL(KEYID.ROTUNDA)) },
+                { 10175040, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Wooden chest on a lower side ledge of the main hall", KL(KEYID.ROTUNDA)) },
+                { 10175050, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Wooden chest behind illusory wall in the top floor", KL(KEYID.ROTUNDA)) },
+                { 10175060, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in side room where you need to jump before Covetous Demon", KL(KEYID.ROTUNDA)) },
+                { 10175070, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Trapped wooden chest in side room before Covetous Demon", KL(KEYID.ROTUNDA)) },
+                { 10175090, WChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Trapped wooden chest next to two desert sorceress", KL(KEYID.ROTUNDA)) },
+                { 10175120, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest on the other side of a jumpable gap", KL(KEYID.ROTUNDA)) },
+                { 10175130, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest behind Pharros contraption in the lowest level next to Lucatiel", KL(KEYID.ROTUNDAPHARROS)) },
+                { 10175140, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in a small room behind a locked door next to Pate (need to drop from above)", KL(KEYID.ROTUNDA)) },
+                { 10175150, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest in a bigger room behind a locked door next to pate (need to drop from above)", KL(KEYID.ROTUNDA)) },
+                { 10175160, MChestInfo(MapArea.EarthenPeak, "[EarthernPeak] Metal chest on upper end of the raisable wooden platform", KL(KEYID.ROTUNDA)) },
+                { 10176010, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] On a broken bridge part with manikin in the central hall", KL(KEYID.ROTUNDA)) },
+                { 10176040, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Vanilla Spell Quartz +1: behind illusory wall on Mytha's foggate level near the ladders", KL(KEYID.ROTUNDA)) },
+                { 10176050, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Under the raisable wooden platform", KL(KEYID.ROTUNDA)) },
+                { 10176100, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In a poison filled corridor in the lowest level", KL(KEYID.ROTUNDA)) },
+                { 10176110, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In a narrow crevasse right before Covetous Demon", KL(KEYID.ROTUNDA)) },
+                { 10176120, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In the corner of the first room after Covetous bonfire", KL(KEYID.ROTUNDA)) },
+                { 10176140, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] On a ledge where you need to buy ladders from gilligan", KL(KEYID.ROTUNDA)) },
+                { 10176150, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Outside of the wooden breakable railing", KL(KEYID.ROTUNDA)) },
+                { 10176170, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse on the other side of a jumpable gap", KL(KEYID.ROTUNDA)) },
+                { 10176171, NGPlusInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse on the other side of a jumpable gap in NG+", KL(KEYID.ROTUNDA)) },
+                { 10176190, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Corpse in side room where you need to jump before Covetous Demon", KL(KEYID.ROTUNDA)) },
+                { 10176420, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] One floor up from the second bonfire", KL(KEYID.ROTUNDA)) },
+                { 10176430, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] One floor up from the second bonfire", KL(KEYID.ROTUNDA)) },
+                { 10176440, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Next to mimic on upper floor", KL(KEYID.ROTUNDA)) },
+                { 10176450, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] In the poison pool just before mytha", KL(KEYID.ROTUNDA)) },
+                { 10176630, SafeInfo(MapArea.EarthenPeak, "[EarthernPeak] Short corridor with poison on floor", KL(KEYID.ROTUNDA)) },
 
 
-            // Misc special:
-            Dold.Add(60007000, ExoticInfo(MapArea.Undefined, "Vanilla Lingering Dragoncrest +2: reward for killing 1000 invading Red Phantoms", KL()));
-            Dold.Add(60007100, ExoticInfo(MapArea.Undefined, "Vanilla Ring of Thorns +2: reward for invading and killing 1000 other worlds", KL()));
-            Dold.Add(60007200, ExoticInfo(MapArea.Undefined, "Vanilla Illusory Ring of a Conqueror: reward for completing the game without dying", KL(KEYID.CREDITS)));
-            Dold.Add(60007300, ExoticInfo(MapArea.Undefined, "Vanilla Illusory Ring of the Exalted: reward for completing the game without taking a bonfire", KL(KEYID.CREDITS)));
-            Dold.Add(70000000, ExoticInfo(MapArea.Undefined, "Pre-order bonus: Black Flamestone dagger + Black Flamestone Parma", KL()));
-            Dold.Add(60010000, CrammedInfo(MapArea.Undefined, "Reward for killing Last Giant when crammed (Soldier key only)", KL()));
-            Dold.Add(60011000, CrammedInfo(MapArea.Undefined, "Reward for killing Ancient Dragon (Ashen Mist only) when crammed", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(60043000, CrammedInfo(MapArea.Undefined, "Reward for killing Giant Lord when crammed (Kinship only)", KL(KEYID.ASHENMIST)));
-            Dold.Add(60042000, CrammedInfo(MapArea.Undefined, "Reward for killing Gulch Giants when crammed (Forgotten Key only)", KL()));
-            Dold.Add(60045000, CrammedInfo(MapArea.Undefined, "Reward for killing Licia using the Crushed Eye Orb whilst crammed (Rotunda only)", KL(KEYID.LICIAINVASION)));
-            Dold.Add(60040000, CrammedInfo(MapArea.Undefined, "Last Giant Soul drop by itself, dropped only when crammed after defeating Last Giant", KL(KEYID.ASHENMIST)));
-            Dold.Add(60044000, CrammedInfo(MapArea.Undefined, "Giant Lord Soul drop by itself, dropped only when crammed after defeating Giant Lord in base NG", KL(KEYID.ASHENMIST)));
-            Dold.Add(60044001, CrammedInfo(MapArea.Undefined, "Giant Lord Soul and Ring of Giants +2. Dropped only when crammed after defeating Giant Lord in NG+", KL(KEYID.ASHENMIST)));
-            Dold.Add(60041000, CrammedInfo(MapArea.Undefined, "Ancient Dragon Soul drop by itself, dropped only when crammed after defeating Ancient Dragon. Likely an oversight.", KL(KEYID.ALDIASKEEP)));
-            Dold.Add(60046000, UnresolvedInfo(MapArea.Undefined, "Key to the Embedded by itself?, possibly related to when Key to Embedded was a key and cramming", KL()));
-            Dold.Add(60046001, UnresolvedInfo(MapArea.Undefined, "Demon of Song Soul by itself? Possibly related to when Key to Embedded was a key and cramming", KL()));
-            Dold.Add(60030000, UnresolvedInfo(MapArea.Undefined, "Soul of Aava + Garrison ward key?? Cut content??", KL()));
-            Dold.Add(90000000, UnresolvedInfo(MapArea.Undefined, "10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 0,3 instead of 3,1???", KL()));
-            Dold.Add(90000001, UnresolvedInfo(MapArea.Undefined, "10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 3,3 instead of 3,1???", KL()));
-            Dold.Add(99995000, UnresolvedInfo(MapArea.Undefined, "One lifegem?", KL()));
-            Dold.Add(99995001, UnresolvedInfo(MapArea.Undefined, "Three lifegems??", KL()));
-            Dold.Add(99995002, UnresolvedInfo(MapArea.Undefined, "One radiant lifegems", KL()));
-            Dold.Add(99995003, UnresolvedInfo(MapArea.Undefined, "Three radiant lifegems", KL()));
-            Dold.Add(99995004, UnresolvedInfo(MapArea.Undefined, "One old radiant lifegem", KL()));
-            Dold.Add(99995005, UnresolvedInfo(MapArea.Undefined, "Three old radiant lifegems", KL()));
-            Dold.Add(99995006, UnresolvedInfo(MapArea.Undefined, "One Elizabeth mushroom?", KL()));
-            Dold.Add(99995007, UnresolvedInfo(MapArea.Undefined, "One divine blessing?", KL()));
-            Dold.Add(99995008, UnresolvedInfo(MapArea.Undefined, "One human effigy?", KL()));
-            Dold.Add(99996000, UnresolvedInfo(MapArea.Undefined, "One Soul of a Lost Undead?", KL()));
-            Dold.Add(99996001, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Lost Undead?", KL()));
-            Dold.Add(99996002, UnresolvedInfo(MapArea.Undefined, "One Soul of a Nameless Soldier?", KL()));
-            Dold.Add(99996003, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Nameless Soldier?", KL()));
-            Dold.Add(99996004, UnresolvedInfo(MapArea.Undefined, "One Soul of a Proud Knight?", KL()));
-            Dold.Add(99996005, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Proud Knight?", KL()));
-            Dold.Add(99996006, UnresolvedInfo(MapArea.Undefined, "One Soul of a Brave Warrior?", KL()));
-            Dold.Add(99996007, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Brave Warrior?", KL()));
-            Dold.Add(99996008, UnresolvedInfo(MapArea.Undefined, "One Soul of a Hero?", KL()));
+                // Iron Keep:
+                { 305000, BossInfo(MapArea.IronKeep, "[IronKeep] Smelter Demon drop", KL(KEYID.ROTUNDA)) },
+                { 607000, BossInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop", KL(KEYID.ROTUNDA)) },
+                { 607001, BossNGPlusInfo(MapArea.IronKeep, "[IronKeep] Old Iron King drop in NG+", KL(KEYID.ROTUNDA)) },
+                { 1772000, NpcInfo(MapArea.IronKeep, "[IronKeep] Gift from Magerold after spending 16000 souls", KL(KEYID.ROTUNDA)) },
+                { 2008000, CovFineInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants join", KL(KEYID.DRAGONCOVENANT)) },
+                { 2008011, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 1st rank reward", KL(KEYID.DRAGONCOVENANT)) },
+                { 2008012, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 2nd rank reward", KL(KEYID.DRAGONCOVENANT)) },
+                { 2008013, CovInfo(MapArea.IronKeep, "[IronKeep] Dragon Remnants 3rd rank reward", KL(KEYID.DRAGONCOVENANT)) },
+                { 10195000, WChestInfo(MapArea.IronKeep, "[IronKeep] Wooden chest at upper level of the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10195001, WChestNGPlusInfo(MapArea.IronKeep, "[IronKeep] Wooden chest at upper level of the room with changing platforms in NG+", KL(KEYID.ROTUNDA)) },
+                { 10195030, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest next to Pharros contraption after Dull ember jump, in the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10195040, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest next to archer on upper left side of the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10195090, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest at the top of the high tower with a hole in the middle of it", KL(KEYID.ROTUNDA)) },
+                { 10195100, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest in lava at right side of the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10195110, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest in lava in the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10195140, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest immediately after Smelter demon", KL(KEYID.ROTUNDA)) },
+                { 10195150, MChestInfo(MapArea.IronKeep, "[IronKeep] Metal chest after Old Iron King", KL(KEYID.ROTUNDA)) },
+                { 10196030, SafeInfo(MapArea.IronKeep, "[IronKeep] On lower left side of the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10196040, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse at the top of the high tower with three Alonne captains", KL(KEYID.ROTUNDA)) },
+                { 10196050, SafeInfo(MapArea.IronKeep, "[IronKeep] Under the fire of bull statues before Old Iron King", KL(KEYID.ROTUNDA)) },
+                { 10196060, SafeInfo(MapArea.IronKeep, "[IronKeep] On pilar on right side of the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10196070, SafeInfo(MapArea.IronKeep, "[IronKeep] Behind ladder after furnace in the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10196080, SafeInfo(MapArea.IronKeep, "[IronKeep] Under the fire of bull statue in the first hall", KL(KEYID.ROTUNDA)) },
+                { 10196090, SafeInfo(MapArea.IronKeep, "[IronKeep] On ledge above the first hall", KL(KEYID.ROTUNDA)) },
+                { 10196100, SafeInfo(MapArea.IronKeep, "[IronKeep] On crisscrossing platforms in a hole in the middle of the high tower", KL(KEYID.ROTUNDA)) },
+                { 10196110, SafeInfo(MapArea.IronKeep, "[IronKeep] On a central platform in the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10196111, NGPlusInfo(MapArea.IronKeep, "[IronKeep] On a central platform in the room with changing platforms in NG+", KL(KEYID.ROTUNDA)) },
+                { 10196120, SafeInfo(MapArea.IronKeep, "[IronKeep] On right side of the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10196130, SafeInfo(MapArea.IronKeep, "[IronKeep] Next to fog gate in the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10196140, SafeInfo(MapArea.IronKeep, "[IronKeep] On lava on the right of bridge by first bonfire", KL(KEYID.ROTUNDA)) },
+                { 10196150, SafeInfo(MapArea.IronKeep, "[IronKeep] Behind illusory wall next to ballista", KL(KEYID.ROTUNDA)) },
+                { 10196160, SafeInfo(MapArea.IronKeep, "[IronKeep] On broken stairs in the first big lava room", KL(KEYID.ROTUNDA)) },
+                { 10196170, SafeInfo(MapArea.IronKeep, "[IronKeep] Vanilla covetous gold ring: in large smelting pot hanging above bridges", KL(KEYID.ROTUNDA)) },
+                { 10196180, SafeInfo(MapArea.IronKeep, "[IronKeep] On lava next to the first bonfire", KL(KEYID.ROTUNDA)) },
+                { 10196190, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse in lava in the room with changing platforms", KL(KEYID.ROTUNDA)) },
+                { 10196210, SafeInfo(MapArea.IronKeep, "[IronKeep] Inside the central kiln", KL(KEYID.ROTUNDA)) },
+                { 10196211, NGPlusInfo(MapArea.IronKeep, "[IronKeep] Inside the central kiln in NG+", KL(KEYID.ROTUNDA)) },
+                { 10196220, SafeInfo(MapArea.IronKeep, "[IronKeep] Corpse at the top of the high tower with three Alonne captains", KL(KEYID.ROTUNDA)) },
 
-            // Missing from previous Rando:
-            Dold.Add(10000, CovInfo(MapArea.Undefined, "Awestone reward for killing an invader in Covenant of Champions", KL()));
-            Dold.Add(10010, CovInfo(MapArea.Undefined, "Pharros/Rat Tail reward for killing an invader in Rat Covenant *PROBABLY*", KL()));
-            Dold.Add(10020, CovInfo(MapArea.Undefined, "Dragon scale reward for killing an invader in Dragon covenant *PROBABLY*", KL(KEYID.DRAGONCOVENANT)));
-            Dold.Add(10030, UnresolvedInfo(MapArea.Undefined, "Bonfire Ascetic + Human Effigy, possibly related to invasions in Dark Chasm of Old?", KL()));
-            Dold.Add(10040, CovInfo(MapArea.Undefined, "Sunlight medal reward for summoning/being summoned and killing bosses in Sunlight covenant", KL(KEYID.BRANCH)));
-            Dold.Add(10050, CovInfo(MapArea.Undefined, "Token of Fidelity: awarded when successfully defending a member of the Way of Blue covenant from an invader", KL()));
-            Dold.Add(10060, CovInfo(MapArea.Undefined, "Sunlight medal reward for summoning/being summoned and killing bosses in Sunlight covenant", KL(KEYID.BRANCH)));
-            Dold.Add(10070, CovInfo(MapArea.Undefined, "Awarded after fulfilling your duty when summoned through a Small White Sign Soapstone", KL()));
-            Dold.Add(10080, UnresolvedInfo(MapArea.Undefined, "Smooth and Silky Stone: possibly for summoning via Small White Sign Soapstone (see above)", KL()));
-            Dold.Add(10110, UnresolvedInfo(MapArea.Undefined, "Token of Fidelity: possibly to do with summoning Blue Sentinel help; covenant related", KL()));
-            Dold.Add(10120, UnresolvedInfo(MapArea.Undefined, "Token of Fidelity: possibly to do with summoning Blue Sentinel help; covenant related", KL()));
-            Dold.Add(10140, CovInfo(MapArea.Undefined, "Awarded to any living Red Phantoms when the host dies during an invasion *PROBABLY*", KL()));
-            Dold.Add(10150, UnresolvedInfo(MapArea.Undefined, "Unresolved token of spite; related to above, maybe if invasion is with soapstone instead of orb?", KL()));
-            Dold.Add(10160, UnresolvedInfo(MapArea.Undefined, "Token of spite. Some other invasion condition?", KL()));
-            Dold.Add(10170, UnresolvedInfo(MapArea.Undefined, "Token of spite. Some other invasion condition?", KL()));
-            Dold.Add(10180, UnresolvedInfo(MapArea.Undefined, "Chunk + Slab + Twinkling + PDB", KL()));
-            Dold.Add(10190, UnresolvedInfo(MapArea.Undefined, "Pharros Lockstone + Smooth & Silky Stone", KL()));
-            Dold.Add(10200, UnresolvedInfo(MapArea.Undefined, "Pharros Lockstone + Smooth & Silky Stone", KL()));
-            Dold.Add(10210, UnresolvedInfo(MapArea.Undefined, "Dragon scale", KL()));
-            Dold.Add(10220, UnresolvedInfo(MapArea.Undefined, "Bonfire Ascetic + Effigy", KL()));
-            Dold.Add(10230, UnresolvedInfo(MapArea.Undefined, "Cracked Blue Eye Orb", KL()));
-            Dold.Add(10240, UnresolvedInfo(MapArea.Undefined, "Cracked Red Eye Orb", KL()));
-            Dold.Add(10250, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()));
-            Dold.Add(10260, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()));
-            Dold.Add(10270, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()));
-            Dold.Add(10280, UnresolvedInfo(MapArea.Undefined, "Chunk + Slab + Twinkling + PDB", KL()));
-            Dold.Add(11000, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11010, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11020, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11030, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11040, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11050, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11060, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11070, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11080, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11090, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11100, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11110, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11120, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11130, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11140, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11150, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11160, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11170, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11180, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11190, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11200, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11210, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11220, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11230, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            Dold.Add(11240, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()));
-            //
-            Dold.Add(1307100, UnresolvedInfo(MapArea.Undefined, "Vengarl's Helm. Maybe some kind of fail-safe?", KL()));
-            Dold.Add(1744000, UnresolvedInfo(MapArea.Undefined, "Tseldora den key (not from creighton though)?", KL()));
-            Dold.Add(1753000, UnresolvedInfo(MapArea.Undefined, "5 rusted coins. Maybe related to talking to bell guard, but can't seem to replicate", KL()));
-            Dold.Add(1753010, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(1756000, UnresolvedInfo(MapArea.Undefined, "Crest of the Rat", KL()));
-            Dold.Add(1757000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(1758000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(1759000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(1776000, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()));
-            Dold.Add(1777000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(1786000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()));
-            Dold.Add(2004000, UnresolvedInfo(MapArea.Undefined, "Bell Keeper's Seal", KL()));
-            // 
-            Dold.Add(3001000, UnresolvedInfo(MapArea.Undefined, "Gesture: Point. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3002000, UnresolvedInfo(MapArea.Undefined, "Gesture: I won't bite. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3004000, UnresolvedInfo(MapArea.Undefined, "Gesture: Bow. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3005000, UnresolvedInfo(MapArea.Undefined, "Gesture: Welcome. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3006000, UnresolvedInfo(MapArea.Undefined, "Gesture: Duel Bow. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3007000, UnresolvedInfo(MapArea.Undefined, "Gesture: Wave. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3008000, UnresolvedInfo(MapArea.Undefined, "Gesture: Pumped Up. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3009000, UnresolvedInfo(MapArea.Undefined, "Gesture: Joy. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3010000, UnresolvedInfo(MapArea.Undefined, "Gesture: Warcry. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3011000, UnresolvedInfo(MapArea.Undefined, "Gesture: Warmup. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3012000, UnresolvedInfo(MapArea.Undefined, "Gesture: Hurrah!. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3013000, UnresolvedInfo(MapArea.Undefined, "Gesture: Righty-ho!. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3014000, UnresolvedInfo(MapArea.Undefined, "Gesture: No Way. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3015000, UnresolvedInfo(MapArea.Undefined, "Gesture: This one's me. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3016000, UnresolvedInfo(MapArea.Undefined, "Gesture: Have mercy. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3017000, UnresolvedInfo(MapArea.Undefined, "Gesture: Prostration. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3018000, UnresolvedInfo(MapArea.Undefined, "Gesture: Decapitate. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3019000, UnresolvedInfo(MapArea.Undefined, "Gesture: Fist pump. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3020000, UnresolvedInfo(MapArea.Undefined, "Gesture: Mock. Gestures seemingly not tied to expected events though", KL()));
-            Dold.Add(3021000, UnresolvedInfo(MapArea.Undefined, "Gesture: Praise the Sun. Gestures seemingly not tied to expected events though", KL()));
-            //
-            Dold.Add(10027000, UnresolvedInfo(MapArea.Undefined, "Bone of Order", KL()));
-            Dold.Add(10045500, UnresolvedInfo(MapArea.Undefined, "Rubbish", KL()));
-            Dold.Add(10106020, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()));
-            Dold.Add(10145050, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()));
-            Dold.Add(10255020, UnresolvedInfo(MapArea.Undefined, "Twinkling Titanite & 3 Smooth and Silky Stones", KL()));
-            Dold.Add(20215040, RemovedInfo(MapArea.Undefined, "10 Fire Grearrows: Likely leftover from the Drangleic wooden trapped chest in chariot room in Vanilla DS2", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20215041, RemovedInfo(MapArea.Undefined, "20/20 Fire/Destructive Grearrows: (see above) in NG+", KL(KEYID.DRANGLEIC)));
-            Dold.Add(20265000, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()));
-            Dold.Add(20266000, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()));
-            Dold.Add(40035000, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()));
-            Dold.Add(40036000, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()));
-            //
-            Dold.Add(50001000, UnresolvedInfo(MapArea.Undefined, "Rubbish", KL()));
-            Dold.Add(50355080, UnresolvedInfo(MapArea.Undefined, "Diving Blessing", KL()));
-            Dold.Add(50355100, UnresolvedInfo(MapArea.Undefined, "Five silver talismans", KL()));
+                // Belfry Sol:
+                { 10195130, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest next to Belfry Sol bonfire", KL(KEYID.BELFRYSOL)) },
+                { 10196000, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Behind the Belfry, near the lever in Belfry Sol", KL(KEYID.BELFRYSOL)) },
+                { 10196010, SafeInfo(MapArea.BelfrySol, "[BelfrySol] On the far side of the sloped roof in Belfry Sol", KL(KEYID.BELFRYSOL)) },
+                { 10196020, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Next to the ladder near the exit of Belfry Sol", KL(KEYID.BELFRYSOL)) },
+                { 10195120, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest immediately after completing Belfy Sol", KL(KEYID.BELFRYSOL)) },
+                { 10196200, SafeInfo(MapArea.BelfrySol, "[BelfrySol] Corpse at bottom of stairs after Belfy Sol exit", KL(KEYID.BELFRYSOL)) },
+                { 10195050, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest behind illusory wall after Belfry Sol exit", KL(KEYID.BELFRYSOL)) },
+                { 10195060, MChestInfo(MapArea.BelfrySol, "[BelfrySol] Metal chest behind illusory wall after Belfry Sol exit", KL(KEYID.BELFRYSOL)) },
 
-            // Maybe these were early versions of the DLC items before finalisation
-            Dold.Add(50355330, UnresolvedInfo(MapArea.Undefined, "Three twinkling titanites", KL()));
-            Dold.Add(50355340, UnresolvedInfo(MapArea.Undefined, "Three bleed stones", KL()));
-            Dold.Add(50356070, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()));
-            Dold.Add(50356080, UnresolvedInfo(MapArea.Undefined, "Three Vine Balms", KL()));
-            Dold.Add(50356110, UnresolvedInfo(MapArea.Undefined, "Crown of the Sunken King", KL()));
-            Dold.Add(50356180, UnresolvedInfo(MapArea.Undefined, "Three titanite chunks", KL()));
-            Dold.Add(50356230, UnresolvedInfo(MapArea.Undefined, "Repair powder", KL()));
-            Dold.Add(50365040, UnresolvedInfo(MapArea.Undefined, "3x Human Effigy", KL()));
-            Dold.Add(50365050, UnresolvedInfo(MapArea.Undefined, "Blacksteel Katana", KL()));
-            Dold.Add(50365060, UnresolvedInfo(MapArea.Undefined, "Repair powder x3", KL()));
-            Dold.Add(50365070, UnresolvedInfo(MapArea.Undefined, "Smooth and silky x5", KL()));
-            Dold.Add(50365530, UnresolvedInfo(MapArea.Undefined, "Catarina Gauntlets / Leggings", KL()));
-            Dold.Add(50365600, UnresolvedInfo(MapArea.Undefined, "Three twinkling titanites", KL())); // gank squad drops independently?
-            Dold.Add(50365610, UnresolvedInfo(MapArea.Undefined, "Three petrified dragon bones", KL()));
-            Dold.Add(50365620, UnresolvedInfo(MapArea.Undefined, "Titanite slab", KL()));
-            Dold.Add(50365630, UnresolvedInfo(MapArea.Undefined, "Recollection spell", KL()));
-            Dold.Add(50365640, UnresolvedInfo(MapArea.Undefined, "2x Diving Blessing", KL()));
-            Dold.Add(50365660, UnresolvedInfo(MapArea.Undefined, "2x Bonfire Ascetic", KL()));
-            Dold.Add(50365670, UnresolvedInfo(MapArea.Undefined, "Petrified Something", KL()));
-            Dold.Add(50366040, UnresolvedInfo(MapArea.Undefined, "Petrified Dragon Bone", KL()));
-            Dold.Add(50366120, UnresolvedInfo(MapArea.Undefined, "5x Torch", KL()));
-            Dold.Add(50366130, UnresolvedInfo(MapArea.Undefined, "5x Large Titanite Shard", KL()));
-            Dold.Add(50366140, UnresolvedInfo(MapArea.Undefined, "3x Alluring Skull", KL()));
-            Dold.Add(50366150, UnresolvedInfo(MapArea.Undefined, "3x Titanite Chunk", KL()));
-            Dold.Add(50366160, UnresolvedInfo(MapArea.Undefined, "15 Destructive Greatarrows", KL()));
-            Dold.Add(50366200, UnresolvedInfo(MapArea.Undefined, "Simpleton's Ring", KL()));
-            Dold.Add(50366220, UnresolvedInfo(MapArea.Undefined, "2x Old Growth Balm", KL()));
-            Dold.Add(50366230, UnresolvedInfo(MapArea.Undefined, "Petrified Dragon Bone", KL()));
-            Dold.Add(50366270, UnresolvedInfo(MapArea.Undefined, "Twinkling titanite", KL()));
-            Dold.Add(50366290, UnresolvedInfo(MapArea.Undefined, "Morning Star", KL()));
-            Dold.Add(50366330, UnresolvedInfo(MapArea.Undefined, "3x Vine Balm", KL()));
-            Dold.Add(50366400, UnresolvedInfo(MapArea.Undefined, "2x Titanite Chunk", KL()));
-            Dold.Add(50366410, UnresolvedInfo(MapArea.Undefined, "2x Twinkling Titanite", KL()));
-            Dold.Add(50366420, UnresolvedInfo(MapArea.Undefined, "2x Goldenfruit Balm", KL()));
-            Dold.Add(50366430, UnresolvedInfo(MapArea.Undefined, "20x Iron Greatarrow", KL()));
-            Dold.Add(50366450, UnresolvedInfo(MapArea.Undefined, "5x Bleeding Serum", KL()));
-            Dold.Add(50366460, UnresolvedInfo(MapArea.Undefined, "2x Firedrake Stone", KL()));
-            Dold.Add(50366470, UnresolvedInfo(MapArea.Undefined, "Flame Quartz Ring +3", KL()));
-            Dold.Add(50366490, UnresolvedInfo(MapArea.Undefined, "2x Goldenfruit Balm", KL()));
-            Dold.Add(50366500, UnresolvedInfo(MapArea.Undefined, "Wilted Dusk Herb", KL()));
-            Dold.Add(50366540, UnresolvedInfo(MapArea.Undefined, "5x Charcoal Pine Resin", KL()));
-            Dold.Add(50366550, UnresolvedInfo(MapArea.Undefined, "Broadsword", KL()));
-            Dold.Add(50366560, UnresolvedInfo(MapArea.Undefined, "3x Cracked Red Eye Orb", KL()));
-            Dold.Add(50366590, UnresolvedInfo(MapArea.Undefined, "3x Amber Herb", KL()));
-            Dold.Add(50366600, UnresolvedInfo(MapArea.Undefined, "3x Rusted Coin", KL()));
-            Dold.Add(50366610, UnresolvedInfo(MapArea.Undefined, "20x Fire Greatarrow", KL()));
-            Dold.Add(50366620, UnresolvedInfo(MapArea.Undefined, "5x Black Firebomb", KL()));
-            Dold.Add(50366630, UnresolvedInfo(MapArea.Undefined, "Morning Star", KL()));
-            Dold.Add(50366640, UnresolvedInfo(MapArea.Undefined, "Dexterity Ring", KL()));
-            Dold.Add(50366650, UnresolvedInfo(MapArea.Undefined, "4x Radiant Lifegems", KL()));
-            Dold.Add(50366660, UnresolvedInfo(MapArea.Undefined, "2x Palestone", KL()));
-            Dold.Add(50366670, UnresolvedInfo(MapArea.Undefined, "5x Green Blossom", KL()));
-            Dold.Add(50366690, UnresolvedInfo(MapArea.Undefined, "Old Radiant Lifegem", KL()));
-            Dold.Add(50366730, UnresolvedInfo(MapArea.Undefined, "Full Mad Warrior Set", KL()));
-            Dold.Add(50366750, UnresolvedInfo(MapArea.Undefined, "2x Rouge Water", KL()));
-            Dold.Add(50366770, UnresolvedInfo(MapArea.Undefined, "3x Small Orange Burr", KL()));
-            Dold.Add(50366780, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()));
-            Dold.Add(50366790, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()));
-            Dold.Add(50366840, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()));
-            Dold.Add(50367070, UnresolvedInfo(MapArea.Undefined, "Twinkling Titanite", KL()));
-            Dold.Add(50367080, UnresolvedInfo(MapArea.Undefined, "Dexterity Ring", KL()));
-            Dold.Add(50368090, UnresolvedInfo(MapArea.Undefined, "Large Soul of a Brave Warrior", KL()));
-            Dold.Add(50375570, UnresolvedInfo(MapArea.Undefined, "3x Petrified Dragon Bone", KL()));
-            Dold.Add(50375620, UnresolvedInfo(MapArea.Undefined, "5x Old radiants + 4x Wilted Dusk Herb", KL()));
-            Dold.Add(50375630, UnresolvedInfo(MapArea.Undefined, "4x Dried Root", KL()));
-            Dold.Add(50375650, UnresolvedInfo(MapArea.Undefined, "4x Human Effigy", KL()));
-            Dold.Add(50375720, UnresolvedInfo(MapArea.Undefined, "3x Human Effigy", KL()));
-            Dold.Add(50376020, UnresolvedInfo(MapArea.Undefined, "3x Hexing Urn", KL()));
-            Dold.Add(50376030, UnresolvedInfo(MapArea.Undefined, "2x Vine Balm", KL()));
-            Dold.Add(50376040, UnresolvedInfo(MapArea.Undefined, "Old Radiant Lifegem", KL()));
-            Dold.Add(50376210, UnresolvedInfo(MapArea.Undefined, "Scimitar", KL()));
-            Dold.Add(50376240, UnresolvedInfo(MapArea.Undefined, "4x Holy Water Urn", KL()));
-            Dold.Add(50376250, UnresolvedInfo(MapArea.Undefined, "2x Old Growth Balm", KL()));
-            Dold.Add(50376260, UnresolvedInfo(MapArea.Undefined, "3x Titanite Chunk", KL()));
-            Dold.Add(50376270, UnresolvedInfo(MapArea.Undefined, "30x Fire Greatarrow", KL()));
-            Dold.Add(50376280, UnresolvedInfo(MapArea.Undefined, "8x Rusted Coin", KL()));
-            Dold.Add(50376290, UnresolvedInfo(MapArea.Undefined, "6x Gold Pine Resin", KL()));
-            Dold.Add(50376330, UnresolvedInfo(MapArea.Undefined, "3x Radiant Lifegem", KL()));
-            Dold.Add(50376390, UnresolvedInfo(MapArea.Undefined, "3x Blackweed Balm", KL()));
-            Dold.Add(50376490, UnresolvedInfo(MapArea.Undefined, "2x Smooth and Silky Stone", KL()));
-            Dold.Add(50376550, UnresolvedInfo(MapArea.Undefined, "2x Twilight Herb", KL()));
+                // Shaded Woods:
+                { 10295000, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest next to the Old Akelarre bonfire", KL(KEYID.BRANCH)) },
+                { 10296020, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse in the room above the Old Akelarre bonfire", KL(KEYID.BRANCH)) },
+                { 10326000, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On ledge left side of the path to Ruined Fork Road bonfire", KL(KEYID.BRANCH)) },
+                { 10326110, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On the path to Ruined Fork Road bonfire", KL(KEYID.BRANCH)) },
+                { 10326270, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse getting eaten by goblins just before Ruined Fork Road bonfire", KL(KEYID.BRANCH)) },
+                { 10326280, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse getting eaten by goblins just before the Ruined Fork Road bonfire", KL(KEYID.BRANCH)) },
+                { 10326170, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla RTSR: in the mud next to hippo", KL(KEYID.BRANCH)) },
+                { 10326020, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On a ledge on left side of the path between Ruined Fork Road bonfire and Shrine of Winter", KL(KEYID.BRANCH)) },
+                { 10326260, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On a wall along the path after Shrine of Winter", KL(KEYID.DRANGLEIC)) },
+                { 10326030, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Golden Falcon shield: in front of the ruined gate just before Shrine of Winter", KL(KEYID.BRANCH)) },
+                { 10325020, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Chlo +1: metal chest on left side of the fog area", KL(KEYID.BRANCH)) },
+                { 10325050, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Old Sun ring: metal chest on right side of the fog area", KL(KEYID.BRANCH)) },
+                { 10325080, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Clear Bluetone +1: metal chest next to a big tree in fog area", KL(KEYID.BRANCH)) },
+                { 10326060, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse just before the stone circle next to Head of Vengarl", KL(KEYID.BRANCH)) },
+                { 1307000, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from Head of Vengarl after exhausting his dialogue", KL(KEYID.BRANCH)) },
+                { 10326240, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Behind the stone circle by Head of Vengarl", KL(KEYID.BRANCH)) },
+                { 10326070, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a tree in fog area", KL(KEYID.BRANCH)) },
+                { 10326080, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a big tree in fog area", KL(KEYID.BRANCH)) },
+                { 10326081, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to a big tree in fog area in NG+", KL(KEYID.BRANCH)) },
+                { 10326090, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse in the middle of the fog area", KL(KEYID.BRANCH)) },
+                { 10326100, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse on right side of the fog area", KL(KEYID.BRANCH)) },
+                { 10326101, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse on right side of the fog area in NG+", KL(KEYID.BRANCH)) },
+                { 10326220, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Behind the ruined gate, to the right after Shrine of Winter", KL(KEYID.DRANGLEIC)) },
+                //
+                { 1502000, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from Manscorpion Tark after defeating Najka", KL(KEYID.TARK)) },
+                { 1502010, NpcInfo(MapArea.ShadedWoods, "[ShadedWoods] Gift from manscorpion Tark after defeating Freja", KL(KEYID.TARK)) },
+                { 10325000, WChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest on lower floor of the main Shaded Ruins bridge", KL(KEYID.BRANCH)) },
+                { 10325001, WChestNGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest On lower floor of the main Shaded Ruins bridge in NG+", KL(KEYID.BRANCH)) },
+                { 10325010, WChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Wooden chest on upper floor of the main Shaded Ruins bridge", KL(KEYID.BRANCH)) },
+                { 10325030, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest on upper area by Manscorpion tark", KL(KEYID.BRANCH)) },
+                { 10325060, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest next to Darkdiver Grandahl", KL(KEYID.BRANCH)) },
+                { 10325110, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla BKH: metal chest under the main Shaded Ruins bridge", KL(KEYID.BRANCH)) },
+                { 10325120, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla bone dust: metal chest in area behind two petrified statues", KL(KEYID.BRANCH)) },
+                { 10326010, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Left of the building leading to Manscorpion Tark", KL(KEYID.BRANCH)) },
+                { 10326040, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On 2nd floor of the area with many lion warriors", KL(KEYID.BRANCH)) },
+                { 10326120, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On ledge next to the exit from the corrosive puddles area", KL(KEYID.BRANCH)) },
+                { 10326130, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On upper floor above Shaded Ruins bonfire", KL(KEYID.BRANCH)) },
+                { 10326140, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Cave on right side of the door to Ornifex", KL(KEYID.BRANCH)) },
+                { 10326141, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Cave on right side of the door to Ornifex in NG+", KL(KEYID.BRANCH)) },
+                { 10326150, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to chest in area behind two petrified statues and Vengarl's body", KL(KEYID.BRANCH)) },
+                { 10326160, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Room where Ornifex is locked", KL(KEYID.ORNIFEX)) },
+                { 10326180, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On collapsed stairs next to Creighton", KL(KEYID.BRANCH)) },
+                { 10326190, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to the big collapsing floor", KL(KEYID.BRANCH)) },
+                { 10326191, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Corpse next to the big collapsing floor in NG+", KL(KEYID.BRANCH)) },
+                { 10326210, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On lower floor of the building leading to Manscorpion Tark", KL(KEYID.BRANCH)) },
+                { 10326200, VolInfo(MapArea.ShadedWoods, "[ShadedWoods] On tree in Najka's arena", KL(KEYID.BRANCH)) },
+                { 503000, BossInfo(MapArea.ShadedWoods, "[ShadedWoods] Scorpioness Najka drop", KL(KEYID.BRANCH)) },
+                { 503001, NGPlusInfo(MapArea.ShadedWoods, "[ShadedWoods] Scorpioness Najka drop in NG+", KL(KEYID.BRANCH)) },
+                { 10326250, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] On the path after Shrine of Winter", KL(KEYID.DRANGLEIC)) },
+                //
+                { 10325100, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest blocked by petrified statue", KL(KEYID.TENBRANCHLOCK)) },
+                { 10326230, SafeInfo(MapArea.ShadedWoods, "[ShadedWoods] Next to Vengarl's body", KL(KEYID.TENBRANCHLOCK)) },
+                { 10325040, MChestInfo(MapArea.ShadedWoods, "[ShadedWoods] Metal chest in room blocked by petrified statue", KL(KEYID.TENBRANCHLOCK)) },
+                { 60009000, VolInfo(MapArea.ShadedWoods, "[ShadedWoods] Vanilla Fang Key: drop from the petrified lion warrior by the tree bridge", KL(KEYID.TENBRANCHLOCK)) },
+
+                // Doors of Pharros:
+                { 223500, BossInfo(MapArea.DoorsOfPharros, "[Pharros] Royal Rat Authority drop", KL(KEYID.BRANCH)) },
+                { 10335000, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in room after using top Pharros contraption and dropping down near the toxic rats", KL(KEYID.BRANCHMEMEPHARROS)) },
+                { 10335010, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla chunk/pdb: trapped wooden chest, after climbing ladder and jumping gap", KL(KEYID.BRANCH)) },
+                { 10335020, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Trapped wooden chest behind (floor) Pharros contraption in the upper level", KL(KEYID.BRANCHMEMEPHARROS)) },
+                { 10335021, WChestNGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] Trapped wooden chest behind (floor) Pharros contraption in the upper level in NG+", KL(KEYID.BRANCHMEMEPHARROS)) },
+                { 10335030, WChestInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in an alcove guarded by dwarf in the beginning of the long stairs to Brightstone", KL(KEYID.BRANCH)) },
+                { 10335031, WChestNGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] Wooden chest in an alcove guarded by dwarf in the beginning of the long stairs to Brightstone in NG+", KL(KEYID.BRANCH)) },
+                { 10335040, MChestInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla Santier's spear: metal chest behind three-part Pharros door in the lower level", KL(KEYID.BRANCHMEMEPHARROS)) },
+                { 10336000, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In water before the first bonfire", KL(KEYID.BRANCH)) },
+                { 10336010, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In the room with Gavlan", KL(KEYID.BRANCH)) },
+                { 10336011, NGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] In the room with Gavlan in NG+", KL(KEYID.BRANCH)) },
+                { 10336020, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Corpse, behind three-part Pharros' door in the upper level", KL(KEYID.BRANCHMEMEPHARROS)) },
+                { 10336040, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] In water in the far side of the first (lower) big hall", KL(KEYID.BRANCH)) },
+                { 10336041, NGPlusInfo(MapArea.DoorsOfPharros, "[Pharros] In water in the big hall right after Gyrm's Respite bonfire in NG+", KL(KEYID.BRANCH)) },
+                { 10336050, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Vanilla Gyrm axe: corpse on a middle-level ledge in the first room", KL(KEYID.BRANCH)) },
+                { 10336060, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] On ledge after climbing the ladder up from the water", KL(KEYID.BRANCH)) },
+                { 10336070, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] Upper level, hidden behind small stairs near Rat Authrotiy", KL(KEYID.BRANCH)) },
+                { 10336080, SafeInfo(MapArea.DoorsOfPharros, "[Pharros] On 2nd floor next to dwarf statues", KL(KEYID.BRANCH)) },
+
+                // Brightstone Cove Tseldora:
+                { 106000, BossInfo(MapArea.Tseldora, "[Tseldora] Prowling Magus and Congregation drop", KL(KEYID.BRANCH)) },
+                { 603000, BossInfo(MapArea.Tseldora, "[Tseldora] Duke's Dear Freja drop", KL(KEYID.BRANCH)) },
+                { 603001, BossNGPlusInfo(MapArea.Tseldora, "[Tseldora] Duke's Dear Freja drop in NG+", KL(KEYID.BRANCH)) },
+                { 1742000, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Pate or Creighton when helping in the fight against the other", KL(KEYID.BRANCH)) },
+                { 1742010, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Creighton when helping in the fight against Pate", KL(KEYID.BRANCH)) },
+                { 1784000, NpcInfo(MapArea.Tseldora, "[Tseldora] Gift from Cromwell when over 35FTH", KL(KEYID.BRANCH)) },
+                { 10145060, WChestInfo(MapArea.Tseldora, "[Tseldora] Spider-trapped wooden chest before Congregation", KL(KEYID.BRANCH)) },
+                { 10145061, WChestNGPlusInfo(MapArea.Tseldora, "[Tseldora] Spider-trapped wooden chest before Congregation in NG+", KL(KEYID.BRANCH)) },
+                { 10145070, WChestInfo(MapArea.Tseldora, "[Tseldora] Wooden chest in Tseldora den", KL(KEYID.TSELDORADEN)) },
+                { 10145080, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest in Tseldora den", KL(KEYID.TSELDORADEN)) },
+                { 10145110, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest in secret alcove behind shelf in room next to Ornifex's Tseldora room", KL(KEYID.BRANCH)) },
+                { 10145120, MChestInfo(MapArea.Tseldora, "[Tseldora] Metal chest on lowerable platform", KL(KEYID.BRANCH)) },
+                { 10145130, MChestInfo(MapArea.Tseldora, "[Tseldora] Vanilla BKUGS: metal chest behind locked door in pickaxe room", KL(KEYID.TSELDORAVAULT)) },
+                { 10146000, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind a bench in the pickaxe room", KL(KEYID.BRANCH)) },
+                { 10146010, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in Ornifex's Tseldora room", KL(KEYID.BRANCH)) },
+                { 10146030, SafeInfo(MapArea.Tseldora, "[Tseldora] On balcony of the house just before the spiky mining field", KL(KEYID.BRANCH)) },
+                { 10146040, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla Priestess set: hanging from window behind illusory wall before Congregation", KL(KEYID.BRANCH)) },
+                { 10146050, SafeInfo(MapArea.Tseldora, "[Tseldora] Hanging on side of the well in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146051, NGPlusInfo(MapArea.Tseldora, "[Tseldora] Hanging on side of the well in falconer camp in NG+", KL(KEYID.BRANCH)) },
+                { 10146060, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146110, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146140, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146150, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse around miner in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146070, SafeInfo(MapArea.Tseldora, "[Tseldora] On ledge before the first spider-decorated door", KL(KEYID.BRANCH)) },
+                { 10146080, SafeInfo(MapArea.Tseldora, "[Tseldora] Under the stairs next to Chapel Threshold bonfire", KL(KEYID.BRANCH)) },
+                { 10146090, SafeInfo(MapArea.Tseldora, "[Tseldora] On ledge above the sand whirlpool", KL(KEYID.BRANCH)) },
+                { 10146100, SafeInfo(MapArea.Tseldora, "[Tseldora] On roof of a house next to the sand whirlpool", KL(KEYID.BRANCH)) },
+                { 10146120, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: on ledge guarded by parasitized undead", KL(KEYID.BRANCH)) },
+                { 10146130, SafeInfo(MapArea.Tseldora, "[Tseldora] In the well in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146160, SafeInfo(MapArea.Tseldora, "[Tseldora] On path under the first boulder", KL(KEYID.BRANCH)) },
+                { 10146170, SafeInfo(MapArea.Tseldora, "[Tseldora] Room on upper floor from Lower Brightstone Cove bonfire", KL(KEYID.BRANCH)) },
+                { 10146180, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: in back room between the two sand areas", KL(KEYID.BRANCH)) },
+                { 10146181, NGPlusInfo(MapArea.Tseldora, "[Tseldora] Vanilla chunk: in back room between the two sand areas in NG+", KL(KEYID.BRANCH)) },
+                { 10146190, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind shelf in Ornifex's Tseldora room", KL(KEYID.BRANCH)) },
+                { 10146200, SafeInfo(MapArea.Tseldora, "[Tseldora] In a house next to the sand whirlpool", KL(KEYID.BRANCH)) },
+                { 10146210, SafeInfo(MapArea.Tseldora, "[Tseldora] In a house in cliffside above the sand whirlpool", KL(KEYID.BRANCH)) },
+                { 10146230, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn next to the ruined house in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146020, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)) },
+                { 10146240, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)) },
+                { 10146250, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)) },
+                { 10146260, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)) },
+                { 10146270, SafeInfo(MapArea.Tseldora, "[Tseldora] On a corpse next to Cromwell", KL(KEYID.BRANCH)) },
+                { 10146280, SafeInfo(MapArea.Tseldora, "[Tseldora] In the right side alcove of the pickaxe room", KL(KEYID.BRANCH)) },
+                { 10146290, SafeInfo(MapArea.Tseldora, "[Tseldora] On top of the wooden tower in falconer camp", KL(KEYID.BRANCH)) },
+                { 10146300, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the first room on a way from doors of pharros", KL(KEYID.BRANCH)) },
+                { 10146310, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the first room after Chapel Threshold bonfire", KL(KEYID.BRANCH)) },
+                { 10146320, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla CPRx3: in urn in room with Pate/Creighton fight", KL(KEYID.BRANCH)) },
+                { 10146220, SafeInfo(MapArea.Tseldora, "[Tseldora] Vanilla torch: on mini staircase in room after Pate/Creighton fight", KL(KEYID.BRANCH)) },
+                { 10146330, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn on middle level of the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146340, SafeInfo(MapArea.Tseldora, "[Tseldora] On middle level of the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146350, SafeInfo(MapArea.Tseldora, "[Tseldora] On spider web in the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146360, SafeInfo(MapArea.Tseldora, "[Tseldora] Behind pilar in the lowest level of the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146370, SafeInfo(MapArea.Tseldora, "[Tseldora] Under spider web in the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146380, SafeInfo(MapArea.Tseldora, "[Tseldora] On middle level of the web room before Freja", KL(KEYID.BRANCH)) },
+                { 10146381, NGPlusInfo(MapArea.Tseldora, "[Tseldora] On middle level of the final hall before Freja in NG+", KL(KEYID.BRANCH)) },
+                { 10146390, SafeInfo(MapArea.Tseldora, "[Tseldora] Next to a boulder in the beginning of the area", KL(KEYID.BRANCH)) },
+                { 10146400, SafeInfo(MapArea.Tseldora, "[Tseldora] On ground close to the sand whirlpool", KL(KEYID.BRANCH)) },
+                { 10146410, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse in the spiky mining field", KL(KEYID.BRANCH)) },
+                { 10146420, SafeInfo(MapArea.Tseldora, "[Tseldora] A corpse in the spiky mining field", KL(KEYID.BRANCH)) },
+                { 10146480, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn next to Congregation foggate", KL(KEYID.BRANCH)) },
+                { 10146490, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn on right side when leaving Congregation fight", KL(KEYID.BRANCH)) },
+                { 10146500, VolInfo(MapArea.Tseldora, "[Tseldora] Vanilla Pickaxe: Guide a pig from the campsite to Lower Tseldora and let it eat mushrooms", KL(KEYID.BRANCH)) },
+                { 10146510, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the 2nd floor of a house just before the spiky mining field", KL(KEYID.BRANCH)) },
+                { 10146520, SafeInfo(MapArea.Tseldora, "[Tseldora] In urn in the pickaxe room", KL(KEYID.BRANCH)) },
+                { 60005000, SafeInfo(MapArea.Tseldora, "[Tseldora] From the Ancient dragon corpse in the memory after Freja", KL(KEYID.DRAGONMEMORY)) },
+
+                // Drangleic Castle / Throne of Want:
+                { 309610, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Twin Dragonriders drop", KL(KEYID.DRANGLEIC)) },
+                { 332000, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Throne Watcher and Defender drop", KL(KEYID.THRONEWANT)) },
+                { 332001, BossNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Throne Watcher and Defender drop in NG+", KL(KEYID.THRONEWANT)) },
+                { 627000, BossVolInfo(MapArea.DrangleicCastle, "[Drangleic] Nashandra drop", KL(KEYID.CREDITS)) },
+                { 2006000, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark join", KL(KEYID.DARKLURKER)) },
+                { 2006011, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark, one dungeon cleared", KL(KEYID.DARKLURKER)) },
+                { 2006012, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrims of Dark, three dungeons cleared", KL(KEYID.DARKLURKER)) },
+                { 506100, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Darklurker drop", KL(KEYID.DARKLURKER)) }, // can get locked if you kill Grandahl
+                { 2006013, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Reward for Rank 3 Darklurker covenant", KL(KEYID.DARKLURKER)) }, // Missed in original rando.
+                { 1725000, CovFineInfo(MapArea.DrangleicCastle, "[Drangleic] Pilgrams of Dark, speak to Grandhal again after defeating Darklurker", KL(KEYID.DARKLURKER)) },
+                { 1721000, NpcSafeInfo(MapArea.DrangleicCastle, "[Drangleic] Gift from Chancellor Wellager after defeating the Giant Lord", KL(KEYID.WELLAGERQUEST)) },
+                { 1760200, NpcInfo(MapArea.DrangleicCastle, "[Drangleic] Gift when releasing Milfanito from highest tower up the Drangleic elevator", KL(KEYID.BDSM)) },
+                { 20215000, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest one level down from the Forgotten Chamber bonfire", KL(KEYID.DRANGLEIC)) },
+                { 20215010, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in acid pool", KL(KEYID.DRANGLEIC)) },
+                { 20215011, WChestNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in acid pool in NG+", KL(KEYID.DRANGLEIC)) },
+                { 20215020, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla dark arrows: wooden chest right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20215021, WChestNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla dark arrows: wooden chest right after the multi-door Sentinel room in NG+", KL(KEYID.DRANGLEIC)) },
+                { 20215050, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20215130, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20216000, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In alcove of one of the doors in the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20215070, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the desert sorceress room", KL(KEYID.DRANGLEIC)) },
+                { 20215080, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest on the right side of the Drangleic gate", KL(KEYID.DRANGLEIC)) },
+                { 20215090, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the upper level of the Drangleic Executioner Chariot room", KL(KEYID.DRANGLEIC)) },
+                { 20215060, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the embedded room", KL(KEYID.DRANGLEIC)) },
+                { 20215100, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest (left) in the embedded room", KL(KEYID.DRANGLEIC)) },
+                { 20215110, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in the embedded room", KL(KEYID.DRANGLEIC)) },
+                { 20215120, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in room after the soul-catching golem", KL(KEYID.DRANGLEIC)) },
+                { 20215140, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Metal chest in room after the soul-catching golem", KL(KEYID.DRANGLEIC)) },
+                { 20215160, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla bone dust: metal chest on left-hand side behind Wellager", KL(KEYID.DRANGLEIC)) },
+                { 20215170, WChestInfo(MapArea.DrangleicCastle, "[Drangleic] Wooden chest in the poison dart trap room", KL(KEYID.DRANGLEIC)) },
+                { 20216010, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla Faraam set: in the cave next to the entrance to the Dark Chasm", KL(KEYID.DRANGLEIC)) },
+                { 20216020, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20216021, NGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla old radiants: next to stairs right after the multi-door Sentinel room in NG+", KL(KEYID.DRANGLEIC)) },
+                { 20216030, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla elizabeth mushroom: in acid pool", KL(KEYID.DRANGLEIC)) },
+                { 20216050, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Next to Forgotten Chamber bonfire", KL(KEYID.DRANGLEIC)) },
+                { 20216090, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla holy water urns: behind a rock on the path towards Drangleic castle", KL(KEYID.DRANGLEIC)) },
+                { 20216100, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Corpse in the desert sorceress room", KL(KEYID.DRANGLEIC)) },
+                { 20216110, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla DLC3 key: in front of the stairs right after the multi-door Sentinel room", KL(KEYID.DRANGLEIC)) },
+                { 20216040, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)) },
+                { 20216130, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)) },
+                { 20216140, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] In the room with cursed painting of Nashandra", KL(KEYID.DRANGLEIC)) },
+                { 504000, BossInfo(MapArea.DrangleicCastle, "[Drangleic] Looking Glass Knight drop", KL(KEYID.AMANA)) },
+                { 504001, BossNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Looking Glass Knight drop in NG+", KL(KEYID.AMANA)) },
+                { 20215150, MChestInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla ascetic chest: metal chest after Looking Glass Knight", KL(KEYID.AMANA)) },
+                { 20216060, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)) },
+                { 20216061, NGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights in NG+", KL(KEYID.AMANA)) },
+                { 20216070, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)) },
+                { 20216120, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Between the stone horse-knights", KL(KEYID.AMANA)) },
+                { 20216080, SafeInfo(MapArea.DrangleicCastle, "[Drangleic] Vanilla skulls: first right side in Mirror Knight approach corridor", KL(KEYID.AMANA)) },
+
+                // Shrine of Amana:
+                { 602000, BossInfo(MapArea.ShrineOfAmana, "[Amana] Demon of Song drop", KL(KEYID.AMANA)) },
+                { 1760010, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire", KL(KEYID.AMANA)) },
+                { 1760000, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire after defeating Demon of song", KL(KEYID.AMANA)) },
+                { 1760020, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Tower of Prayer bonfire after releasing the Milfanito in Drangleic castle", KL(KEYID.AMANA)) },
+                { 1760110, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire", KL(KEYID.AMANA)) },
+                { 1760100, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire after defeating Demon of song", KL(KEYID.AMANA)) },
+                { 1760120, NpcInfo(MapArea.ShrineOfAmana, "[Amana] Gift from Milfanito near Rise of the Dead bonfire after releasing the Milfanito in Drangleic castle", KL(KEYID.AMANA)) },
+                { 20115000, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest on side path right through door a few steps below the first bonfire", KL(KEYID.AMANA)) },
+                { 20115010, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest submerged in water immediately left from the bottom of the first staircase", KL(KEYID.AMANA)) },
+                { 20115020, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water on left before the first fog gate", KL(KEYID.AMANA)) },
+                { 20115030, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest behind the first hut", KL(KEYID.AMANA)) },
+                { 20115040, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in cave before the first fog gate", KL(KEYID.AMANA)) },
+                { 20115050, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt", KL(KEYID.AMANA)) },
+                { 20115051, WChestNGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt in NG+", KL(KEYID.AMANA)) },
+                { 20115060, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla sunlight blade: metal chest in the end of the narrow underwater walkway", KL(KEYID.AMANA)) },
+                { 20115080, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in water side from the second hut", KL(KEYID.AMANA)) },
+                { 20115090, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Helix Halberd: metal chest behind a Pharros contraption near the Crumbled Ruins bonfire", KL(KEYID.AMANAPHARROS)) },
+                { 20115070, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KL(KEYID.VENDRICK)) },
+                { 20115500, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Soul of the King: on a throne behind a door that opens after defeating Vendrick", KL(KEYID.VENDRICK)) },
+                { 20116000, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On narrow walkway just after Rhoy's Resting Place bonfire", KL(KEYID.AMANA)) },
+                { 20116010, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Under the circular staircase in the beginning of the area", KL(KEYID.AMANA)) },
+                { 20116011, NGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Under the circular staircase in the beginning of the area in NG+", KL(KEYID.AMANA)) },
+                { 20116030, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the end of the narrow underwater walkway", KL(KEYID.AMANA)) },
+                { 20116040, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Near the half circle of pillars", KL(KEYID.AMANA)) },
+                { 20116060, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)) },
+                { 20116070, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)) },
+                { 20116080, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla near RITB: in the middle of circle of pillars after the Rhoy's resting place bonfire", KL(KEYID.AMANA)) },
+                { 20116090, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Behind a fallen pilar next to the circle of pillars after the Rhoy's Resting place bonfire", KL(KEYID.AMANA)) },
+                { 20116100, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Next to torch before the demon of song", KL(KEYID.AMANA)) },
+                { 20116130, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Corpse hanging from branch in the beginning of the area", KL(KEYID.AMANA)) },
+                { 20116140, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On narrow walkway to the right of the second fog gate", KL(KEYID.AMANA)) },
+                { 20116150, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Behind roots before the first bonfire", KL(KEYID.AMANA)) },
+                { 20116120, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)) },
+                { 20116020, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)) },
+                { 20116160, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On island with three archdrakes before the first fog gate", KL(KEYID.AMANA)) },
+                { 20116170, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut", KL(KEYID.AMANA)) },
+                { 20116171, NGPlusInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut in NG+", KL(KEYID.AMANA)) },
+                { 20116210, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In the second hut", KL(KEYID.AMANA)) },
+                { 20116190, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On rising-beam to the left of the second fog gate", KL(KEYID.AMANA)) },
+                { 20116200, SafeInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Life Ring +2: in a cave behind roots with a hippo", KL(KEYID.AMANA)) },
+                { 20116220, SafeInfo(MapArea.ShrineOfAmana, "[Amana] On small island surrounding by lizardmen, left side of the path before the first hut", KL(KEYID.AMANA)) },
+                { 20116110, SafeInfo(MapArea.ShrineOfAmana, "[Amana] In cave under the stairs leading down from the praying Milfanito", KL(KEYID.AMANABRANCH)) },
+                { 20115100, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in left-side water at bottom of stairs by the praying Milfanito", KL(KEYID.AMANABRANCH)) },
+                { 20115110, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in right-side water at bottom of stairs by the praying Milfanito", KL(KEYID.AMANABRANCH)) },
+
+                // Undead Crypt:
+                { 333000, BossInfo(MapArea.UndeadCrypt, "[Crypt] Velstadt drop", KL(KEYID.AMANA)) },
+                { 333001, BossNGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Velstadt drop in NG+", KL(KEYID.AMANA)) },
+                { 1506000, NpcInfo(MapArea.UndeadCrypt, "[Crypt] Gift from Agdayne after getting King's Ring", KL(KEYID.AGDAYNEGIFT)) },
+                { 20245000, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest near the torch that lights up the big statues", KL(KEYID.AMANA)) },
+                { 20245010, WChestInfo(MapArea.UndeadCrypt, "[Crypt] Wooden chest on left side of the doorway leading to the great hall and Velstadt", KL(KEYID.AMANA)) },
+                { 20245020, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest on balcony of the second graveyard room", KL(KEYID.AMANA)) },
+                { 20245030, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Vanilla Crushed Eye Orb: metal chest above the bridge after Agdayne", KL(KEYID.AMANA)) },
+                { 20245040, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest behind a illusory wall and a Pharros contraption from the third graveyard room", KL(KEYID.AMANAPHARROS)) },
+                { 20245050, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest behind a illusory wall from the room where Nameless Usurper invades", KL(KEYID.AMANA)) },
+                { 20245070, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)) },
+                { 20245080, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)) },
+                { 20245090, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)) },
+                { 20245100, MChestInfo(MapArea.UndeadCrypt, "[Crypt] Metal chest right before Velstadt", KL(KEYID.AMANA)) },
+                { 20246000, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Right side of the stairs next to Undead Crypt Entrance bonfire", KL(KEYID.AMANA)) },
+                { 20246010, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Next to Agdayne", KL(KEYID.AMANA)) },
+                { 20246011, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Next to Agdayne in NG+", KL(KEYID.AMANA)) },
+                { 20246030, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Under the bridge leading from Agdayne to the second bonfire", KL(KEYID.AMANA)) },
+                { 20246040, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246050, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room", KL(KEYID.AMANA)) },
+                { 20246070, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In side tunnel of the third graveyard room", KL(KEYID.AMANA)) },
+                { 20246100, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In small room above the second bonfire", KL(KEYID.AMANA)) },
+                { 20246110, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246111, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room in NG+", KL(KEYID.AMANA)) },
+                { 20246120, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room", KL(KEYID.AMANA)) },
+                { 20246121, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the second graveyard room in NG+", KL(KEYID.AMANA)) },
+                { 20246130, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In room where Nameless Usurper invades", KL(KEYID.AMANA)) },
+                { 20246140, SafeInfo(MapArea.UndeadCrypt, "[Crypt] In room where Nameless Usurper invades", KL(KEYID.AMANA)) },
+                { 20246150, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the third graveyard room", KL(KEYID.AMANA)) },
+                { 20246151, NGPlusInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the third graveyard room in NG+", KL(KEYID.AMANA)) },
+                { 20246180, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246190, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246200, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246210, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246220, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Corpse in the first graveyard room", KL(KEYID.AMANA)) },
+                { 20246500, SafeInfo(MapArea.UndeadCrypt, "[Crypt] Vanilla King's Ring: looted from Vendrick's armor", KL(KEYID.AMANA)) },
+
+                // Aldia's Keep
+                { 212000, BossInfo(MapArea.AldiasKeep, "[AldiasKeep] Guardian Dragon drop", KL(KEYID.ALDIASKEEP)) },
+                { 1752000, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Lucatiel if she has survived at least three summons", KL(KEYID.LUCATIELFULLQUEST)) },
+                { 1771010, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Ladder Miniature", KL(KEYID.NAVLANQUEST)) },
+                { 1771020, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Cale's Helm", KL(KEYID.NAVLANQUEST)) },
+                { 1771030, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Sunset Staff", KL(KEYID.NAVLANQUEST)) },
+                { 1771040, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after bringing him Aged Feather", KL(KEYID.NAVLANQUEST)) },
+                { 1771000, NpcInfo(MapArea.AldiasKeep, "[AldiasKeep] Gift from Navlaan after completing all assassination jobs", KL(KEYID.NAVLANQUEST)) },
+                { 10155000, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in a side corridor next to the mirror room", KL(KEYID.ALDIASKEEP)) },
+                { 10155010, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in a side corridor next to the giant basilisk", KL(KEYID.ALDIASKEEP)) },
+                { 10155020, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest behind the breakable chained door", KL(KEYID.ALDIASKEEP)) },
+                { 10155030, MChestInfo(MapArea.AldiasKeep, "[AldiasKeep] Metal chest in the mirror room", KL(KEYID.ALDIASKEEP)) },
+                { 10156000, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In front of the skeleton dragon", KL(KEYID.ALDIASKEEP)) },
+                { 10156010, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the mirror room", KL(KEYID.ALDIASKEEP)) },
+                { 10156030, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Under a table in the long corridor", KL(KEYID.ALDIASKEEP)) },
+                { 10156031, NGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] Under a table in the long corridor in NG+", KL(KEYID.ALDIASKEEP)) },
+                { 10156040, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Inside a barrel in the corner in side room with caged Gargoyle", KL(KEYID.ALDIASLAB)) },
+                { 10156140, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] On table in side room with caged Gargoyle", KL(KEYID.ALDIASLAB)) },
+                { 10156050, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Room just before Guardian dragon, where the second ogre breaks through", KL(KEYID.ALDIASKEEP)) },
+                { 10156060, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In front of the giant basilisk", KL(KEYID.ALDIASKEEP)) },
+                { 10156130, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Behind a shelf in the potion room", KL(KEYID.ALDIASKEEP)) },
+                { 10156070, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)) },
+                { 10156100, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)) },
+                { 10156160, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool", KL(KEYID.ALDIASKEEP)) },
+                { 10156161, NGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] In the acid pool in NG+", KL(KEYID.ALDIASKEEP)) },
+                { 10156020, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Vanilla alluring skulls: in the Foregarden courtyard", KL(KEYID.ALDIASKEEP)) },
+                { 10156080, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the Foregarden courtyard", KL(KEYID.ALDIASKEEP)) },
+                { 10156170, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the Foregarden courtyard", KL(KEYID.ALDIASKEEP)) },
+                { 10156090, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] To the right at the start of the Foregarden courtyard stairs", KL(KEYID.ALDIASKEEP)) },
+                { 10156180, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the water-feature in the middle of the stairs approaching Aslatiel", KL(KEYID.ALDIASKEEP)) },
+                { 10156190, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] In the left side of the front door, before Aslatiel", KL(KEYID.ALDIASKEEP)) },
+                { 10156200, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Stuck in a mirror in the mirror room", KL(KEYID.ALDIASKEEP)) },
+                { 10156150, SafeInfo(MapArea.AldiasKeep, "[AldiasKeep] Just before the elevator to the dragon aerie", KL(KEYID.ALDIASKEEP)) },
+                { 60050000, VolInfo(MapArea.AldiasKeep, "[AldiasKeep] Drop from the Skeleton Dragon after defeating four Forlorns", KL(KEYID.FOURFORLORN)) },
+
+                // Dragon Aerie:
+                { 1701000, NpcInfo(MapArea.DragonAerie, "[Aerie] Gift from the Emerald Herald", KL(KEYID.ALDIASKEEP)) },
+                { 10276010, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276020, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276030, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276120, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276040, SafeInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276041, NGPlusInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest in NG+", KL(KEYID.ALDIASKEEP)) },
+                { 10276190, SafeInfo(MapArea.DragonAerie, "[Aerie] In the cave under the first dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276060, SafeInfo(MapArea.DragonAerie, "[Aerie] Near the hollow priest by the second dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276061, NGPlusInfo(MapArea.DragonAerie, "[Aerie] Near the hollow priest by the second dragon nest in NG+", KL(KEYID.ALDIASKEEP)) },
+                { 10276180, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the second dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276080, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the second dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276070, SafeInfo(MapArea.DragonAerie, "[Aerie] In the middle of Aerie, at the end of one of the rope bridges, near multiple exploding hollows", KL(KEYID.ALDIASKEEP)) },
+                { 10276000, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge before the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276050, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge before the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276090, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276100, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276110, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276170, SafeInfo(MapArea.DragonAerie, "[Aerie] Corpse in the third dragon nest", KL(KEYID.ALDIASKEEP)) },
+                { 10276130, SafeInfo(MapArea.DragonAerie, "[Aerie] On droppable small ledge close to the zip-line start", KL(KEYID.ALDIASKEEP)) },
+                { 10276160, SafeInfo(MapArea.DragonAerie, "[Aerie] On a stone pillar you need to drop to from the zip-line", KL(KEYID.ALDIASKEEP)) },
+
+                // Dragon Shrine:
+                { 600000, BossInfo(MapArea.DragonShrine, "[DragonShrine] Ancient dragon drop", KL(KEYID.ALDIASKEEP)) },
+                { 1787000, NpcInfo(MapArea.DragonShrine, "[DragonShrine] Gift from ancient dragon when speaking to him", KL(KEYID.ALDIASKEEP)) },
+                { 10275000, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest in a side room right after the bonfire", KL(KEYID.ALDIASKEEP)) },
+                { 10275060, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest behind the Pharros contraption under the staircase", KL(KEYID.ALDIASKEEP)) },
+                { 10275010, WChestInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on right side of the stairs, towards petrified egg door", KL(KEYID.ALDIASKEEP)) },
+                { 10275020, WChestInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper", KL(KEYID.ALDIASKEEP)) },
+                { 10275021, WChestNGPlusInfo(MapArea.DragonShrine, "[DragonShrine] Wooden chest on roof on the path to the left of the second Drakekeeper in NG+", KL(KEYID.ALDIASKEEP)) },
+                { 10276140, SafeInfo(MapArea.DragonShrine, "[DragonShrine] On a corpse hanging off the ledge in the watchtower", KL(KEYID.ALDIASKEEP)) },
+                { 10275030, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest on a ledge that you jump to from the watchtower", KL(KEYID.ALDIASKEEP)) },
+                { 10275040, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Vanilla Third Dragon Ring: metal chest just past petrified egg door", KL(KEYID.ALDIASKEEP)) },
+                { 10275050, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest on outer ledge next to the petrified egg", KL(KEYID.ALDIASKEEP)) },
+                { 10275070, MChestInfo(MapArea.DragonShrine, "[DragonShrine] Metal chest next to the petrified egg", KL(KEYID.ALDIASKEEP)) },
+                { 10276150, SafeInfo(MapArea.DragonShrine, "[DragonShrine] On a corpse in the corner before petrified egg door", KL(KEYID.ALDIASKEEP)) },
+                { 60003000, SafeInfo(MapArea.DragonShrine, "[DragonShrine] Vanilla Petrified Egg: Near the invader in Dragon Shrine", KL(KEYID.ALDIASKEEP)) }, // Petrified Egg pickup
+
+                // Memories of Jeigh (Giant Lord):
+                { 309700, BossInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Giant Lord drop", KL(KEYID.MEMORYJEIGH)) },
+                { 309701, BossNGPlusInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Giant Lord drop in NG+", KL(KEYID.MEMORYJEIGH)) },
+                { 60004000, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Vanilla Soul of a Giant: Giant corpse at end of all memories", KL(KEYID.ASHENMIST)) },
+                { 20106100, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] First left in Giant Lord's memory", KL(KEYID.MEMORYJEIGH)) },
+                { 20106110, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] On the battlefield, just before Giant Lord", KL(KEYID.MEMORYJEIGH)) },
+                { 20106111, NGPlusInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] On the battlefield, just before Giant Lord in NG+", KL(KEYID.MEMORYJEIGH)) },
+                { 20106120, SafeInfo(MapArea.MemoryOfJeigh, "[MemoryJeigh] Up the second set of stairs in the Giant Lord memory", KL(KEYID.MEMORYJEIGH)) },
+
+                // Memory of Orro
+                { 1743000, NpcInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Gift from Benhart if he has survived at least three summons", KL(KEYID.BENHARTFULLQUEST)) },
+                { 20105020, WChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Trapped wooden chest behind a Pharros' contraption on the second floor", KL(KEYID.ORROPHARROS)) },
+                { 20105030, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KL(KEYID.ORROPHARROS)) },
+                { 20105040, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest behind a Pharros contraption and an illusory wall on the second floor", KL(KEYID.ORROPHARROS)) },
+                { 20105050, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest in the room where you need to drop the crane", KL(KEYID.MEMORYORRO)) },
+                { 20105060, MChestInfo(MapArea.MemoryOfOrro, "[MemoryOrro] Metal chest in the room where you need to drop the crane", KL(KEYID.MEMORYORRO)) },
+                { 20106050, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] In the corner of the second floor room of the entrace stairs", KL(KEYID.MEMORYORRO)) },
+                { 20106070, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On the bridge above courtyard", KL(KEYID.MEMORYORRO)) },
+                { 20106080, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] In the corner of the courtyard", KL(KEYID.MEMORYORRO)) },
+                { 20106090, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] At the side of the center of the courtyard", KL(KEYID.MEMORYORRO)) },
+                { 20106130, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On the roof looking onto courtyard after climbing ladder", KL(KEYID.MEMORYORRO)) },
+                { 20106140, SafeInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On scaffolding after climbing a ladder from the courtyard", KL(KEYID.MEMORYORRO)) },
+                { 20106141, NGPlusInfo(MapArea.MemoryOfOrro, "[MemoryOrro] On scaffolding after climbing a ladder from the courtyard in NG+", KL(KEYID.MEMORYORRO)) },
+
+                // Memory of Vammar
+                { 1724000, NpcInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Gift from Captain Drummond after defeating Giant lord", KL(KEYID.MEMORYJEIGH)) },
+                { 20105000, WChestInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Wooden chest in side room opposite Captain Drummond", KL(KEYID.ASHENMIST)) },
+                { 20105001, WChestNGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Wooden chest in side room opposite Captain Drummond in NG+", KL(KEYID.ASHENMIST)) },
+                { 20105010, MChestInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Metal chest in the corner of the main battlefield area", KL(KEYID.ASHENMIST)) },
+                { 20106000, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Behind a corner in the first corridor after Drummond", KL(KEYID.ASHENMIST)) },
+                { 20106010, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield", KL(KEYID.ASHENMIST)) },
+                { 20106011, NGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] On the second floor of the ruined house, just left before the main Vammar battlefield in NG+", KL(KEYID.ASHENMIST)) },
+                { 20106020, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] In the corner of the roof", KL(KEYID.ASHENMIST)) },
+                { 20106030, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Vanilla Giant Warrior Club: in the far right corner of the main battlefield area", KL(KEYID.ASHENMIST)) },
+                { 20106040, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] At the top of the final stairs in Memory of Vammar", KL(KEYID.ASHENMIST)) },
+                { 20106060, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Next to the stairs just before the end of Memory of Vammar", KL(KEYID.ASHENMIST)) },
+                { 20106061, NGPlusInfo(MapArea.MemoryOfVammar, "[MemoryVammar] Next to the stairs just before the end of Memory of Vammar in NG+", KL(KEYID.ASHENMIST)) },
+                { 20106150, SafeInfo(MapArea.MemoryOfVammar, "[MemoryVammar] In the corner of the last platform in Memory of Vammar", KL(KEYID.ASHENMIST)) },
+
+                // DLC1:
+                { 682000, BossInfo(MapArea.DragonsSanctum, "[DLC1] Elana, Squalid Queen drop", KL(KEYID.ELANA)) },
+                { 681000, BossInfo(MapArea.DragonsSanctum, "[DLC1] Sinh, the Slumbering Dragon drop", KL(KEYID.ELANA)) },
+                { 862000, BossInfo(MapArea.CaveOfTheDead, "[DLC1] Gank Squad drop", KL(KEYID.GANKSQUAD)) },
+                { 862001, BossNGPlusInfo(MapArea.CaveOfTheDead, "[DLC1] Gank Squad drop in NG+", KL(KEYID.GANKSQUAD)) },
+                { 50356130, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the corner of a corridor just after the DLC1 opening door", KL(KEYID.DLC1KEY)) },
+                { 50356000, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the top of the first building by Photoshop Jump", KL(KEYID.DLC1KEY)) },
+                { 50356010, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the first corrosive bug room", KL(KEYID.DLC1KEY)) },
+                { 50356020, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Beneath the switch in front of you directly after Photoshop Jump, near stairs", KL(KEYID.DLC1KEY)) },
+                { 50356030, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge outside the first corrosive bug room", KL(KEYID.DLC1KEY)) },
+                { 50356140, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge one stairs down from the Sanctum Walk bonfire", KL(KEYID.DLC1KEY)) },
+                { 50356160, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge next to the two first raising towers", KL(KEYID.DLC1KEY)) },
+                { 50356560, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Vanilla Dark Quartz +3: on top of a stationary tower in the first raising tower area", KL(KEYID.DLC1KEY)) },
+                { 50356400, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On top of a raising tower in the first area", KL(KEYID.DLC1KEY)) },
+                { 50356170, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Hanging from the ledge on the far side just below the first raising towers", KL(KEYID.DLC1KEY)) },
+                { 50356190, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On ledge in the second corrosive bug room", KL(KEYID.DLC1KEY)) },
+                { 50356590, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the first poison statue clump", KL(KEYID.DLC1KEY)) },
+                { 50356600, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the first poison statue clump", KL(KEYID.DLC1KEY)) },
+                { 50356050, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On outer ledge of the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)) },
+                { 50356040, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Stationary tower next to the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)) },
+                { 50356200, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the base of the tower with the Tower of Prayer bonfire", KL(KEYID.DLC1KEY)) },
+                { 50356060, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the path next to the row of raising towers below Tower of Prayer", KL(KEYID.DLC1KEY)) },
+                { 50356220, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] On the path next to the row of raising towers below Tower of Prayer", KL(KEYID.DLC1KEY)) },
+                { 50356570, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of one of the raising towers next to Tower of Prayer", KL(KEYID.DLC1KEY)) },
+                { 50356580, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of one of the raising towers next to Tower of Prayer", KL(KEYID.DLC1KEY)) },
+                { 50356410, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the middle level of the raising tower that creates the path to the whipping tree", KL(KEYID.DLC1KEY)) },
+                { 50356380, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the whipping tree", KL(KEYID.DLC1KEY)) },
+                { 50356530, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the whipping tree", KL(KEYID.DLC1KEY)) },
+                { 50356240, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] In the lower elevator room that connects to the Cave of the Dead", KL(KEYID.DLC1KEY)) },
+                { 50356250, SafeInfo(MapArea.ShulvaSanctumCity, "[DLC1] Next to the bridge which Sinh fireballs leading to the Dragon's Sanctum", KL(KEYID.DLC1KEY)) },
+                //
+                { 50356430, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla 20k/Dragon Charms: in small room that opens from button in the beginning of Sanctum", KL(KEYID.DLC1KEY)) },
+                { 50355050, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the first two ghosts", KL(KEYID.DLC1KEY)) },
+                { 50355250, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)) },
+                { 50355260, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)) },
+                { 50355270, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)) },
+                { 50355280, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in the room with the two ghosts", KL(KEYID.DLC1KEY)) },
+                { 50355010, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Trapped wooden chest close to the first rotating door", KL(KEYID.DLC1KEY)) },
+                { 50355350, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest in room that opens from ceiling button close to the first rotating door", KL(KEYID.DLC1KEY)) },
+                { 50356260, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the room with the first rotating door", KL(KEYID.DLC1KEY)) },
+                { 50356280, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)) },
+                { 50356290, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)) },
+                { 50356300, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)) },
+                { 50356310, SafeInfo(MapArea.DragonsSanctum, "[DLC1] On the stairs in the bug room before Flynn's Ring", KL(KEYID.DLC1KEY)) },
+                { 50355090, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Flynn's Ring: in a metal chest in the room up the ladder above the bug room", KL(KEYID.DLC1KEY)) },
+                { 50356270, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla repair powder: where you drop back to the corridor after Flynn's Ring", KL(KEYID.DLC1KEY)) },
+                { 50356090, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)) },
+                { 50356100, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)) },
+                { 50355020, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Wooden chest in the room after the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)) },
+                { 50355030, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Wooden chest in the room after the spike trapped stairs by Puzzling Sword", KL(KEYID.PUZZLINGSWORD)) },
+                { 50355060, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Puzzling Sword: metal chest in the room after the spike trapped stairs", KL(KEYID.PUZZLINGSWORD)) },
+                { 50356320, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)) },
+                { 50356330, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)) },
+                { 50356340, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)) },
+                { 50356350, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the spiky field near Dragon Stone", KL(KEYID.DLC1KEY)) },
+                { 50355120, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Dragon Stone: metal chest in room opened by single button next to the spiky field", KL(KEYID.DLC1KEY)) },
+                { 50356420, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Sanctum Crossbow: next to the Hidden Sanctum Chamber bonfire", KL(KEYID.DLC1KEY)) },
+                { 50355110, WChestInfo(MapArea.DragonsSanctum, "[DLC1] Trapped wooden chest next to the entrance to the ghost armor room", KL(KEYID.DLC1KEY)) },
+                { 50355070, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest next to the entrance to the ghost armor room", KL(KEYID.DLC1KEY)) },
+                { 50356630, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Gank Squad Key: In the ghost armor room", KL(KEYID.DLC1KEY)) },
+                { 50356640, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the ghost armor room", KL(KEYID.DLC1KEY)) },
+                { 50355130, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Denial: metal chest behind the rotating door next to the spiky field", KL(KEYID.DLC1KEY)) },
+                { 50356360, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Corpse near the stairs before Jester Thomas invades", KL(KEYID.DLC1KEY)) },
+                { 50356370, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)) },
+                { 50356440, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)) },
+                { 50356650, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)) },
+                { 50356660, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the water area with Dinobutts", KL(KEYID.DLC1KEY)) },
+                { 50356510, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla DBGS: near the bottom of the elevator that takes you to Elana's bridge", KL(KEYID.DLC1KEY)) },
+                { 50356150, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Just before the bridge activated by Dragon Stone, near the elevator shortcut back to start", KL(KEYID.DLC1KEY)) },
+                { 50356450, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In corridor one level up from Sanctum Interior bonfire", KL(KEYID.ELANA)) },
+                { 50356460, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)) },
+                { 50356470, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)) },
+                { 50356480, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)) },
+                { 50356490, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)) },
+                { 50356500, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In side corridor one level up from Dragon's rest", KL(KEYID.ELANA)) },
+                { 50356520, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In the room with many opened chests one level down from Sanctum Interior bonfire", KL(KEYID.ELANA)) },
+                { 50356540, SafeInfo(MapArea.DragonsSanctum, "[DLC1] In Sinh's arena", KL(KEYID.ELANA)) },
+                { 60020000, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Crown: in Sinh's arena after defeating him", KL(KEYID.ELANA)) },
+                { 50355190, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with Eternal Sanctum key", KL(KEYID.GANKSQUAD)) },
+                { 50355200, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)) },
+                { 50355210, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)) },
+                { 50355220, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)) },
+                { 50355230, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Metal chest behind the door that is opened with eternal sanctum key", KL(KEYID.GANKSQUAD)) },
+                { 50355240, MChestInfo(MapArea.DragonsSanctum, "[DLC1] Vanilla Sanctum ShieLd: metal chest in the topmost room (up ladder on the way to Gank Squad)", KL(KEYID.GANKSQUAD)) },
+                { 50356390, SafeInfo(MapArea.DragonsSanctum, "[DLC1] Hanging from ledge in the middle level of the elevator that connects to the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50355180, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla Flower Skirt: metal chest after Gank Squad fight", KL(KEYID.GANKSQUAD)) },
+                { 50356610, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla brightbugs: in the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50356620, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Vanilla ascetics: in the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50356670, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] In the lower level of the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50355140, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Metal chest in the middle level of the elevator that connects to the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50355150, MChestInfo(MapArea.CaveOfTheDead, "[DLC1] Metal chest in the Cave of the Dead", KL(KEYID.GANKSQUAD)) },
+                { 50356210, SafeInfo(MapArea.CaveOfTheDead, "[DLC1] Corpse after Gank Squad fight", KL(KEYID.GANKSQUAD)) },
+
+                // DLC2:
+                { 675000, BossInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop", KL(KEYID.DLC2)) },
+                { 675010, BossNGPlusInfo(MapArea.BrumeTower, "[DLC2] Fume Knight drop in NG+", KL(KEYID.DLC2)) },
+                { 305010, BossInfo(MapArea.BrumeTower, "[DLC2] Blue Smelter Demon drop", KL(KEYID.BLUESMELTER)) },
+                { 680000, BossInfo(MapArea.BrumeTower, "[DLC2] Sir Alonne drop", KL(KEYID.ALONNE)) },
+                { 60019000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Smelter Wedge x6: Very first ash pile before the first chain bridge", KL(KEYID.DLC2)) },
+                { 50367140, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Baneful Bird Ring: on railing on top of the tower next to the Throne Floor bonfire requiring elevator", KL(KEYID.FUME)) },
+                { 50366340, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Dex Ring: in the end of the stairs by the first Ashen Idol at the top of the tower", KL(KEYID.DLC2)) },
+                { 50366020, SafeInfo(MapArea.BrumeTower, "[DLC2] On the topmost round platform of the central pillar", KL(KEYID.DLC2)) },
+                { 50366360, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar close to the top of the tower", KL(KEYID.DLC2)) },
+                { 50366380, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar close to the top of the tower", KL(KEYID.DLC2)) },
+                { 50366350, SafeInfo(MapArea.BrumeTower, "[DLC2] In first (top) ash ledge beneath the chain; near a gate", KL(KEYID.DLC2)) },
+                { 50368000, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue in the first (top) ash-covered ledge beneath the chain", KL(KEYID.DLC2)) },
+                { 50366030, SafeInfo(MapArea.BrumeTower, "[DLC2] On a corpose underneath the first chain towards Throne Floor bonfire", KL(KEYID.DLC2)) },
+                { 50365000, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest just above the second Ashen Idol guarded by possessed armor", KL(KEYID.DLC2)) },
+                { 50366900, SafeInfo(MapArea.BrumeTower, "[DLC2] In the first area with Cask Runners", KL(KEYID.DLC2)) },
+                { 50365010, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest outside just before the Upper Floor bonfire", KL(KEYID.DLC2)) },
+                { 50366000, SafeInfo(MapArea.BrumeTower, "[DLC2] In the corner of small room next to the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50365560, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest up the ladder from the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50366370, SafeInfo(MapArea.BrumeTower, "[DLC2] In a corridor up the ladder from the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50366390, SafeInfo(MapArea.BrumeTower, "[DLC2] On ledge next to the Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50365500, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50365510, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind Leap of Faith illusory rock after the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50365090, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest in a side corridor next to the Upper Floor bonfire", KL(KEYID.DLC2)) },
+                { 50366260, SafeInfo(MapArea.BrumeTower, "[DLC2] In Lever Room with the third Ashen Idol and multiple other enemies", KL(KEYID.DLC2)) },
+                { 50366440, SafeInfo(MapArea.BrumeTower, "[DLC2] On a corpse, up a ladder from Lever Room (third Ashen Idol)", KL(KEYID.DLC2)) },
+                { 50366280, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)) },
+                { 50366300, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)) },
+                { 50366310, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)) },
+                { 50366320, SafeInfo(MapArea.BrumeTower, "[DLC2] In a circle of loot just after Lever Room guarded by possessed armor", KL(KEYID.DLC2)) },
+                { 50366480, SafeInfo(MapArea.BrumeTower, "[DLC2] On ledge with two Fume Sorcerers above the outside ash field", KL(KEYID.DLC2)) },
+                { 50368020, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on ledge after the second Ashen Idol", KL(KEYID.DLC2)) },
+                { 50368030, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50368040, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50368050, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on bigger ash covered field before the Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50366510, SafeInfo(MapArea.BrumeTower, "[DLC2] In corner just before the chain bridge to the tower where Maldron invades", KL(KEYID.DLC2)) },
+                { 50365700, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest next to Maldron", KL(KEYID.DLC2)) },
+                { 50366810, SafeInfo(MapArea.BrumeTower, "[DLC2] On a round platform of the central pillar of the tower where Maldron invades", KL(KEYID.DLC2)) },
+                { 50368060, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue at the bottom of the tower where Maldron invades", KL(KEYID.DLC2)) },
+                { 50366820, SafeInfo(MapArea.BrumeTower, "[DLC2] In the stairs of the tower where Maldron invades", KL(KEYID.DLC2)) },
+                { 50366800, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the bottom of the tower where Maldron invades", KL(KEYID.DLC2)) },
+                { 50366170, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Spell Quartz +3: in the corner next to Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50366580, SafeInfo(MapArea.BrumeTower, "[DLC2] In the room immediately after the Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50365540, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Catarina Set: metal chest behind explodable wall in the corridor with Fume Sorcerers", KL(KEYID.DLC2)) },
+                { 50365590, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla PDBx8 :Metal chest behind explodable wall in the corridor with Fume Sorcerers", KL(KEYID.DLC2)) },
+                { 50366570, SafeInfo(MapArea.BrumeTower, "[DLC2] In the shortcut between the tower where Scorching Iron Scepter is and the Foyer bonfire", KL(KEYID.DLC2)) },
+                { 50367090, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom above the Quicksword Rachel invasion", KL(KEYID.DLC2)) },
+                { 50367100, SafeInfo(MapArea.BrumeTower, "[DLC2] In the curved corridor with crawlers before Quicksword Rachel", KL(KEYID.DLC2)) },
+                { 50367110, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom next to the room where Quicksword Rachel invades", KL(KEYID.DLC2)) },
+                { 50367120, SafeInfo(MapArea.BrumeTower, "[DLC2] In a small sideroom next to the room where Quicksword Rachel invades", KL(KEYID.DLC2)) },
+                { 60014000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Scorching Scepter: bottom floor of side tower after Foyer", KL(KEYID.DLC2)) },
+                { 50366830, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366850, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366860, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366870, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366710, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366720, SafeInfo(MapArea.BrumeTower, "[DLC2] On an ash covered area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50368070, SafeInfo(MapArea.BrumeTower, "[DLC2] In ash statue in area one level down from the Foyer bonfire near vanilla Tower Key", KL(KEYID.FUME)) },
+                { 50366210, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Tower Key: corpse on the cliff edge of ash area one level below Foyer bonfire", KL(KEYID.FUME)) },
+                { 50365680, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Strength Ring: netal chest on the top floor of the multi-level room", KL(KEYID.FUME)) },
+                { 50366760, SafeInfo(MapArea.BrumeTower, "[DLC2] In the lower room of the multi-level room on the way to Fume Knight", KL(KEYID.FUME)) },
+                { 50365080, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Sorcery Clutch Ring: metal chest in a side room above Fume's elevator", KL(KEYID.FUME)) },
+                { 50368010, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on the left side of the Fume Knight arena", KL(KEYID.FUME)) },
+                { 50368080, SafeInfo(MapArea.BrumeTower, "[DLC2] Inside ash statue on the right side of the Fume Knight arena", KL(KEYID.FUME)) },
+                { 60016000, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Crown: in ash pile after defeating Fume Knight", KL(KEYID.FUME)) },
+                { 50365020, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Life Ring +3: metal chest next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50365550, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla Pilgrim's Spontoon (Pseudo jumps): metal chest in a small room where you need to jump from an elevator next to the Upper floor bonfire", KL(KEYID.FUME)) },
+                { 50366240, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50366250, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50367130, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50366880, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50366890, SafeInfo(MapArea.BrumeTower, "[DLC2] Behind a door next to Ashen Idol on the same level as the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50365690, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest behind illusory wall from the elevator shaft going up from the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50365580, MChestInfo(MapArea.BrumeTower, "[DLC2] Vanilla brightbugs: metal chest in room with lizard; jump from the elevator going up from Foyer", KL(KEYID.FUME)) },
+                { 50366070, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Simpleton's Ring: on outside ledge accessed from a room with a rotating fiery bull statue next to the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50366530, SafeInfo(MapArea.BrumeTower, "[DLC2] In front of a rotating fiery bull statue in a room next to the Upper Floor bonfire", KL(KEYID.FUME)) },
+                { 50365650, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the upper floor of curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)) },
+                { 50366680, SafeInfo(MapArea.BrumeTower, "[DLC2] In the lower floor of curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)) },
+                { 50366700, SafeInfo(MapArea.BrumeTower, "[DLC2] Vanilla Dispelling Ring +1: behind explodable wall the curved corridor opposite the gate to Sir Alonne", KL(KEYID.FUME)) },
+                { 50365570, MChestInfo(MapArea.BrumeTower, "[DLC2] Metal chest in the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)) },
+                { 50366520, SafeInfo(MapArea.BrumeTower, "[DLC2] On altar in the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)) },
+                { 50365030, WChestInfo(MapArea.BrumeTower, "[DLC2] Wooden chest in the left of the dark cursed area next to the Foyer bonfire", KL(KEYID.BLUESMELTER)) },
+                { 50366740, SafeInfo(MapArea.BrumeTower, "[DLC2] One elevator up from the Iron Passage bonfire", KL(KEYID.BLUESMELTER)) },
+                { 50367010, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell on the right just before the first gate of Iron Passage", KL(KEYID.BLUESMELTER)) },
+                { 50367020, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell just before the second gate of Iron Passage", KL(KEYID.BLUESMELTER)) },
+                { 50367030, SafeInfo(MapArea.IronPassage, "[DLC2] In a cell just before the second gate", KL(KEYID.BLUESMELTER)) },
+                { 50367040, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the first big room after passing through first gate", KL(KEYID.BLUESMELTER)) },
+                { 50367050, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the second big room after passing through first gate and dropping", KL(KEYID.BLUESMELTER)) },
+                { 50366980, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the third big room after passing through the second gate", KL(KEYID.BLUESMELTER)) },
+                { 50366990, SafeInfo(MapArea.IronPassage, "[DLC2] On an upper ledge of the third big room after passing through the second gate", KL(KEYID.BLUESMELTER)) },
+                { 50367000, SafeInfo(MapArea.IronPassage, "[DLC2] On lower level of the third big room before Blue Smelter", KL(KEYID.BLUESMELTER)) },
+                { 50367060, SafeInfo(MapArea.IronPassage, "[DLC2] Right after the Blue Smelter Demon", KL(KEYID.BLUESMELTER)) },
+                { 50366910, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)) },
+                { 50366920, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)) },
+                { 50366930, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the first hall in Alonne memory", KL(KEYID.ALONNE)) },
+                { 50366940, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On side alcove on the left side of the first hall", KL(KEYID.ALONNE)) },
+                { 50366950, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the second hall in Alonne memory", KL(KEYID.ALONNE)) },
+                { 50366970, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] In the middle of the second hall in Alonne memory", KL(KEYID.ALONNE)) },
+                { 50366960, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On side alcove on the lower level of the second hall", KL(KEYID.ALONNE)) },
+                { 60013000, SafeInfo(MapArea.MemoryOfTheOldIronKing, "[DLC2] On throne after Sir Alonne", KL(KEYID.ALONNE)) },
+                { 60012100, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the top of the tower next to the Throne Floor bonfire", KL(KEYID.ALLWEDGES)) },
+                { 60012000, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol (the second ashen idol from the top of the tower)", KL(KEYID.ALLWEDGES)) },
+                { 60012050, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the Lever Rooom with multiple other enemies", KL(KEYID.ALLWEDGES)) },
+                { 60012080, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen idol in the tower where Maldron invades", KL(KEYID.ALLWEDGES)) },
+                { 60012010, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)) },
+                { 60012020, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the left side of the Fume Knight arena", KL(KEYID.FUMEIDOL)) },
+                { 60012030, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the right side of the Fume Knight arena", KL(KEYID.FUMEIDOL)) },
+                { 60012040, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on the right side of the Fume Knight arena", KL(KEYID.FUMEIDOL)) },
+                { 60012060, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol down the stairs from the Smelter Throne bonfire", KL(KEYID.FUMETOWERIDOL)) },
+                { 60012070, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol in the dark curse area next to Foyer bonfire", KL(KEYID.SMELTERIDOL)) },
+                { 60012090, SafeInfo(MapArea.BrumeTower, "[DLC2] Ashen Idol on ledge behind a door on the same level as the Upper floor bonfire", KL(KEYID.FUMEIDOL)) },
+
+                // DLC3:
+                { 679000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Aava, the King's Pet drop", KL(KEYID.DLC3)) },
+                { 690000, BossInfo(MapArea.FrozenEleumLoyce, "[DLC3] Ivory King drop", KL(KEYID.DLC3)) },
+                { 679010, BossInfo(MapArea.FrigidOutskirts, "[DLC3] Lud and Zallen drop", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50375710, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Vessel Shield: netal chest after Aava", KL(KEYID.DLC3)) },
+                { 1788000, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 5 Loyce souls", KL(KEYID.DLC3)) },
+                { 1788010, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 15 Loyce souls", KL(KEYID.DLC3)) },
+                { 1788020, CovInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 35 Loyce souls", KL(KEYID.DLC3)) },
+                { 1788030, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Gift from Alsanna after bringing her 50 Loyce souls; or killing her", KL(KEYID.DLC3)) },
+                { 60031000, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Crown: in the Ivory King arena after defeating him", KL(KEYID.DLC3)) },
+                { 50376340, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In a corner of the first room right from the Outer Wall bonfire", KL(KEYID.DLC3)) },
+                { 50376410, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In a narrow corridor in the beginning of the area", KL(KEYID.DLC3)) },
+                { 50376350, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In an area with ice dogs in the beginning", KL(KEYID.DLC3)) },
+                { 50376050, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Under the stairs before the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376750, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376760, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376070, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In small room right after the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376060, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Under ice in the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376010, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Behind ice just before the square with a fountain", KL(KEYID.DLC3)) },
+                { 50375510, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)) },
+                { 50375520, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)) },
+                { 50375540, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest on roof of a house near the square with a fountain", KL(KEYID.DLC3)) },
+                { 50376000, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Near Vanilla Dark Clutch On snowy ledge accessed by dropping from the roof before fountain square", KL(KEYID.DLC3)) },
+                { 50376080, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Dark Clutch Ring: under a tree accessed by dropping from the roof before fountain square", KL(KEYID.DLC3)) },
+                { 50376090, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Old Bell Helm: on ledge at the end of the path on left side before Abandoned Dwelling bonfire", KL(KEYID.DLC3)) },
+                { 50376580, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In the right side of the cave opened by lighting torches", KL(KEYID.DLC3CAVE)) },
+                { 50376300, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Garrison Ward Key: guarded by Flexile Sentry in the cave opened by lighting torches", KL(KEYID.DLC3CAVE)) },
+                { 50376570, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Behind illusory wall in the left side of the cave opened by lighting torches", KL(KEYID.DLC3CAVE)) },
+                { 50376540, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Ring of the Embedded: On a snow ledge after a narrow gap between buildings after Abandoned Dwelling bonfire", KL(KEYID.DLC3)) },
+                { 50376530, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On a higher part of the courtyard after Abandoned Dwelling bonfire", KL(KEYID.DLC3)) },
+                { 50376100, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the courtyard after Abandoned Dwelling bonfire", KL(KEYID.DLC3)) },
+                { 50376110, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Radiants: next to a Rampart Golem by the lever to Outer Wall", KL(KEYID.DLC3)) },
+                { 50375580, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)) },
+                { 50375590, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)) },
+                { 50375600, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)) },
+                { 50375610, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest in round room with mimic near Expulsion Chamber bonfire", KL(KEYID.DLC3)) },
+                { 50376120, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the main ballista bridge", KL(KEYID.DLC3)) },
+                { 50376130, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the main ballista bridge", KL(KEYID.DLC3)) },
+                { 50376140, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the main ballista bridge", KL(KEYID.DLC3)) },
+                { 50375550, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Elizabeth Mushrooms: metal chest at the end of the main ballista bridge", KL()) },
+                { 50375530, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest behind the elevator full of coffins", KL(KEYID.DLC3)) },
+                { 50376560, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On upper floor behind the elevator full of coffins", KL(KEYID.DLC3)) },
+                { 50375740, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest behind Pharros contraption on the ballista bridge", KL(KEYID.DLC3PHARROS)) },
+                { 50376590, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On lower floor of the tower with the invisible ladder", KL(KEYID.DLC3)) },
+                { 50376360, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On middle floor balcony of the tower with the invisible ladder", KL(KEYID.DLC3)) },
+                { 50375640, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest on top floor of the tower with the invisible ladder", KL(KEYID.DLC3)) },
+                { 50376150, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Next to a Rampart Golem near the tower with the invisible ladder", KL(KEYID.DLC3)) },
+                { 50376370, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In small room between stairs leading to the Eye of the Priestess", KL(KEYID.DLC3)) },
+                { 50375500, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Eye of the Priestess: on altar", KL(KEYID.DLC3)) },
+                { 50376160, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Just before the fog gate leading to the Inner Wall bonfire", KL(KEYID.DLC3)) },
+                { 50376170, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Just before the fog gate leading to the Inner Wall bonfire", KL(KEYID.DLC3)) },
+                { 50375690, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest under ice in the first room of Inner Wall", KL(KEYID.DLC3)) },
+                { 50376600, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In the large empty room in the middle floor of Inner Wall", KL(KEYID.DLC3)) },
+                { 50375700, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest surrounded by three Frozen Golems on upper floor of Inner Wall", KL(KEYID.DLC3)) },
+                { 50375730, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest in the corridor where Holy Knight Aurheim invades", KL(KEYID.DLC3)) },
+                { 50376380, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In a dead end corridor in Inner Wall near the Eleum Knight and by the illusory wall", KL(KEYID.DLC3)) },
+                { 50375670, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest behind Inner Wall illusory near route back to bonfire", KL(KEYID.DLC3)) },
+                { 50375660, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Vanilla Fire Clutch Ring: metal chest behind Inner Wall illusory wall and up stairs", KL(KEYID.DLC3)) },
+                { 50376510, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On upper floor balcony of the (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)) },
+                { 50376770, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Next to the shortcut door up a ladder in multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)) },
+                { 50376400, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On lower-middle floor balcony of the (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)) },
+                { 50375680, WChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Wooden chest on bottom floor of (wooden) multi-level area down the middle ballista bridge stairs", KL(KEYID.DLC3)) },
+                { 50376310, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Guarded by three hedgehogs at the start of the Lower Garrison area", KL(KEYID.DLC3)) },
+                { 50376320, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Guarded by three hedgehogs just at the start of the Lower Garrison area", KL(KEYID.DLC3)) },
+                { 50376180, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Before Hexer Nicolai invades behind a pillar near hedgehogs", KL(KEYID.DLC3)) },
+                { 50376190, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Where Hexer Nicolai invades guarded by a hedgehog", KL(KEYID.DLC3)) },
+                { 50376660, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Where Hexer Nicolai invades, near the shortcut back to the Lower Garrison courtyard", KL(KEYID.DLC3)) },
+                { 50376200, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Hanging from ledge near Lower Garrison bonfire", KL(KEYID.DLC3)) },
+                { 50375560, MChestInfo(MapArea.FrozenEleumLoyce, "[DLC3] Metal chest on upper level of the Lower Garrison courtyard", KL(KEYID.DLC3)) },
+                { 50376520, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] Hanging from the ledge outside the tower of the Eleum Knight near snowball start", KL(KEYID.DLC3)) },
+                { 50376610, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376620, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376630, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376670, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376680, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376690, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] In Covetous Demons cave", KL(KEYID.DLC3)) },
+                { 50376640, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On a corpse by hedgehogs and frozen golems on the way to snowball", KL(KEYID.DLC3)) },
+                { 50376650, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On a corpse by hedgehogs and frozen golems on the way to snowball", KL(KEYID.DLC3)) },
+                { 50376420, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)) },
+                { 50376430, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)) },
+                { 50376440, SafeInfo(MapArea.FrozenEleumLoyce, "[DLC3] On the broken where the snowball finishes", KL(KEYID.DLC3)) },
+                { 50376730, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Under the coffin you ride in on in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376740, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In one of the coffins at the start of Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376220, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In the first house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376450, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Outside the first house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376230, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Between the first and the second house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376460, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] Between the second and the third house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376470, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] In the third house in Frigid Outskirts", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 50376710, SafeInfo(MapArea.FrigidOutskirts, "[DLC3] On ledge just before bridge to Lud and Zallen", KL(KEYID.FRIGIDOUTSKIRTS)) },
 
 
+                // Misc special:
+                { 60007000, ExoticInfo(MapArea.Undefined, "Vanilla Lingering Dragoncrest +2: reward for killing 1000 invading Red Phantoms", KL()) },
+                { 60007100, ExoticInfo(MapArea.Undefined, "Vanilla Ring of Thorns +2: reward for invading and killing 1000 other worlds", KL()) },
+                { 60007200, ExoticInfo(MapArea.Undefined, "Vanilla Illusory Ring of a Conqueror: reward for completing the game without dying", KL(KEYID.CREDITS)) },
+                { 60007300, ExoticInfo(MapArea.Undefined, "Vanilla Illusory Ring of the Exalted: reward for completing the game without taking a bonfire", KL(KEYID.CREDITS)) },
+                { 70000000, ExoticInfo(MapArea.Undefined, "Pre-order bonus: Black Flamestone dagger + Black Flamestone Parma", KL()) },
+                { 60010000, CrammedInfo(MapArea.Undefined, "Reward for killing Last Giant when crammed (Soldier key only)", KL()) },
+                { 60011000, CrammedInfo(MapArea.Undefined, "Reward for killing Ancient Dragon (Ashen Mist only) when crammed", KL(KEYID.ALDIASKEEP)) },
+                { 60043000, CrammedInfo(MapArea.Undefined, "Reward for killing Giant Lord when crammed (Kinship only)", KL(KEYID.ASHENMIST)) },
+                { 60042000, CrammedInfo(MapArea.Undefined, "Reward for killing Gulch Giants when crammed (Forgotten Key only)", KL()) },
+                { 60045000, CrammedInfo(MapArea.Undefined, "Reward for killing Licia using the Crushed Eye Orb whilst crammed (Rotunda only)", KL(KEYID.LICIAINVASION)) },
+                { 60040000, CrammedInfo(MapArea.Undefined, "Last Giant Soul drop by itself, dropped only when crammed after defeating Last Giant", KL(KEYID.ASHENMIST)) },
+                { 60044000, CrammedInfo(MapArea.Undefined, "Giant Lord Soul drop by itself, dropped only when crammed after defeating Giant Lord in base NG", KL(KEYID.ASHENMIST)) },
+                { 60044001, CrammedInfo(MapArea.Undefined, "Giant Lord Soul and Ring of Giants +2. Dropped only when crammed after defeating Giant Lord in NG+", KL(KEYID.ASHENMIST)) },
+                { 60041000, CrammedInfo(MapArea.Undefined, "Ancient Dragon Soul drop by itself, dropped only when crammed after defeating Ancient Dragon. Likely an oversight.", KL(KEYID.ALDIASKEEP)) },
+                { 60046000, UnresolvedInfo(MapArea.Undefined, "Key to the Embedded by itself?, possibly related to when Key to Embedded was a key and cramming", KL()) },
+                { 60046001, UnresolvedInfo(MapArea.Undefined, "Demon of Song Soul by itself? Possibly related to when Key to Embedded was a key and cramming", KL()) },
+                { 60030000, UnresolvedInfo(MapArea.Undefined, "Soul of Aava + Garrison ward key?? Cut content??", KL()) },
+                { 90000000, UnresolvedInfo(MapArea.Undefined, "10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 0,3 instead of 3,1???", KL()) },
+                { 90000001, UnresolvedInfo(MapArea.Undefined, "10,20,30 Destructive, Lightning, and Fire Greatarrows. First Unk bytes = 3,3 instead of 3,1???", KL()) },
+                { 99995000, UnresolvedInfo(MapArea.Undefined, "One lifegem?", KL()) },
+                { 99995001, UnresolvedInfo(MapArea.Undefined, "Three lifegems??", KL()) },
+                { 99995002, UnresolvedInfo(MapArea.Undefined, "One radiant lifegems", KL()) },
+                { 99995003, UnresolvedInfo(MapArea.Undefined, "Three radiant lifegems", KL()) },
+                { 99995004, UnresolvedInfo(MapArea.Undefined, "One old radiant lifegem", KL()) },
+                { 99995005, UnresolvedInfo(MapArea.Undefined, "Three old radiant lifegems", KL()) },
+                { 99995006, UnresolvedInfo(MapArea.Undefined, "One Elizabeth mushroom?", KL()) },
+                { 99995007, UnresolvedInfo(MapArea.Undefined, "One divine blessing?", KL()) },
+                { 99995008, UnresolvedInfo(MapArea.Undefined, "One human effigy?", KL()) },
+                { 99996000, UnresolvedInfo(MapArea.Undefined, "One Soul of a Lost Undead?", KL()) },
+                { 99996001, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Lost Undead?", KL()) },
+                { 99996002, UnresolvedInfo(MapArea.Undefined, "One Soul of a Nameless Soldier?", KL()) },
+                { 99996003, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Nameless Soldier?", KL()) },
+                { 99996004, UnresolvedInfo(MapArea.Undefined, "One Soul of a Proud Knight?", KL()) },
+                { 99996005, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Proud Knight?", KL()) },
+                { 99996006, UnresolvedInfo(MapArea.Undefined, "One Soul of a Brave Warrior?", KL()) },
+                { 99996007, UnresolvedInfo(MapArea.Undefined, "One Large Soul of a Brave Warrior?", KL()) },
+                { 99996008, UnresolvedInfo(MapArea.Undefined, "One Soul of a Hero?", KL()) },
+
+                // Missing from previous Rando:
+                { 10000, CovInfo(MapArea.Undefined, "Awestone reward for killing an invader in Covenant of Champions", KL()) },
+                { 10010, CovInfo(MapArea.Undefined, "Pharros/Rat Tail reward for killing an invader in Rat Covenant *PROBABLY*", KL()) },
+                { 10020, CovInfo(MapArea.Undefined, "Dragon scale reward for killing an invader in Dragon covenant *PROBABLY*", KL(KEYID.DRAGONCOVENANT)) },
+                { 10030, UnresolvedInfo(MapArea.Undefined, "Bonfire Ascetic + Human Effigy, possibly related to invasions in Dark Chasm of Old?", KL()) },
+                { 10040, CovInfo(MapArea.Undefined, "Sunlight medal reward for summoning/being summoned and killing bosses in Sunlight covenant", KL(KEYID.BRANCH)) },
+                { 10050, CovInfo(MapArea.Undefined, "Token of Fidelity: awarded when successfully defending a member of the Way of Blue covenant from an invader", KL()) },
+                { 10060, CovInfo(MapArea.Undefined, "Sunlight medal reward for summoning/being summoned and killing bosses in Sunlight covenant", KL(KEYID.BRANCH)) },
+                { 10070, CovInfo(MapArea.Undefined, "Awarded after fulfilling your duty when summoned through a Small White Sign Soapstone", KL()) },
+                { 10080, UnresolvedInfo(MapArea.Undefined, "Smooth and Silky Stone: possibly for summoning via Small White Sign Soapstone (see above)", KL()) },
+                { 10110, UnresolvedInfo(MapArea.Undefined, "Token of Fidelity: possibly to do with summoning Blue Sentinel help; covenant related", KL()) },
+                { 10120, UnresolvedInfo(MapArea.Undefined, "Token of Fidelity: possibly to do with summoning Blue Sentinel help; covenant related", KL()) },
+                { 10140, CovInfo(MapArea.Undefined, "Awarded to any living Red Phantoms when the host dies during an invasion *PROBABLY*", KL()) },
+                { 10150, UnresolvedInfo(MapArea.Undefined, "Unresolved token of spite; related to above, maybe if invasion is with soapstone instead of orb?", KL()) },
+                { 10160, UnresolvedInfo(MapArea.Undefined, "Token of spite. Some other invasion condition?", KL()) },
+                { 10170, UnresolvedInfo(MapArea.Undefined, "Token of spite. Some other invasion condition?", KL()) },
+                { 10180, UnresolvedInfo(MapArea.Undefined, "Chunk + Slab + Twinkling + PDB", KL()) },
+                { 10190, UnresolvedInfo(MapArea.Undefined, "Pharros Lockstone + Smooth & Silky Stone", KL()) },
+                { 10200, UnresolvedInfo(MapArea.Undefined, "Pharros Lockstone + Smooth & Silky Stone", KL()) },
+                { 10210, UnresolvedInfo(MapArea.Undefined, "Dragon scale", KL()) },
+                { 10220, UnresolvedInfo(MapArea.Undefined, "Bonfire Ascetic + Effigy", KL()) },
+                { 10230, UnresolvedInfo(MapArea.Undefined, "Cracked Blue Eye Orb", KL()) },
+                { 10240, UnresolvedInfo(MapArea.Undefined, "Cracked Red Eye Orb", KL()) },
+                { 10250, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()) },
+                { 10260, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()) },
+                { 10270, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()) },
+                { 10280, UnresolvedInfo(MapArea.Undefined, "Chunk + Slab + Twinkling + PDB", KL()) },
+                { 11000, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11010, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11020, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11030, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11040, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11050, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11060, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11070, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11080, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11090, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11100, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11110, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11120, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11130, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11140, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11150, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11160, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11170, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11180, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11190, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11200, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11210, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11220, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11230, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                { 11240, UnresolvedInfo(MapArea.Undefined, "Rubbish, perhaps wooden chest related??", KL()) },
+                //
+                { 1307100, UnresolvedInfo(MapArea.Undefined, "Vengarl's Helm. Maybe some kind of fail-safe?", KL()) },
+                { 1744000, UnresolvedInfo(MapArea.Undefined, "Tseldora den key (not from creighton though)?", KL()) },
+                { 1753000, UnresolvedInfo(MapArea.Undefined, "5 rusted coins. Maybe related to talking to bell guard, but can't seem to replicate", KL()) },
+                { 1753010, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 1756000, UnresolvedInfo(MapArea.Undefined, "Crest of the Rat", KL()) },
+                { 1757000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 1758000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 1759000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 1776000, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()) },
+                { 1777000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 1786000, UnresolvedInfo(MapArea.Undefined, "Dagger", KL()) },
+                { 2004000, UnresolvedInfo(MapArea.Undefined, "Bell Keeper's Seal", KL()) },
+                // 
+                { 3001000, UnresolvedInfo(MapArea.Undefined, "Gesture: Point. Gestures seemingly not tied to expected events though", KL()) },
+                { 3002000, UnresolvedInfo(MapArea.Undefined, "Gesture: I won't bite. Gestures seemingly not tied to expected events though", KL()) },
+                { 3004000, UnresolvedInfo(MapArea.Undefined, "Gesture: Bow. Gestures seemingly not tied to expected events though", KL()) },
+                { 3005000, UnresolvedInfo(MapArea.Undefined, "Gesture: Welcome. Gestures seemingly not tied to expected events though", KL()) },
+                { 3006000, UnresolvedInfo(MapArea.Undefined, "Gesture: Duel Bow. Gestures seemingly not tied to expected events though", KL()) },
+                { 3007000, UnresolvedInfo(MapArea.Undefined, "Gesture: Wave. Gestures seemingly not tied to expected events though", KL()) },
+                { 3008000, UnresolvedInfo(MapArea.Undefined, "Gesture: Pumped Up. Gestures seemingly not tied to expected events though", KL()) },
+                { 3009000, UnresolvedInfo(MapArea.Undefined, "Gesture: Joy. Gestures seemingly not tied to expected events though", KL()) },
+                { 3010000, UnresolvedInfo(MapArea.Undefined, "Gesture: Warcry. Gestures seemingly not tied to expected events though", KL()) },
+                { 3011000, UnresolvedInfo(MapArea.Undefined, "Gesture: Warmup. Gestures seemingly not tied to expected events though", KL()) },
+                { 3012000, UnresolvedInfo(MapArea.Undefined, "Gesture: Hurrah!. Gestures seemingly not tied to expected events though", KL()) },
+                { 3013000, UnresolvedInfo(MapArea.Undefined, "Gesture: Righty-ho!. Gestures seemingly not tied to expected events though", KL()) },
+                { 3014000, UnresolvedInfo(MapArea.Undefined, "Gesture: No Way. Gestures seemingly not tied to expected events though", KL()) },
+                { 3015000, UnresolvedInfo(MapArea.Undefined, "Gesture: This one's me. Gestures seemingly not tied to expected events though", KL()) },
+                { 3016000, UnresolvedInfo(MapArea.Undefined, "Gesture: Have mercy. Gestures seemingly not tied to expected events though", KL()) },
+                { 3017000, UnresolvedInfo(MapArea.Undefined, "Gesture: Prostration. Gestures seemingly not tied to expected events though", KL()) },
+                { 3018000, UnresolvedInfo(MapArea.Undefined, "Gesture: Decapitate. Gestures seemingly not tied to expected events though", KL()) },
+                { 3019000, UnresolvedInfo(MapArea.Undefined, "Gesture: Fist pump. Gestures seemingly not tied to expected events though", KL()) },
+                { 3020000, UnresolvedInfo(MapArea.Undefined, "Gesture: Mock. Gestures seemingly not tied to expected events though", KL()) },
+                { 3021000, UnresolvedInfo(MapArea.Undefined, "Gesture: Praise the Sun. Gestures seemingly not tied to expected events though", KL()) },
+                //
+                { 10027000, UnresolvedInfo(MapArea.Undefined, "Bone of Order", KL()) },
+                { 10045500, UnresolvedInfo(MapArea.Undefined, "Rubbish", KL()) },
+                { 10106020, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()) },
+                { 10145050, UnresolvedInfo(MapArea.Undefined, "Human Effigy", KL()) },
+                { 10255020, UnresolvedInfo(MapArea.Undefined, "Twinkling Titanite & 3 Smooth and Silky Stones", KL()) },
+                { 20215040, RemovedInfo(MapArea.Undefined, "10 Fire Grearrows: Likely leftover from the Drangleic wooden trapped chest in chariot room in Vanilla DS2", KL(KEYID.DRANGLEIC)) },
+                { 20215041, RemovedInfo(MapArea.Undefined, "20/20 Fire/Destructive Grearrows: (see above) in NG+", KL(KEYID.DRANGLEIC)) },
+                { 20265000, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()) },
+                { 20266000, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()) },
+                { 40035000, UnresolvedInfo(MapArea.Undefined, "Lifegem", KL()) },
+                { 40036000, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()) },
+                //
+                { 50001000, UnresolvedInfo(MapArea.Undefined, "Rubbish", KL()) },
+                { 50355080, UnresolvedInfo(MapArea.Undefined, "Diving Blessing", KL()) },
+                { 50355100, UnresolvedInfo(MapArea.Undefined, "Five silver talismans", KL()) },
+
+                // Maybe these were early versions of the DLC items before finalisation
+                { 50355330, UnresolvedInfo(MapArea.Undefined, "Three twinkling titanites", KL()) },
+                { 50355340, UnresolvedInfo(MapArea.Undefined, "Three bleed stones", KL()) },
+                { 50356070, UnresolvedInfo(MapArea.Undefined, "Soul of a Lost Undead", KL()) },
+                { 50356080, UnresolvedInfo(MapArea.Undefined, "Three Vine Balms", KL()) },
+                { 50356110, UnresolvedInfo(MapArea.Undefined, "Crown of the Sunken King", KL()) },
+                { 50356180, UnresolvedInfo(MapArea.Undefined, "Three titanite chunks", KL()) },
+                { 50356230, UnresolvedInfo(MapArea.Undefined, "Repair powder", KL()) },
+                { 50365040, UnresolvedInfo(MapArea.Undefined, "3x Human Effigy", KL()) },
+                { 50365050, UnresolvedInfo(MapArea.Undefined, "Blacksteel Katana", KL()) },
+                { 50365060, UnresolvedInfo(MapArea.Undefined, "Repair powder x3", KL()) },
+                { 50365070, UnresolvedInfo(MapArea.Undefined, "Smooth and silky x5", KL()) },
+                { 50365530, UnresolvedInfo(MapArea.Undefined, "Catarina Gauntlets / Leggings", KL()) },
+                { 50365600, UnresolvedInfo(MapArea.Undefined, "Three twinkling titanites", KL()) }, // gank squad drops independently?
+                { 50365610, UnresolvedInfo(MapArea.Undefined, "Three petrified dragon bones", KL()) },
+                { 50365620, UnresolvedInfo(MapArea.Undefined, "Titanite slab", KL()) },
+                { 50365630, UnresolvedInfo(MapArea.Undefined, "Recollection spell", KL()) },
+                { 50365640, UnresolvedInfo(MapArea.Undefined, "2x Diving Blessing", KL()) },
+                { 50365660, UnresolvedInfo(MapArea.Undefined, "2x Bonfire Ascetic", KL()) },
+                { 50365670, UnresolvedInfo(MapArea.Undefined, "Petrified Something", KL()) },
+                { 50366040, UnresolvedInfo(MapArea.Undefined, "Petrified Dragon Bone", KL()) },
+                { 50366120, UnresolvedInfo(MapArea.Undefined, "5x Torch", KL()) },
+                { 50366130, UnresolvedInfo(MapArea.Undefined, "5x Large Titanite Shard", KL()) },
+                { 50366140, UnresolvedInfo(MapArea.Undefined, "3x Alluring Skull", KL()) },
+                { 50366150, UnresolvedInfo(MapArea.Undefined, "3x Titanite Chunk", KL()) },
+                { 50366160, UnresolvedInfo(MapArea.Undefined, "15 Destructive Greatarrows", KL()) },
+                { 50366200, UnresolvedInfo(MapArea.Undefined, "Simpleton's Ring", KL()) },
+                { 50366220, UnresolvedInfo(MapArea.Undefined, "2x Old Growth Balm", KL()) },
+                { 50366230, UnresolvedInfo(MapArea.Undefined, "Petrified Dragon Bone", KL()) },
+                { 50366270, UnresolvedInfo(MapArea.Undefined, "Twinkling titanite", KL()) },
+                { 50366290, UnresolvedInfo(MapArea.Undefined, "Morning Star", KL()) },
+                { 50366330, UnresolvedInfo(MapArea.Undefined, "3x Vine Balm", KL()) },
+                { 50366400, UnresolvedInfo(MapArea.Undefined, "2x Titanite Chunk", KL()) },
+                { 50366410, UnresolvedInfo(MapArea.Undefined, "2x Twinkling Titanite", KL()) },
+                { 50366420, UnresolvedInfo(MapArea.Undefined, "2x Goldenfruit Balm", KL()) },
+                { 50366430, UnresolvedInfo(MapArea.Undefined, "20x Iron Greatarrow", KL()) },
+                { 50366450, UnresolvedInfo(MapArea.Undefined, "5x Bleeding Serum", KL()) },
+                { 50366460, UnresolvedInfo(MapArea.Undefined, "2x Firedrake Stone", KL()) },
+                { 50366470, UnresolvedInfo(MapArea.Undefined, "Flame Quartz Ring +3", KL()) },
+                { 50366490, UnresolvedInfo(MapArea.Undefined, "2x Goldenfruit Balm", KL()) },
+                { 50366500, UnresolvedInfo(MapArea.Undefined, "Wilted Dusk Herb", KL()) },
+                { 50366540, UnresolvedInfo(MapArea.Undefined, "5x Charcoal Pine Resin", KL()) },
+                { 50366550, UnresolvedInfo(MapArea.Undefined, "Broadsword", KL()) },
+                { 50366560, UnresolvedInfo(MapArea.Undefined, "3x Cracked Red Eye Orb", KL()) },
+                { 50366590, UnresolvedInfo(MapArea.Undefined, "3x Amber Herb", KL()) },
+                { 50366600, UnresolvedInfo(MapArea.Undefined, "3x Rusted Coin", KL()) },
+                { 50366610, UnresolvedInfo(MapArea.Undefined, "20x Fire Greatarrow", KL()) },
+                { 50366620, UnresolvedInfo(MapArea.Undefined, "5x Black Firebomb", KL()) },
+                { 50366630, UnresolvedInfo(MapArea.Undefined, "Morning Star", KL()) },
+                { 50366640, UnresolvedInfo(MapArea.Undefined, "Dexterity Ring", KL()) },
+                { 50366650, UnresolvedInfo(MapArea.Undefined, "4x Radiant Lifegems", KL()) },
+                { 50366660, UnresolvedInfo(MapArea.Undefined, "2x Palestone", KL()) },
+                { 50366670, UnresolvedInfo(MapArea.Undefined, "5x Green Blossom", KL()) },
+                { 50366690, UnresolvedInfo(MapArea.Undefined, "Old Radiant Lifegem", KL()) },
+                { 50366730, UnresolvedInfo(MapArea.Undefined, "Full Mad Warrior Set", KL()) },
+                { 50366750, UnresolvedInfo(MapArea.Undefined, "2x Rouge Water", KL()) },
+                { 50366770, UnresolvedInfo(MapArea.Undefined, "3x Small Orange Burr", KL()) },
+                { 50366780, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()) },
+                { 50366790, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()) },
+                { 50366840, UnresolvedInfo(MapArea.Undefined, "Smelter Wedge", KL()) },
+                { 50367070, UnresolvedInfo(MapArea.Undefined, "Twinkling Titanite", KL()) },
+                { 50367080, UnresolvedInfo(MapArea.Undefined, "Dexterity Ring", KL()) },
+                { 50368090, UnresolvedInfo(MapArea.Undefined, "Large Soul of a Brave Warrior", KL()) },
+                { 50375570, UnresolvedInfo(MapArea.Undefined, "3x Petrified Dragon Bone", KL()) },
+                { 50375620, UnresolvedInfo(MapArea.Undefined, "5x Old radiants + 4x Wilted Dusk Herb", KL()) },
+                { 50375630, UnresolvedInfo(MapArea.Undefined, "4x Dried Root", KL()) },
+                { 50375650, UnresolvedInfo(MapArea.Undefined, "4x Human Effigy", KL()) },
+                { 50375720, UnresolvedInfo(MapArea.Undefined, "3x Human Effigy", KL()) },
+                { 50376020, UnresolvedInfo(MapArea.Undefined, "3x Hexing Urn", KL()) },
+                { 50376030, UnresolvedInfo(MapArea.Undefined, "2x Vine Balm", KL()) },
+                { 50376040, UnresolvedInfo(MapArea.Undefined, "Old Radiant Lifegem", KL()) },
+                { 50376210, UnresolvedInfo(MapArea.Undefined, "Scimitar", KL()) },
+                { 50376240, UnresolvedInfo(MapArea.Undefined, "4x Holy Water Urn", KL()) },
+                { 50376250, UnresolvedInfo(MapArea.Undefined, "2x Old Growth Balm", KL()) },
+                { 50376260, UnresolvedInfo(MapArea.Undefined, "3x Titanite Chunk", KL()) },
+                { 50376270, UnresolvedInfo(MapArea.Undefined, "30x Fire Greatarrow", KL()) },
+                { 50376280, UnresolvedInfo(MapArea.Undefined, "8x Rusted Coin", KL()) },
+                { 50376290, UnresolvedInfo(MapArea.Undefined, "6x Gold Pine Resin", KL()) },
+                { 50376330, UnresolvedInfo(MapArea.Undefined, "3x Radiant Lifegem", KL()) },
+                { 50376390, UnresolvedInfo(MapArea.Undefined, "3x Blackweed Balm", KL()) },
+                { 50376490, UnresolvedInfo(MapArea.Undefined, "2x Smooth and Silky Stone", KL()) },
+                { 50376550, UnresolvedInfo(MapArea.Undefined, "2x Twilight Herb", KL()) },
+                //
+                { 0,        UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10090,    UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10100,    UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10130,    UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 514500,   UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 1705100,  UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 1705300,  UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10146430, UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10146440, UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10146450, UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10146460, UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+                { 10146470, UnresolvedInfo(MapArea.Undefined, "unknown lot", KL()) },
+            };
+
+            // done
+            return d;
+        }
+
+        internal static Dictionary<int, RandoInfo> SetupDropsDictionary()
+        {
+            Dictionary<int, RandoInfo> d = new()
+            {
+                { 0,  UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 10, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 20, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 40, UnreachableDropInfo(MapArea.Undefined, "possibly 'see individual enemy instance', or 'special-case'", KL()) },
+                { 1100200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1100201, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1100500, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1020000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1100000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1106000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1156000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1156100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1156200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1160000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1164100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1166000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1166100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1166200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1171100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1171200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1186000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1230000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1230001, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1236000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1256000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1256100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1256200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1256300, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1256400, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 1310200, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 1310300, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing, removed Old Knight?", KL()) },
+                { 1310500, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 1320500, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 1330000, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 1333000, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 1336000, UnreachableDropInfo(MapArea.HeidesTowerOfFlame, "missing", KL()) },
+                { 2110000, UnreachableDropInfo(MapArea.ShrineOfAmana, "missing", KL()) },
+                { 2116000, UnreachableDropInfo(MapArea.ShrineOfAmana, "missing", KL()) },
+                { 2216000, UnreachableDropInfo(MapArea.DrangleicCastle, "missing", KL()) },
+                { 2216100, UnreachableDropInfo(MapArea.DrangleicCastle, "missing", KL()) },
+                { 2216200, UnreachableDropInfo(MapArea.DrangleicCastle, "missing", KL()) },
+                { 2240001, UnreachableDropInfo(MapArea.UndeadCrypt, "Nameless Usurper removed NG+ content?", KL()) },
+                { 2246000, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246100, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246200, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246300, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246400, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246500, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246600, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246700, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246800, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2246900, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2247000, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2247100, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2247200, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2247300, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 2247400, UnreachableDropInfo(MapArea.UndeadCrypt, "missing", KL()) },
+                { 5000000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5001000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5002000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5003000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5004000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5005000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5006000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5007000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5008000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5009000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5037300, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 5037400, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "missing", KL()) },
+                { 6000000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 10205000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10213000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10300100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10301100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10302100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10303100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10304100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10305000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10310000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10310100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10311000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10312000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 10313000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 11800100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 11900000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12300100, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12301000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12303000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12501000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12700400, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12700500, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 12702000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 13102000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 13101000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 13301000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 13302000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 13502000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 13505000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 13901000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 14600000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 14602000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15120100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15121000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15300100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15300900, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15301100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15500100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15700000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15701000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15702000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 15703000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 20510000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 20510100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 20600200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 20900100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 21000100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 21000300, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 21200000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 21300000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 22000000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 22200100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 22610000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30330000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30500000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30501000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30710000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30970000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30960000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31201000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31202000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31203000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31204000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31205000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31300000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31301000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31800000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 31801000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32100000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32101000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32500000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32600000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 32700000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33002000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33003000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33004100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33102000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33200000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33300000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33700100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33700400, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33700500, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33700600, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33702200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 33702300, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50000000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50100000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50300000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50610000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50620000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50700000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 50800000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 51460000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60000000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60101000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60200000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60300000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60310000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 60700000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 61100000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 61911000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 62500000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 62600000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 62700000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 62800000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65000100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65100100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65300100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65301100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65302100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65303100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65600100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 65901000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 66101000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 66600100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 66604100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 67110100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 68000100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 68100100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 68800000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 68901000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 70150000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 70360000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 72110000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 74201000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 75500000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 76401000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 77001000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 78501000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81000000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81000100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81000200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81000400, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81200100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 81400800, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82000100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82000200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82100100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82200200, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82200000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 82200100, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 83400000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 83410000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 83505000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 83730000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 84500000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 84810000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 85100000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 87900000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 99900000, UnreachableDropInfo(MapArea.Undefined, "missing", KL()) },
+                { 30102000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 30102001, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 99990000, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                { 99990001, UnreachableRegistInfo(MapArea.Undefined, "missing", KL()) },
+                
+                // Things Betwixt
+                { 1020100, EnemyDropInfo(MapArea.ThingsBetwixt, "[Betwixt] Undead Traveler (e.g. first Betwixt foggate enemies) [GEN:3000]", KL()) },
+                { 1020200, EnemyDropInfo(MapArea.ThingsBetwixt, "[Betwixt] Ogres by gender change coffin [GEN:3300]", KL(KEYID.BRANCH)) },
+                { 1020300, EnemyDropInfo(MapArea.ThingsBetwixt, "[Betwixt] Invader from lighting all Betwixt sconces [GEN:9500]", KL()) },
+
+                // Majula
+                { 1040000, EnemyDropInfo(MapArea.Majula, "[Majula] Any Majula mansion basement skeletons [GEN:1100]", KL(KEYID.MANSION)) },
+                { 1040100, EnemyDropInfo(MapArea.Majula, "[Majula] Any small boar near well [GEN:1000]", KL()) },
+                { 1040200, EnemyDropInfo(MapArea.Majula, "[Majula] Licia drop during Crushed Eye invasion [GEN:152]", KL(KEYID.CRUSHEDEYEORB)) },
+                { 1040300, EnemyDropInfo(MapArea.Majula, "[Majula] Any medium-size boar near well [GEN:1010]", KL()) },
+                { 1040400, EnemyDropInfo(MapArea.Majula, "[Majula] GIGABOAR [GEN:1020]", KL()) },
+                { 1040500, EnemyNGPlusInfo(MapArea.Majula, "[Majula] NG+ mimic in building towards Forest [GEN:2000]", KL()) },
+
+                // Forest of Fallen Giants
+                { 1100100, EnemyDropInfo(MapArea.FOFG, "[FOFG] Various hollow soldiers, e.g. the those who open the door after you hit [GEN:2521]", KL()) },
+                { 1101000, EnemyDropInfo(MapArea.FOFG, "[FOFG] Crystal lizard above Cardinal Tower bonfire [GEN:5000]", KL()) },
+                { 1105000, EnemyDropInfo(MapArea.FOFG, "[FOFG] Hollow infantry near ogre, [GEN:1082]", KL()) },
+                { 1105100, EnemyDropInfo(MapArea.FOFG, "[FOFG] Hollow infantry near ogre, [GEN:1000]", KL()) },
+                { 1105200, EnemyDropInfo(MapArea.FOFG, "[FOFG] Hollow infantry near ogre [GEN:1083]", KL()) },
+                { 1105300, EnemyDropInfo(MapArea.FOFG, "[FOFG] Hollow infantry before ladder after ogre [GEN:1085]", KL()) },
+                { 1105400, EnemyDropInfo(MapArea.FOFG, "[FOFG] Hollow archer before ladder after ogre [GEN:1084]", KL()) },
+                { 1107000, EnemyDropInfo(MapArea.FOFG, "[FOFG] Ogre in river at start of area [GEN:8000]", KL()) },
+                { 15301900, EnemyDropInfo(MapArea.FOFG, "[FOFG] Syan Knight guarding King's Door [GEN:8100]", KL(KEYID.SOLDIER)) },
+
+                // Brightstone Cove Tseldora
+                { 1140000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Magus in Congregation fight [GEN:2500]", KL()) },
+                { 1140100, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Adult boar in Tseldora Royal Army campsite, near the well [GEN:1120]", KL(KEYID.TSELDORA)) },
+                { 1140200, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Baby boar in Tseldora Royal Army campsite, near the well [GEN:1122]", KL(KEYID.TSELDORA)) },
+                { 1140300, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Lord Tseldora after Freja [GEN:8500]", KL(KEYID.TSELDORA)) },
+                { 1140400, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant near boulders [GEN:1230]", KL(KEYID.TSELDORA)) },
+                { 1140500, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant guarding door after boulders [GEN:1301]", KL(KEYID.TSELDORA)) },
+                { 1141000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Annoying ledge Crystal Lizard just after door [GEN:5390]", KL(KEYID.TSELDORA)) },
+                { 1141100, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Jump-plunge Crystal Lizard after Congregation [GEN:3090]", KL(KEYID.TSELDORA)) },
+                { 1141200, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Red Crystal Lizard for sandhole [GEN:4090]", KL(KEYID.TSELDORA)) },
+                { 1143000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Mimic chest in house after going down the well by Royal Army campsite [GEN:1195]", KL(KEYID.TSELDORA)) },
+                { 1148000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Poison Moth on wall in Cromwell's room [GEN:9500]", KL(KEYID.TSELDORA)) },
+
+                // Aldia's Keep
+                { 1150000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Petrified Ogre blocking stairway near Bone Dragon [GEN:2500]", KL(KEYID.ALDIASKEEP)) },
+                { 1151000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Red Crystal Lizard on middle floor near Bone Dragon [GEN:1700]", KL(KEYID.ALDIASKEEP)) },
+                { 1153000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic in corner of Foregarden [GEN:1850]", KL(KEYID.ALDIASKEEP)) },
+                { 1153100, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic trapped in final hanging cage in corridor with paintings [GEN:8010]", KL(KEYID.ALDIASKEEP)) },
+                { 1153200, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic trapped in first hanging cage in corridor with paintings [GEN:8011]", KL(KEYID.ALDIASKEEP)) },
+                { 1153300, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic chest nearest Gargoyle in experiment room [GEN:8012]", KL(KEYID.ALDIASLAB)) },
+                { 1153400, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic chest on left in experiment room [GEN:8013]", KL(KEYID.ALDIASLAB)) },
+                { 1153500, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Mimic chest on right after Gargoyle in experiment room [GEN:8014]", KL(KEYID.ALDIASLAB)) },
+                { 1154000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Gargoyles in centre of experiment room [GEN:8000]", KL(KEYID.ALDIASLAB)) },
+                { 1154100, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Magus at end of experiment room [GEN:8500]", KL(KEYID.ALDIASLAB)) },
+                { 1154200, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Undead Aberration in centre hanging cage in corridor with paintings [GEN:8020]", KL(KEYID.ALDIASKEEP)) },
+                { 1154300, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Normal Basilisk in central hanging cage in corridor with paintings [GEN:8040]", KL(KEYID.ALDIASKEEP)) },
+                { 1154400, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Giant Mushroom in early hanging cage in corridor with paintings [GEN:4030]", KL(KEYID.ALDIASKEEP)) },
+                { 1157000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Petrified Undead Traveller just before Giant Basilisk [GEN:8600]", KL(KEYID.ALDIASKEEP)) },
+                { 1157100, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Centre petrified Undead Traveller just before Giant Basilisk [GEN:8601]", KL(KEYID.ALDIASKEEP)) },
+                { 1158000, EnemyDropInfo(MapArea.AldiasKeep, "[AldiasKeep] Giga hidden Poison Moth on roof above Bone Dragon [GEN:2000]", KL(KEYID.ALDIASKEEP)) },
+
+                // Bastille, Belfry Luna, Sinner's Rise
+                { 1164000, EnemyDropInfo(MapArea.BelfryLuna, "[BelfryLuna] Any Bellkeeper dwarf in Belfry Luna [GEN:541]", KL(KEYID.BELFRYLUNA)) },
+                { 1165000, EnemyDropInfo(MapArea.SinnersRise, "[SinnersRise] Flexile Sentry in water passage before Sinner [GEN:6031]", KL(KEYID.SINNERSRISE)) },
+                { 1165100, EnemyDropInfo(MapArea.TheLostBastille, "[Bastille] Pursuer near The Tower Apart [GEN:4000]", KL(KEYID.SOLDIER)) },
+                { 1165200, EnemyDropInfo(MapArea.TheLostBastille, "[Bastille] Pursuer before Belfry Luna [GEN:4010]", KL(KEYID.BRANCH)) },
+                { 1165300, EnemyDropInfo(MapArea.TheLostBastille, "[Bastille] Pursuer on platform after double illusionary wall [GEN:4020]", KL(KEYID.SINNERSRISE)) },
+                { 1165400, EnemyDropInfo(MapArea.TheLostBastille, "[Bastille] Pursuer in courtyard with dogs near McDuff [GEN:4030]", KL()) },
+                { 1168000, EnemyDropInfo(MapArea.TheLostBastille, "[Bastille] Poison Moth on roof after Servant's Quarters bonfire [GEN:4100]", KL(KEYID.BRANCH)) },
+
+                // Harvest Valley, Earthern Peak
+                { 1171000, EnemyDropInfo(MapArea.HarvestValley, "[HarvestValley] Any of the three Crystal Lizards after The Mines bonfire [GEN:1800]", KL(KEYID.HARVESTVALLEY)) },
+                { 1173000, EnemyDropInfo(MapArea.EarthenPeak, "[EarthernPeak] Wooden chest Mimic in poison jar room near Mytha's bonfire [GEN:8210]", KL(KEYID.EARTHERNPEAK)) },
+                { 1178000, EnemyDropInfo(MapArea.EarthenPeak, "[EarthernPeak] Poison Moth on wall above Gilligan [GEN:9100]", KL(KEYID.EARTHERNPEAK)) },
+
+                // No Man's Wharf
+                { 1181000, EnemyDropInfo(MapArea.NoMansWharf, "[Wharf] Crystal Lizard behind breakable wall [GEN:4850]", KL()) },
+
+                // Iron Keep and Belfry Sol
+                { 1190000, EnemyDropInfo(MapArea.IronKeep, "[IronKeep] Alonne Captain opposite Smelter at the far end [GEN:7002]", KL(KEYID.IRONKEEP)) },
+                { 1190001, EnemyNGPlusInfo(MapArea.IronKeep, "[IronKeep] Alonne Captain opposite Smelter at the far end in NG+ [GEN:7002]", KL(KEYID.IRONKEEP)) },
+                { 1190500, EnemyDropInfo(MapArea.IronKeep, "[IronKeep] Pursuer in Smelter arena after defeating him [GEN:5000]", KL(KEYID.IRONKEEP)) },
+                { 1191000, EnemyDropInfo(MapArea.IronKeep, "[IronKeep] Crystal Lizard on left of room with changing platforms [GEN:4039]", KL(KEYID.IRONKEEP)) },
+                { 1193000, EnemyNGPlusInfo(MapArea.IronKeep, "[IronKeep] Mimic metal chest just before Belfry Sol bonfire in NG+ [GEN:4035]", KL(KEYID.IRONKEEP)) },
+                { 1194100, EnemyDropInfo(MapArea.BelfrySol, "[IronKeep] Any of the Bellkeeper dwarfs in Belfry Sol [GEN:570]", KL(KEYID.BELFRYSOL)) },
+
+                // Hunstman's Copse
+                { 1230200, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead - enemy near Chariot bonfire [GEN:2100]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1230500, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead - enemy near Chariot bonfire [GEN:2500]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1231000, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Crystal Lizard by lever for Skellies shortcut [GEN:4112]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1238000, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Poison Moth on roof of cave by Undead Refuge bonfire [GEN:9000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1238100, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Poison Moth on side of highest walkway above Ricard's rapier [GEN:9001]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1238200, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Poison Moth on top of tree above the hole to Soul Spear chest [GEN:9002]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1238300, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Poison Moth on waterfall wall immediately before Skellies [GEN:9003]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 1238400, EnemyDropInfo(MapArea.HuntsmansCopse, "[Copse] Poison Moth on highest tree on wall next to Merciless Roanna invasion [GEN:9004]", KL(KEYID.HUNSTMANSCOPSE)) },
+
+                // The Gutter
+                { 1250000, EnemyDropInfo(MapArea.TheGutter, "[Gutter] Mushrooms surrounding Gutter bug [GEN:2710]", KL()) },
+                { 1250500, EnemyDropInfo(MapArea.TheGutter, "[Gutter] Heide Knight [GEN:2090]", KL()) },
+                { 1250501, EnemyNGPlusInfo(MapArea.TheGutter, "[Gutter] Heide Knight in NG+ [GEN:2090]", KL()) },
+                { 1253000, EnemyDropInfo(MapArea.TheGutter, "[Gutter] Mimic in wooden chest in middle floor of building by Melinda the Butcher invasion [GEN:1490]", KL()) },
+
+                // Dragon Aerie
+                { 1270000, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Third Guardian Dragon if you don't take the zipline [GEN:1100]", KL(KEYID.ALDIASKEEP)) },
+                { 1270100, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] First Guardian Dragon if you don't take the zipline [GEN:1101]", KL(KEYID.ALDIASKEEP)) },
+                { 1270200, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] First Guardian Dragon if you don't take the zipline [GEN:1102]", KL(KEYID.ALDIASKEEP)) },
+                { 1271000, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard closest to Dragon Tooth pickup [GEN:1200]", KL(KEYID.ALDIASKEEP)) },
+                { 1271100, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard on immediate right before Second Guardian Dragon [GEN:1300]", KL(KEYID.ALDIASKEEP)) },
+                { 1271200, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard in cave before first Guardian Dragon [GEN:1400]", KL(KEYID.ALDIASKEEP)) },
+                { 1271300, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard in cave above first Guardian Draagon [GEN:1401]", KL(KEYID.ALDIASKEEP)) },
+                { 1271400, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard directly underneath first Guardian Dragon [GEN:1402]", KL(KEYID.ALDIASKEEP)) },
+                { 1271500, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard at the rear of the first Guardian Dragon [GEN:1403]", KL(KEYID.ALDIASKEEP)) },
+                { 1271600, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard nearest to start of first Guardian Dragon area [GEN:1404]", KL(KEYID.ALDIASKEEP)) },
+                { 1271700, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard underneath second Guardian Dragon, near cave exit [GEN:1500]", KL(KEYID.ALDIASKEEP)) },
+                { 1271800, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard on left of second Guardian Dragon [GEN:1501]", KL(KEYID.ALDIASKEEP)) },
+                { 1271900, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard near eggs, underneath third Guardian Dragon [GEN:1600]", KL(KEYID.ALDIASKEEP)) },
+                { 1272000, EnemyDropInfo(MapArea.DragonAerie, "[Aerie] Crystal Lizard on ledge by third Guardian Dragon [GEN:1601]", KL(KEYID.ALDIASKEEP)) },
+
+                // Heides
+                { 1310000, EnemyDropInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [GEN:1000]", KL()) },
+                { 1310100, EnemyDropInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [GEN:1030]", KL()) },
+                { 1310400, EnemyDropInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [GEN:1010]", KL()) },
+                { 1311000, EnemyDropInfo(MapArea.HeidesTowerOfFlame, "[Heides] Guardian Dragon [GEN:1080]", KL()) },
+
+                // Shaded Woods
+                { 1320000, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Lion Warrior Fang Key guy [GEN:2041]", KL(KEYID.SHADEDWOODS)) },
+                { 1320100, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Petrified Lion Warrior next to Golden Lion Warrior [GEN:2103]", KL(KEYID.SHADEDWOODS)) },
+                { 1320200, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Petrified Lion Warrior blocking the path to Vengarl's body from behind [GEN:2040]", KL(KEYID.SHADEDWOODS)) },
+                { 1321000, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Crystal Lizard near Manscorpion Tark [GEN:2320]", KL(KEYID.SHADEDWOODS)) },
+                { 1328000, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Poison Moth on wall near and above the Bone Dust [GEN:9500]", KL(KEYID.SHADEDWOODS)) },
+                { 1328100, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Poison Moth in tree above the collapsing floor that leads to Grandhal [GEN:9501]", KL(KEYID.SHADEDWOODS)) },
+                { 1328200, EnemyDropInfo(MapArea.ShadedWoods, "[ShadedWoods] Poison Moth on wall of building where Creighton is found [GEN:9502]", KL(KEYID.SHADEDWOODS)) },
+
+                // Doors of Pharros
+                { 1330100, EnemyDropInfo(MapArea.DoorsOfPharros, "[Pharros] Two Gyrm Warriors 50m either side of trapped wooden chest after ladder [GEN:2410]", KL(KEYID.PHARROS)) },
+                { 1330200, EnemyDropInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm Warrior just left of lockstone for hidden trapped wooden chest [GEN:2510]", KL(KEYID.PHARROS)) },
+                { 1330300, EnemyDropInfo(MapArea.DoorsOfPharros, "[Pharros] Three sporadic top floor Gyrm Warriors, e.g. the one by Ordeal's End [GEN:2400]", KL(KEYID.PHARROS)) },
+                { 1331000, EnemyDropInfo(MapArea.DoorsOfPharros, "[Pharros] Crystal Lizard towards Tseldora (gives raw stone in Vanilla) [GEN:1400]", KL(KEYID.PHARROS)) },
+
+                // Grave of Saints
+                { 1341000, EnemyDropInfo(MapArea.ThePit, "[Pit] Bridge Crystal Lizard at the end of The Pit [GEN:1910]", KL()) },
+
+                // Shrine of Amana
+                { 2115000, EnemyDropInfo(MapArea.ShrineOfAmana, "[Amana] Dragonrider guarding door which opens after killing Vendrick [GEN:6500]", KL(KEYID.AMANA)) },
+                { 2115100, EnemyDropInfo(MapArea.ShrineOfAmana, "[Amana] Pyro enemies surrounding true Amana Shrine [GEN:6020]", KL(KEYID.AMANA)) },
+                { 2118000, EnemyDropInfo(MapArea.ShrineOfAmana, "[Amana] Poison Moth on curved wall in front of first Ogre [GEN:6400]", KL(KEYID.AMANA)) },
+                { 2118100, EnemyDropInfo(MapArea.ShrineOfAmana, "[Amana] Poison Moth high on wall Rise of the Dead bonfire [GEN:6402]", KL(KEYID.AMANA)) },
+                { 2118200, EnemyDropInfo(MapArea.ShrineOfAmana, "[Amana] Poison Moth on roof inside Demon of Song arena [GEN:6403]", KL(KEYID.AMANA)) },
+
+                // Drangleic
+                { 2210501, EnemyNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Dual Pursuers (left Pursuer) drop in NG+ [GEN:8000]", KL(KEYID.DRANGLEIC)) },
+                { 2210601, EnemyNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Dual Pursuers (right Pursuer) drop in NG+ [GEN:8010]", KL(KEYID.DRANGLEIC)) },
+                { 2210602, EnemyNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Dual Pursuers (right Pursuer) drop in NG++ [GEN:8010]", KL(KEYID.DRANGLEIC)) },
+                { 2210700, EnemyDropInfo(MapArea.DrangleicCastle, "[Drangleic] Any Ruin Sentinel near King's Gate bonfire [GEN:1320]", KL(KEYID.DRANGLEIC)) },
+                { 2211000, EnemyDropInfo(MapArea.DrangleicCastle, "[Drangleic] Crystal Lizard by Emerald Herald before Drangleic gate [GEN:1098]", KL(KEYID.DRANGLEIC)) },
+                { 2213000, EnemyDropInfo(MapArea.DrangleicCastle, "[Drangleic] Mimic chest in room with Chariot [GEN:9300]", KL(KEYID.DRANGLEIC)) },
+                { 2213001, EnemyNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Mimic chest in room with Chariot in NG+ [GEN:9300]", KL(KEYID.DRANGLEIC)) },
+                { 2214000, EnemyDropInfo(MapArea.DrangleicCastle, "[Drangleic] Gargoyles on roof after Chariot room [GEN:9000]", KL(KEYID.DRANGLEIC)) },
+                { 2214100, EnemyDropInfo(MapArea.DrangleicCastle, "[Drangleic] Chariot [GEN:9010]", KL(KEYID.DRANGLEIC)) },
+                
+                // Undead Crypt
+                { 2240000, EnemyRegistInvasion(MapArea.UndeadCrypt, "[Crypt] Nameless Usurper invasion after Undead Ditch bonfire [GEN:680]", KL(KEYID.UNDEADCRYPT)) },
+                { 2240100, MemeCopyDropInfo(MapArea.UndeadCrypt, "[Crypt] One specific Insolent Knight that spawns when you light up the Crypt [GEN:7008]", KL(KEYID.UNDEADCRYPT)) },
+                { 2240200, EnemyDropInfo(MapArea.UndeadCrypt, "[Crypt] Any normal Insolent Knight that spawns when you light up the Crypt [GEN:7000]", KL(KEYID.UNDEADCRYPT)) },
+                { 2240500, EnemyDropInfo(MapArea.UndeadCrypt, "[Crypt] Dragonrider guarding Velstadt's foggate [GEN:4000]", KL(KEYID.UNDEADCRYPT)) },
+                { 2248000, EnemyDropInfo(MapArea.UndeadCrypt, "[Crypt] Poison Moth on the roof in the centre of Velstadt's approach room [GEN:8000]", KL(KEYID.UNDEADCRYPT)) },
+
+                // Dark Chasm of Old
+                { 4030000, EnemyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030001, EnemyNGPlusInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+ [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030002, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+2 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030003, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+3 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030004, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+4 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030005, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+5 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030006, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+6 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+                { 4030007, MemeCopyDropInfo(MapArea.Quantum, "[DarkChasmOfOld] Final enemy in the Shaded Woods dungeon in NG+7 [GEN:1000]", KL(KEYID.DARKLURKER)) },
+
+                // DLC1
+                { 5035000, EnemyDropInfo(MapArea.DragonsSanctum, "[DLC1] One of the meme Crystal Lizards inside the rotating contraption before Elana [GEN:6600]", KL(KEYID.ELANA)) },
+                { 5035100, EnemyDropInfo(MapArea.DragonsSanctum, "[DLC1] One of the meme Crystal Lizards inside the rotating contraption before Elana [GEN:6601]", KL(KEYID.ELANA)) },
+                { 5035200, EnemyDropInfo(MapArea.DragonsSanctum, "[DLC1] One of the meme Crystal Lizards inside the rotating contraption before Elana [GEN:6602]", KL(KEYID.ELANA)) },
+                { 5035300, EnemyDropInfo(MapArea.DragonsSanctum, "[DLC1] One of the meme Crystal Lizards inside the rotating contraption before Elana [GEN:6603]", KL(KEYID.ELANA)) },
+
+                // DLC2
+                { 5036000, EnemyDropInfo(MapArea.BrumeTower, "[DLC2] Crystal Lizard next to the Brightbug chest [GEN:7100]", KL(KEYID.FUME)) },
+
+                // DLC3
+                { 5037100, EnemyDropInfo(MapArea.FrozenEleumLoyce, "[DLC3] Mimic in the room with five frozen chests [GEN:2300]", KL(KEYID.DLC3)) },
+                { 5037200, EnemyDropInfo(MapArea.FrozenEleumLoyce, "[DLC3] Mimic in room beneath three frozen golems [GEN:3020]", KL(KEYID.DLC3)) },
+                { 5037500, EnemyDropInfo(MapArea.FrozenEleumLoyce, "[DLC3] First Undead Laborer on the passage to Old Bell Helm [GEN:1920]", KL(KEYID.DLC3)) },
+
+                // -------------------------------------------------------------------------------------------------------------------------------------------- //
+                // (Regist) Things Betwixt Woods
+                { 10000100, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Ballsack dudes in NG+ [REG:10000060]", KL()) },
+                { 10100000, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Kobolds running around at the start [REG:10100000]", KL()) },
+                { 11500100, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Basic Undead Traveller enemies after character creation [REG:11500000]", KL()) },
+                { 11501000, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Basic Undead Traveller enemies after character creation in NG+? [REG:11500000]", KL()) },
+                { 21000000, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Basilisks by penis jump [REG:21000000]", KL(KEYID.BRANCH)) },
+                { 30000000, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Ogres by gender coffin [REG:30000000]", KL(KEYID.BRANCH)) },
+                { 31302000, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Falconers in spawning area in NG+ [REG:31300000]", KL()) },
+                { 31303000, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Falconers in spawning area in NG+ [REG:31300001]", KL()) },
+                { 70550000, EnemyRegistNpc(MapArea.ThingsBetwixt, "[Betwixt] Strowen Firekeeper (NPC) [REG:70500000]", KL()) },
+                { 70560000, EnemyRegistNpc(MapArea.ThingsBetwixt, "[Betwixt] Griant Firekeeper (NPC) [REG:70510000]", KL()) },
+                { 70580000, EnemyRegistNpc(MapArea.ThingsBetwixt, "[Betwixt] Morrel Firekeeper (NPC) [REG:70530000]", KL()) },
+                { 72300000, EnemyRegistNpc(MapArea.ThingsBetwixt, "[Betwixt] Milibeth Firekeeper (NPC) [REG:72300000]", KL()) },
+                { 78600000, EnemyRegistNpc(MapArea.ThingsBetwixt, "[Betwixt] Dyna & Tillo (NPC) [REG:78600000]", KL()) },
+                { 83700000, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Phantom after lightning all the scones [REG:83700000]", KL()) },
+                { 83700001, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Phantom after lightning all the sconces in NG+? [REG:83700000]", KL()) },
+                { 83710000, EnemyRegistInfo(MapArea.ThingsBetwixt, "[Betwixt] Foreign Wanderer (hollows near ladder in right foggate) [REG:83710001]", KL()) },
+                { 83720000, EnemyRegistNGPlusInfo(MapArea.ThingsBetwixt, "[Betwixt] Bridge phantom in NG+ [REG:83720000]", KL()) },
+
+                // (Regist) Majula
+                { 13200000, EnemyRegistInfo(MapArea.Majula, "[Majula] Skeleton [REG:13200100]", KL(KEYID.MANSION)) },
+                { 13201000, EnemyRegistInfo(MapArea.Majula, "[Majula] Skeleton [REG:13200000]", KL(KEYID.MANSION)) },
+                { 13202000, EnemyRegistInfo(MapArea.Majula, "[Majula] Skeleton [REG:13200200]", KL(KEYID.MANSION)) },
+                { 13300000, EnemyRegistInfo(MapArea.Majula, "[Majula] Bone-wheels [REG:13300000]", KL(KEYID.MANSION)) },
+                { 13200100, UnreachableRegistInfo(MapArea.Majula, "[Majula] Dual-wielding Skeleton [REG:15700000]", KL()) },
+                { 21400000, EnemyRegistInfo(MapArea.Majula, "[Majula] GIGABOAR [REG:21400000]", KL()) },
+                { 70050000, EnemyRegistNpc(MapArea.Majula, "[Majula] Emerald Herald (NPC) [REG:70050000]", KL()) },
+                { 70450000, EnemyRegistNpc(MapArea.Majula, "[Majula] Laddersmith Gilligan (NPC) [REG:70450000]", KL(KEYID.EARTHERNPEAK)) },
+                { 74100000, EnemyRegistNpc(MapArea.Majula, "[Majula] Crestfallen Saulden (NPC) [REG:74100000]", KL()) },
+                { 75100000, EnemyRegistNpc(MapArea.Majula, "[Majula] Cartographer Cale (NPC) [REG:75100000]", KL()) },
+                { 75400000, EnemyRegistNpc(MapArea.Majula, "[Majula] Merchant Hag Melentia (NPC) [REG:75400000]", KL()) },
+                { 76100000, EnemyRegistNpc(MapArea.Majula, "[Majula] Maughlin the Armourer (NPC) [REG:76100000]", KL()) },
+                { 76200000, EnemyRegistNpc(MapArea.Majula, "[Majula] Stone Trader Chloanne (NPC) [REG:76200000]", KL(KEYID.HARVESTVALLEY)) },
+                { 76300000, EnemyRegistNpc(MapArea.Majula, "[Majula] Rosabeth of Melfia (NPC) [REG:76300000]", KL()) },
+                { 76400000, EnemyRegistNpc(MapArea.Majula, "[Majula] Blacksmith Lenigrast (NPC) [REG:76400000]", KL()) },
+                { 74300000, EnemyRegistNpc(MapArea.Majula, "[Majula] Benhart of Jugo (NPC) [REG:74300000]", KL()) },
+                { 76600000, EnemyRegistNpc(MapArea.Majula, "[Majula] Carhillion of the Fold (NPC) [REG:76600000]", KL()) },
+                { 76900000, EnemyRegistNpc(MapArea.Majula, "[Majula] Licia of Lindeldt (NPC) [REG:76900000]", KL()) },
+                { 77700000, EnemyRegistNpc(MapArea.Majula, "[Majula] Sweet Shalquoi, Cat (NPC) [REG:77700000]", KL()) },
+                { 84000000, UnreachableRegistInfo(MapArea.Majula, "[Majula] Covenant of Champions Voice Marker [REG:78600000]", KL()) },
+
+                // (Regist) FOFG
+                { 10200000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10200000]", KL()) },
+                { 10201000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10201000]", KL()) },
+                { 10202000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10202000]", KL()) },
+                { 10203000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10203000]", KL()) },
+                { 10204000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10204000]", KL()) },
+                { 10300000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10300000]", KL()) },
+                { 10301000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10301000]", KL()) },
+                { 10302000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10302000]", KL()) },
+                { 10303000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10303000]", KL()) },
+                { 10304000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Hollow Soldier [REG:10304000]", KL()) },
+                { 13200600, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Skeleon in dark area towards Soldier's Rest bonfire [REG:13200000]", KL(KEYID.SOLDIER)) },
+                { 13201500, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Skeleon in dark area towards Soldier's Rest bonfire [REG:13201000]", KL(KEYID.SOLDIER)) },
+                { 13203000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Skeleon in dark area towards Soldier's Rest bonfire [REG:13203000]", KL(KEYID.SOLDIER)) },
+                { 15120000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Ironclad Turtle throughout [REG:15100000]", KL(KEYID.SOLDIER)) },
+                { 15200100, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Royal Soldier before Pursuer [REG:15200000]", KL(KEYID.SOLDIER)) },
+                { 15200101, EnemyRegistNGPlusInfo(MapArea.FOFG, "[FOFG] Royal Soldier before Pursuer in NG+ [REG:15200000]", KL(KEYID.SOLDIER)) },
+                { 15201100, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Royal Soldier before Pursuer [REG:15201000]", KL(KEYID.SOLDIER)) },
+                { 15201101, EnemyNGPlusInfo(MapArea.FOFG, "[FOFG] Royal Soldier before Pursuer in NG+ [REG:15201000]", KL(KEYID.SOLDIER)) },
+                { 15301000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Syan Knight guarding King's Door [REG:15301000]", KL(KEYID.SOLDIER)) },
+                { 30100000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Heide Knight up ladder after Ogre [REG:30100000]", KL()) },
+                { 30100001, EnemyRegistNGPlusInfo(MapArea.FOFG, "[FOFG] Heide Knight up ladder after Ogre in NG+ [REG:30100000]", KL()) },
+                { 60100000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Salamander [REG:60100000]", KL()) },
+                { 69600000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Invisible Hollow [REG:69600000]", KL()) },
+                { 74400000, EnemyRegistNpc(MapArea.FOFG, "[FOFG] Mild Mannered Pate (NPC) [REG:74400000]", KL()) },
+                { 84200000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Syan Knight Phantom near King's Gate in NG+ [REG:81000000]", KL(KEYID.SOLDIER)) },
+                { 84300000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Knight Phantom by King's Gate and by Pate in NG+ [REG:81000001]", KL()) },
+                { 84400000, UnreachableRegistInfo(MapArea.FOFG, "[FOFG] Catarina Knight Phantom above Seed of a Tree of Giants in NG?", KL(KEYID.SOLDIER)) },
+                { 84400001, EnemyRegistNGPlusInfo(MapArea.FOFG, "[FOFG] Catarina Knight Phantom above Seed of a Tree of Giants in NG+", KL(KEYID.SOLDIER)) },
+                { 84910000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Forlorn by King's Gate (and maybe by Giant Memory?) [REG:91000001]", KL()) },
+                { 85310000, EnemyRegistSummon(MapArea.FOFG, "[FOFG] Ruined Aflis summon in corridor beneath buckler [REG:90000002]", KL()) },
+                { 89750000, EnemyRegistInfo(MapArea.FOFG, "[FOFG] Armorer Dennis in Soldier's Rest area [REG:91000000]", KL(KEYID.SOLDIER)) },
+
+                // (Regist) Tseldora
+                { 10600000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Hollow Priest [REG:10600001]", KL(KEYID.TSELDORA)) },
+                { 10700000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Parasitized Undead [REG:10700000]", KL(KEYID.TSELDORA)) },
+                { 11820000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] White Hollow Mage [REG:11820000],", KL(KEYID.TSELDORA)) },
+                { 12700200, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Captive Undead [REG:12700000]", KL(KEYID.TSELDORA)) },
+                { 14601000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Lord Tseldora [REG:14601000]", KL(KEYID.TSELDORA)) },
+                { 14700000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Undead Crawlers in Congregation fight [REG:14700000]", KL(KEYID.TSELDORA)) },
+                { 14800000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant [REG:14800000]", KL(KEYID.TSELDORA)) },
+                { 14801000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant [REG:14800100]", KL(KEYID.TSELDORA)) },
+                { 14802000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant [REG:14800001]", KL(KEYID.TSELDORA)) },
+                { 14803000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Undead Peasant [REG:14800120]", KL(KEYID.TSELDORA)) },
+                { 20300000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Spider [REG:20300000]", KL(KEYID.TSELDORA)) },
+                { 20300001, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Spider in NG+ [REG:20300000]", KL(KEYID.TSELDORA)) },
+                { 20400000, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Poison Moth in Cromwell's room [REG:20400000]", KL(KEYID.TSELDORA)) },
+                { 21000400, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Basilisk [REG:21000000]", KL(KEYID.TSELDORA)) },
+                { 31300100, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Falconer [REG:31300010]", KL(KEYID.TSELDORA)) },
+                { 31301100, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Falconer [REG:31300020]", KL(KEYID.TSELDORA)) },
+                { 31303100, EnemyRegistInfo(MapArea.Tseldora, "[Tseldora] Falconer [REG:31300000]", KL(KEYID.TSELDORA)) },
+                { 74200000, EnemyRegistNpc(MapArea.Tseldora, "[Tseldora] Creighton (NPC) [REG:74200000]", KL(KEYID.TSELDORA)) },
+                { 77600000, EnemyRegistNpc(MapArea.Tseldora, "[Tseldora] Weaponsmith Ornifex [REG:77600000]", KL(KEYID.ORNIFEX)) },
+                { 78400000, EnemyRegistNpc(MapArea.Tseldora, "[Tseldora] Cromwell the Pardoner [REG:78400000]", KL(KEYID.TSELDORA)) },
+                { 84600000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Red phantom behind a door in the pickaxe room MapArea.Tseldora", KL(KEYID.TSELDORA)) },
+                { 84800000, EnemyNGPlusInfo(MapArea.Tseldora, "[Tseldora] Dual Wielding Swordsman Phantom next to spike field [REG:84800000]", KL(KEYID.TSELDORA)) },
+                { 85300000, EnemyDropInfo(MapArea.Tseldora, "[Tseldora] Bowman Guthry [REG:85300000]", KL(KEYID.TSELDORA)) },
+
+                // (Regist) Aldia's Keep
+                { 10100100, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Kobold [REG:10100000]", KL(KEYID.ALDIASKEEP)) },
+                { 11500000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Undead Traveler [REG:11500000]", KL(KEYID.ALDIASKEEP)) },
+                { 13701000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Prowling Magus [REG:13701000]", KL(KEYID.ALDIASKEEP)) },
+                { 13900200, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Artificial Undead [REG:13900000]", KL(KEYID.ALDIASKEEP)) },
+                { 14100000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Undead Aberration [REG:14100000]", KL(KEYID.ALDIASKEEP)) },
+                { 20900000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Big dogs in acid pool [REG:20900000]", KL(KEYID.ALDIASKEEP)) },
+                { 21000200, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Basilisk [REG:21000010]", KL(KEYID.ALDIASKEEP)) },
+                { 30000200, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Various Ogres [REG:30000000]", KL(KEYID.ALDIASKEEP)) },
+                { 22000100, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Giant Mushroom in hanging cage [REG:22000000]", KL(KEYID.ALDIASKEEP)) },
+                { 22200000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Giant Basilisk before ringpull [REG:22200000]", KL(KEYID.ALDIASKEEP)) },
+                { 31700000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Dragon Acolyte (expirement room) [REG:31700000]", KL(KEYID.ALDIASKEEP)) },
+                { 73000000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Enemy that breaks through mirror [REG:73000000]", KL(KEYID.ALDIASKEEP)) },
+                { 73101000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Enemy that breaks through mirror [REG:73100000]", KL(KEYID.ALDIASKEEP)) },
+                { 75200000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Lucatiel of Mirrah [REG:75200000]", KL(KEYID.LUCATIELFULLQUEST)) },
+                { 82400000, EnemyRegistInvasion(MapArea.AldiasKeep, "[AldiasKeep] Aslatiel of Mirrah invasion [REG:82400000]", KL(KEYID.ALDIASKEEP)) },
+                { 82400001, EnemyRegistNGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] Aslatiel of Mirrah invasion in NG+? [REG:82400000]", KL(KEYID.ALDIASKEEP)) },
+                { 77100000, EnemyRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Royal Sorcerer Navlaan (NPC) [REG:77100000]", KL(KEYID.ALDIASKEEP)) },
+                { 85000000, UnreachableRegistInfo(MapArea.AldiasKeep, "[AldiasKeep] Painting Guardian Phantom in NG? [REG:85000000]", KL(KEYID.ALDIASKEEP)) },
+                { 85000001, EnemyNGPlusInfo(MapArea.AldiasKeep, "[AldiasKeep] Painting Guardian Phantom in NG+ [REG:85000000]", KL(KEYID.ALDIASKEEP)) },
+
+                // (Regist) The Lost Bastille, Belfry Luna, and Sinner's Rise
+                { 11300000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Varangian Sailor after Flexile boat trip [REG:11300000]", KL()) },
+                { 11301000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Varangian Sailor after Flexile boat trip [REG:11300001]", KL()) },
+                { 12300200, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Suspicious Shadow by the elevator towards Straid [REG:12302200]", KL(KEYID.SINNERSRISE)) },
+                { 12500100, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Exploding Hollow [REG:12500040]", KL(KEYID.SINNERSRISE)) },
+                { 12503000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Exploding Hollow [REG:12500007] Rupturing Hollow", KL(KEYID.SINNERSRISE)) },
+                { 12504000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Exploding Hollow [REG:12500000] Rupturing Hollow", KL(KEYID.SINNERSRISE)) },
+                { 12505000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Exploding Hollow [REG:12500030] Rupturing Hollow", KL(KEYID.SINNERSRISE)) },
+                { 22700000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Dog [REG:22700000]", KL()) },
+                { 30200000, EnemyRegistInfo(MapArea.TheLostBastille, "[Bastille] Undead Jailer (mummies) [REG:30200000]", KL()) },
+                { 76430000, EnemyRegistNpc(MapArea.TheLostBastille, "[Bastille] Steady Hand McDuff (NPC) [REG:76430000]", KL()) },
+                { 76800000, EnemyRegistNpc(MapArea.TheLostBastille, "[Bastille] Straid of Olaphis (NPC) [REG:76800000]", KL(KEYID.STRAID)) },
+                { 81200000, EnemyRegistSummon(MapArea.TheLostBastille, "[Bastille] Pilgrim Bellclaire summon [REG:81200000]", KL(KEYID.SINNERSRISE)) },
+                { 81300000, EnemyRegistSummon(MapArea.TheLostBastille, "[Bastille] Felicia the Brave summon [REG:85000000]", KL(KEYID.SINNERSRISE)) },
+                { 75300000, EnemyRegistNpc(MapArea.BelfryLuna, "[BelfryLuna] Bell Keeper covenant leader [REG:75300000]", KL(KEYID.BELFRYLUNA)) },
+                { 82000000, EnemyRegistInvasion(MapArea.BelfryLuna, "[BelfryLuna] Vorgel the Sinner invasion after Gargoyles [REG:82000000]",KL(KEYID.BELFRYLUNA)) },
+                { 14100100, EnemyRegistNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Undead Aberration before Sinner in NG+ [REG:14100000]", KL(KEYID.SINNERSRISE)) },
+                { 30101000, EnemyRegistInfo(MapArea.SinnersRise, "[SinnersRise] Heide Knight [REG:30102000]", KL(KEYID.SINNERSCELLS)) },
+                { 30101001, EnemyRegistNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Heide Knight in NG+ [REG:30102000]", KL(KEYID.SINNERSCELLS)) },
+                { 73200000, EnemyRegistNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner Pyromancer Phantom [REG:73200000]", KL(KEYID.SINNERSRISE)) },
+                { 73300000, EnemyRegistNGPlusInfo(MapArea.SinnersRise, "[SinnersRise] Lost Sinner Pyromancer Phantom [REG:73200000]", KL(KEYID.SINNERSRISE)) },
+
+                // (Regist) Harvest Valley
+                { 12300300, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Suspicious Shadow [REG:12300000]", KL(KEYID.HARVESTVALLEY)) },
+                { 12400000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Manikin [REG:12400000]", KL(KEYID.HARVESTVALLEY)) },
+                { 12401000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Manikin [REG:12401000]", KL(KEYID.HARVESTVALLEY)) },
+                { 12402000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Manikin [REG:12402000]", KL(KEYID.HARVESTVALLEY)) },
+                { 12403000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Manikin [REG:12403000]", KL(KEYID.HARVESTVALLEY)) },
+                { 12700300, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Captive Undead [REG:12700000]", KL(KEYID.HARVESTVALLEY)) },
+                { 14700100, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Undead Crawlers in Poison before Mytha [REG:14700000] ", KL(KEYID.HARVESTVALLEY)) },
+                { 14900000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Fat green hammer enemies [REG:14900000]", KL(KEYID.HARVESTVALLEY)) },
+                { 20500000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Mushrooms in mimic chest room before Mytha [REG:20500000]", KL(KEYID.HARVESTVALLEY)) },
+                { 13900100, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Artificial Undead (fat sickle enemies) [REG:13900001]", KL(KEYID.HARVESTVALLEY)) },
+                { 31100000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Mounted Overseer [REG:31100000]", KL(KEYID.HARVESTVALLEY)) },
+                { 31201100, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Grave Warden (e.g. enemies before Mytha foggate) [REG:31200001]", KL(KEYID.HARVESTVALLEY)) },
+                { 31203100, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Grave Warden (e.g. enemies before Mytha foggate) [REG:31200000]", KL(KEYID.HARVESTVALLEY)) },
+                { 31600000, EnemyRegistInfo(MapArea.HarvestValley, "[HarvestValley] Desert Sorceress [REG:31600000]", KL(KEYID.HARVESTVALLEY)) },
+                { 84100000, UnreachableDropInfo(MapArea.HarvestValley, "[HarvestValley] Voice Marker (Altar of Sunlight) [REG:84100000]", KL(KEYID.HARVESTVALLEY)) },
+                { 72600000, EnemyRegistNpc(MapArea.Quantum, "[Multi-area] Lonesome Gavlan (NPC) [REG:72600000]", KL(KEYID.HARVESTVALLEY)) },
+
+                // (Regist) No Man's Wharf
+                { 10302200, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Hollow Infantry [REG:10300000]", KL()) },
+                { 10303200, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Hollow Infantry [REG:10300041]", KL()) },
+                { 10305100, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Hollow Infantry [REG:10300010]", KL()) },
+                { 11302000, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Varangian Sailor [REG:11300010]", KL()) },
+                { 12300000, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Suspicious Shadow [REG:12300200]", KL()) },
+                { 12300001, EnemyRegistNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Suspicious Shadow in NG+ [REG:12300200]", KL()) },
+                { 12302000, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Suspicious Shadow [REG:12302200]", KL()) },
+                { 12701100, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Captive Undead [REG:12701100]", KL()) },
+                { 21700000, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Dark Stalker [REG:21700000]", KL()) },
+                { 22700100, EnemyRegistInfo(MapArea.NoMansWharf, "[Wharf] Dog [REG:22700000]", KL()) },
+                { 85400000, UnreachableRegistInfo(MapArea.NoMansWharf, "[Wharf] Aurous Knight Phantom on ship in NG? [REG:82000000]", KL()) },
+                { 85400001, EnemyRegistNGPlusInfo(MapArea.NoMansWharf, "[Wharf] Aurous Knight Phantom on ship in NG+ [REG:82000000]", KL()) },
+
+                // (Regist) Iron Keep and Belfry Sol
+                { 15100000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Ironclad Soldier (Turtle) [REG:15100000]", KL(KEYID.IRONKEEP)) },
+                { 30600000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Alonne Captain [REG:30600000]", KL(KEYID.IRONKEEP)) },
+                { 30601000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Alonne Captain [REG:30601000]", KL(KEYID.IRONKEEP)) },
+                { 31900000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Alonne Knight [REG:31900000]", KL(KEYID.IRONKEEP)) },
+                { 31901000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Alonne Knight [REG:31901000]", KL(KEYID.IRONKEEP)) },
+                { 77200000, EnemyRegistNpc(MapArea.IronKeep, "[IronKeep] Magerold of Lanafir (NPC) [REG:77200000]", KL(KEYID.IRONKEEP)) },
+                { 83600000, EnemyRegistInfo(MapArea.BelfrySol, "[BelfrySol] Mad Warrior Phantom [REG:83600000]", KL(KEYID.BELFRYSOL)) },
+                { 83600001, EnemyRegistNGPlusInfo(MapArea.BelfrySol, "[BelfrySol] Mad Warrior Phantom in NG+? [REG:83600000]", KL(KEYID.BELFRYSOL)) },
+                { 83610000, EnemyRegistInfo(MapArea.BelfrySol, "[IronKeep] Greatsword Black Phantom [REG:83610000]", KL(KEYID.BELFRYSOL)) },
+                { 83620000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Dual Avelyn Black Phantom [REG:83620000]", KL(KEYID.BELFRYSOL)) },
+                { 83630000, EnemyRegistInfo(MapArea.IronKeep, "[IronKeep] Mage Black Phantom [REG:83630000]", KL(KEYID.BELFRYSOL)) },
+                { 83640000, EnemyRegistNGPlusInfo(MapArea.IronKeep, "[IronKeep] Hammer-wielding Phantom before Eigis Idol bonfire in NG+ [REG:83640000]", KL(KEYID.IRONKEEP)) },
+                { 89700000, EnemyRegistInvasion(MapArea.IronKeep, "[IronKeep] Fencer Sharron invasion [REG:89700000]", KL(KEYID.IRONKEEP)) },
+                { 89800000, EnemyRegistInvasion(MapArea.IronKeep, "[IronKeep] Oliver the Collector invasion [REG:89800000]", KL(KEYID.IRONKEEP)) },
+
+                // (Regist) Huntsman's Copse and Undead Purgatory
+                { 10800000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Hollow Rogue [REG:10800000] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 10801000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Hollow Rogue [REG:10800005] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 10802000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Hollow Rogue [REG:10800010] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 11800000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Necromancer (Black Hollow Mage) [REG:11800000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 12700000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead [REG:12700000] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 13800000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Torturer [REG:13800000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 13801000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Torturer [REG:13800002]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 13900000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Artificial Undead (sickle dudes) [REG:13900000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 15300300, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Syan Knight (guarding Soul Spear) [REG:15300000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 22200200, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Giant Basilisk (guarding Ricard's Rapier) [REG:22200000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 22700200, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Dog [REG:22700000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 33700000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead [REG:32700031] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 33701000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead [REG:32700010] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 33702000, EnemyRegistInfo(MapArea.HuntsmansCopse, "[Copse] Captive Undead [REG:32700020] ", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 77000000, EnemyRegistNpc(MapArea.HuntsmansCopse, "[Copse] Felkin the Outcast (NPC) [REG:77000000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 78300000, EnemyRegistNpc(MapArea.UndeadPurgatory, "[UndeadPurgatory] Titchy Gren (NPC) [REG:78300000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 82100000, EnemyRegistInvasion(MapArea.HuntsmansCopse, "[Copse] Merciless Roenna invasion [REG:82100000]", KL(KEYID.HUNSTMANSCOPSE)) },
+                { 85200000, EnemyRegistNpc(MapArea.UndeadPurgatory, "[UndeadPurgatory] Greatsword Phantom outside Chariot foggate", KL(KEYID.HUNSTMANSCOPSE)) },
+
+                // (Regist) The Gutter and The Black Gulch
+                { 12500200, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] 12501600, 12501600 - [REG:12501600] Rupturing Hollow", KL()) },
+                { 12504100, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Exploding Hollow [REG:12501300]", KL()) },
+                { 20500100, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Mushroom [REG:20500100]", KL()) },
+                { 20900200, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Hunting Dog [REG:20900200]", KL()) },
+                { 33700200, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Captive Undead [REG:33700200]", KL()) },
+                { 33701100, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Captive Undead [REG:33701101]", KL()) },
+                { 33702100, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Captive Undead [REG:33702200]", KL()) },
+                { 60800000, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Corrosive Ant Queen [REG:60800000]", KL()) },
+                { 67200000, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Corrosive Bug [REG:67200000]", KL()) },
+                { 88700000, EnemyRegistInfo(MapArea.TheGutter, "[Gutter] Gutter Denizen (phantom from lighting all Gutter sconces) [REG:88700000]", KL()) },
+                { 81400900, EnemyRegistInvasion(MapArea.TheGutter, "[Gutter] Melinda the Butcher invasion [REG:81400900]", KL()) },
+                { 89600000, EnemyRegistInvasion(MapArea.BlackGulch, "[Gulch] Woodland Child Victor invasion [REG:89600000]", KL()) },
+                { 67100100, EnemyRegistInfo(MapArea.BlackGulch, "[Gulch] Poison Statue Cluster [REG:67100000]", KL()) },
+                { 22400000, EnemyRegistInfo(MapArea.BlackGulch, "[Gulch] Tar pit aliens [REG:22400000]", KL()) },
+                { 20600000, EnemyRegistInfo(MapArea.BlackGulch, "[Gulch] Worm [REG:20600000]", KL()) },
+                { 30900100, EnemyRegistInfo(MapArea.BlackGulch, "[Gulch] Forgotten Giant [REG:30900100]", KL()) },
+                { 81100000, EnemyRegistSummon(MapArea.BlackGulch,"[Gulch] Lone Hunter Schmidt summon [REG:81100000]", KL()) },
+                { 89650000, EnemyRegistInvasion(MapArea.BlackGulch, "[Gulch] Woodland Child Gully invasion [REG:89650000]", KL()) },
+                { 72500000, EnemyRegistNpc(MapArea.Quantum, "[Multi-area] Darkdiver Grandahl (NPC) [REG:72500200]", KL()) },
+
+                // (Regist) Dragon Aerie and Dragon Shrine
+                { 10620000, EnemyRegistInfo(MapArea.DragonAerie, "[Aerie] Hollow Priestess [REG:10620000]", KL(KEYID.ALDIASKEEP)) },
+                { 12502000, EnemyRegistInfo(MapArea.DragonAerie, "[Aerie] Rupturing Hollow [REG:12510000]", KL(KEYID.ALDIASKEEP)) },
+                { 15500000, UnreachableRegistInfo(MapArea.DragonAerie, "[Aerie] Amana Aberration apparently?? [REG:15500000]", KL(KEYID.ALDIASKEEP)) },
+                { 33100000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Drakekeeper [REG:33100000]", KL(KEYID.ALDIASKEEP)) },
+                { 33101000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Drakekeeper [REG:33100010]", KL(KEYID.ALDIASKEEP)) },
+                { 33104000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Drakekeeper [REG:33100040]", KL(KEYID.ALDIASKEEP)) },
+                { 33103000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Drakekeeper [REG:33100030]", KL(KEYID.ALDIASKEEP)) },
+                { 81400000, EnemyRegistSummon(MapArea.DragonShrine, "[DragonShrine] Melinda the Butcher summon [REG:81400000]", KL(KEYID.ALDIASKEEP)) },
+                { 82300000, EnemyRegistInvasion(MapArea.DragonShrine, "[DragonShrine] Dragonfang Villard invasion at Petrified Egg [REG:82300000]", KL(KEYID.ALDIASKEEP)) },
+                { 83500000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Black Dragon Knight [REG:83500000]", KL(KEYID.ALDIASKEEP)) },
+                { 83510000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Black Dragon Knight [REG:83510000]", KL(KEYID.ALDIASKEEP)) },
+                { 83520000, EnemyRegistInfo(MapArea.DragonShrine, "[DragonShrine] Black Dragon Knight [REG:83520000]", KL(KEYID.ALDIASKEEP)) },
+
+                // (Regist) Heide's Tower of Flame
+                { 21000600, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Basilisk (towards Wharf) [REG:21000000]", KL()) },
+                { 30100100, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Heide Knight [REG:30100000]", KL()) },
+                { 30101100, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Heide Knight [REG:30100100]", KL()) },
+                { 31400100, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Mastadon (towards Wharf) [REG:31400000]", KL()) },
+                { 33000000, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [REG:33000000]", KL()) },
+                { 33001000, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [REG:33000010]", KL()) },
+                { 33004000, EnemyRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Old Knight [REG:33000040]", KL()) },
+                { 78500000, EnemyRegistNpc(MapArea.HeidesTowerOfFlame, "[Heides] Blue Sentinel Targray (NPC) [REG:78500000]", KL()) },
+                { 81000300, UnreachableRegistInfo(MapArea.HeidesTowerOfFlame, "[Heides] Masterless Glencour summon [REG:81100000]", KL()) },
+                { 84700000, EnemyRegistNGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Executioner Phantom before Dragonrider in NG+ [REG:84700000]", KL()) },
+                { 84710000, EnemyRegistNGPlusInfo(MapArea.HeidesTowerOfFlame, "[Heides] Sentinel Phantoms outside Ornstein in NG+ [REG:81250000]", KL()) },
+
+                // (Regist) Shaded Woods
+                { 15301300, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Syan Knight guarding Aldia's gate [REG:15300000]", KL(KEYID.SHADEDWOODS)) },
+                { 10000000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Forest Grotesque (ballsack dudes) [REG:10000000]", KL(KEYID.SHADEDWOODS)) },
+                { 10001000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Forest Grotesque (ballsack dudes) [REG:10000020]", KL(KEYID.SHADEDWOODS)) },
+                { 10002000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Forest Grotesque (ballsack dudes) [REG:10000010]", KL(KEYID.SHADEDWOODS)) },
+                { 15300000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] [REG:15300000] Syan Knight, MapArea.ShadedWoods", KL(KEYID.SHADEDWOODS)) },
+                { 30700000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] [REG:30701000] Headless Vengarl, MapArea.ShadedWoods", KL(KEYID.SHADEDWOODS)) },
+                { 30800000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Lion Clan Warrior [REG:30800000]", KL(KEYID.SHADEDWOODS)) },
+                { 30810000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Lion Clan Warrior [REG:30800010]", KL(KEYID.SHADEDWOODS)) },
+                { 31300200, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Falconer [REG:31300000]", KL(KEYID.SHADEDWOODS)) },
+                { 30711000, EnemyRegistNpc(MapArea.ShadedWoods, "[ShadedWoods] Vengarl's Head (NPC) [REG:30700000]", KL(KEYID.SHADEDWOODS)) },
+                { 31301200, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Falconer [REG:31300100]", KL(KEYID.SHADEDWOODS)) },
+                { 31303200, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Falconer [REG:31300200]", KL(KEYID.SHADEDWOODS)) },
+                { 50200000, EnemyRegistNpc(MapArea.ShadedWoods, "[ShadedWoods] Manscorpion Tark (NPC) [REG:50200000]", KL(KEYID.SHADEDWOODS)) },
+                { 83800000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Forest Guardian (ghosts) [REG:83800000]", KL(KEYID.SHADEDWOODS)) },
+                { 83810000, EnemyRegistInfo(MapArea.ShadedWoods, "[ShadedWoods] Forest Guardian (ghosts) [REG:83810000]", KL(KEYID.SHADEDWOODS)) },
+
+                // (Regist) Doors of Pharros
+                { 13400000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm (e.g. enemy guarding wooden chest at the start of the path towards Tseldora) [REG:13400000]", KL(KEYID.PHARROS)) },
+                { 13500000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm Warrior [REG:13500000]", KL(KEYID.PHARROS)) },
+                { 13501000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm Warrior [REG:13501000]", KL(KEYID.PHARROS)) },
+                { 13503000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm Warrior [REG:13503000]", KL(KEYID.PHARROS)) },
+                { 13504000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Gyrm Warrior [REG:13504000]", KL(KEYID.PHARROS)) },
+                { 22300000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Mongrel Rat [REG:22300000]", KL(KEYID.PHARROS)) },
+                { 22620000, EnemyRegistNpc(MapArea.DoorsOfPharros, "[Pharros] Rat King (NPC) [REG:22620000]", KL(KEYID.PHARROS)) },
+                { 31400000, EnemyRegistInfo(MapArea.DoorsOfPharros, "[Pharros] Mastadon (elephant) [REG:31400000]", KL(KEYID.PHARROS)) },
+
+                // (Regist) Grave of Saints
+                { 12500000, EnemyRegistInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Exploding Hollow [REG:12500000]", KL()) },
+                { 22600000, EnemyRegistInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Corpse Rat [REG:22600010]", KL()) },
+                { 33700300, EnemyRegistInfo(MapArea.GraveOfSaints, "[GraveOfSaints] Non-hostile Captive Hollows at the start of the area [REG:33700015]", KL()) },
+                { 83100000, EnemyRegistJourneyPlus(MapArea.GraveOfSaints, "[GraveOfSaints] Dingy Cleric Phantom by bridge Crystal Lizard in JOURNEY+ [REG:81100000]", KL()) },
+                { 83110000, EnemyRegistJourneyPlus(MapArea.GraveOfSaints, "[GraveOfSaints] Faraam Knight Phantom by bridge Crystal Lizard in JOURNEY+ [REG:81110000]", KL()) },
+                { 84920000, EnemyRegistInvasion(MapArea.GraveOfSaints, "[GraveOfSaints] Rhoy the Explorer invasion [REG:84920000]", KL()) },
+
+                // (Regist) Giant Memories
+                { 10210000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Royal Soldier [REG:10210000]", KL(KEYID.ASHENMIST)) },
+                { 10211000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Royal Soldier [REG:10211000]", KL(KEYID.ASHENMIST)) },
+                { 10214000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Royal Soldier [REG:10212000]", KL(KEYID.ASHENMIST)) },
+                { 10311100, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Drangleic Infantry [REG:10310000]", KL(KEYID.ASHENMIST)) },
+                { 10312100, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Drangleic Infantry [REG:10310010]", KL(KEYID.ASHENMIST)) },
+                { 10313100, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Drangleic Infantry [REG:10310020]", KL(KEYID.ASHENMIST)) },
+                { 12100000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Vammar/Orro) Giant [REG:12100000]", KL(KEYID.ASHENMIST)) },
+                { 12101000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Vammar/Orro) Giant [REG:12101000]", KL(KEYID.ASHENMIST)) },
+                { 12102000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Vammar/Orro) Giant [REG:12102000]", KL(KEYID.ASHENMIST)) },
+                { 12103000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Vammar/Orro) Giant [REG:12103000]", KL(KEYID.ASHENMIST)) },
+                { 30900000, EnemyRegistInfo(MapArea.MemoryOfVammar, "[MemoryVammar] (Any memory) Forgotten Giant [REG:30900000]", KL(KEYID.ASHENMIST)) },
+                { 72400000, EnemyRegistNpc(MapArea.MemoryOfVammar, "[MemoryVammar] Captain Drummond (NPC) [REG:72400000]", KL(KEYID.ASHENMIST)) },
+
+                // (Regist) Shrine of Amana
+                { 10500000, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Shrine Maiden (caster/healer) [REG:10500000]", KL(KEYID.AMANA)) },
+                { 10501000, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Shrine Maiden (caster/healer) [REG:10501000]", KL(KEYID.AMANA)) },
+                { 13100000, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Archdrake [REG:13100000]", KL(KEYID.AMANA)) },
+                { 15300200, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Syan Knight (guarding door to Undead Crypt) [REG:15300200]", KL(KEYID.AMANA)) },
+                { 20510200, UnreachableRegistInfo(MapArea.ShrineOfAmana, "[Amana] Unknown Giant Mushroom [REG:20510200] ", KL(KEYID.AMANA)) },
+                { 21000500, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Basilisk [REG:21000000]", KL(KEYID.AMANA)) },
+                { 30000100, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Ogre [REG:30000100] ", KL(KEYID.AMANA)) },
+                { 22000200, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Giant Mushroom near Rhoy's Resting Place bonfire [REG:22000200]", KL(KEYID.AMANA)) },
+                { 33004200, EnemyRegistInfo(MapArea.ShrineOfAmana, "[Amana] Old Knight [REG:33004900]", KL(KEYID.AMANA)) },
+                { 15301200, UnreachableRegistInfo(MapArea.ShrineOfAmana, "[Amana] Syan Knight [REG:15301200]", KL(KEYID.AMANA)) },
+                { 30401000, EnemyRegistNpc(MapArea.ShrineOfAmana, "[Amana] All the Milfanito (NPCs) [REG:30401000]", KL(KEYID.AMANA)) },
+                { 50900000, UnreachableRegistInfo(MapArea.ShrineOfAmana, "[Amana] Unused? Leydia Witch [REG:50900000]", KL(KEYID.AMANA)) },
+                { 76000000, EnemyRegistNpc(MapArea.ShrineOfAmana, "[Amana] Milfanito (NPC) [REG:76000000]", KL(KEYID.AMANA)) },
+                { 76010000, EnemyRegistNpc(MapArea.ShrineOfAmana, "[Amana] Milfanito at true Shrine of Amana (NPC) [REG:76010000]", KL(KEYID.AMANA)) },
+                { 82200300, EnemyRegistInvasion(MapArea.ShrineOfAmana, "[Amana] Peculiar Kindalur invasion [REG:82200300]", KL(KEYID.AMANA)) },
+                { 83300000, EnemyRegistNGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Peculiar Kindalur Phantom in NG+ [REG:83300000]", KL(KEYID.AMANA)) },
+
+                // (Regist) Drangleic Castle
+                { 11700000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Stone Soldier [REG:11700000]", KL(KEYID.DRANGLEIC)) },
+                { 12400100, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Manikin [REG:12400000]", KL(KEYID.DRANGLEIC)) },
+                { 15000000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Stone Knight (horses before Mirror Knight) [REG:15000000]", KL(KEYID.DRANGLEIC)) },
+                { 15200000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Royal Soldier [REG:15200000]", KL(KEYID.DRANGLEIC)) },
+                { 15201000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Royal Soldier [REG:15201000]", KL(KEYID.DRANGLEIC)) },
+                { 21600000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Wall Ghost [REG:21600000]", KL(KEYID.DRANGLEIC)) },
+                { 21700100, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Dark Stalker near Grandahl [REG:21700000]", KL(KEYID.DRANGLEIC)) },
+                { 30103000, UnreachableRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Heide Knight apparently? [REG:30103000]", KL(KEYID.DRANGLEIC)) },
+                { 30103001, UnreachableRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Heide Knight apparently maybe in NG+? [REG:30103000]", KL(KEYID.DRANGLEIC)) },
+                { 30601100, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Alonne Captain on roof with Gargoyle [REG:30601100]", KL(KEYID.DRANGLEIC)) },
+                { 31600100, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Desert Sorceresses in room beneath Gargoyle [REG:31600100]", KL(KEYID.DRANGLEIC)) },
+                { 33001100, UnreachableRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Removed Old Knight? [REG:33001900]", KL(KEYID.DRANGLEIC)) },
+                { 31500000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Mastadon (elephants) [REG:31500000]", KL(KEYID.DRANGLEIC)) },
+                { 76020000, EnemyRegistNpc(MapArea.DrangleicCastle, "[Drangleic] Imprisoned Milfanito (NPC) [REG:76020000]", KL(KEYID.DRANGLEIC)) },
+                { 84900000, EnemyRegistInvasion(MapArea.DrangleicCastle, "[Drangleic] Nameless Usurper invasion [REG:84900000]", KL(KEYID.DRANGLEIC)) },
+                { 84900001, EnemyRegistNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Nameless Usurper invasion in NG+? [REG:84900000]", KL(KEYID.DRANGLEIC)) },
+                { 85320000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] Drakekeeper Knight Phantom (asshole red phantom outside Drangleic Gate in NG+ [REG:85320000]", KL(KEYID.DRANGLEIC)) },
+                { 85330000, EnemyRegistInfo(MapArea.DrangleicCastle, "[Drangleic] (Vanilla only) Elite Knight Phantom (old) guarding King's Gate in NG+ [REG:85330000]", KL(KEYID.DRANGLEIC)) },
+                { 85340000, UnreachableRegistInfo(MapArea.DrangleicCastle, "[Drangleic] (Vanilla only) Greatbow Phantom (old) guarding King's Gate in NG+ [REG:85340000]", KL(KEYID.DRANGLEIC)) },
+                { 85340001, UnreachableRegistInfo(MapArea.DrangleicCastle, "[Drangleic] (Vanilla only) Greatbow Phantom (old) guarding King's Gate in NG+ [REG:85340000]", KL(KEYID.DRANGLEIC)) },
+                { 85350000, EnemyRegistNGPlusInfo(MapArea.DrangleicCastle, "[Drangleic] Washing Pole Phantom in room with Imprisoned Embedded in NG+ [REG:85350000]", KL(KEYID.DRANGLEIC)) },
+
+                // (Regist) Undead Crypt
+                { 13200700, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Skeletons in rock rooms [REG:13200000]", KL(KEYID.UNDEADCRYPT)) },
+                { 12700100, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Spawning Undeads in rock rooms [REG:12700100]", KL(KEYID.UNDEADCRYPT)) },
+                { 31200000, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Grave Warden by Agdayne [REG:31200100]", KL(KEYID.UNDEADCRYPT)) },
+                { 31202100, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Grave Warden by Agdayne [REG:31202100]", KL(KEYID.UNDEADCRYPT)) },
+                { 31203200, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Grave Warden by Agdayne [REG:31203200]", KL(KEYID.UNDEADCRYPT)) },
+                { 50650000, EnemyRegistNpc(MapArea.UndeadCrypt, "[Crypt] Grave Warden Agdayne (NPC) [REG:50650000]", KL(KEYID.UNDEADCRYPT)) },
+                { 51100000, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Twin-shield guy near the sconce that spawns Insolent Knights [REG:51100001]", KL(KEYID.UNDEADCRYPT)) },
+                { 51200000, EnemyRegistInfo(MapArea.UndeadCrypt, "[Crypt] Leydia Pyromancers that spawn from grave stones [REG:51200003]", KL(KEYID.UNDEADCRYPT)) },
+
+                // Dark Chasm of Old and Vendrick Memory
+                { 12900000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Forest Spirit [REG:12900000]", KL(KEYID.DARKLURKER)) },
+                { 12901000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Forest Spirit [REG:12903000]", KL(KEYID.DARKLURKER)) },
+                { 83200000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Underworld Deadeye (Woods dungeon archer) [REG:81200000]", KL(KEYID.DARKLURKER)) },
+                { 83210000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Abyss Ironclad [REG:81210000]", KL(KEYID.DARKLURKER)) },
+                { 83220000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Pretender to the Xanthous Throen [REG:81220000]", KL(KEYID.DARKLURKER)) },
+                { 83230000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Pretender to the Xanthous Throne [REG:81230000]", KL(KEYID.DARKLURKER)) },
+                { 83240000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Tenebrous Rogue [REG:81240000]", KL(KEYID.DARKLURKER)) },
+                { 83250000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] The Ghost of Princes Past (Ricard) [REG:81250000]", KL(KEYID.DARKLURKER)) },
+                { 83260000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] A Chip Off the Ol Rock (Havel) [REG:81260000]", KL(KEYID.DARKLURKER)) },
+                { 83270000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Shadowveil Assasin (last enemy in Drangleic Dungeon) [REG:81270000]", KL(KEYID.DARKLURKER)) },
+                { 68400000, UnreachableRegistInfo(MapArea.Undefined, "[VendrickMemory] Vendrick [REG:68400000]", KL(KEYID.DARKLURKER)) },
+
+                // (Regist) DLC1
+                { 20600100, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Worms by Gank Squad [REG:20600000]", KL(KEYID.GANKSQUAD)) },
+                { 66601000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66600100]", KL(KEYID.DLC1KEY)) },
+                { 66602000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66600200]", KL(KEYID.DLC1KEY)) },
+                { 66604000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66604000]", KL(KEYID.DLC1KEY)) },
+                { 66605000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66605000]", KL(KEYID.DLC1KEY)) },
+                { 66606000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66606000]", KL(KEYID.DLC1KEY)) },
+                { 67000000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Priestess [REG:67000000]", KL(KEYID.DLC1KEY)) },
+                { 67100000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Poison Statue Cluster [REG:67100000]", KL(KEYID.DLC1KEY)) },
+                { 67110000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Poison Statue Cluster [REG:67101000]", KL(KEYID.DLC1KEY)) },
+                { 67400000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Pagan Whipping Tree [REG:67400000]", KL(KEYID.DLC1KEY)) },
+                { 66500000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Knight (ghosts) [REG:66500000]", KL(KEYID.DLC1KEY)) },
+                { 66501000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Knight (ghosts) [REG:66501000]", KL(KEYID.DLC1KEY)) },
+                { 66600000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sanctum Soldier [REG:66600000]", KL(KEYID.DLC1KEY)) },
+                { 68100000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "[DLC1] Sinh, the Slumbering Dragon (boss) [REG:68100000]", KL(KEYID.DLC1KEY)) },
+                { 68200000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "[DLC1] Elana, Squalid Queen (boss) [REG:68200000]", KL(KEYID.DLC1KEY)) },
+                { 68300000, EnemyRegistInfo(MapArea.ShulvaSanctumCity, "[DLC1] Imperfect (dragon butts) [REG:68300000]", KL(KEYID.DLC1KEY)) },
+                { 86200000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "[DLC1] Removed Rhoy the Explorer [REG:86200000]", KL(KEYID.DLC1KEY)) },
+                { 86300000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "[DLC1] Removed Stewart the Explorer [REG:86300000]", KL(KEYID.DLC1KEY)) },
+                { 86400000, UnreachableDropInfo(MapArea.ShulvaSanctumCity, "[DLC1] Removed Courh the Explorer [REG:86400000]", KL(KEYID.DLC1KEY)) },
+
+                // (Regist) DLC2
+                { 65000000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Iron Warrior (ones with lava coming out of their shoulders) [REG:65000000]", KL(KEYID.DLC2)) },
+                { 65100000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Fume Sorcerer [REG:65100000]", KL(KEYID.DLC2)) },
+                { 65300000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Ashen Warrior [REG:65300000]", KL(KEYID.DLC2)) },
+                { 65301000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Ashen Warrior [REG:65301000]", KL(KEYID.DLC2)) },
+                { 65302000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Ashen Warrior [REG:65302000]", KL(KEYID.DLC2)) },
+                { 65303000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Ashen Warrior [REG:65303000]", KL(KEYID.DLC2)) },
+                { 65400000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Ashen Crawler [REG:65400000]", KL(KEYID.DLC2)) },
+                { 65600000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Possessed Armor [REG:65600000]", KL(KEYID.DLC2)) },
+                { 65700000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Barrel Carrier [REG:65700000]", KL(KEYID.DLC2)) },
+                { 67500000, UnreachableDropInfo(MapArea.BrumeTower, "[DLC2] Fume Knight (boss) [REG:67500000]", KL(KEYID.DLC2)) },
+                { 68000000, UnreachableDropInfo(MapArea.BrumeTower, "[DLC2] Sir Alonne (boss) [REG:68000000]", KL(KEYID.DLC2)) },
+                { 87200000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Astrologists before Blue Smelter [REG:82100042]", KL(KEYID.DLC2)) },
+                { 87300000, EnemyRegistJourneyPlus(MapArea.BrumeTower, "[DLC2] Swashbuckling Matelas near Upper Floor bonfire in NG++ and some other NG+ or higher places [REG:82100043]", KL(KEYID.DLC2)) },
+                { 88100000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Prowlers [REG:82100030]", KL(KEYID.DLC2)) },
+                { 88200000, EnemyRegistInfo(MapArea.BrumeTower, "[DLC2] Prowlers [REG:82100031]", KL(KEYID.DLC2)) },
+
+                // (Regist) DLC3
+                { 50001000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Ice Covetous Demon [REG:90000020]", KL(KEYID.DLC3)) },
+                { 12701000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Undead Laborers in Frigid Outskirst [REG:90000041]", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 65900000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Rampart Golem (they throw ice spears) [REG:65900000]", KL(KEYID.DLC3)) },
+                { 66000000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Ice Golem (look like Rampart Golems but don't throw ice spears) [REG:66000000]", KL(KEYID.DLC3)) },
+                { 66100000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Frozen Reindeer [REG:66100000]", KL(KEYID.DLC3)) },
+                { 66200000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Rampart Hedgehog [REG:66200000]", KL(KEYID.DLC3)) },
+                { 66300000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Spellsword [REG:66300000]", KL(KEYID.DLC3)) },
+                { 66301000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Spellsword [REG:66301000]", KL(KEYID.DLC3)) },
+                { 67700000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Retainer [REG:67700000]", KL(KEYID.DLC3)) },
+                { 67701000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Retainer [REG:67700100]", KL(KEYID.DLC3)) },
+                { 67800000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] [REG:67800000] Facsimile Giant (that come to life after absorbing souls)", KL(KEYID.DLC3)) },
+                { 68900000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Charred Loyce Knight in Burnt Ivory King fight [REG:80000030]", KL(KEYID.DLC3)) },
+                { 87110000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Teeth-chattering Dan (white Maldron) [REG:87110000]", KL(KEYID.DLC3)) },
+                { 88300000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Wall Watchman (invisible ballista bridge enemies) [REG:88300000]", KL(KEYID.DLC3)) },
+                { 88310000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Wall Watchman (invisible ballista bridge enemies) [REG:88310000]", KL(KEYID.DLC3)) },
+                { 88320000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] Wall Watchman (invisible ballista bridge enemies) [REG:88320000]", KL(KEYID.DLC3)) },
+                { 88500000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] (name is) Unknown Phantom, spawns in buildings in Frigid Outskirts in NG++ [REG:88500000]", KL(KEYID.FRIGIDOUTSKIRTS)) },
+                { 88510000, EnemyRegistInfo(MapArea.FrozenEleumLoyce, "[DLC3] (name is) Unknown Phantom, spawns in buildings in Frigid Outskirts in NG++ [REG:88510000]", KL(KEYID.FRIGIDOUTSKIRTS)) },
+            };
+            return d;
         }
     }
 }

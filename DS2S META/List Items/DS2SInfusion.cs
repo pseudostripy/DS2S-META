@@ -22,7 +22,7 @@ namespace DS2S_META
                 return string.Empty;
             return Name;
         }
-        public static List<DS2SInfusion> Infusions = new List<DS2SInfusion>()
+        public static List<DS2SInfusion> Infusions = new()
         {
             new DS2SInfusion("Normal", 0),
             new DS2SInfusion("Fire", 1),

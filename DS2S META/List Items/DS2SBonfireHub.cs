@@ -6,10 +6,10 @@ namespace DS2S_META
 {
     class DS2SBonfireHub : IComparable<DS2SBonfireHub>
     {
-        private static Regex BonfireHubEntryRx = new Regex(@"^(?<name>(.*:)+)\s+(?<bonfires>.+)$");
+        private static Regex BonfireHubEntryRx = new(@"^(?<name>(.*:)+)\s+(?<bonfires>.+)$");
 
         public string Name;
-        public List<string> Bonfires = new List<string>();
+        public List<string> Bonfires = new();
 
         private DS2SBonfireHub(string config)
         {
@@ -32,7 +32,7 @@ namespace DS2S_META
             return Name.CompareTo(other?.Name);
         }
 
-        public static List<DS2SBonfireHub> All = new List<DS2SBonfireHub>();
+        public static List<DS2SBonfireHub> All = new();
 
         static DS2SBonfireHub()
         {

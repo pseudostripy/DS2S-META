@@ -44,7 +44,7 @@ namespace DS2S_META.Utils
             public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
             public const string ARMOR_REINFORCE = "ARMOR_REINFORCE_PARAM";
             public const string ARMOR = "ARMOR_PARAM";
-            
+
             // Names different from underlying DEF
             public const string ITEM_LOT_OTHER = "ITEM_LOT_OTHER";
             public const string ITEM_LOT_CHR = "ITEM_LOT_CHR";
@@ -134,10 +134,18 @@ namespace DS2S_META.Utils
         public static Param? ArmorParam => AllParams[PAliases.ARMOR];
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
+        // Rows shorthand
+        public static Dictionary<int, ItemRow> ItemRows { get; set; }
+        public static List<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
+        public static List<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>().ToList();
+        public static List<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>().ToList();
+        public static List<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
+
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
             GetParams(Hook.IsVanilla);
+             ItemRows = ItemParam.AsRows<ItemRow>().ToDictionary(ir => ir.ItemID, ir => ir);
             IsLoaded = true;
         }
         public static void Uninitialise()
@@ -169,6 +177,9 @@ namespace DS2S_META.Utils
         }
         private static void AddMemoryParams(List<Param> paramList, string paramPath, string path, string[] pointers)
         {
+            if (Hook == null)
+                throw new Exception("shouldn't get here");
+
             foreach (string entry in pointers)
             {
                 if (!Util.IsValidTxtResource(entry))
@@ -183,7 +194,7 @@ namespace DS2S_META.Utils
                     throw new($"The PARAMDEF {defName} does not exist for {entry}.");
 
                 // Make param
-                int[] offsets = info[0].Split(';').Select(s => hex2int(s)).ToArray();
+                int[] offsets = info[0].Split(';').Select(s => Hex2int(s)).ToArray();
                 PHPointer pointer = GetParamPointer(offsets);
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new(pointer, offsets, paramDef, name, Hook.Is64Bit);
@@ -236,7 +247,7 @@ namespace DS2S_META.Utils
                 GeneratorRegistParams.Add(AllParams[PAliases.GENERATOR_REGIST[i]]);
 
         }
-        private static int hex2int(string hexbyte)
+        private static int Hex2int(string hexbyte)
         {
             return int.Parse(hexbyte, System.Globalization.NumberStyles.HexNumber);
         }
@@ -252,7 +263,7 @@ namespace DS2S_META.Utils
 
                 case "ITEM_LOT_PARAM2":
                     if (param.Name == "ITEM_LOT_OTHER")
-                        param.initialise<ItemWLotRow>();
+                        param.initialise<ItemLotRow>();
                     else
                         param.initialise<ItemDropRow>();
                     break;
@@ -355,14 +366,6 @@ namespace DS2S_META.Utils
             if (lookup.Count() == 0)
                 return default;
             return lookup.First();
-        }
-        public static ItemRow? GetItemFromID(int id)
-        {
-            // Just a useful QOL to avoid replicating code everywhere
-            if (ItemParam == null)
-                throw new Exception("Weapon param table not initialised");
-
-            return ItemParam.Rows.FirstOrDefault(row => row.ID == id) as ItemRow;
         }
         public static WeaponRow? GetWeaponFromID(int? id)
         {

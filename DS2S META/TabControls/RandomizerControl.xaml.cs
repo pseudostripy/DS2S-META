@@ -56,10 +56,12 @@ namespace DS2S_META
         private void btnRerandomize_Click(object sender, RoutedEventArgs e)
         {
             PopulateNewSeed();
+            RM.IsRandomSeed = true;
             rando_core_process(RANDOPROCTYPE.Rerand);
         }
         private void btnRandomize_Click(object sender, RoutedEventArgs e)
         {
+            RM.IsRandomSeed = false;
             if (IsRandomized)
                 rando_core_process(RANDOPROCTYPE.Unrand);
             else
@@ -68,7 +70,7 @@ namespace DS2S_META
         private enum RANDOPROCTYPE { Rand, Unrand, Rerand }
         private async void rando_core_process(RANDOPROCTYPE rpt)
         {
-            randomizerSetup();
+            RandomizerSetup();
             CreateItemRestrictions();
 
             // Inform user of progress..
@@ -76,6 +78,8 @@ namespace DS2S_META
             lblWorking.Visibility = Visibility.Visible;
 
             int seed = Seed;
+            //RM.SetSeed(seed);
+
             var tasks = new List<Task>();
             switch (rpt)
             {
@@ -113,19 +117,23 @@ namespace DS2S_META
         private void CreateItemRestrictions()
         {
             // to reconsider structure
-            RM.Restrictions = new();
+            RM.UIRestrictions = new();
             var vm = (RandoSettingsViewModel)DataContext;
-            RM.Restrictions = vm.ItemRestrictions.Select(ir => ir).ToList();
+            RM.UIRestrictions = vm.ItemRestrictions.Select(ir => ir).ToList();
         }
         
 
-        private bool randomizerSetup()
+        private bool RandomizerSetup()
         {
             if (!EnsureHooked())
                 return false;
 
             if (!RM.IsInitialized)
                 RM.Initalize(Hook);
+
+            // Get updated settings:
+            var vm = (RandoSettingsViewModel)DataContext;
+            RM.IsRaceMode = vm.RaceMode;
 
             // Warn user about the incoming warp
             // hook.Loaded = true when in game (false on load screens)

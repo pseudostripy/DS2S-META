@@ -37,7 +37,7 @@ namespace DS2S_META
         public override void InitTab()
         {
             PlayerState.Set = false;
-            foreach (var bonfire in DS2SBonfire.All)
+            foreach (var bonfire in DS2Resource.Bonfires)
                 cmbBonfire.Items.Add(bonfire);
             LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: _Game Start"); //last set bonfire (default values) // TODO cleaner.
             cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
@@ -215,12 +215,12 @@ namespace DS2S_META
             if (LastSetBonfire.ID != bonfireID) // lastSetBonfire does not match game LastBonfire
             {
                 //target warp is not in filter
-                var result = DS2SBonfire.All.FirstOrDefault(b => b.ID == bonfireID); //check if warp is in bonfire resource
+                var result = DS2Resource.Bonfires.FirstOrDefault(b => b.ID == bonfireID); //check if warp is in bonfire resource
                 if (result == null)
                 {
                     //bonfire not in filter. Add to filter as unknown
                     result = new DS2SBonfire(Hook.LastBonfireAreaID ,bonfireID, $"Unknown {Hook.LastBonfireAreaID}: {bonfireID}");
-                    DS2SBonfire.All.Add(result);
+                    DS2Resource.Bonfires.Add(result);
                     FilterBonfires();
                 }
 
@@ -244,7 +244,7 @@ namespace DS2S_META
             cmbBonfire.SelectedItem = null;
 
             //go through bonfire resource and add to filter
-            foreach (var bonfire in DS2SBonfire.All)
+            foreach (var bonfire in DS2Resource.Bonfires)
             {
                 if (bonfire.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
                 {

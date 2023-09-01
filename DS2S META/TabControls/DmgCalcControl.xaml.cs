@@ -22,8 +22,8 @@ namespace DS2S_META
     public partial class DmgCalcControl : METAControl
     {
         // Fields:
-        private List<DS2SItem> Weapons => DS2SItemCategory.AllWeapons; // shorthand
-        private DS2SItem? SelDs2item;
+        //private List<DS2SItem> Weapons => DS2Resource.Weapons; // shorthand
+        //private DS2SItem? SelDs2item;
         //private WeaponRow Wep;
         internal ItemRow? Item;
         Timer InventoryTimer = new Timer();
@@ -131,7 +131,6 @@ namespace DS2S_META
         
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
-            int test = 1;
             //GetWeaponProperties();
         }
         private void cbxMaxUpgrade_Checked(object sender, RoutedEventArgs e)

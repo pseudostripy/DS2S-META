@@ -34,6 +34,18 @@ namespace DS2S_META.ViewModels
         
         public event EventHandler UserPresetChange;
         private bool AutoChange = false;
+        private bool _racemode = false;
+        public bool RaceMode 
+        {
+            get => _racemode;
+            set
+            {
+                _racemode = value;
+                Settings.Default.RandoRaceMode = value;
+                OnPropertyChanged(nameof(RaceMode));
+            }
+        }
+
 
         public void HandleUserPresetChange(object? sender, EventArgs e)
         {
@@ -55,6 +67,7 @@ namespace DS2S_META.ViewModels
         {
             Hook = hook;
             OnPropertyChanged(nameof(Hook));
+            RaceMode = Settings.Default.RandoRaceMode;
         }
 
         // Constructor
