@@ -99,7 +99,7 @@ namespace DS2S_META.Randomizer
         }; 
 
         // Output fields:
-        private List<Randomization> FullListRdz = new();
+        public List<Randomization> FullListRdz = new();
         internal List<Randomization> AllPtf = new();
         internal List<DropInfo> LTR_flatlist = new();
 
@@ -247,7 +247,10 @@ namespace DS2S_META.Randomizer
 
             return RDZ_TASKTYPE.STANDARD;
         }
-        private static RDZ_TASKTYPE CalcShopRdzStatus(ShopRow lotrow, RandoInfo ri) => ri.RandoHandleType; // until told otherwise
+        private static RDZ_TASKTYPE CalcShopRdzStatus(ShopRow shoprow, RandoInfo ri)
+        {
+            return ri.RandoHandleType; // until told otherwise
+        }
         
         // Misc. helpers
         private static ItemLotRow GetAssocNgItemlot(LotRdz ngpldz, List<LotRdz> ldzsNg)

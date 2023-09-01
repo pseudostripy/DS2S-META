@@ -295,7 +295,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopCopies()
         {
             // Maughlin / Gilligan / Gavlan
-            var fillbycopy = PTF.OfType<ShopRdz>().ToList()
+            var fillbycopy = Scope.FullListRdz.OfType<ShopRdz>().ToList()
                                  .FilterByTaskType(RDZ_TASKTYPE.FILL_BY_COPY).ToList();
             var shops = PTF.OfType<ShopRdz>();
 
@@ -340,7 +340,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopTradeCopies()
         {
             // Ornifex (non-free)
-            var fillbycopy = PTF.OfType<ShopRdz>().ToList()
+            var fillbycopy = Scope.FullListRdz.OfType<ShopRdz>().ToList()
                                 .FilterByTaskType(RDZ_TASKTYPE.TRADE_SHOP_COPY).ToList();
             var filled_shops = PTF.OfType<ShopRdz>();
 
@@ -380,7 +380,7 @@ namespace DS2S_META.Randomizer.Placement
         internal void FixShopsToRemove()
         {
             // Ornifex First Trade (ensure free)
-            var shops_toremove = PTF.OfType<ShopRdz>().ToList()
+            var shops_toremove = Scope.FullListRdz.OfType<ShopRdz>().ToList()
                                     .FilterByTaskType(RDZ_TASKTYPE.SHOPREMOVE);
 
             foreach (var shp in shops_toremove)
@@ -391,7 +391,7 @@ namespace DS2S_META.Randomizer.Placement
         }
         internal void FixLotCopies()
         {
-            var fillbycopy = PTF.OfType<LotRdz>().ToList()
+            var fillbycopy = Scope.FullListRdz.OfType<LotRdz>().ToList()
                                  .FilterByTaskType(RDZ_TASKTYPE.LINKEDSLAVE).OfType<LotRdz>().ToList();
             foreach (var lot in fillbycopy)
             {

@@ -924,7 +924,7 @@ namespace DS2S_META.Randomizer
                 { 10106180, SafeInfo(MapArea.FOFG, "[FOFG] Behind the stairs outside the ballista trap room", KL()) },
                 { 10106190, SafeInfo(MapArea.FOFG, "[FOFG] Behind the giant-tree in the middle courtyard", KL()) },
                 { 10106210, SafeInfo(MapArea.FOFG, "[FOFG] On a giant tree root", KL()) },
-                { 10106220, SafeInfo(MapArea.FOFG, "[FOFG] On the wall after climbing the ladder near a Giant", KL()) },
+                { 10106220, SafeInfo(MapArea.FOFG, "[FOFG] On the wall after climbing the ladder by Memory of Vammar", KL()) },
                 { 10106240, SafeInfo(MapArea.FOFG, "[FOFG] In the round tower where you drop from a tree root", KL()) },
                 { 10106250, SafeInfo(MapArea.FOFG, "[FOFG] Lower end of dead end stairs near the seaside fog gate", KL()) },
                 { 10106300, SafeInfo(MapArea.FOFG, "[FOFG] On the other end of the small bridge going over the fire area", KL()) },
