@@ -70,6 +70,7 @@ namespace DS2S_META
         CRUSHEDEYEORB   = 0x30A32C0,
         SMELTERWEDGE    = 0x32BC480,
         NADALIAFRAGMENT = 0x32D4B20,
+        FISTS           = 0x33E140,
     }
     public enum ITEMUSAGE
     {

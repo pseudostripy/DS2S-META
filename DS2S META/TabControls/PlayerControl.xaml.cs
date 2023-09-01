@@ -1,5 +1,6 @@
 ﻿using DS2S_META.Randomizer;
 using DS2S_META.Utils;
+using DS2S_META.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace DS2S_META
     /// </summary>
     public partial class PlayerControl : METAControl
     {
+        public float DMGMOD = 1000;
         private DS2SBonfire? LastSetBonfire;
 
         public PlayerControl()
@@ -294,17 +296,11 @@ namespace DS2S_META
             if (!Hook.Hooked)
                 return; // first call
 
-            float dmgmod;
-            if (cbxOHKO.IsChecked == true)
-                dmgmod = 1000;
-            else
-                dmgmod = 1;
+            float dmgmod = cbxFistOHKO.IsChecked == true ? DMGMOD : 1;
 
             // Write to memory
             var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
-            var F = rapierrow.Param.Fields[34];
-            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
-            Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
+            rapierrow.DamageMultiplier = dmgmod;
             rapierrow.WriteRow();
         }
 
@@ -313,17 +309,11 @@ namespace DS2S_META
             if (!Hook.Hooked)
                 return; // first call
 
-            float dmgmod;
-            if (cbxFistOHKO.IsChecked == true)
-                dmgmod = 1000;
-            else
-                dmgmod = 1;
+            float dmgmod = cbxFistOHKO.IsChecked == true ? DMGMOD : 1;
 
             // Write to memory
-            var fistrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)3400000) as WeaponRow ?? throw new NullReferenceException(); // Rapier
-            var F = fistrow.Param.Fields[34];
-            byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
-            Array.Copy(dmgbytes, 0, fistrow.RowBytes, F.FieldOffset, F.FieldLength);
+            var fistrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.FISTS) as WeaponRow ?? throw new NullReferenceException(); // Fists
+            fistrow.DamageMultiplier = dmgmod;
             fistrow.WriteRow();
         }
 
