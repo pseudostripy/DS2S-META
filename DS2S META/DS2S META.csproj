@@ -178,6 +178,8 @@
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
 			
+	  <Exec Command="echo testing"/>
+	  
   </Target>
 
   <ItemGroup>
