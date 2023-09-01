@@ -301,8 +301,7 @@ namespace DS2S_META
                 dmgmod = 1;
 
             // Write to memory
-            //var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
-            var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)Hook.IntRightHand1) as WeaponRow ?? throw new NullReferenceException(); // Rapier
+            var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
             var F = rapierrow.Param.Fields[34];
             byte[] dmgbytes = BitConverter.GetBytes(dmgmod);
             Array.Copy(dmgbytes, 0, rapierrow.RowBytes, F.FieldOffset, F.FieldLength);
