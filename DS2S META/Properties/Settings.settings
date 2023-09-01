@@ -113,5 +113,8 @@
     <Setting Name="hkyGive31" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">27</Value>
     </Setting>
+	<Setting Name="hkyNoDeath" Type="System.Int32" Scope="User">
+	  <Value Profile="(Default)">27</Value>
+	</Setting>
   </Settings>
 </SettingsFile>

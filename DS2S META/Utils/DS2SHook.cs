@@ -1978,6 +1978,23 @@ namespace DS2S_META
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
+
+        public void SetNoDeath()
+        {
+            if (Hooked)
+            {
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, 1);
+            }
+        }
+
+        public void SetYesDeath()
+        {
+            if (Hooked)
+            {
+                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, -99999);
+            }
+        }
+
         public int HealthMax
         {
             get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
@@ -3937,6 +3954,21 @@ namespace DS2S_META
                 return itemID.ToString();
             }
         }
+
+        public int IntRightHand1
+        {
+            get
+            {
+                if (!Loaded) return 0;
+                var itemID = PlayerCtrl.ReadInt32(Offsets.PlayerEquipment.RightHand1);
+
+                if (DS2SItem.Items.ContainsKey(itemID))
+                    return itemID;
+
+                return itemID;
+            }
+        }
+
         public string RightHand2
         {
             get
