@@ -24,14 +24,16 @@ namespace DS2S_META.ViewModels
 {
     internal class DS2SViewModel : ObservableObject
     {
+        // Wrapper exposures:
         private Settings Settings = Settings.Default;
         public DS2SHook Hook { get; private set; }
-        public bool GameLoaded { get; set; }
-        public bool Reading
-        {
-            get => DS2SHook.Reading;
-            set => DS2SHook.Reading = value;
-        }
+        //public bool Reading
+        //{
+        //    get => DS2SHook.Reading;
+        //    set => DS2SHook.Reading = value;
+        //}
+
+        public bool GameLoaded => Hook.InGame;
         public bool DS2Loading => Hook.IsLoading;
 
         private MetaVersionInfo MVI = new();
@@ -70,7 +72,7 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                if (Hook.Loaded)
+                if (Hook.InGame)
                     return "Yes";
                 return "No";
             }
@@ -100,7 +102,7 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                if (Hook.Loaded)
+                if (Hook.InGame)
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }

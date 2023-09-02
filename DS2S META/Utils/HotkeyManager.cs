@@ -68,11 +68,11 @@ namespace DS2S_META
                 "Warp" => () => MW.metaPlayer.Warp(),
                 "Create Item" => () => MW.metaItems.CreateItem(),
                 "Fast Quit" => () => MW.metaPlayer.FastQuit(),
-                "Give 17k" => () => MW.metaCheats.Give17kReward(),
+                "Give 17k" => () => MW.metaCheats.Hook.Give17kReward(),
                 "Toggle AI" => () => MW.metaPlayer.ToggleAI(),
                 "Toggle No Death" => () => MW.metaPlayer.ToggleNoDeath(),
                 "Toggle OHKO" => () => MW.metaPlayer.ToggleOHKO(),
-                "Give 3/1" => () => MW.metaCheats.Give3Chunk1Slab(),
+                "Give 3/1" => () => MW.metaCheats.Hook.Give3Chunk1Slab(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };
         }

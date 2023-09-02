@@ -18,6 +18,7 @@ namespace DS2S_META.Utils.Offsets
             BasePtrOffset2 = 0x7;
 
             LoadingState = new int[] { 0x80, 0x8, 0xBB4 };
+            GameState = 0x24AC; // from basea
 
             // Records:
             ForceQuit = new (0x24B1);

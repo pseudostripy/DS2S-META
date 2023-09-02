@@ -22,7 +22,7 @@
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <StackPanel Margin="15">
                     <Label Content="Name" />
-                    <TextBox x:Name="txtName" Text="{Binding ElementName=StatsCon, Path=Hook.Name}" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox x:Name="txtName" Text="{Binding ElementName=StatsCon, Path=Hook.CharacterName}" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                     <!--<Label Content="Sex" />
                 <ComboBox Name="Sex"/>-->
                     <Label Content="Class" />

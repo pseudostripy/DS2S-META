@@ -32,18 +32,8 @@ namespace DS2S_META
         private Properties.Settings Settings;
         public HotkeyManager HKM;
         DS2SHook Hook => ViewModel.Hook;
-        bool FormLoaded
-        {
-            get => ViewModel.GameLoaded;
-            set => ViewModel.GameLoaded = value;
-        }
-        public bool Reading
-        {
-            get => ViewModel.Reading;
-            set => ViewModel.Reading = value;
-        }
         Timer UpdateTimer = new();
-        
+
         //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
         public MainWindow()
@@ -57,12 +47,15 @@ namespace DS2S_META
             //LoadSettingsAfterUpgrade();
             //ShowOnlineWarning();
             Hook.OnHooked += Hook_OnHooked;
+            Hook.OnGameStateHandler += OnGameStateChange;
             Hook.MW = this;
 
-            // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
-            //DmgCalcViewModel = new DmgCalcViewModel();
-            //ViewModels.Add(DmgCalcViewModel);
-        }
+
+
+        // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
+        //DmgCalcViewModel = new DmgCalcViewModel();
+        //ViewModels.Add(DmgCalcViewModel);
+    }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             EnableTabs(false);
@@ -75,11 +68,21 @@ namespace DS2S_META
 
         //ObservableCollection<ViewModelBase> ViewModels = new();
 
+        private void OnGameStateChange(object? sender, GameStateEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() => {
+                if (e.GameState == Hook.MAINMENU)
+                    EnableTabs(false);
+                if (e.GameState == Hook.LOADEDINGAME) // add more here
+                    EnableTabs(true);
+            }));
+        }
+
         private void Hook_OnHooked(object? sender, PHEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                EnableTabs(Hook.Loaded);
+                EnableTabs(Hook.InGame);
             }));
         }
 
@@ -119,40 +122,19 @@ namespace DS2S_META
         
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.Invoke(new Action( () =>
             {
                 UpdateMainProperties();
-                if (Hook.Hooked)
-                {
-                    if (Hook.Loaded && Hook.Setup)
-                    {
-                        if (!FormLoaded)
-                        {
-                            FormLoaded = true;
-                            Reading = true;
-                            ReloadAllTabs();
-                            Reading = false;
-                            EnableTabs(true);
-                        }
-                        else
-                        {
-                            Reading = true;
-                            UpdateProperties();
-                            //UpdateAllViewModels();
-                            UpdateAllTabs();
-                            Reading = false;
-                        }
-                    }
-                    else if (FormLoaded)
-                    {
-                        Reading = true;
-                        UpdateProperties();
-                        Hook.UpdateName();
-                        EnableTabs(false);
-                        FormLoaded = false;
-                        Reading = false;
-                    }
-                }
+                if (!Hook.Hooked || !ParamMan.IsLoaded)
+                    return;
+
+
+                // Hook will be initialized by now
+                UpdateProperties();
+                //EnableTabs(Hook.InGame);
+
+                if (Hook.InGame)
+                    UpdateAllTabs();                
             }));
             
         }
@@ -176,6 +158,7 @@ namespace DS2S_META
         }
         private void UpdateProperties()
         {
+            Hook.UpdateGameState();
             Hook.UpdateStatsProperties();
             Hook.UpdatePlayerProperties();
             Hook.UpdateInternalProperties();
@@ -218,7 +201,7 @@ namespace DS2S_META
         }
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)
         {
-            metaStats.EnableCtrls(Hook.Loaded);
+            metaStats.EnableCtrls(Hook.InGame);
         }
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {

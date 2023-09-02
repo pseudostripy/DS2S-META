@@ -137,7 +137,7 @@ namespace DS2S_META
 
             // Warn user about the incoming warp
             // hook.Loaded = true when in game (false on load screens)
-            if (Hook.Loaded && Settings.Default.ShowWarnRandowarp)
+            if (Hook.InGame && Settings.Default.ShowWarnRandowarp)
             {
                 var randowarning = new RandoWarpWarning()
                 {

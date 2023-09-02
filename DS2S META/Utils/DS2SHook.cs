@@ -26,6 +26,9 @@ namespace DS2S_META
         public List<Param> Params = new();
 
 
+        public int LOADEDINGAME = 30;
+        public int MAINMENU = 10;
+
         public MainWindow MW { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -33,6 +36,12 @@ namespace DS2S_META
         {
             PropertyChanged?.Invoke(this, new(name));
         }
+        public event EventHandler<GameStateEventArgs> OnGameStateHandler;
+        private void RaiseGameStateChange(int oldstate, int newstate)
+        {
+            OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
+        }
+
         public IntPtr BaseAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
@@ -51,9 +60,28 @@ namespace DS2S_META
         public BBJTYPE BBJType;
         internal DS2HookOffsets Offsets;
 
+        // Utility Info
         public static bool Reading { get; set; }
         public bool IsLoading => LoadingState != null && Offsets.LoadingState != null && LoadingState.ReadBoolean(Offsets.LoadingState[^1]);
 
+        private int _gamestate;
+        public int GameState
+        {
+            get => _gamestate;
+            set {  
+                if (value == _gamestate) return;
+                RaiseGameStateChange(_gamestate, value);
+                _gamestate = value;
+            }
+        }
+        public bool InGame => GameState == LOADEDINGAME;
+        public bool InMenu => GameState == MAINMENU;
+
+        //public bool 
+        public bool Focused => Hooked && User32.GetForegroundProcessID() == Process.Id;
+        public bool IsInitialized = false;
+
+        // Pointer Setups
         private PHPointer GiveSoulsFunc;
         private PHPointer RemoveSoulsFunc;
         private PHPointer ItemGiveFunc;
@@ -105,10 +133,6 @@ namespace DS2S_META
         public PHPointer LoadingState;
         public PHPointer phDisableAI; // pointer head (missing final offset)
 
-        public bool Loaded => PlayerCtrl != null && PlayerCtrl.Resolve() != IntPtr.Zero;
-        public bool Setup = false;
-
-        public bool Focused => Hooked && User32.GetForegroundProcessID() == Process.Id;
 
         public DS2SHook(int refreshInterval, int minLifetime) :
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
@@ -199,7 +223,7 @@ namespace DS2S_META
             UpdateStatsProperties();
             GetSpeedhackOffsets();
             Version = GetStringVersion();
-            Setup = true;
+            IsInitialized = true;
 
             //asm execution update:
             //if (Is64Bit)
@@ -214,11 +238,11 @@ namespace DS2S_META
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
         {
             Version = "Not Hooked";
-            Setup = false;
             ClearSpeedhackInject();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
             OnPropertyChanged(nameof(Hooked));
+            IsInitialized = false;
         }
 
         // Major setup functions:
@@ -562,12 +586,13 @@ namespace DS2S_META
 
 
         // Player tab stuff:
-        public void UpdateName()
+        public void UpdateGameState()
         {
-            OnPropertyChanged(nameof(Name));
+            GameState = Hooked ? BaseA.ReadInt32(Offsets.GameState) : -1;
         }
         public void UpdateMainProperties()
         {
+            OnPropertyChanged(nameof(CharacterName));
             OnPropertyChanged(nameof(ID));
             OnPropertyChanged(nameof(Online));
         }
@@ -1420,8 +1445,23 @@ namespace DS2S_META
         }
 
 
-        
-        
+        public void Give17kReward()
+        {
+            // Add Soul of Pursuer x1 Ring of Blades x1 / 
+            var itemids = new int[2] { 0x03D09000, 0x0264CB00 };
+            var amounts = new short[2] { 1, 1 };
+            GiveItems(itemids, amounts);
+            AddSouls(17001);
+        }
+        public void Give3Chunk1Slab()
+        {
+            // For the lizard in dlc2
+            var items = new ITEMID[2] { ITEMID.TITANITECHUNK, ITEMID.TITANITESLAB };
+            var itemids = items.Cast<int>().ToArray();
+            var amounts = new short[2] { 3, 1 };
+            GiveItems(itemids, amounts);
+        }
+
         public void SetMaxLevels()
         {
             // Possibly to tidy
@@ -1913,7 +1953,7 @@ namespace DS2S_META
             if (!ParamMan.IsLoaded)
                 return false;
 
-            if (!Setup || ParamMan.ItemUsageParam == null)
+            if (!IsInitialized || ParamMan.ItemUsageParam == null)
                 return false;
 
             if (item == null)
@@ -1935,20 +1975,20 @@ namespace DS2S_META
         }
         public byte DisableAI
         {
-            get => Loaded && (Offsets.DisableAI != null) ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
+            get => InGame && (Offsets.DisableAI != null) ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 if (Offsets.DisableAI == null) return;
                 phDisableAI.WriteByte(Offsets.DisableAI[^1], value);
             }
         }
         public int Health
         {
-            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
+            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
@@ -1971,14 +2011,14 @@ namespace DS2S_META
 
         public int HealthMax
         {
-            get => Loaded ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
+            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
             set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
         }
         public int HealthCap
         {
             get
             {
-                if (!Loaded) return 0;
+                if (!InGame) return 0;
                 var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
                 return cap < HealthMax ? cap : HealthMax;
             }
@@ -1986,78 +2026,78 @@ namespace DS2S_META
         }
         public float Stamina
         {
-            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
+            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
             }
         }
         public float MaxStamina
         {
-            get => Loaded ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
+            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
             set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
         }
         public byte NetworkPhantomID
         {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
+            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
             set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
         }
         public byte TeamType
         {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
+            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
             //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
         }
         public byte CharType
         {
-            get => Loaded ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
+            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
             //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
         }
         public float PosX
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
             }
         }
         public float PosY
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
             }
         }
         public float PosZ
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
             }
         }
         public float AngX
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
         }
         public float AngY
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
         }
         public float AngZ
         {
-            get => Loaded ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
+            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
         }
         public float StableX
         {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
+            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
             set
             {
                 PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
@@ -2067,7 +2107,7 @@ namespace DS2S_META
         }
         public float StableY
         {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
+            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
             set
             {
                 PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
@@ -2077,7 +2117,7 @@ namespace DS2S_META
         }
         public float StableZ
         {
-            get => Loaded ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
+            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
             set
             {
                 PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
@@ -2126,21 +2166,21 @@ namespace DS2S_META
         {
             set
             {
-                if (!Loaded) return;
+                if (!InGame) return;
                 PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value);
             }
         }
         public bool Gravity
         {
-            get => Loaded ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
+            get => InGame ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
             set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
         }
         public bool Collision
         {
-            get => Loaded ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
+            get => InGame ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 if (value)
                     NetworkPhantomID = 0;
                 else
@@ -2149,16 +2189,16 @@ namespace DS2S_META
         }
         public ushort LastBonfireID
         {
-            get => Loaded ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
+            get => InGame ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
             set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
         }
         public int LastBonfireAreaID
         {
-            get => Loaded ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
+            get => InGame ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
             set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
         }
-        public bool Multiplayer => !Loaded || ConnectionType > 1;
-        public bool Online => !Loaded || ConnectionType > 0;
+        public bool Multiplayer => !InGame || ConnectionType > 1;
+        public bool Online => !InGame || ConnectionType > 0;
         public int ConnectionType => Hooked && Connection != null ? Connection.ReadInt32(Offsets.Connection.Online) : 0;
 
         // Bonfire Get/Setter related:
@@ -2255,7 +2295,7 @@ namespace DS2S_META
 
         // Equipped items:
         private string PlayerCtrlToName(int? offset) {
-            if (offset == null || !Loaded)
+            if (offset == null || !InGame)
                 return string.Empty;
             return PlayerCtrl.ReadInt32((int)offset).AsMetaName();
         }
@@ -2437,401 +2477,401 @@ namespace DS2S_META
 
         public byte CurrentCovenant
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
             }
         }
         public string? CurrentCovenantName
         {
-            get => Loaded ? DS2SCovenant.All.FirstOrDefault(x => x.ID == CurrentCovenant)?.Name : "";
+            get => InGame ? DS2SCovenant.All.FirstOrDefault(x => x.ID == CurrentCovenant)?.Name : "";
         }
         public bool HeirsOfTheSunDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered, value);
             }
         }
         public byte HeirsOfTheSunRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.HeirsOfTheSunRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.HeirsOfTheSunRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.HeirsOfTheSunRank, value);
             }
         }
         public short HeirsOfTheSunProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.HeirsOfTheSunProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.HeirsOfTheSunProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.HeirsOfTheSunProgress, value);
             }
         }
         public bool BlueSentinelsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BlueSentinelsDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.BlueSentinelsDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.BlueSentinelsDiscovered, value);
             }
         }
         public byte BlueSentinelsRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BlueSentinelsRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.BlueSentinelsRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.BlueSentinelsRank, value);
             }
         }
         public short BlueSentinelsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BlueSentinelsProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.BlueSentinelsProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.BlueSentinelsProgress, value);
             }
         }
         public bool BrotherhoodOfBloodDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BrotherhoodOfBloodDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.BrotherhoodOfBloodDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.BrotherhoodOfBloodDiscovered, value);
             }
         }
         public byte BrotherhoodOfBloodRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BrotherhoodOfBloodRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.BrotherhoodOfBloodRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.BrotherhoodOfBloodRank, value);
             }
         }
         public short BrotherhoodOfBloodProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BrotherhoodOfBloodProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.BrotherhoodOfBloodProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.BrotherhoodOfBloodProgress, value);
             }
         }
         public bool WayOfTheBlueDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.WayOfTheBlueDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.WayOfTheBlueDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.WayOfTheBlueDiscovered, value);
             }
         }
         public byte WayOfTheBlueRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.WayOfTheBlueRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.WayOfTheBlueRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.WayOfTheBlueRank, value);
             }
         }
         public short WayOfTheBlueProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.WayOfTheBlueProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.WayOfTheBlueProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.WayOfTheBlueProgress, value);
             }
         }
         public bool RatKingDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.RatKingDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.RatKingDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.RatKingDiscovered, value);
             }
         }
         public byte RatKingRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.RatKingRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.RatKingRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.RatKingRank, value);
             }
         }
         public short RatKingProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.RatKingProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.RatKingProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.RatKingProgress, value);
             }
         }
         public bool BellKeepersDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.BellKeepersDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.BellKeepersDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.BellKeepersDiscovered, value);
             }
         }
         public byte BellKeepersRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.BellKeepersRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.BellKeepersRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.BellKeepersRank, value);
             }
         }
         public short BellKeepersProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.BellKeepersProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.BellKeepersProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.BellKeepersProgress, value);
             }
         }
         public bool DragonRemnantsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.DragonRemnantsDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.DragonRemnantsDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.DragonRemnantsDiscovered, value);
             }
         }
         public byte DragonRemnantsRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.DragonRemnantsRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.DragonRemnantsRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.DragonRemnantsRank, value);
             }
         }
         public short DragonRemnantsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.DragonRemnantsProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.DragonRemnantsProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.DragonRemnantsProgress, value);
             }
         }
         public bool CompanyOfChampionsDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.CompanyOfChampionsDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.CompanyOfChampionsDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.CompanyOfChampionsDiscovered, value);
             }
         }
         public byte CompanyOfChampionsRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.CompanyOfChampionsRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CompanyOfChampionsRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.CompanyOfChampionsRank, value);
             }
         }
         public short CompanyOfChampionsProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.CompanyOfChampionsProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.CompanyOfChampionsProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.CompanyOfChampionsProgress, value);
             }
         }
         public bool PilgrimsOfDarknessDiscovered
         {
-            get => Loaded ? PlayerParam.ReadBoolean(Offsets.Covenants.PilgrimsOfDarknessDiscovered) : false;
+            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.PilgrimsOfDarknessDiscovered) : false;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteBoolean(Offsets.Covenants.PilgrimsOfDarknessDiscovered, value);
             }
         }
         public byte PilgrimsOfDarknessRank
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.Covenants.PilgrimsOfDarknessRank) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.PilgrimsOfDarknessRank) : (byte)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteByte(Offsets.Covenants.PilgrimsOfDarknessRank, value);
             }
         }
         public short PilgrimsOfDarknessProgress
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Covenants.PilgrimsOfDarknessProgress) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Covenants.PilgrimsOfDarknessProgress) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Covenants.PilgrimsOfDarknessProgress, value);
             }
         }
 
-        public string Name
+        public string CharacterName
         {
-            get => Loaded ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
+            get => InGame ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
             set
             {
-                if (Reading || !Loaded) return;
-                if (Name == value) return;
+                if (Reading || !InGame) return;
+                if (CharacterName == value) return;
                 PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
-                OnPropertyChanged(nameof(Name));
+                OnPropertyChanged(nameof(CharacterName));
             }
         }
         public byte Class
         {
-            get => Loaded ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
+            get => InGame ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
             }
         }
         public int SoulLevel
         {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
+            get => InGame ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
             set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
         }
         public int SoulMemory
         {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
+            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
             set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
         }
         public int SoulMemory2
         {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
+            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
             set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
         }
         public byte SinnerLevel
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
             set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
         }
         public byte SinnerPoints
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
             set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
         }
         public byte HollowLevel
         {
-            get => Loaded ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
+            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
             set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
         }
         public int Souls
         {
-            get => Loaded ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
+            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
         }
         public short Vigor
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
                 UpdateSoulLevel();
             }
         }
         public short Endurance
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.END, value);
                 UpdateSoulLevel();
             }
         }
         public short Vitality
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
                 UpdateSoulLevel();
             }
         }
         public short Attunement
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
                 UpdateSoulLevel();
             }
         }
         public short Strength
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
                 UpdateSoulLevel();
             }
         }
         public short Dexterity
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
                 UpdateSoulLevel();
             }
         }
         public short Adaptability
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
                 UpdateSoulLevel();
             }
         }
         public short Intelligence
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
                 UpdateSoulLevel();
             }
         }
         public short Faith
         {
-            get => Loaded ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
+            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
             set
             {
-                if (Reading || !Loaded) return;
+                if (Reading || !InGame) return;
                 PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
                 UpdateSoulLevel();
             }

@@ -37,7 +37,7 @@ namespace DS2S_META
         }
         private void cbmClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Hook.Loaded)
+            if (Hook.InGame)
             {
                 if (cmbClass.SelectedItem is not DS2SClass charClass)
                     throw new NullReferenceException("Null character class");
@@ -62,7 +62,7 @@ namespace DS2S_META
         internal override void ReloadCtrl()
         {
             cmbClass.SelectedItem = cmbClass.Items.Cast<DS2SClass>().FirstOrDefault(c => c.ID == Hook.Class);
-            txtName.Text = Hook.Name;
+            txtName.Text = Hook.CharacterName;
         }
 
         internal override void EnableCtrls(bool enable)
@@ -100,7 +100,7 @@ namespace DS2S_META
         }
         private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            Hook.Name = txtName.Text;
+            Hook.CharacterName = txtName.Text;
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)

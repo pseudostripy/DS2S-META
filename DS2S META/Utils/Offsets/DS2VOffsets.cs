@@ -15,6 +15,7 @@ namespace DS2S_META.Utils.Offsets
             BaseABabyJumpAoB = "8b 48 6c 53 8b 58 70 8b 40 68 89 45 0c a1 f4 93 54 01 56";
             BasePtrOffset1 = 0x4;
             BasePtrOffset2 = 0x0;
+            GameState = 0xdec;
 
 
             // Records    

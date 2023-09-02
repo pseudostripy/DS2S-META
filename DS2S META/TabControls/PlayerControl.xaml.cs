@@ -296,7 +296,7 @@ namespace DS2S_META
             if (!Hook.Hooked)
                 return; // first call
 
-            float dmgmod = cbxFistOHKO.IsChecked == true ? DMGMOD : 1;
+            float dmgmod = cbxOHKO.IsChecked == true ? DMGMOD : 1;
 
             // Write to memory
             var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
@@ -367,7 +367,7 @@ namespace DS2S_META
         private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Guard clauses
-            if (!Hook.Loaded)
+            if (!Hook.InGame)
                 return;
             if (cbxQuickSelectBonfire.IsChecked != true)
                 return;
