@@ -57,30 +57,6 @@ namespace DS2S_META
                 Hook.AwaitBonfireRest();
         }
 
-        //internal override void EnableCtrls(bool enable)
-        //{
-        //    btnPosStore.IsEnabled = enable;
-        //    btnPosRestore.IsEnabled = enable;
-        //    nudPosStoredX.IsEnabled = enable;
-        //    nudPosStoredY.IsEnabled = enable;
-        //    nudPosStoredZ.IsEnabled = enable;
-        //    nudHealth.IsEnabled = enable;
-        //    nudStamina.IsEnabled = enable;
-        //    cbxGravity.IsEnabled = enable;
-        //    cbxCollision.IsEnabled = enable;
-        //    btnWarp.IsEnabled = enable && !Hook.Multiplayer;
-        //    cbxWarpRest.IsEnabled = enable;
-            
-        //    // Version specific:
-        //    cbxDisableAI.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.MADWARRIOR);
-        //    cbxFistOHKO.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.OHKO_FIST);
-        //    cbxOHKO.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.OHKO_RAPIER);
-        //    cbxNoDeath.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.NODEATH);
-
-
-        //    if (enable)
-        //        cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
-        //}
         public void StorePosition()
         {
             if (VM.Hook == null)
@@ -215,9 +191,6 @@ namespace DS2S_META
             if (VM.Hook == null) return;
             var bonfireID = VM.Hook.LastBonfireID;
 
-            if(cbxNoDeath.IsChecked == true)
-                VM.Hook.SetNoDeath();
-
             if (LastSetBonfire == null)
                 return;
 
@@ -324,9 +297,16 @@ namespace DS2S_META
         }
         private void cbxNoDeath_UnChecked(object sender, RoutedEventArgs e)
         {
+            if (VM?.Hook == null)
+                return;
             VM.Hook.SetYesDeath();
         }
-        
+        private void cbxNoDeath_Checked(object sender, RoutedEventArgs e)
+        {
+            if (VM?.Hook == null) return;
+            VM.Hook.SetNoDeath();
+        }
+
         // UI events
         private void btnStore_Click(object sender, RoutedEventArgs e)
         {

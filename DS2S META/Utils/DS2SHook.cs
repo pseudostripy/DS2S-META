@@ -2001,17 +2001,13 @@ namespace DS2S_META
         public void SetNoDeath()
         {
             if (Hooked)
-            {
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, 1);
-            }
         }
 
         public void SetYesDeath()
         {
             if (Hooked)
-            {
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, -99999);
-            }
         }
 
         public int HealthMax

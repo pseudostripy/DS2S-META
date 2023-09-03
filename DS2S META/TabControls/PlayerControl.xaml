@@ -160,7 +160,7 @@
                         <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" Width="385" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="4" Margin="0,5,0,0"/>
                         <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,5,0,0" IsHitTestVisible="False" Grid.ColumnSpan="4"/>
                         <ComboBox x:Name="cmbBonfire" SelectionChanged="cmbBonfire_SelectionChanged" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,10"/>
-                        <Button Content="Warp" Click="WarpButton_Click" x:Name="btnWarp" Grid.Row="1" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,10"/>
+                        <Button Content="Warp" Click="WarpButton_Click" IsEnabled="{Binding EnWarp}" x:Name="btnWarp" Grid.Row="1" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,10"/>
                     </Grid>
                     <Grid VerticalAlignment="Bottom" Margin="50,5,50,5">
                         <Grid.RowDefinitions>
@@ -175,10 +175,10 @@
                         </Grid.ColumnDefinitions>
                         <CheckBox  Width="100" IsChecked="{Binding Hook.Gravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="{Binding EnGravity}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                         <CheckBox  Width="100" IsChecked="{Binding Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnCollision}" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
-                        <CheckBox  Width="100" IsChecked="{Binding Hook.DisableAI}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
+                        <CheckBox  Width="100" IsChecked="{Binding ChkDisableAi}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                         <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsEnabled="{Binding EnRapierOHKO}" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3" Width="100"/>
                         <CheckBox x:Name="cbxFistOHKO" Content="Fist OHKO" IsEnabled="{Binding EnFistOHKO}" IsChecked="False" Checked="cbxFistOHKO_Checked" Unchecked="cbxFistOHKO_Checked" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <CheckBox x:Name="cbxNoDeath" Content="No Death" IsEnabled="{Binding EnNoDeath}" IsChecked="False" Unchecked="cbxNoDeath_UnChecked" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <CheckBox x:Name="cbxNoDeath" Content="No Death" IsEnabled="{Binding EnNoDeath}" IsChecked="{Binding ChkNoDeath}" Checked="cbxNoDeath_Checked" Unchecked="cbxNoDeath_UnChecked" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding EnSpeedhack}" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <wpfTool:DecimalUpDown Value="{Binding SpeedValue, Mode=TwoWay, Source={x:Static p:Settings.Default}, 
                     UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
