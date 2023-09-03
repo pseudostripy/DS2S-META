@@ -6,9 +6,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:p="clr-namespace:DS2S_META.Properties"
-             xmlns:local="clr-namespace:DS2S_META"
-             mc:Ignorable="d" 
-             d:DesignHeight="692.468" d:DesignWidth="429.026" Background="LightGray">
+             xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
+                   mc:Ignorable="d" 
+             d:DesignHeight="692.468" d:DesignWidth="429.026" Background="LightGray"
+             d:DataContext="{d:DesignInstance viewmodels:PlayerViewModel, IsDesignTimeCreatable=True}">
     <Grid Grid.Row="0" Grid.RowSpan="2" Margin="10,0,10,47">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="247*"/>
@@ -38,19 +39,19 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="Health" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:IntegerUpDown x:Name="nudHealth" Value="{Binding ElementName=PlayerCon, Path=Hook.Health}" Maximum="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="1"/>
+                        <wpfTool:IntegerUpDown x:Name="nudHealth" Value="{Binding Path=Hook.Health}" Maximum="{Binding Hook.HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="1"/>
                         <Label Content="Health Cap" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthCap}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1"/>
+                        <wpfTool:IntegerUpDown Value="{Binding Path=Hook.HealthCap}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1"/>
                         <Label Content="Health Max" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.HealthMax}" TextAlignment="Center" IsEnabled="False" Grid.Column="2" Grid.Row="1"/>
+                        <wpfTool:IntegerUpDown Value="{Binding Path=Hook.HealthMax}" TextAlignment="Center" IsEnabled="False" Grid.Column="2" Grid.Row="1"/>
                         <Label Content="Stamina" Grid.Row="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:IntegerUpDown x:Name="nudStamina" Value="{Binding ElementName=PlayerCon, Path=Hook.Stamina}" TextAlignment="Center" Maximum="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="3" />
+                        <wpfTool:IntegerUpDown x:Name="nudStamina" Value="{Binding Path=Hook.Stamina}" TextAlignment="Center" Maximum="{Binding Path=Hook.MaxStamina}" ClipValueToMinMax="True" IsEnabled="False" Grid.Row="3" />
                         <Label Content="Stamina Max" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:IntegerUpDown Value="{Binding ElementName=PlayerCon, Path=Hook.MaxStamina}" TextAlignment="Center" IsEnabled="False" Grid.Row="3" Grid.Column="1"/>
+                        <wpfTool:IntegerUpDown Value="{Binding Path=Hook.MaxStamina}" TextAlignment="Center" IsEnabled="False" Grid.Row="3" Grid.Column="1"/>
                         <Label Content="Char Type" Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.CharType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5" Grid.Column="2"/>
+                        <TextBox Text="{Binding Path=Hook.CharType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5" Grid.Column="2"/>
                         <Label Content="Team Type" Grid.Row="4" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                        <TextBox Text="{Binding ElementName=PlayerCon, Path=Hook.TeamType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5"/>
+                        <TextBox Text="{Binding Path=Hook.TeamType, Mode=OneWay}" TextAlignment="Center" IsEnabled="False" Grid.Row="5"/>
                         <Label Content="Invade Type" Grid.Row="4" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                         <TextBox IsEnabled="False" Grid.Row="5" Grid.Column="1"/>
                     </Grid>
@@ -81,9 +82,9 @@
                         <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
                         <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4"/>
                         <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding ElementName=PlayerCon, Path=Hook.PosX, Mode=OneWay}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding ElementName=PlayerCon, Path=Hook.PosY, Mode=OneWay}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding ElementName=PlayerCon, Path=Hook.PosZ, Mode=OneWay}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Hook.PosX, Mode=OneWay}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Hook.PosY, Mode=OneWay}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Hook.PosZ, Mode=OneWay}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
 
                         <Grid Grid.Row="4" Grid.Column="3">
                             <Grid.RowDefinitions>
@@ -92,14 +93,14 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <CheckBox Content="Restore State" x:Name="cbxRestoreState" IsChecked="{Binding RestoreState,Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Button Content="Store" x:Name="btnPosStore" IsEnabled="False" Margin="2" Click="btnStore_Click" Grid.Row="1"/>
-                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="False" Grid.Column="3" Grid.Row="5" Margin="2" Click="btnRestore_Click"/>
+                            <Button Content="Store" x:Name="btnPosStore" IsEnabled="{Binding EnStorePosition}" Margin="2" Click="btnStore_Click" Grid.Row="1"/>
+                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="{Binding EnRestorePosition}" Grid.Column="3" Grid.Row="5" Margin="2" Click="btnRestore_Click"/>
                         </Grid>
 
                         <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableX, Mode=OneWay}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableY, Mode=OneWay}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding ElementName=PlayerCon, Path=Hook.StableZ, Mode=OneWay}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableX, Mode=OneWay}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableY, Mode=OneWay}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableZ, Mode=OneWay}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
 
                         <Label Content="Stored" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" />
                         <wpfTool:DecimalUpDown x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
@@ -112,9 +113,9 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBox x:Name="txtAngX" Text="{Binding ElementName=PlayerCon, Path=Hook.AngX, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngY" Text="{Binding ElementName=PlayerCon, Path=Hook.AngY, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngZ" Text="{Binding ElementName=PlayerCon, Path=Hook.AngZ, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngX" Text="{Binding Hook.AngX, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngY" Text="{Binding Hook.AngY, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngZ" Text="{Binding Hook.AngZ, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                         </Grid>
                         <Grid Grid.Row="4" Grid.Column="2">
                             <Grid.RowDefinitions>
@@ -172,13 +173,13 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Gravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="False" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
-                        <CheckBox  Width="100" IsChecked="{Binding ElementName=PlayerCon, Path=Hook.DisableAI}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="False" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
-                        <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3" Width="100" />
-                        <CheckBox x:Name="cbxFistOHKO" Content="Fist OHKO" IsChecked="False" Checked="cbxFistOHKO_Checked" Unchecked="cbxFistOHKO_Checked" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <CheckBox x:Name="cbxNoDeath" Content="No Death" IsChecked="False" Unchecked="cbxNoDeath_UnChecked" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding ElementName=PlayerCon Hook.Hooked}" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <CheckBox  Width="100" IsChecked="{Binding Hook.Gravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="{Binding EnGravity}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <CheckBox  Width="100" IsChecked="{Binding Hook.Collision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnCollision}" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
+                        <CheckBox  Width="100" IsChecked="{Binding Hook.DisableAI}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
+                        <CheckBox x:Name="cbxOHKO" Content="Rapier OHKO" IsEnabled="{Binding EnRapierOHKO}" IsChecked="False" Checked="cbxOHKO_Checked" Unchecked="cbxOHKO_Checked" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3" Width="100"/>
+                        <CheckBox x:Name="cbxFistOHKO" Content="Fist OHKO" IsEnabled="{Binding EnFistOHKO}" IsChecked="False" Checked="cbxFistOHKO_Checked" Unchecked="cbxFistOHKO_Checked" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <CheckBox x:Name="cbxNoDeath" Content="No Death" IsEnabled="{Binding EnNoDeath}" IsChecked="False" Unchecked="cbxNoDeath_UnChecked" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <CheckBox Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding EnSpeedhack}" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <wpfTool:DecimalUpDown Value="{Binding SpeedValue, Mode=TwoWay, Source={x:Static p:Settings.Default}, 
                     UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                     </Grid>

@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Collections.Generic;
+using DS2S_META.Properties;
+using PropertyHook;
+using System.Windows.Media;
 
 namespace DS2S_META.ViewModels
 {
@@ -35,5 +38,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(propertyName ?? "");
             return true;
         }
+
+        public DS2SHook? Hook { get; set; }
+        public void InitViewModel(DS2SHook hook) { Hook = hook; }
     }
 }

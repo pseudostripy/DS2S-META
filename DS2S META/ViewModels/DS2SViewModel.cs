@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using static DS2S_META.MainWindow;
 
 namespace DS2S_META.ViewModels
@@ -52,20 +53,35 @@ namespace DS2S_META.ViewModels
                 
 
             Hook = new DS2SHook(5000, 5000);
-            Hook.OnHooked += Hook_OnHooked;
-            Hook.OnUnhooked += Hook_OnUnhooked;
-            Hook.Start();
+            Hook.OnHooked += OnHooked;
+            Hook.OnUnhooked += OnUnhooked;
+            Hook.OnGameStateHandler += OnGameStateChange;
 
             // Setup ViewModels
+            PlayerViewModel = new PlayerViewModel();
             DmgCalcViewModel = new DmgCalcViewModel();
             CheatsViewModel = new CheatsViewModel();
             RandoSettingsViewModel = new RandoSettingsViewModel();
             ViewModels.Add(DmgCalcViewModel);
             ViewModels.Add(CheatsViewModel);
+            ViewModels.Add(PlayerViewModel);
+            ViewModels.Add(RandoSettingsViewModel);
 
+
+            Hook.Start();
             ShowOnlineWarning();
             Versioning();
         }
+
+        private void OnHooked(object? sender, PHEventArgs e)
+        {
+            PlayerViewModel.OnHooked();
+        }
+        private void OnUnhooked(object? sender, PHEventArgs e)
+        {
+            PlayerViewModel.OnUnHooked();
+        }
+
 
         // Binding Variables:
         public string ContentLoaded
@@ -150,10 +166,12 @@ namespace DS2S_META.ViewModels
         public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
 
+        // ViewModel helpers
         ObservableCollection<ViewModelBase> ViewModels = new();
         public DmgCalcViewModel DmgCalcViewModel { get; set; }
         public RandoSettingsViewModel RandoSettingsViewModel { get; set; }
         public CheatsViewModel CheatsViewModel { get; set; }
+        public PlayerViewModel PlayerViewModel { get; set; }
 
         public void UpdateMainProperties()
         {
@@ -168,14 +186,46 @@ namespace DS2S_META.ViewModels
 
             DmgCalcViewModel.UpdateViewModel();
             CheatsViewModel.UpdateViewModel();
-        }
-        private void Hook_OnHooked(object? sender, PHEventArgs e)
-        {
-        }
-        private void Hook_OnUnhooked(object? sender, PHEventArgs e)
-        {
+            PlayerViewModel.UpdateViewModel();
 
         }
+
+        public void InitViewModels()
+        {
+            foreach (var vm in ViewModels)
+                vm.InitViewModel(Hook);
+        }
+
+        private void OnGameStateChange(object? sender, GameStateEventArgs e)
+        {
+            if (e.GameState == Hook.MAINMENU)
+                AllTabsOnMainMenu();
+            if (e.GameState == Hook.LOADEDINGAME) // add more here
+                EnableTabsOnGameLoad(true);
+        }
+        
+        private void EnableTabsOnGameLoad(bool enable)
+        {
+            PlayerViewModel.OnInGame();
+            //PlayerViewModel.EnableCtrls(enable);
+            //metaStats.EnableCtrls(enable);
+            //metaInternal.EnableCtrls(enable);
+            //metaItems.EnableCtrls(enable);
+            //metatabDmgCalc.EnableCtrls(enable);
+            // ViewModel.RandoSettingsViewModel.enablectrls // todo
+        }
+
+        private void AllTabsOnMainMenu()
+        {
+            PlayerViewModel.OnMainMenu();
+            //metaPlayer.EnableOnHooked(enable);
+            //metaStats.EnableCtrls(enable);
+            //metaInternal.EnableCtrls(enable);
+            //metaItems.EnableCtrls(enable);
+            //metatabDmgCalc.EnableCtrls(enable);
+        }
+
+        
 
         private async void Versioning()
         {

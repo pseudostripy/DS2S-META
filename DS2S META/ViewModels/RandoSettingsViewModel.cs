@@ -63,16 +63,17 @@ namespace DS2S_META.ViewModels
         }
 
         public DS2SHook? Hook { get; set; }
-        public void InitViewModel(DS2SHook hook)
-        {
-            Hook = hook;
-            OnPropertyChanged(nameof(Hook));
-            RaceMode = Settings.Default.RandoRaceMode;
-        }
+        //public void InitViewModel(DS2SHook hook)
+        //{
+        //    Hook = hook;
+        //    OnPropertyChanged(nameof(Hook));
+        //    RaceMode = Settings.Default.RandoRaceMode;
+        //}
 
         // Constructor
         public RandoSettingsViewModel()
         {
+            RaceMode = Settings.Default.RandoRaceMode;
             try
             {
                 LoadRandomizerSettings();

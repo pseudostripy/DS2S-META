@@ -70,8 +70,9 @@ namespace DS2S_META
             get => _gamestate;
             set {  
                 if (value == _gamestate) return;
-                RaiseGameStateChange(_gamestate, value);
-                _gamestate = value;
+                var oldstate = _gamestate;
+                _gamestate = value; // needs to be read during event
+                RaiseGameStateChange(oldstate, value);
             }
         }
         public bool InGame => GameState == LOADEDINGAME;
@@ -557,6 +558,10 @@ namespace DS2S_META
             return feature switch
             {
                 METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null,
+                METAFEATURE.OHKO_FIST => IsSOTFS,
+                METAFEATURE.OHKO_RAPIER => IsSOTFS,
+                METAFEATURE.NODEATH => IsSOTFS,
+                METAFEATURE.DISABLEAI => IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }

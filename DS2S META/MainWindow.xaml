@@ -87,7 +87,7 @@
                         <ItemsPanelTemplate/>
                     </TabControl.ItemsPanel>
                     <TabItem Header="Player">
-                        <local:PlayerControl x:Name="metaPlayer" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
+                        <local:PlayerControl x:Name="metaPlayer" DataContext="{Binding PlayerViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="3"/>
                     </TabItem>
                     <TabItem Header="Stats">
                         <Grid Background="LightGray">

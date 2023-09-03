@@ -9,5 +9,9 @@ namespace DS2S_META.Utils
     public enum METAFEATURE
     {
         MADWARRIOR,
+        OHKO_FIST,
+        OHKO_RAPIER,
+        NODEATH,
+        DISABLEAI,
     }
 }

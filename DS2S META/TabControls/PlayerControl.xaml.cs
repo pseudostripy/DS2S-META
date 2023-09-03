@@ -33,6 +33,7 @@ namespace DS2S_META
         }
 
         private State.PlayerState PlayerState;
+        PlayerViewModel VM; // todo setup command objects to the ViewModel in xaml
 
         private List<SavedPos> Positions = new();
 
@@ -47,6 +48,7 @@ namespace DS2S_META
             cmbStoredPositions.Items.Add(new SavedPos());
             btnWarp.IsEnabled = true;
             UpdatePositions();
+            VM = (PlayerViewModel)DataContext; // todo setup command objects to the ViewModel in xaml
         }
         internal override void ReloadCtrl()
         {
@@ -54,56 +56,59 @@ namespace DS2S_META
             if (Properties.Settings.Default.AlwaysRestAfterWarp)
                 Hook.AwaitBonfireRest();
         }
-        internal override void EnableCtrls(bool enable)
-        {
-            btnPosStore.IsEnabled = enable;
-            btnPosRestore.IsEnabled = enable;
-            nudPosStoredX.IsEnabled = enable;
-            nudPosStoredY.IsEnabled = enable;
-            nudPosStoredZ.IsEnabled = enable;
-            nudHealth.IsEnabled = enable;
-            nudStamina.IsEnabled = enable;
-            cbxGravity.IsEnabled = enable;
-            cbxCollision.IsEnabled = enable;
-            btnWarp.IsEnabled = enable && !Hook.Multiplayer;
-            cbxWarpRest.IsEnabled = enable;
-            cbxSpeed.IsEnabled = enable || Hook.Hooked;
 
-            cbxDisableAI.IsEnabled = enable && (Hook.Offsets.DisableAI != null);
+        //internal override void EnableCtrls(bool enable)
+        //{
+        //    btnPosStore.IsEnabled = enable;
+        //    btnPosRestore.IsEnabled = enable;
+        //    nudPosStoredX.IsEnabled = enable;
+        //    nudPosStoredY.IsEnabled = enable;
+        //    nudPosStoredZ.IsEnabled = enable;
+        //    nudHealth.IsEnabled = enable;
+        //    nudStamina.IsEnabled = enable;
+        //    cbxGravity.IsEnabled = enable;
+        //    cbxCollision.IsEnabled = enable;
+        //    btnWarp.IsEnabled = enable && !Hook.Multiplayer;
+        //    cbxWarpRest.IsEnabled = enable;
+            
+        //    // Version specific:
+        //    cbxDisableAI.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.MADWARRIOR);
+        //    cbxFistOHKO.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.OHKO_FIST);
+        //    cbxOHKO.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.OHKO_RAPIER);
+        //    cbxNoDeath.IsEnabled = enable && Hook.IsFeatureCompatible(METAFEATURE.NODEATH);
 
-            if (enable)
-                cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
-            //cbxSpeed.IsEnabled = enable;
-        }
+
+        //    if (enable)
+        //        cmbBonfire.SelectedIndex = cmbBonfire.Items.Count - 1;
+        //}
         public void StorePosition()
         {
-            if (btnPosStore.IsEnabled)
-            {
-                var pos = new SavedPos();
-                pos.Name = cmbStoredPositions.Text;
-                nudPosStoredX.Value = (decimal)Hook.StableX;
-                nudPosStoredY.Value = (decimal)Hook.StableY;
-                nudPosStoredZ.Value = (decimal)Hook.StableZ;
-                PlayerState.AngX = Hook.AngX;
-                PlayerState.AngY = Hook.AngY;
-                PlayerState.AngZ = Hook.AngZ;
-                PlayerState.HP = nudHealth.Value?? 0; // default to 0 if null
-                PlayerState.Stamina = nudStamina.Value?? 0;
-                PlayerState.FollowCam = Hook.CameraData;
-                PlayerState.FollowCam2 = Hook.CameraData2;
-                PlayerState.Set = true;
-                pos.X = Hook.StableX;
-                pos.Y = Hook.StableY;
-                pos.Z = Hook.StableZ;
-                pos.PlayerState = PlayerState;
-                ProcessSavedPos(pos);
-                UpdatePositions();
-                SavedPos.Save(Positions);
+            if (VM.Hook == null)
+                return;
+            var pos = new SavedPos();
+            pos.Name = cmbStoredPositions.Text;
+            nudPosStoredX.Value = (decimal)VM.Hook.StableX;
+            nudPosStoredY.Value = (decimal)VM.Hook.StableY;
+            nudPosStoredZ.Value = (decimal)VM.Hook.StableZ;
+            PlayerState.AngX = VM.Hook.AngX;
+            PlayerState.AngY = VM.Hook.AngY;
+            PlayerState.AngZ = VM.Hook.AngZ;
+            PlayerState.HP = nudHealth.Value?? 0; // default to 0 if null
+            PlayerState.Stamina = nudStamina.Value?? 0;
+            PlayerState.FollowCam = VM.Hook.CameraData;
+            PlayerState.FollowCam2 = VM.Hook.CameraData2;
+            PlayerState.Set = true;
+            pos.X = VM.Hook.StableX;
+            pos.Y = VM.Hook.StableY;
+            pos.Z = VM.Hook.StableZ;
+            pos.PlayerState = PlayerState;
+            ProcessSavedPos(pos);
+            UpdatePositions();
+            SavedPos.Save(Positions);
 
-                txtAngX.Text = PlayerState.AngX.ToString("N2");
-                txtAngY.Text = PlayerState.AngY.ToString("N2");
-                txtAngZ.Text = PlayerState.AngZ.ToString("N2");
-            }
+            txtAngX.Text = PlayerState.AngX.ToString("N2");
+            txtAngY.Text = PlayerState.AngY.ToString("N2");
+            txtAngZ.Text = PlayerState.AngZ.ToString("N2");
         }
         public void ProcessSavedPos(SavedPos pos)
         {
@@ -158,26 +163,29 @@ namespace DS2S_META
         }
         public void RestorePosition()
         {
-            if (btnPosRestore.IsEnabled)
-            {
-                if (!nudPosStoredX.Value.HasValue || !nudPosStoredY.Value.HasValue || !nudPosStoredZ.Value.HasValue)
-                    return;
+            if (!btnPosRestore.IsEnabled)
+                return;
 
-                Hook.StableX = (float)nudPosStoredX.Value;
-                Hook.StableY = (float)nudPosStoredY.Value;
-                Hook.StableZ = (float)nudPosStoredZ.Value;
-                Hook.AngX = PlayerState.AngX;
-                Hook.AngY = PlayerState.AngY;
-                Hook.AngZ = PlayerState.AngZ;
-                //Hook.CameraData = PlayerState.FollowCam;
-                //Hook.CamX = CamX;
-                //Hook.CamY = CamY;
-                //Hook.CamZ = CamZ;
-                if (cbxRestoreState.IsChecked == true)
-                {
-                    nudHealth.Value = PlayerState.HP;
-                    nudStamina.Value = PlayerState.Stamina;
-                }
+            if (!nudPosStoredX.Value.HasValue || !nudPosStoredY.Value.HasValue || !nudPosStoredZ.Value.HasValue)
+                return;
+
+            if (VM.Hook == null)
+                return;
+
+            VM.Hook.StableX = (float)nudPosStoredX.Value;
+            VM.Hook.StableY = (float)nudPosStoredY.Value;
+            VM.Hook.StableZ = (float)nudPosStoredZ.Value;
+            VM.Hook.AngX = PlayerState.AngX;
+            VM.Hook.AngY = PlayerState.AngY;
+            VM.Hook.AngZ = PlayerState.AngZ;
+            //Hook.CameraData = PlayerState.FollowCam;
+            //Hook.CamX = CamX;
+            //Hook.CamY = CamY;
+            //Hook.CamZ = CamZ;
+            if (cbxRestoreState.IsChecked == true)
+            {
+                nudHealth.Value = PlayerState.HP;
+                nudStamina.Value = PlayerState.Stamina;
             }
         }
 
@@ -204,12 +212,11 @@ namespace DS2S_META
         internal override void UpdateCtrl() 
         {
             //manage unknown warps and current warps that are not in filter
-            var bonfireID = Hook.LastBonfireID;
+            if (VM.Hook == null) return;
+            var bonfireID = VM.Hook.LastBonfireID;
 
             if(cbxNoDeath.IsChecked == true)
-            {
-                Hook.SetNoDeath();
-            }
+                VM.Hook.SetNoDeath();
 
             if (LastSetBonfire == null)
                 return;
@@ -221,7 +228,7 @@ namespace DS2S_META
                 if (result == null)
                 {
                     //bonfire not in filter. Add to filter as unknown
-                    result = new DS2SBonfire(Hook.LastBonfireAreaID ,bonfireID, $"Unknown {Hook.LastBonfireAreaID}: {bonfireID}");
+                    result = new DS2SBonfire(VM.Hook.LastBonfireAreaID ,bonfireID, $"Unknown {VM.Hook.LastBonfireAreaID}: {bonfireID}");
                     DS2Resource.Bonfires.Add(result);
                     FilterBonfires();
                 }
@@ -286,14 +293,14 @@ namespace DS2S_META
             cbxOHKO.IsChecked = !cbxOHKO.IsChecked;
             cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
         }
-
         public void ToggleNoDeath()
         {
             cbxNoDeath.IsChecked = !cbxNoDeath.IsChecked;
         }
+        
         private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
         {
-            if (!Hook.Hooked)
+            if (VM.Hook == null || !VM.Hook.Hooked)
                 return; // first call
 
             float dmgmod = cbxOHKO.IsChecked == true ? DMGMOD : 1;
@@ -303,10 +310,9 @@ namespace DS2S_META
             rapierrow.DamageMultiplier = dmgmod;
             rapierrow.WriteRow();
         }
-
         private void cbxFistOHKO_Checked(object sender, RoutedEventArgs e)
         {
-            if (!Hook.Hooked)
+            if (VM.Hook == null || !VM.Hook.Hooked)
                 return; // first call
 
             float dmgmod = cbxFistOHKO.IsChecked == true ? DMGMOD : 1;
@@ -316,27 +322,12 @@ namespace DS2S_META
             fistrow.DamageMultiplier = dmgmod;
             fistrow.WriteRow();
         }
-
         private void cbxNoDeath_UnChecked(object sender, RoutedEventArgs e)
         {
-            Hook.SetYesDeath();
+            VM.Hook.SetYesDeath();
         }
-        public void DeltaHeight(float delta)
-        {
-            Hook.PosZ += delta;
-
-            // QOL: AutoTurn off gravity
-            if (cbxGravity.IsChecked == true)
-                cbxGravity.IsChecked = false;
-        }
-        public void FastQuit()
-        {
-            if (!Hook.Hooked) 
-                return;
-            Hook.FastQuit = 6;
-        }
-
-
+        
+        // UI events
         private void btnStore_Click(object sender, RoutedEventArgs e)
         {
             StorePosition();
@@ -347,43 +338,18 @@ namespace DS2S_META
         }
         private void cbxSpeed_Checked(object sender, RoutedEventArgs e)
         {
+            if (VM.Hook == null) return;
             nudSpeed.IsEnabled = cbxSpeed.IsChecked == true;
-            Hook.Speedhack(cbxSpeed.IsChecked == true);
+            VM.Hook.Speedhack(cbxSpeed.IsChecked == true);
         }
-
-        private void SetGameSpeed()
-        {
-            if (GameLoaded && Hook.Hooked)
-                Hook.SetSpeed((double)(nudSpeed.Value ?? 1));
-        }
-        private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            SetGameSpeed();
-        }
-        private void nudSpeed_LostFocus(object sender, RoutedEventArgs e)
-        {
-            SetGameSpeed();
-        }
-        private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Guard clauses
-            if (!Hook.InGame)
-                return;
-            if (cbxQuickSelectBonfire.IsChecked != true)
-                return;
-            if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
-                throw new NullReferenceException("Unexpected bonfire");
-            
-            // Do stuff
-            Hook.LastBonfireID = bonfire.ID;
-            Hook.LastBonfireAreaID = bonfire.AreaID;
-        }
-
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             RemoveSavedPos();
         }
-
+        private void WarpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Warp();
+        }
         private void storedPositions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var savedPos = cmbStoredPositions.SelectedItem as SavedPos;
@@ -399,15 +365,58 @@ namespace DS2S_META
             txtAngZ.Text = PlayerState.AngZ.ToString("N2");
         }
 
-        private void WarpButton_Click(object sender, RoutedEventArgs e)
-        {
-            Warp();
-        }
 
+        public void DeltaHeight(float delta)
+        {
+            if (VM.Hook == null) return;
+            VM.Hook.PosZ += delta;
+
+            // QOL: AutoTurn off gravity
+            if (cbxGravity.IsChecked == true)
+                cbxGravity.IsChecked = false;
+        }
+        public void FastQuit()
+        {
+            if (VM.Hook == null || !VM.Hook.Hooked)
+                return;
+            VM.Hook.FastQuit = 6;
+        }
+        private void SetGameSpeed()
+        {
+            if (VM?.Hook == null || VM.Hook.Hooked == false) return;
+            VM.Hook.SetSpeed((double)(nudSpeed.Value ?? 1));
+        }
+        private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            SetGameSpeed();
+        }
+        private void nudSpeed_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SetGameSpeed();
+        }
+        private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Guard clauses
+            if (VM.Hook == null)
+                return;
+            if (!VM.Hook.InGame)
+                return;
+            if (cbxQuickSelectBonfire.IsChecked != true)
+                return;
+            if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
+                throw new NullReferenceException("Unexpected bonfire");
+            
+            // Do stuff
+            VM.Hook.LastBonfireID = bonfire.ID;
+            VM.Hook.LastBonfireAreaID = bonfire.AreaID;
+        }
         public void Warp()
         {
+            if (VM.Hook == null)
+                return;
+
             _ = ChangeColor(Brushes.DarkGray);
-            if (Hook.Multiplayer)
+            if (VM.Hook.Multiplayer)
             {
                 MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -421,8 +430,8 @@ namespace DS2S_META
             {
                 int BETWIXTAREA = 167903232;
                 ushort BETWIXTBFID = 2650;
-                Hook.LastBonfireAreaID = BETWIXTAREA;
-                Hook.Warp(BETWIXTBFID, true);
+                VM.Hook.LastBonfireAreaID = BETWIXTAREA;
+                VM.Hook.Warp(BETWIXTBFID, true);
                 return;
             }
 
@@ -430,9 +439,9 @@ namespace DS2S_META
             if (bonfire == null)
                 throw new Exception("How do we get here intellisense??");
 
-            Hook.LastBonfireID = bonfire.ID;
-            Hook.LastBonfireAreaID = bonfire.AreaID;
-            var warped = Hook.Warp(bonfire.ID);
+            VM.Hook.LastBonfireID = bonfire.ID;
+            VM.Hook.LastBonfireAreaID = bonfire.AreaID;
+            var warped = VM.Hook.Warp(bonfire.ID);
             if (warped && cbxWarpRest.IsChecked == true)
                 WarpRest = true; 
         }
@@ -450,14 +459,14 @@ namespace DS2S_META
         {
             FilterBonfires();
         }
-        private void KeyPressed(object sender, System.Windows.Input.KeyEventArgs e)
+        private void KeyPressed(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
                 txtSearch.Clear();
 
             KeyDownListbox(e);
         }
-        private void KeyDownListbox(System.Windows.Input.KeyEventArgs e)
+        private void KeyDownListbox(KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {

@@ -37,8 +37,6 @@ namespace DS2S_META
         internal override void EnableCtrls(bool enable)
         {
             IsEnabled = enable;
-            //cbxSpeeds.IsEnabled = enable;
-
             spCovenants.IsEnabled = enable;
             btnSet.IsEnabled = enable;
         }

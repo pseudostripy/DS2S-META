@@ -46,8 +46,7 @@ namespace DS2S_META
 
             //LoadSettingsAfterUpgrade();
             //ShowOnlineWarning();
-            Hook.OnHooked += Hook_OnHooked;
-            Hook.OnGameStateHandler += OnGameStateChange;
+            //Hook.OnHooked += Hook_OnHooked;
             Hook.MW = this;
 
 
@@ -58,7 +57,7 @@ namespace DS2S_META
     }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            EnableTabs(false);
+            //EnableTabsOnHooked(false);
             InitAllTabs();
 
             UpdateTimer.Interval = 16;
@@ -68,23 +67,7 @@ namespace DS2S_META
 
         //ObservableCollection<ViewModelBase> ViewModels = new();
 
-        private void OnGameStateChange(object? sender, GameStateEventArgs e)
-        {
-            Dispatcher.Invoke(new Action(() => {
-                if (e.GameState == Hook.MAINMENU)
-                    EnableTabs(false);
-                if (e.GameState == Hook.LOADEDINGAME) // add more here
-                    EnableTabs(true);
-            }));
-        }
-
-        private void Hook_OnHooked(object? sender, PHEventArgs e)
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                EnableTabs(Hook.InGame);
-            }));
-        }
+        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -133,8 +116,8 @@ namespace DS2S_META
                 UpdateProperties();
                 //EnableTabs(Hook.InGame);
 
-                if (Hook.InGame)
-                    UpdateAllTabs();                
+                //if (Hook.InGame)
+                //    UpdateAllTabs();                
             }));
             
         }
@@ -152,9 +135,13 @@ namespace DS2S_META
             metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
             metaSettings.InitTab(HKM);
-            ViewModel.DmgCalcViewModel.InitViewModel(Hook);
-            ViewModel.CheatsViewModel.InitViewModel(Hook);
-            ViewModel.RandoSettingsViewModel.InitViewModel(Hook);
+
+            // todo for each
+            ViewModel.InitViewModels();
+            //ViewModel.DmgCalcViewModel.InitViewModel(Hook);
+            //ViewModel.CheatsViewModel.InitViewModel(Hook);
+            //ViewModel.RandoSettingsViewModel.InitViewModel(Hook);
+            //ViewModel.PlayerViewModel.InitViewModel(Hook);
         }
         private void UpdateProperties()
         {
@@ -170,15 +157,7 @@ namespace DS2S_META
         //    foreach(var vm in ViewModels)
         //        vm.UpdateViewModel();
         //}
-
-        private void EnableTabs(bool enable)
-        {
-            metaPlayer.EnableCtrls(enable);
-            metaStats.EnableCtrls(enable);
-            metaInternal.EnableCtrls(enable);
-            metaItems.EnableCtrls(enable);
-            metatabDmgCalc.EnableCtrls(enable);
-        }
+        
         private void ReloadAllTabs()
         {
             metaPlayer.ReloadCtrl();
