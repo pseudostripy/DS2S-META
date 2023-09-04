@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.2.7</AssemblyVersion>
+	<AssemblyVersion>0.7.3.0</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
@@ -178,7 +178,7 @@
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
 			
-	  <Exec Command="echo testing"/>
+	  <Exec Command="echo testing" />
 	  
   </Target>
 
