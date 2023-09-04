@@ -66,9 +66,6 @@ namespace DS2S_META
         }
 
         //ObservableCollection<ViewModelBase> ViewModels = new();
-
-        
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Hook.EnableSpeedFactors)
@@ -101,8 +98,6 @@ namespace DS2S_META
             HKM.ClearHooks();
             Settings.Save();
         }
-
-        
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action( () =>
@@ -135,6 +130,7 @@ namespace DS2S_META
             metatabDmgCalc.InitTab();
             metaPlayer.InitTab();
             metaSettings.InitTab(HKM);
+            metaRando.InitTab();
 
             // todo for each
             ViewModel.InitViewModels();

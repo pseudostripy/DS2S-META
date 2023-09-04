@@ -16,6 +16,7 @@ using Octokit;
 using System.ComponentModel;
 using DS2S_META.Properties;
 using DS2S_META.ViewModels;
+using static DS2S_META.State;
 
 namespace DS2S_META
 {
@@ -32,6 +33,7 @@ namespace DS2S_META
         internal RandomizerManager RM = new();
         public static bool IsRandomized = false;
         private int Seed => Convert.ToInt32(txtSeed.Text);
+        private RandoSettingsViewModel VM;
 
         // FrontEnd:
         public RandomizerControl()
@@ -39,6 +41,12 @@ namespace DS2S_META
             InitializeComponent();
             txtSeed.Text = Settings.Default.LastRandomizerSeed;
         }
+
+        public override void InitTab()
+        {
+            VM = (RandoSettingsViewModel)DataContext;
+        }
+
         private void FixSeedVisibility()
         {
             //Handles the "Seed..." label on the text box
@@ -61,7 +69,13 @@ namespace DS2S_META
         }
         private void btnRandomize_Click(object sender, RoutedEventArgs e)
         {
-            RM.IsRandomSeed = false;
+            if (txtSeed.Text.Length == 0)
+            {
+                RM.IsRandomSeed = true;
+                PopulateNewSeed();
+            } else
+                RM.IsRandomSeed = false;
+
             if (IsRandomized)
                 rando_core_process(RANDOPROCTYPE.Unrand);
             else
@@ -128,8 +142,10 @@ namespace DS2S_META
             if (!EnsureHooked())
                 return false;
 
+            if (VM?.Hook == null) return false;
+
             if (!RM.IsInitialized)
-                RM.Initalize(Hook);
+                RM.Initalize(VM.Hook);
 
             // Get updated settings:
             var vm = (RandoSettingsViewModel)DataContext;
@@ -137,7 +153,7 @@ namespace DS2S_META
 
             // Warn user about the incoming warp
             // hook.Loaded = true when in game (false on load screens)
-            if (Hook.InGame && Settings.Default.ShowWarnRandowarp)
+            if (VM.Hook.InGame && Settings.Default.ShowWarnRandowarp)
             {
                 var randowarning = new RandoWarpWarning()
                 {
@@ -181,7 +197,7 @@ namespace DS2S_META
         }
         private bool EnsureHooked()
         {
-            if (Hook.Hooked)
+            if (VM?.Hook != null && VM.Hook.Hooked)
                 return true;
 
             // Window warning to user:

@@ -186,9 +186,11 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(GameLoaded));
             OnPropertyChanged(nameof(DS2Loading)); // not used yet
 
-            DmgCalcViewModel.UpdateViewModel();
-            CheatsViewModel.UpdateViewModel();
-            PlayerViewModel.UpdateViewModel();
+            foreach (var vm in ViewModels)
+                vm.UpdateViewModel();
+            //DmgCalcViewModel.UpdateViewModel();
+            //CheatsViewModel.UpdateViewModel();
+            //PlayerViewModel.UpdateViewModel();
 
         }
 
