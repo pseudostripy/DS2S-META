@@ -25,66 +25,6 @@ namespace DS2S_META.ViewModels
 {
     internal class DS2SViewModel : ObservableObject
     {
-        // Wrapper exposures:
-        private Settings Settings = Settings.Default;
-        public DS2SHook Hook { get; private set; }
-        //public bool Reading
-        //{
-        //    get => DS2SHook.Reading;
-        //    set => DS2SHook.Reading = value;
-        //}
-
-        public bool GameLoaded => Hook.InGame;
-        public bool DS2Loading => Hook.IsLoading;
-
-        private MetaVersionInfo MVI = new();
-
-        public string WindowName => $"META {MVI.MetaVersionStr}";
-
-        public static bool DesignMode
-        {
-            get { return DesignerProperties.GetIsInDesignMode(new DependencyObject()); }
-        }
-
-        public DS2SViewModel()
-        {
-            if (DesignMode)
-                return; // maaaaybe fixes designer unhandled crash :thinking:?
-                
-
-            Hook = new DS2SHook(5000, 5000);
-            Hook.OnHooked += AllTabsOnHooked;
-            Hook.OnUnhooked += AllTabsOnUnhooked;
-            Hook.OnGameStateHandler += OnGameStateChange;
-
-            // Setup ViewModels
-            PlayerViewModel = new PlayerViewModel();
-            DmgCalcViewModel = new DmgCalcViewModel();
-            CheatsViewModel = new CheatsViewModel();
-            RandoSettingsViewModel = new RandoSettingsViewModel();
-            ViewModels.Add(DmgCalcViewModel);
-            ViewModels.Add(CheatsViewModel);
-            ViewModels.Add(PlayerViewModel);
-            ViewModels.Add(RandoSettingsViewModel);
-
-
-            Hook.Start();
-            ShowOnlineWarning();
-            Versioning();
-        }
-
-        private void AllTabsOnHooked(object? sender, PHEventArgs e)
-        {
-            PlayerViewModel.OnHooked();
-            CheatsViewModel.OnHooked();
-        }
-        private void AllTabsOnUnhooked(object? sender, PHEventArgs e)
-        {
-            PlayerViewModel.OnUnHooked();
-            CheatsViewModel.OnUnHooked();
-        }
-
-
         // Binding Variables:
         public string ContentLoaded
         {
@@ -149,9 +89,9 @@ namespace DS2S_META.ViewModels
                 return Brushes.IndianRed;
             }
         }
-        public string CheckVer 
+        public string CheckVer
         {
-            get 
+            get
             {
                 return MVI.UpdateStatus switch
                 {
@@ -164,7 +104,7 @@ namespace DS2S_META.ViewModels
                 };
             }
         }
-        
+
         public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
 
@@ -174,6 +114,69 @@ namespace DS2S_META.ViewModels
         public RandoSettingsViewModel RandoSettingsViewModel { get; set; }
         public CheatsViewModel CheatsViewModel { get; set; }
         public PlayerViewModel PlayerViewModel { get; set; }
+        public StatsViewModel StatsViewModel { get; set; }
+
+
+        // Wrapper exposures:
+        private Settings Settings = Settings.Default;
+        public DS2SHook Hook { get; private set; }
+        
+        public bool GameLoaded => Hook.InGame;
+        public bool DS2Loading => Hook.IsLoading;
+
+        private MetaVersionInfo MVI = new();
+
+        public string WindowName => $"META {MVI.MetaVersionStr}";
+
+        public static bool DesignMode
+        {
+            get { return DesignerProperties.GetIsInDesignMode(new DependencyObject()); }
+        }
+
+        public DS2SViewModel()
+        {
+            if (DesignMode)
+                return; // maaaaybe fixes designer unhandled crash :thinking:?
+                
+
+            Hook = new DS2SHook(5000, 5000);
+            Hook.OnHooked += AllTabsOnHooked;
+            Hook.OnUnhooked += AllTabsOnUnhooked;
+            Hook.OnGameStateHandler += OnGameStateChange;
+
+            // Setup ViewModels
+            PlayerViewModel = new PlayerViewModel();
+            DmgCalcViewModel = new DmgCalcViewModel();
+            CheatsViewModel = new CheatsViewModel();
+            RandoSettingsViewModel = new RandoSettingsViewModel();
+            StatsViewModel = new StatsViewModel();
+            ViewModels.Add(DmgCalcViewModel);
+            ViewModels.Add(CheatsViewModel);
+            ViewModels.Add(PlayerViewModel);
+            ViewModels.Add(RandoSettingsViewModel);
+            ViewModels.Add(StatsViewModel);
+
+
+            Hook.Start();
+            ShowOnlineWarning();
+            Versioning();
+        }
+
+        private void AllTabsOnHooked(object? sender, PHEventArgs e)
+        {
+            PlayerViewModel.OnHooked();
+            CheatsViewModel.OnHooked();
+            StatsViewModel.OnHooked();
+        }
+        private void AllTabsOnUnhooked(object? sender, PHEventArgs e)
+        {
+            PlayerViewModel.OnUnHooked();
+            CheatsViewModel.OnUnHooked();
+            StatsViewModel.OnUnHooked();
+        }
+
+
+        
 
         public void UpdateMainProperties()
         {
@@ -212,6 +215,7 @@ namespace DS2S_META.ViewModels
         {
             PlayerViewModel.OnInGame();
             CheatsViewModel?.OnInGame();
+            StatsViewModel?.OnInGame();
             //PlayerViewModel.EnableCtrls(enable);
             //metaStats.EnableCtrls(enable);
             //metaInternal.EnableCtrls(enable);

@@ -91,7 +91,7 @@
                     </TabItem>
                     <TabItem Header="Stats">
                         <Grid Background="LightGray">
-                            <local:StatsControl x:Name="metaStats" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
+                            <local:StatsControl x:Name="metaStats" DataContext="{Binding StatsViewModel}" Hook="{Binding Hook}"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Items">

@@ -71,6 +71,7 @@ namespace DS2S_META
         SMELTERWEDGE    = 0x32BC480,
         NADALIAFRAGMENT = 0x32D4B20,
         FISTS           = 0x33E140,
+        ASCETIC         = 0x039B9198,
     }
     public enum ITEMUSAGE
     {

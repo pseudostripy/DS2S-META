@@ -131,6 +131,7 @@ namespace DS2S_META
             metaPlayer.InitTab();
             metaSettings.InitTab(HKM);
             metaRando.InitTab();
+            metaStats.InitTab();
 
             // todo for each
             ViewModel.InitViewModels();

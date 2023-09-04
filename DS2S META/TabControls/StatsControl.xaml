@@ -5,9 +5,10 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                   xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
-                  xmlns:local="clr-namespace:DS2S_META"
+                  xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
                   mc:Ignorable="d" 
-                  d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+                  d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+                  d:DataContext="{d:DesignInstance viewmodels:StatsViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -22,7 +23,7 @@
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <StackPanel Margin="15">
                     <Label Content="Name" />
-                    <TextBox x:Name="txtName" Text="{Binding ElementName=StatsCon, Path=Hook.CharacterName}" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox x:Name="txtName" Text="{Binding Hook.CharacterName}" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                     <!--<Label Content="Sex" />
                 <ComboBox Name="Sex"/>-->
                     <Label Content="Class" />
@@ -49,17 +50,17 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="Souls" Grid.Row="0" Grid.Column="0"/>
-                        <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                        <TextBox Text="{Binding Hook.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                         <Label Content="SoulMemory" Grid.Row="1" Grid.Column="0" />
-                        <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
+                        <TextBox Text="{Binding Hook.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
                         <Label Content="SoulMemory2" Grid.Row="2" Grid.Column="0"/>
-                        <TextBox Text="{Binding ElementName=StatsCon, Path=Hook.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                        <TextBox Text="{Binding Hook.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                     </Grid>
                     <Button Content="Reset Soul Memory" x:Name="btnResetSoulMemory" Width="150" IsEnabled="False" Click="ResetSoulMemory_Click"/>
                     <Label Content="Give Souls" HorizontalAlignment="Center"/>
                     <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Minimum="-9999999" Value="0" ClipValueToMinMax="True"/>
                     <Separator Visibility="Hidden"/>
-                    <Button x:Name="btnGive" Content="Give" Width="100" Click="GiveSouls_Click" IsEnabled="False" />
+                    <Button x:Name="btnGive" Content="Give" Width="100" Click="GiveSouls_Click" IsEnabled="{Binding EnGiveSouls}" />
                 </StackPanel>
 
             </Border>
@@ -90,32 +91,32 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Label Content="Soul Level" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="0" />
-                    <TextBox x:Name="nudSoulLevel" Text="{Binding ElementName=StatsCon, Path=Hook.SoulLevel, Mode=TwoWay, UpdateSourceTrigger=Explicit}" MaxWidth="150" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Margin="0,0,18,0" Grid.Column="1" Grid.Row="0" />
+                    <TextBox x:Name="nudSoulLevel" Text="{Binding Hook.SoulLevel, Mode=TwoWay, UpdateSourceTrigger=Explicit}" MaxWidth="150" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Margin="0,0,18,0" Grid.Column="1" Grid.Row="0" />
                     <Label Content="Vigor" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="1" />
-                    <wpfTool:IntegerUpDown x:Name="nudVig"  Value="{Binding ElementName=StatsCon, Path=Hook.Vigor}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudVig"  Value="{Binding Hook.Vigor}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Endurance" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="2" />
-                    <wpfTool:IntegerUpDown x:Name="nudEnd" Value="{Binding ElementName=StatsCon, Path=Hook.Endurance}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudEnd" Value="{Binding Hook.Endurance}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Vitality" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="3" />
-                    <wpfTool:IntegerUpDown x:Name="nudVit" Value="{Binding ElementName=StatsCon, Path=Hook.Vitality}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudVit" Value="{Binding Hook.Vitality}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Attunement" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="4" />
-                    <wpfTool:IntegerUpDown x:Name="nudAtt" Value="{Binding ElementName=StatsCon, Path=Hook.Attunement}" Grid.Column="1" Grid.Row="4" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudAtt" Value="{Binding Hook.Attunement}" Grid.Column="1" Grid.Row="4" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Strength" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="5" />
-                    <wpfTool:IntegerUpDown x:Name="nudStr" Value="{Binding ElementName=StatsCon, Path=Hook.Strength}" Grid.Column="1" Grid.Row="5" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudStr" Value="{Binding Hook.Strength}" Grid.Column="1" Grid.Row="5" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Dexterity" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="6" />
-                    <wpfTool:IntegerUpDown x:Name="nudDex" Value="{Binding ElementName=StatsCon, Path=Hook.Dexterity}" Grid.Column="1" Grid.Row="6" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudDex" Value="{Binding Hook.Dexterity}" Grid.Column="1" Grid.Row="6" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Adaptability" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="7" />
-                    <wpfTool:IntegerUpDown x:Name="nudAdp" Value="{Binding ElementName=StatsCon, Path=Hook.Adaptability}" Grid.Column="1" Grid.Row="7" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudAdp" Value="{Binding Hook.Adaptability}" Grid.Column="1" Grid.Row="7" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Intelligence" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="8" />
-                    <wpfTool:IntegerUpDown x:Name="nudInt" Value="{Binding ElementName=StatsCon, Path=Hook.Intelligence}" Grid.Column="1" Grid.Row="8" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudInt" Value="{Binding Hook.Intelligence}" Grid.Column="1" Grid.Row="8" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                     <Label Content="Faith" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="9" />
-                    <wpfTool:IntegerUpDown x:Name="nudFth" Value="{Binding ElementName=StatsCon, Path=Hook.Faith}" Grid.Column="1" Grid.Row="9" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudFth" Value="{Binding Hook.Faith}" Grid.Column="1" Grid.Row="9" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
                 </Grid>
             </Border>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
             <Label Content="Misc"/>
-            <Button Content="Restore Humanity" Margin="0" Width="110" Click="RestoreHumanity_Click" x:Name="btnRestoreHumanity"/>
-            <Button Content="New Test Character" Margin="10" Width="110" x:Name="btnNewTestCharacter" Click="NewTestCharacter_Click"/>
+            <Button Content="Restore Humanity" Margin="0" IsEnabled="{Binding EnRestoreHumanity}" Width="110" Click="RestoreHumanity_Click" x:Name="btnRestoreHumanity"/>
+            <Button Content="New Test Character" Margin="10" IsEnabled="{Binding EnNewTestCharacter}" Width="110" x:Name="btnNewTestCharacter" Click="NewTestCharacter_Click"/>
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <Grid Margin="15,15,15,15">
                     <Grid.ColumnDefinitions>
@@ -128,11 +129,11 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Label Content="Hollow Level" Grid.Row="0" Grid.Column="0"/>
-                    <wpfTool:IntegerUpDown Value="{Binding Hook.HollowLevel, ElementName=StatsCon}" x:Name="nudHollowLevel" Maximum="32" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" Width="85"/>
+                    <wpfTool:IntegerUpDown Value="{Binding Hook.HollowLevel}" x:Name="nudHollowLevel" Maximum="32" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" Width="85"/>
                     <Label Content="Sinner Level" Grid.Row="1" Grid.Column="0" />
-                    <TextBox Text="{Binding Hook.SinnerLevel, ElementName=StatsCon}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox Text="{Binding Hook.SinnerLevel}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                     <Label Content="Sinner Points" Grid.Row="2" Grid.Column="0"/>
-                    <TextBox Text="{Binding Hook.SinnerPoints, ElementName=StatsCon}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox Text="{Binding Hook.SinnerPoints}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
                 </Grid>
 
             </Border>

@@ -1536,12 +1536,13 @@ namespace DS2S_META
             var palestoneid = 61160000;
             var lockstoneid = 60536000;
             var brightbug = 0x03972C98;
+            var ascetic = (int)ITEMID.ASCETIC;
 
             var multi_items = new List<int>() { lifegemid, oldradid, mushroomid, blessingid, effigyid, mossid, wiltherbid,
                                                 oozeid, gprid, dprid, featherid, branchid, witchurnid, firebombid, blkfirebombid,
                                                 dungid, poisonknifeid, greatheroid, odosid, skullsid, torchid,
                                                 titshardid, ltsid, chunkid, slabid, twinklingid, ptbid, boltstoneid, darkstoneid,
-                                                rawstoneid, palestoneid, lockstoneid, brightbug};
+                                                rawstoneid, palestoneid, lockstoneid, brightbug, ascetic};
 
             foreach (int id in multi_items)
                 GiveItem(id, 95, 0, 0, GIVESILENT);
