@@ -16,8 +16,8 @@ A
  YOU HAVE BEEN WARNED  
 
 ## Requirements 
-* [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
-* *Specifically for Vanilla Speedhack* [.NET 6 for x86] see above link and select x86
+* Sotfs/Vanilla: [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
+* Vanilla with speedhack: [.NET 6 for x86] see above link and select x86
 
 ## Installing  
 * Extract contents of zip archive to it's own folder. 
@@ -31,7 +31,8 @@ A
 **[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor\
 **[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge\
 **[Stennis](https://github.com/StenniHub)** Contributions to code refactoring and speedhack fixes\
-**[Meander5](https://github.com/meander5)** Contributions with bug fixes, testing & example feature implementations
+**[Meander5](https://github.com/meander5)** Contributions with bug fixes, testing & example feature implementations\
+**[JeffTheBigLizard](https://github.com/GeckoGary)** Feature contributions
 
 ## Libraries
 Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TKGP](https://github.com/JKAnderson/)  
@@ -45,6 +46,33 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
+#### v0.7.3 [RefactorHell]
+ - RandoFeature: Added initial RaceMode (for change/improvement/balancing)
+ - RandoMinorFeature: Added flag to printout for whether seed was randomly generated (not crypto crced yet)
+ - RandoMinorFeature: Printout improvements (more to do on this)
+ - RandoFeature: Added drop descriptions for all ItemLot_Chr (enemy drop) params
+ - RandoBugFix: Straid's trades not being placed into the pool for randomization
+ - RandoBugFix: Pursuer platform item not implemented correctly
+ - RefactorHell: Completely overhauled and rewrote most of the randomizer code to reduce complexity
+ - RefactorHell: 1000+ lines of DS2Hook to denser format
+ - CodeTidy: Removed archaic code throughout ViewModels/Controls
+ - RefactorHell: Overhaul and upgrade to the assembly scripts to tidy up bloat and confusion between versions
+ - RefactorHell: Finally updated the remaining older tabcontrols to ViewModel format
+ - RefactorHell: Rewritten and tidied DS2Resource loading and added extension methods for equipment queries
+ - CodeUpgrade: Version-specific META features now enabled in a more robust manner
+ - CodeUpgrade: Implemented GameState from CE for better granularity on loading situations
+ - BugFix: Finally nailed down the STA error, both in threading and root cause AoB scan
+ - Balance: Added bonfire ascetics to NewTestCharacter
+ - BugFix: Item categories fixed after change to DS2Resource
+ - BugFix: (Toolchain) Dependency confusion on clean->launch (before a clean->build) is done
+ - CodeUpgrade: META functionality for reenabling state after load or quit, e.g. for disableAI
+ - Feature: Merged Jeff's NoDeath and Fist OHKO code
+ - BugFix: Leftover code from Rubbishizer checkbox causing cross-breeding nonsense with MadWarrior
+ - Feature: MadWarrior spawn feature added without gigajank ce implementation (finally)
+ - Upgrade: Made META window resizable
+ - BugFix: Give 17k and 3chunks1slab fixed for vanilla.
+ - VanillaUpgrade: Added a complete implementation for multi-give item
+ 
 #### v0.7.2 [RandoSettings]
  - RandoFeature: Add Randomizer customisable settings
  - RandoBugFix: Some shops reset on Shrine of Winter or Nash event now fixed
@@ -147,7 +175,6 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 
 ### META v0.5 [Rando]
 #### Randomizer Alpha A.1
-
 * Added descriptions of all items and all keys in txt files
 * Vanilla item-leak bug fixed on all lots/shops
 * Empty lots fixed
@@ -173,135 +200,84 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 
 ### META v0.4 [Stable] (first stable release and pseudo takes over main development from Nord)
 ### Beta 0.4  
-
 * Fixed game crash when closing META  
-
 * Fixed crash related to bad Hunters Hat ID  
-
 * Added fast quit hotkey  
 
 ### Beta 0.3  
-
 * Modify Speed on the Player tab is now equivilent to Cheat Engine Speedhack. If you want to just modify your own speed, use the speeds in Internals tab.  
 
 ### Beta 0.2  
-
 * New Hotkey system using GlobalHotkeys library. Should fix issue with input delayin game
-
 * Optimized GetHeld method, which should make looking up items in player inventory faster. Could use feedback from anyone who previously couldn't use the live inventory update feature.  
-
 * Updated Resources/Equipment/DS2SItemCategories.txt to be more like the other editable text files.  
-
 * Added check to make sure you have right version of the game loaded.  
-
 * Changed to using Stable position in the player position restore system  
 
 ### Beta 0.1  
-
 * Cosmetic changes, and added bonfire control  
-
 * Getting ready for 1.0 
-
 * Checkbox to live update max quantity (Scan inventory constantly. CPU intensive).  
 
 ### Beta 0.0.3.2
-
 * Unoofed storing position. (Fixed crash)  
 
 ### Beta 0.0.3.1
-
 * Bonfire menu fixed so it displays actual ascetic level  
-
 * Fixed wrong offset for Max Held, causing max item to be broken  
 
 ### Beta 0.0.3
-**Please update all files in your Resource folder**  
-
 * Bonfire warp. Not enabled during multiplayer or searching for multiplayer.  
-
 * Restrict now works as expected (I think)  
-
 * Some spelling errors fixed  
-
 * Items tab Quantity and Upgrade no longer default to min/max val  
-
 * Item name and category updates  
-
 * New Item category for weapon reskins. Not Online Safe.  
-
 * Search box text now hilights when searchbox selected  
-
 * Item Box no longer crashes cause tool due to empty item  
-
 * Misc vanity changes  
-
 * Max available to spawn in is now more accurate when you use an item - Tied to max and restrict checkbox  
-
 * Items now check usage params. Option to unlock spawning in undroppable items.  
 
 ### Beta 0.0.2  
-
 * Fixed Give Souls func  
-
 * Added reset/max level buttons  
-
 * Blank search now stores a position
-
 * Items refresh on reload
 
 ### Beta 0.0.1  
-
 * Items max quantity now looks at how many items are in your inventory  
-
 * Individual speed factors  
-
 * Search all now toggles filter  
-
 * Misc cosmetic changes to positioning  
 
 ### Beta 0.0.0.8  
-
 * Revamped Bonfire tab code and look
-
 * Added Up, Down, Collision and Speed hotkeys
 
 ### Beta 0.0.0.7  
-
 * Fixed bonfire unlock script no longer breaks Fire Keepers Dwelling Bonfire (Have to rest at it to unlock it)
-
 * Added Internals tab to display character equipment info and other
-
 * Bonfires tab works now kinda. Will make it nice looking later.
 
 ### Beta 0.0.0.6  
-
 * Baby Jump DLL Compatability  
 
 ### Beta 0.0.0.5  
-
 * Item Quantity, Infusion and Max level read from params  
-
 * Unlock All Bonfires  
-
 * Edit hollow level   
-
 * Fixed max HP bug  
 
-
 ### Beta 0.0.0.4   
-
 * Mostly working item infusion/upgrade menu. Everything should be accurate except melee weapons categories. Report if any are wrong.  
-
 * Split goods into consumables, ammo, upgrade materials and useable items.  
 
 ### Beta 0.0.0.3   
-
 * Fixed Update Message meme  
 
 ### Beta 0.0.0.2  
-
 * Added Online notification and text colors.  
-
 * Implimented Stored Positions start. These positions will end up changing later, most likely, so they will break eventually.  
 
 ### Beta 0.0.0.1  
