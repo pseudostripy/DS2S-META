@@ -13,13 +13,14 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using DS2S_META.Randomizer;
+using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META.ViewModels
 {
     // Note: CheatsControl has CheatsViewModel data context set in MainWindow.xaml
     public class CheatsViewModel : ViewModelBase
     {
-        public DS2SHook? Hook { get; set; }
+        //public DS2SHook? Hook { get; set; }
 
         // Constructor
         public CheatsViewModel()
@@ -49,66 +50,83 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                if (!EnableMW) return "Not enabled"; // should be invisibile
+                if (!ChkMadWarrior) return "Not enabled"; // should be invisible
                 if (!IsSpawned) return "MISSING";
                 return "SPAWNED";
             }
         }
-        public Visibility lblSpawnVisibility => CheckedMW ? Visibility.Visible : Visibility.Hidden;
-        private bool _enableMW = false;
-        public bool EnableMW
+        public Visibility lblSpawnVisibility => ChkMadWarrior ? Visibility.Visible : Visibility.Hidden;
+        //private bool _enableMW = false;
+        //public bool EnableMW
+        //{
+        //    get => _enableMW;
+        //    set
+        //    {
+        //        _enableMW = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
+        private bool _chkMadWarrior;
+        public bool ChkMadWarrior // isChecked
         {
-            get => _enableMW;
+            get => _chkMadWarrior;
             set
             {
-                _enableMW = value;
-                OnPropertyChanged();
-            }
-        }
-        private bool _checkedMW;
-        public bool CheckedMW
-        {
-            get => _checkedMW;
-            set
-            {
-                _checkedMW = value;
+                _chkMadWarrior = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(lblSpawnVisibility));
                 OnPropertyChanged(nameof(IsSpawned));
             }
         }
 
+        public bool EnGive17kReward => Hook.InGameAndFeature(METAFEATURE.GIVE17KREWARD);
+        public bool EnGive3Chunk1Slab => Hook.InGameAndFeature(METAFEATURE.GIVE3CHUNK1SLAB);
+        public bool EnMadWarrior => Hook.InGameAndFeature(METAFEATURE.MADWARRIOR);
+        public bool EnRubbishChallenge => Hook.CheckFeature(METAFEATURE.RUBBISHCHALLENGE);
+
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()
         {
-            // Hook checks:
-            if (HookValid != _hookprev)
-                HookChangeEvent();
-            _hookprev = HookValid; // update for next time
-            
-            if (!HookValid)
-                return;
-
             // Check version features:
-            if (!EnableMW) 
+            if (EnMadWarrior && ChkMadWarrior) 
+                IsSpawned = Hook?.CheckLoadedEnemies(CHRID.MADWARRIOR) == true; // Confirmed OK for model reading:
+        }
+
+        internal void OnHooked()
+        {
+            EnableElements();
+        }
+        internal void OnUnHooked()
+        {
+            EnableElements();
+        }
+        internal void OnInGame()
+        {
+            // called upon transition from load-screen or main-menu to in-game
+            if (Hook == null)
                 return;
-
-            // Confirmed OK for model reading:
-            IsSpawned = Hook?.CheckLoadedEnemies(CHRID.MADWARRIOR) == true;
+            EnableElements(); // refresh UI elements
         }
-
-        private void HookChangeEvent()
+        private void EnableElements()
         {
-            // Used to disable functionality on loss of Hook amongst other situations
-            EnableMW = Hook?.IsFeatureCompatible(METAFEATURE.MADWARRIOR) == true;
+            OnPropertyChanged(nameof(EnGive17kReward));
+            OnPropertyChanged(nameof(EnGive3Chunk1Slab));
+            OnPropertyChanged(nameof(EnMadWarrior));
+            OnPropertyChanged(nameof(EnRubbishChallenge));
         }
 
+        //private void HookChangeEvent()
+        //{
+        //    // Used to disable functionality on loss of Hook amongst other situations
+        //    EnableMW = Hook?.IsFeatureCompatible(METAFEATURE.MADWARRIOR) == true;
+        //}
 
-        public void InitViewModel(DS2SHook hook)
-        {
-            Hook = hook;
-            _hookprev = hook != null && hook.Hooked;
-            HookChangeEvent();
-        }
+
+        //public void InitViewModel(DS2SHook hook)
+        //{
+        //    Hook = hook;
+        //    _hookprev = hook != null && hook.Hooked;
+        //    //HookChangeEvent();
+        //}
     }
 }

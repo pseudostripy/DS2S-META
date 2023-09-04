@@ -13,5 +13,8 @@ namespace DS2S_META.Utils
         OHKO_RAPIER,
         NODEATH,
         DISABLEAI,
+        GIVE17KREWARD,
+        GIVE3CHUNK1SLAB,
+        RUBBISHCHALLENGE,
     }
 }

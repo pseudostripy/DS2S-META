@@ -557,13 +557,16 @@ namespace DS2S_META
             // in certain versions, can veto here.
             return feature switch
             {
-                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null,
                 METAFEATURE.OHKO_FIST => IsSOTFS,
                 METAFEATURE.OHKO_RAPIER => IsSOTFS,
                 METAFEATURE.NODEATH => IsSOTFS,
                 METAFEATURE.DISABLEAI => IsSOTFS_CP,
+                METAFEATURE.GIVE17KREWARD => Hooked, // should be fine for all versions
+                METAFEATURE.GIVE3CHUNK1SLAB => Hooked,
+                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
+                METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
                 _ => throw new NotImplementedException("Add many more here!")
-            };
+            }
         }
         public bool CheckLoadedEnemies(CHRID chrid) => CheckLoadedEnemies((int)chrid);
         public bool CheckLoadedEnemies(int queryChrId)

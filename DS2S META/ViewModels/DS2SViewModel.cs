@@ -53,8 +53,8 @@ namespace DS2S_META.ViewModels
                 
 
             Hook = new DS2SHook(5000, 5000);
-            Hook.OnHooked += OnHooked;
-            Hook.OnUnhooked += OnUnhooked;
+            Hook.OnHooked += AllTabsOnHooked;
+            Hook.OnUnhooked += AllTabsOnUnhooked;
             Hook.OnGameStateHandler += OnGameStateChange;
 
             // Setup ViewModels
@@ -73,13 +73,15 @@ namespace DS2S_META.ViewModels
             Versioning();
         }
 
-        private void OnHooked(object? sender, PHEventArgs e)
+        private void AllTabsOnHooked(object? sender, PHEventArgs e)
         {
             PlayerViewModel.OnHooked();
+            CheatsViewModel.OnHooked();
         }
-        private void OnUnhooked(object? sender, PHEventArgs e)
+        private void AllTabsOnUnhooked(object? sender, PHEventArgs e)
         {
             PlayerViewModel.OnUnHooked();
+            CheatsViewModel.OnUnHooked();
         }
 
 
@@ -201,12 +203,13 @@ namespace DS2S_META.ViewModels
             if (e.GameState == Hook.MAINMENU)
                 AllTabsOnMainMenu();
             if (e.GameState == Hook.LOADEDINGAME) // add more here
-                EnableTabsOnGameLoad(true);
+                AllTabsOnInGame();
         }
         
-        private void EnableTabsOnGameLoad(bool enable)
+        private void AllTabsOnInGame()
         {
             PlayerViewModel.OnInGame();
+            CheatsViewModel?.OnInGame();
             //PlayerViewModel.EnableCtrls(enable);
             //metaStats.EnableCtrls(enable);
             //metaInternal.EnableCtrls(enable);
@@ -218,6 +221,7 @@ namespace DS2S_META.ViewModels
         private void AllTabsOnMainMenu()
         {
             PlayerViewModel.OnMainMenu();
+            
             //metaPlayer.EnableOnHooked(enable);
             //metaStats.EnableCtrls(enable);
             //metaInternal.EnableCtrls(enable);
