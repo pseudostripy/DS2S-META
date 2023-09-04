@@ -20,18 +20,13 @@ namespace DS2S_META.ViewModels
     // Note: CheatsControl has CheatsViewModel data context set in MainWindow.xaml
     public class CheatsViewModel : ViewModelBase
     {
-        //public DS2SHook? Hook { get; set; }
+        // Constants
+        public const int MadWarriorChrID = 0x000CC1A0; // 836000d
 
         // Constructor
         public CheatsViewModel()
         {
         }
-
-        // Properties
-        public bool GameLoaded { get; set; }
-        private bool _hookprev; // TODO consider event handler
-        public const int MadWarriorChrID = 0x000CC1A0; // 836000d
-        public bool HookValid => Hook != null && Hook.Hooked;
 
         // MVVM Properties
         public Brush MWSpawnColor => IsSpawned ? Brushes.Green : Brushes.Red;
@@ -56,16 +51,6 @@ namespace DS2S_META.ViewModels
             }
         }
         public Visibility lblSpawnVisibility => ChkMadWarrior ? Visibility.Visible : Visibility.Hidden;
-        //private bool _enableMW = false;
-        //public bool EnableMW
-        //{
-        //    get => _enableMW;
-        //    set
-        //    {
-        //        _enableMW = value;
-        //        OnPropertyChanged();
-        //    }
-        //}
         private bool _chkMadWarrior;
         public bool ChkMadWarrior // isChecked
         {
@@ -78,7 +63,6 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(IsSpawned));
             }
         }
-
         public bool EnGive17kReward => Hook.InGameAndFeature(METAFEATURE.GIVE17KREWARD);
         public bool EnGive3Chunk1Slab => Hook.InGameAndFeature(METAFEATURE.GIVE3CHUNK1SLAB);
         public bool EnMadWarrior => Hook.InGameAndFeature(METAFEATURE.MADWARRIOR);
@@ -114,19 +98,5 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMadWarrior));
             OnPropertyChanged(nameof(EnRubbishChallenge));
         }
-
-        //private void HookChangeEvent()
-        //{
-        //    // Used to disable functionality on loss of Hook amongst other situations
-        //    EnableMW = Hook?.IsFeatureCompatible(METAFEATURE.MADWARRIOR) == true;
-        //}
-
-
-        //public void InitViewModel(DS2SHook hook)
-        //{
-        //    Hook = hook;
-        //    _hookprev = hook != null && hook.Hooked;
-        //    //HookChangeEvent();
-        //}
     }
 }

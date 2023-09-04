@@ -130,7 +130,7 @@
                     </TabItem>
                     <TabItem Header="Cheats" >
                         <Grid Background="LightGray">
-                            <local:CheatsControl x:Name="metaCheats" DataContext="{Binding CheatsViewModel}" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                            <local:CheatsControl x:Name="metaCheats" DataContext="{Binding CheatsViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Settings" >

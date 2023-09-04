@@ -566,7 +566,7 @@ namespace DS2S_META
                 METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
                 _ => throw new NotImplementedException("Add many more here!")
-            }
+            };
         }
         public bool CheckLoadedEnemies(CHRID chrid) => CheckLoadedEnemies((int)chrid);
         public bool CheckLoadedEnemies(int queryChrId)
