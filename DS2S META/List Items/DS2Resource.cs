@@ -45,13 +45,12 @@ namespace DS2S_META
             // Query handy things
             Items = ItemCategories.SelectMany(p => p.Items).ToList();
             ItemNames = Items.ToDictionary(it => it.ItemId, it => it.Name);
-            Weapons = ItemCategories.First(cat => cat.Type == ITEMCATEGORY.Weapon).Items.ToList();
+            List<ITEMCATEGORY> weptypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
+            Weapons = ItemCategories.Where(cat => weptypes.Contains(cat.Type)).SelectMany(cat => cat.Items).ToList();
 
             /////////////////////////////////
             Bonfires = ParseResource(PathBonfires, DS2SBonfire.ParseNew);
             Classes = ParseResource(PathClasses, DS2SClass.ParseNew);
-
-
         }
         public static List<T> ParseResource<T>(string path, Func<string, T>parser)
         {

@@ -1,16 +1,16 @@
 ﻿//Format: Category; Show ID boolean; /Relative/File/Path/Category.txt; Name [arbitrary]
-//Categories - Weapon = 0 Armor = 1 Item = 2 Ring = 3
+//Categories - See DS2ItemCategory.ITEMCATEGORY enum
 1 false Resources/Equipment/Armor/Armor.txt Armor
 2 false Resources/Equipment/Items/Consumeables.txt Consumables
 2 false Resources/Equipment/Items/UseableItems.txt Useable Items
 2 false Resources/Equipment/Items/UpgradeMaterials.txt Upgrade Materials
-2 false Resources/Equipment/Items/Gestures.txt Gestures
-2 false Resources/Equipment/Items/KeyItems.txt Key Items
+3 false Resources/Equipment/Items/Gestures.txt Gestures
+4 false Resources/Equipment/Items/KeyItems.txt Key Items
 0 false Resources/Equipment/Weapons/MeleeWeapons.txt Melee Weapons
-0 false Resources/Equipment/Weapons/ReskinnedWeapons.txt Reskinned Weapons (Unsafe)
-0 false Resources/Equipment/Weapons/RangedWeapons.txt Ranged Weapons
-2 false Resources/Equipment/Items/Ammo.txt Ammo
-3 false Resources/Equipment/Rings/Rings.txt Rings
-0 false Resources/Equipment/Weapons/Shields.txt Shields
-2 false Resources/Equipment/Items/Spells.txt Spells
-0 false Resources/Equipment/Weapons/SpellTools.txt Staff/Chimes
+5 false Resources/Equipment/Weapons/ReskinnedWeapons.txt Reskinned Weapons (Unsafe)
+6 false Resources/Equipment/Weapons/RangedWeapons.txt Ranged Weapons
+7 false Resources/Equipment/Items/Ammo.txt Ammo
+8 false Resources/Equipment/Rings/Rings.txt Rings
+9 false Resources/Equipment/Weapons/Shields.txt Shields
+10 false Resources/Equipment/Items/Spells.txt Spells
+11 false Resources/Equipment/Weapons/SpellTools.txt Staff/Chimes

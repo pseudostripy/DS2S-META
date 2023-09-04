@@ -13,10 +13,18 @@ namespace DS2S_META
 {
     public enum ITEMCATEGORY
     {
-        Weapon = 0,
+        MeleeWeapon = 0,
         Armor = 1,
         Item = 2,
-        Ring = 3
+        Gesture = 3,
+        KeyItems = 4,
+        RemovedItems = 5,
+        RangedWeapons = 6,
+        Ammo = 7,
+        Rings = 8,
+        Shields = 9,
+        Spells = 10,
+        StaffChimes = 11,
     }
     internal class DS2SItemCategory
     {

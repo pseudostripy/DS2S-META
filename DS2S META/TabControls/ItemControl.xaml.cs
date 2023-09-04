@@ -30,9 +30,24 @@ namespace DS2S_META
         }
 
         // Setup stuff:
+        private Dictionary<ITEMCATEGORY, string> CategoryNames = new()
+        {
+            { ITEMCATEGORY.Ammo, "Ammo" },
+            { ITEMCATEGORY.Shields, "Shields" },
+            { ITEMCATEGORY.Spells, "Spells" },
+            { ITEMCATEGORY.RangedWeapons, "Ranged Weapons" },
+            { ITEMCATEGORY.RemovedItems, "Removed Content" },
+            { ITEMCATEGORY.Gesture, "Gestures" },
+            { ITEMCATEGORY.KeyItems, "Key Items" },
+            { ITEMCATEGORY.Rings, "Rings" },
+            { ITEMCATEGORY.StaffChimes, "Staves/Chimes" },
+            { ITEMCATEGORY.MeleeWeapon, "Melee Weapons" },
+            { ITEMCATEGORY.Armor, "Armor" },
+            { ITEMCATEGORY.Item, "Item" },
+        };
         public override void InitTab()
         {
-            cmbCategory.ItemsSource = DS2Resource.ItemCategories;
+            cmbCategory.ItemsSource = DS2Resource.ItemCategories.Select(ic => CategoryNames[ic.Type]);
             cmbCategory.SelectedIndex = 0;
             FilterItems();
             InventoryTimer.Interval = 100;
@@ -86,6 +101,41 @@ namespace DS2S_META
         {
             FilterItems();
         }
+        private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
+            //Checks if cbxMaxUpgrade is checked and sets the value to max value
+            HandleMaxItemCheckbox();
+        }
+        private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ParamMan.IsLoaded) return;
+            if (!TryGetSelectedItem(out var item))
+                return;
+            if (item == null) return;
+
+            // update quantities based on newly selected item
+            UpdateQuantityAndTextVis();
+
+            // Update infusion/upgrade ..?
+            var selid = cmbInfusion.SelectedIndex;
+            cmbInfusion.ItemsSource = item.GetInfusionList();
+
+            if (selid <= cmbInfusion.Items.Count)
+                cmbInfusion.SelectedIndex = selid; // keep previous selection
+            else
+                cmbInfusion.SelectedIndex = 0;
+            cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
+
+
+            nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
+            nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
+
+            btnCreate.IsEnabled = Hook.GetIsDroppable(item) || Properties.Settings.Default.SpawnUndroppable;
+            if (!Properties.Settings.Default.UpdateMaxLive)
+                HandleMaxAvailable();
+            HandleMaxItemCheckbox();
+        }
 
         //Clear items and add the ones that match text in search box
         private void FilterItems()
@@ -95,7 +145,7 @@ namespace DS2S_META
             if (SearchAllCheckbox.IsChecked == true && txtSearch.Text != "")
             {
                 //search every item category
-                foreach (DS2SItemCategory category in cmbCategory.Items)
+                foreach (DS2SItemCategory category in DS2Resource.ItemCategories)
                 {
                     foreach (DS2SItem item in category.Items)
                     {
@@ -106,12 +156,9 @@ namespace DS2S_META
             }
             else
             {
-                //only search selected item category
-                DS2SItemCategory? category = cmbCategory.SelectedItem as DS2SItemCategory;
-                if (category == null)
-                    return;
-
-                foreach (DS2SItem item in category.Items)
+                // Note this adds all items if search is empty string
+                var cat = DS2Resource.ItemCategories.ElementAt(cmbCategory.SelectedIndex);
+                foreach (DS2SItem item in cat.Items)
                 {
                     if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
                         lbxItems.Items.Add(item);
@@ -210,42 +257,9 @@ namespace DS2S_META
             return max - held;
         }
 
-        private void cmbInfusion_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var infusion = cmbInfusion.SelectedItem as DS2SInfusion;
-            //Checks if cbxMaxUpgrade is checked and sets the value to max value
-            HandleMaxItemCheckbox();
-        }
+        
 
-        private void lbxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!ParamMan.IsLoaded) return;
-            if (!TryGetSelectedItem(out var item))
-                return;
-            if (item == null) return;
-
-            // update quantities based on newly selected item
-            UpdateQuantityAndTextVis();
-
-            // Update infusion/upgrade ..?
-            var selid = cmbInfusion.SelectedIndex;
-            cmbInfusion.ItemsSource = item.GetInfusionList();
-
-            if (selid <= cmbInfusion.Items.Count)
-                cmbInfusion.SelectedIndex = selid; // keep previous selection
-            else
-                cmbInfusion.SelectedIndex = 0;
-            cmbInfusion.IsEnabled = cmbInfusion.Items.Count > 1;
-
-            
-            nudUpgrade.Maximum = Hook.GetMaxUpgrade(item);
-            nudUpgrade.IsEnabled = nudUpgrade.Maximum > 0;
-
-            btnCreate.IsEnabled = Hook.GetIsDroppable(item) || Properties.Settings.Default.SpawnUndroppable;
-            if (!Properties.Settings.Default.UpdateMaxLive)
-                HandleMaxAvailable();
-            HandleMaxItemCheckbox();
-        }
+        
 
         public void UpdateCreateEnabled()
         {
