@@ -210,7 +210,9 @@ namespace DS2S_META
 
             // Initial Setup & Version Checks:
             Offsets = GetOffsets();
-            BasePointerSetup(out bool isOldBbj); // set BaseA (base pointer)
+            if (!BasePointerSetup(out bool isOldBbj)) // set BaseA (base pointer)
+                return; // basepointer setup failure
+
             BBJType = GetBBJType(isOldBbj);
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
@@ -437,7 +439,7 @@ namespace DS2S_META
                 _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
             };
         }
-        internal void BasePointerSetup(out bool isOldBbj)
+        internal bool BasePointerSetup(out bool isOldBbj)
         {
             BaseASetup = RegisterAbsoluteAOB(Offsets.BaseAAob);
             RescanAOB();
@@ -447,12 +449,12 @@ namespace DS2S_META
             BaseA = CreateBasePointer(bp_orig);
             isOldBbj = BaseA.Resolve() == IntPtr.Zero; // cannot find standard basea AoB
             if (!isOldBbj)
-                return; // normal basea success
+                return true; // normal basea success
 
             if (DS2Ver != DS2VER.VANILLA_V111 && DS2Ver != DS2VER.SOTFS_V102)
             {
-                MessageBox.Show($"Cannot find BasePtr for Version: {DS2Ver}, META likely won't work");
-                return;
+                MsgBoxCannotFindBasePointer();
+                return false; // failure
             }
 
             // Old BBJ mod BasePointer adjustment:
@@ -461,7 +463,21 @@ namespace DS2S_META
             BaseASetup = RegisterAbsoluteAOB(bytestring);
             RescanAOB();
             BaseA = CreateBasePointer(BasePointerFromSetupBabyJ(BaseASetup));
+            return true;
         }
+        public void MsgBoxCannotFindBasePointer()
+        {
+            // Run on dispatcher thread to avoid STA error
+            System.Windows.Application.Current.Dispatcher.Invoke(MBBaseErr);
+        }
+        internal void MBBaseErr()
+        {
+            MessageBox.Show($"Cannot find BasePtr for Version: {DS2Ver}, META likely won't work. Possible alleviations are to " +
+                $"verify steam game files, check you're using the newest bbj mod dll and check that no other mods are editing " +
+                $"the game code. If you're still having issues, ping pseudostripy on Discord and we can investigate.");
+        }
+
+
         internal void SetupChildPointers()
         {
             // Further pointer setup... todo?
