@@ -236,9 +236,12 @@ namespace DS2S_META.Randomizer
         // Seed / CRC related        
         internal static bool GenCRCSeed(out int seed)
         {
-            seed = 0;
+            seed = 0; // preallocate output
             if (!GetRandoSettingsStr(out var strsett))
                 return false;
+
+            // ensure create (verified) seed is independent of previous runs
+            Rng.SetSeed(Environment.TickCount); 
 
             // Look for one that matches current settings hash checks
             var c = 0; // attempt count

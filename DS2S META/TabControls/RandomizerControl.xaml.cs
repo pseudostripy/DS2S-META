@@ -90,8 +90,8 @@ namespace DS2S_META
             // Inform user of progress..
             btnRandomize.IsEnabled = false;
             lblWorking.Visibility = Visibility.Visible;
-
             int seed = Seed;
+
             //RM.SetSeed(seed);
 
             var tasks = new List<Task>();
