@@ -63,10 +63,11 @@ namespace DS2S_META.Randomizer
         {
             if (ShuffledLot == null)
                 return -1;
-            int ind = ShuffledLot.GetLotIndex(itemID);
-            return ShuffledLot.Quantities[ind];
-            // Note: there's an extremely unlikely bug that can occur here and only affects
-            // output display, so I'm too lazy to deal with it.
+
+            // get full total
+            return ShuffledLot.Flatlist.FilterByItem(itemID)
+                                .Select(di => (int)di.Quantity)
+                                .Sum();
         }
         internal override string GetNeatDescription()
         {

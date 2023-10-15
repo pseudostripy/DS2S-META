@@ -20,6 +20,10 @@ namespace DS2S_META
         {
             return dropinfos.Where(di => items.Cast<int>().Contains(di.ItemID)).ToList();
         }
+        public static List<DropInfo> FilterByItem(this List<DropInfo> dropinfos, params int[] itemids)
+        {
+            return dropinfos.Where(di => itemids.Contains(di.ItemID)).ToList();
+        }
         public static List<DropInfo> FilterByItemType(this List<DropInfo> dropinfos, params eItemType[] goodtypes)
         {
             return dropinfos.FilterByItemType(goodtypes);

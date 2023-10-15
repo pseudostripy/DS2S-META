@@ -234,6 +234,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Seed / CRC related        
+        internal static string CRC = "AA";
         internal static bool GenCRCSeed(out int seed)
         {
             seed = 0; // preallocate output
@@ -272,7 +273,6 @@ namespace DS2S_META.Randomizer
             xmlstr = File.ReadAllText(path);
             return true;
         }
-        internal static string CRC = "AA";
         internal static bool EnsureSeedCompatibility(int seed)
         {
             // do a CRC on the settings to make sure that it aligns.

@@ -182,18 +182,5 @@ namespace DS2S_META.Utils.ParamRows
         
         // Query Utility
         internal bool HasItem(int itemid) => Items.Contains(itemid);
-        internal int GetLotIndex(int itemid)
-        {
-            if (!HasItem(itemid))
-                throw new Exception("Shouldn't be using this query when there's no item with this ID in list");
-
-            for (int i = 0; i < 10; i++)
-            {
-                if (Items[i] == itemid)
-                    return i;
-            }
-            throw new Exception("This should be impossible");
-        }
-
     }
 }

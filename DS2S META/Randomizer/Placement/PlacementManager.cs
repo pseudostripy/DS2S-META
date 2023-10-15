@@ -200,7 +200,7 @@ namespace DS2S_META.Randomizer.Placement
         {
             // Slightly extra logic when diset.IsKeys is true. See updatefornewkey
             // Get fresh copies
-            var ld = new List<DropInfo>(diset.Data); // ld: list of DropInfos
+            var ld = new List<DropInfo>(diset.Data); // ld: list of DropInfos (list of stuff to place for this set)
             var availrdzs = GetRemainingRdz();
 
             // speed things up

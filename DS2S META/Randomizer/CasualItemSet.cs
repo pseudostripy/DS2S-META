@@ -1587,7 +1587,7 @@ namespace DS2S_META.Randomizer
                 { 20115040, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in cave before the first fog gate", KL(KEYID.AMANA)) },
                 { 20115050, WChestInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt", KL(KEYID.AMANA)) },
                 { 20115051, WChestNGPlusInfo(MapArea.ShrineOfAmana, "[Amana] Wooden chest in water to the right of the door to Undead Crypt in NG+", KL(KEYID.AMANA)) },
-                { 20115060, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla sunlight blade: metal chest in the end of the narrow underwater walkway", KL(KEYID.AMANA)) },
+                { 20115060, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Sunlight Blade: Metal chest at the end of the narrow underwater walkway", KL(KEYID.AMANA)) },
                 { 20115080, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Metal chest in water side from the second hut", KL(KEYID.AMANA)) },
                 { 20115090, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla Helix Halberd: metal chest behind a Pharros contraption near the Crumbled Ruins bonfire", KL(KEYID.AMANAPHARROS)) },
                 { 20115070, MChestInfo(MapArea.ShrineOfAmana, "[Amana] Vanilla King's crown: metal chest behind a door that opens after defeating Vendrick", KL(KEYID.VENDRICK)) },

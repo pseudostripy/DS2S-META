@@ -424,29 +424,5 @@ namespace DS2S_META.Randomizer
         {
             return types;
         }
-
-        
-
-
-        
-        //internal void FixGUID_AddRandoInfo(List<Randomization> rdzs)
-        //{
-        //    foreach (var rdz in rdzs)
-        //    {
-        //        if (Dold.TryGetValue(rdz.UniqueParamID, out var randoinfo))
-        //        {
-        //            rdz.RandoInfo = randoinfo; // store link
-        //            D.Add(rdz.GUID, randoinfo);
-        //        }
-                    
-        //    }
-        //}
-
-        // To remove?:
-        //protected Dictionary<int, RandoInfo> Dold = new();
-        //internal Dictionary<string, RandoInfo> D = new();
-        //internal abstract void SetupItemSet();
-
-
     }
 }
