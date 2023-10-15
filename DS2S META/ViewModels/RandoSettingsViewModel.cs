@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace DS2S_META.ViewModels
@@ -61,14 +62,6 @@ namespace DS2S_META.ViewModels
             // Legit update:
             LoadPresetSettings(GetDefaultPreset(Preset));
         }
-
-        //public DS2SHook? Hook { get; set; }
-        //public void InitViewModel(DS2SHook hook)
-        //{
-        //    Hook = hook;
-        //    OnPropertyChanged(nameof(Hook));
-        //    RaceMode = Settings.Default.RandoRaceMode;
-        //}
 
         // Constructor
         public RandoSettingsViewModel()
@@ -211,17 +204,11 @@ namespace DS2S_META.ViewModels
         }
         internal void SaveRandomizerSettings()
         {
-            TextWriter? writer = null;
-            try
-            {
-                writer = new StreamWriter(SettingsFilePath, false);
-                var serializable = ItemRestrictions;
-                new XmlSerializer(serializable.GetType()).Serialize(writer, serializable);
-            }
-            finally
-            {
-                writer?.Close();
-            }
+            var serializable = ItemRestrictions;
+            var serialWriterSettings = new XmlWriterSettings() { Indent = true };
+            var serializer = new XmlSerializer(serializable.GetType());
+            using var xmlWriter = XmlWriter.Create(SettingsFilePath, serialWriterSettings);
+            serializer.Serialize(xmlWriter, serializable);
         }
         internal void LoadRandomizerSettings()
         {
