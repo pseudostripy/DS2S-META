@@ -89,6 +89,7 @@ namespace DS2S_META
 
             // Inform user of progress..
             btnRandomize.IsEnabled = false;
+            btnRerandomize.IsEnabled = false;
             lblWorking.Visibility = Visibility.Visible;
             int seed = Seed;
 
@@ -126,8 +127,9 @@ namespace DS2S_META
             // Restore after completion:
             lblWorking.Visibility = Visibility.Hidden;
             btnRandomize.IsEnabled = true;
+            btnRerandomize.IsEnabled = true;
         }
-
+        
         private void CreateItemRestrictions()
         {
             // to reconsider structure
