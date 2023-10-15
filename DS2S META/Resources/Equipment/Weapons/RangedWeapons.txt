@@ -1,19 +1,19 @@
-//Format: Item ID; Name [arbitrary]
- 4200000 Short Bow
- 4210000 Long Bow
- 4220000 Composite Bow
- 4230000 Sea Bow
- 4240000 Dragonrider Bow
- 4270000 Bell Keeper Bow
- 4280000 Bow of Want
- 4290000 Hunter's Blackbow
- 4400000 Alonne Greatbow
- 4420000 Dragonslayer Greatbow
- 4430000 Possessed Armor Greatbow
- 4440000 Twin-headed Greatbow
- 4600000 Light Crossbow
- 4610000 Heavy Crossbow
- 4630000 Shield Crossbow
- 4660000 Avelyn
- 4670000 Sanctum Crossbow
- 4680000 Sanctum Repeating Crossbow
+//Format: Item ID; MetaShowType; Name [arbitrary]
+ 4200000 1 Short Bow
+ 4210000 1 Long Bow
+ 4220000 1 Composite Bow
+ 4230000 1 Sea Bow
+ 4240000 1 Dragonrider Bow
+ 4270000 1 Bell Keeper Bow
+ 4280000 1 Bow of Want
+ 4290000 1 Hunter's Blackbow
+ 4400000 1 Alonne Greatbow
+ 4420000 1 Dragonslayer Greatbow
+ 4430000 1 Possessed Armor Greatbow
+ 4440000 1 Twin-headed Greatbow
+ 4600000 1 Light Crossbow
+ 4610000 1 Heavy Crossbow
+ 4630000 1 Shield Crossbow
+ 4660000 1 Avelyn
+ 4670000 1 Sanctum Crossbow
+ 4680000 1 Sanctum Repeating Crossbow

@@ -1,21 +1,21 @@
-//Format: Item ID; Name [arbitrary]
- 63000000 "Point" Gesture
- 63001000 "I won't bite" Gesture
- 63003000 "Bow" Gesture
- 63004000 "Welcome" Gesture
- 63005000 "Duel bow" Gesture
- 63006000 "Wave" Gesture
- 63007000 "Pumped up" Gesture
- 63008000 "Joy" Gesture
- 63009000 "Warcry" Gesture
- 63010000 "Warmup" Gesture
- 63011000 "Hurrah!" Gesture
- 63012000 "Righty-ho!" Gesture
- 63013000 "No way" Gesture
- 63014000 "This one's me" Gesture
- 63015000 "Have mercy!" Gesture
- 63016000 "Prostration" Gesture
- 63017000 "Decapitate" Gesture
- 63018000 "Fist pump" Gesture
- 63019000 "Mock" Gesture
- 63021000 "Praise the Sun" Gesture
+//Format: Item ID; MetaShowType; Name [arbitrary]
+ 63000000 1 "Point" Gesture
+ 63001000 1 "I won't bite" Gesture
+ 63003000 1 "Bow" Gesture
+ 63004000 1 "Welcome" Gesture
+ 63005000 1 "Duel bow" Gesture
+ 63006000 1 "Wave" Gesture
+ 63007000 1 "Pumped up" Gesture
+ 63008000 1 "Joy" Gesture
+ 63009000 1 "Warcry" Gesture
+ 63010000 1 "Warmup" Gesture
+ 63011000 1 "Hurrah!" Gesture
+ 63012000 1 "Righty-ho!" Gesture
+ 63013000 1 "No way" Gesture
+ 63014000 1 "This one's me" Gesture
+ 63015000 1 "Have mercy!" Gesture
+ 63016000 1 "Prostration" Gesture
+ 63017000 1 "Decapitate" Gesture
+ 63018000 1 "Fist pump" Gesture
+ 63019000 1 "Mock" Gesture
+ 63021000 1 "Praise the Sun" Gesture

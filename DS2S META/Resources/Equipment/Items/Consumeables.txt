@@ -1,134 +1,134 @@
- //Format: Item ID; Name [arbitrary]
- 51010000 Simpleton's Spice
- 51020000 Skeptic's Spice
- 50880000 Smooth & Silky Stone
- 50885000 Small Smooth & Silky Stone
- 50920000 Soul of a Giant
- 50960000 Soul Vessel
- 53200000 Smelter Wedge
- 53300000 Soul of Nadalia, Bride of Ash - Shard
- 60010000 Lifegem
- 60020000 Radiant Lifegem
- 60030000 Old Radiant Lifegem
- 60035000 Elizabeth Mushroom
- 60036000 Dried Root
- 60040000 Amber Herb
- 60050000 Twilight Herb
- 60060000 Wilted Dusk Herb
- 60070000 Poison Moss
- 60090000 Monastery Charm
- 60100000 Dragon Charm
- 60105000 Divine Blessing
- 60110000 Rouge Water
- 60120000 Crimson Water
- 60151000 Human Effigy
- 60160000 Small Blue Burr
- 60170000 Small Yellow Burr
- 60180000 Small Orange Burr
- 60190000 Dark Troches
- 60200000 Common Fruit
- 60210000 Red Leech Troches
- 60230000 Triclops Snake Troches
- 60235000 Old Growth Balm
- 60236000 Vine Balm
- 60237000 Blackweed Balm
- 60238000 Goldenfruit Balm
- 60239000 Brightbug
- 60240000 Aromatic Ooze
- 60250000 Gold Pine Resin
- 60260000 Charcoal Pine Resin
- 60270000 Dark Pine Resin
- 60280000 Rotten Pine Resin
- 60290000 Bleeding Serum
- 60310000 Green Blossom
- 60320000 Rusted Coin
- 60350000 Homeward Bone
- 60370000 Silver Talisman
- 60410000 Repair Powder
- 60430000 Flame Butterfly
- 60450000 Prism Stone
- 60510000 Rubbish
- 60511000 Petrified Something
- 60525000 Estus Flask Shard
- 60526000 Sublime Bone Dust
- 60527000 Bonfire Ascetic
- 60530000 Alluring Skull
- 60531000 Lloyd's Talisman
- 60536000 Pharros' Lockstone
- 60537000 Fragrant Branch of Yore
- 60540000 Throwing Knife
- 60550000 Witching Urn
- 60560000 Lightning Urn
- 60570000 Firebomb
- 60575000 Black Firebomb
- 60580000 Hexing Urn
- 60590000 Poison Throwing Knife
- 60595000 Dung Pie
- 60600000 Lacerating Knife
- 60610000 Corrosive Urn
- 60620000 Holy Water Urn
- 60625000 Fading Soul
- 60630000 Soul of a Lost Undead
- 60640000 Large Soul of a Lost Undead
- 60650000 Soul of a Nameless Soldier
- 60660000 Large Soul of a Nameless Soldier
- 60670000 Soul of a Proud Knight
- 60680000 Large Soul of a Proud Knight
- 60690000 Soul of a Brave Warrior
- 60700000 Large Soul of a Brave Warrior
- 60710000 Soul of a Hero
- 60720000 Soul of a Great Hero
- 62050000 Cracked Blue Eye Orb
- 62060000 Cracked Red Eye Orb
- 62100000 Token of Fidelity
- 62110000 Token of Spite
- 62120000 Sunlight Medal
- 62130000 Dragon Scale
- 62140000 Rat Tail
- 62150000 Awestone
- 62170000 Seed of a Tree of Giants
- 64000000 Soul of the Pursuer
- 64010000 Soul of the Last Giant
- 64020000 Dragonrider Soul
- 64030000 Old Dragonslayer Soul
- 64040000 Flexile Sentry Soul
- 64050000 Ruin Sentinel Soul
- 64060000 Soul of the Lost Sinner
- 64070000 Executioner's Chariot Soul
- 64080000 Skeleton Lord's Soul
- 64090000 Covetous Demon Soul
- 64100000 Mytha, the Baneful Queen Soul
- 64110000 Smelter Demon Soul
- 64120000 Old Iron King Soul
- 64130000 Royal Rat Vanguard Soul
- 64140000 Soul of the Rotten
- 64150000 Scorpioness Najka Soul
- 64160000 Royal Rat Authority Soul
- 64170000 Soul of the Duke's Dear Freja
- 64180000 Looking Glass Knight Soul
- 64190000 Demon of Song Soul
- 64200000 Soul of Velstadt
- 64210000 Soul of the King
- 64220000 Guardian Dragon Soul
- 64230000 Ancient Dragon Soul
- 64240000 Giant Lord Soul
- 64250000 Soul of Nashandra
- 64260000 Throne Defender Soul
- 64270000 Throne Watcher Soul
- 64280000 Darklurker Soul
- 64290000 Belfry Gargoyle Soul
- 64300000 Old Witch Soul
- 64310000 Old King Soul
- 64320000 Old Dead One Soul
- 64330000 Old Paledrake Soul
- 64500000 Soul of Sinh, the Slumbering Dragon
- 64510000 Soul of the Fume Knight
- 64520000 Soul of Aava, the King's Pet
- 64530000 Soul of Elana, Squalid Queen
- 64540000 Soul of Nadalia, Bride of Ash
- 64550000 Soul of Alsanna, Silent Oracle
- 64560000 Soul of Sir Alonne
- 64580000 Soul of the Ivory King
- 64590000 Soul of Zallen, the King's Pet
- 64600000 Loyce Soul
- 64610000 Soul of Lud, the King's Pet
+ //Format: Item ID; MetaShowType; Name [arbitrary]
+ 51010000 1 Simpleton's Spice
+ 51020000 1 Skeptic's Spice
+ 50880000 1 Smooth & Silky Stone
+ 50885000 1 Small Smooth & Silky Stone
+ 50920000 1 Soul of a Giant
+ 50960000 1 Soul Vessel
+ 53200000 1 Smelter Wedge
+ 53300000 1 Soul of Nadalia, Bride of Ash - Shard
+ 60010000 1 Lifegem
+ 60020000 1 Radiant Lifegem
+ 60030000 1 Old Radiant Lifegem
+ 60035000 1 Elizabeth Mushroom
+ 60036000 1 Dried Root
+ 60040000 1 Amber Herb
+ 60050000 1 Twilight Herb
+ 60060000 1 Wilted Dusk Herb
+ 60070000 1 Poison Moss
+ 60090000 1 Monastery Charm
+ 60100000 1 Dragon Charm
+ 60105000 1 Divine Blessing
+ 60110000 1 Rouge Water
+ 60120000 1 Crimson Water
+ 60151000 1 Human Effigy
+ 60160000 1 Small Blue Burr
+ 60170000 1 Small Yellow Burr
+ 60180000 1 Small Orange Burr
+ 60190000 1 Dark Troches
+ 60200000 1 Common Fruit
+ 60210000 1 Red Leech Troches
+ 60230000 1 Triclops Snake Troches
+ 60235000 1 Old Growth Balm
+ 60236000 1 Vine Balm
+ 60237000 1 Blackweed Balm
+ 60238000 1 Goldenfruit Balm
+ 60239000 1 Brightbug
+ 60240000 1 Aromatic Ooze
+ 60250000 1 Gold Pine Resin
+ 60260000 1 Charcoal Pine Resin
+ 60270000 1 Dark Pine Resin
+ 60280000 1 Rotten Pine Resin
+ 60290000 1 Bleeding Serum
+ 60310000 1 Green Blossom
+ 60320000 1 Rusted Coin
+ 60350000 1 Homeward Bone
+ 60370000 1 Silver Talisman
+ 60410000 1 Repair Powder
+ 60430000 1 Flame Butterfly
+ 60450000 1 Prism Stone
+ 60510000 1 Rubbish
+ 60511000 1 Petrified Something
+ 60525000 1 Estus Flask Shard
+ 60526000 1 Sublime Bone Dust
+ 60527000 1 Bonfire Ascetic
+ 60530000 1 Alluring Skull
+ 60531000 1 Lloyd's Talisman
+ 60536000 1 Pharros' Lockstone
+ 60537000 1 Fragrant Branch of Yore
+ 60540000 1 Throwing Knife
+ 60550000 1 Witching Urn
+ 60560000 1 Lightning Urn
+ 60570000 1 Firebomb
+ 60575000 1 Black Firebomb
+ 60580000 1 Hexing Urn
+ 60590000 1 Poison Throwing Knife
+ 60595000 1 Dung Pie
+ 60600000 1 Lacerating Knife
+ 60610000 1 Corrosive Urn
+ 60620000 1 Holy Water Urn
+ 60625000 1 Fading Soul
+ 60630000 1 Soul of a Lost Undead
+ 60640000 1 Large Soul of a Lost Undead
+ 60650000 1 Soul of a Nameless Soldier
+ 60660000 1 Large Soul of a Nameless Soldier
+ 60670000 1 Soul of a Proud Knight
+ 60680000 1 Large Soul of a Proud Knight
+ 60690000 1 Soul of a Brave Warrior
+ 60700000 1 Large Soul of a Brave Warrior
+ 60710000 1 Soul of a Hero
+ 60720000 1 Soul of a Great Hero
+ 62050000 1 Cracked Blue Eye Orb
+ 62060000 1 Cracked Red Eye Orb
+ 62100000 1 Token of Fidelity
+ 62110000 1 Token of Spite
+ 62120000 1 Sunlight Medal
+ 62130000 1 Dragon Scale
+ 62140000 1 Rat Tail
+ 62150000 1 Awestone
+ 62170000 1 Seed of a Tree of Giants
+ 64000000 1 Soul of the Pursuer
+ 64010000 1 Soul of the Last Giant
+ 64020000 1 Dragonrider Soul
+ 64030000 1 Old Dragonslayer Soul
+ 64040000 1 Flexile Sentry Soul
+ 64050000 1 Ruin Sentinel Soul
+ 64060000 1 Soul of the Lost Sinner
+ 64070000 1 Executioner's Chariot Soul
+ 64080000 1 Skeleton Lord's Soul
+ 64090000 1 Covetous Demon Soul
+ 64100000 1 Mytha, the Baneful Queen Soul
+ 64110000 1 Smelter Demon Soul
+ 64120000 1 Old Iron King Soul
+ 64130000 1 Royal Rat Vanguard Soul
+ 64140000 1 Soul of the Rotten
+ 64150000 1 Scorpioness Najka Soul
+ 64160000 1 Royal Rat Authority Soul
+ 64170000 1 Soul of the Duke's Dear Freja
+ 64180000 1 Looking Glass Knight Soul
+ 64190000 1 Demon of Song Soul
+ 64200000 1 Soul of Velstadt
+ 64210000 1 Soul of the King
+ 64220000 1 Guardian Dragon Soul
+ 64230000 1 Ancient Dragon Soul
+ 64240000 1 Giant Lord Soul
+ 64250000 1 Soul of Nashandra
+ 64260000 1 Throne Defender Soul
+ 64270000 1 Throne Watcher Soul
+ 64280000 1 Darklurker Soul
+ 64290000 1 Belfry Gargoyle Soul
+ 64300000 1 Old Witch Soul
+ 64310000 1 Old King Soul
+ 64320000 1 Old Dead One Soul
+ 64330000 1 Old Paledrake Soul
+ 64500000 1 Soul of Sinh, the Slumbering Dragon
+ 64510000 1 Soul of the Fume Knight
+ 64520000 1 Soul of Aava, the King's Pet
+ 64530000 1 Soul of Elana, Squalid Queen
+ 64540000 1 Soul of Nadalia, Bride of Ash
+ 64550000 1 Soul of Alsanna, Silent Oracle
+ 64560000 1 Soul of Sir Alonne
+ 64580000 1 Soul of the Ivory King
+ 64590000 1 Soul of Zallen, the King's Pet
+ 64600000 1 Loyce Soul
+ 64610000 1 Soul of Lud, the King's Pet

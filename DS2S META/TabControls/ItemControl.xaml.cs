@@ -43,8 +43,12 @@ namespace DS2S_META
             { ITEMCATEGORY.StaffChimes, "Staves/Chimes" },
             { ITEMCATEGORY.MeleeWeapon, "Melee Weapons" },
             { ITEMCATEGORY.Armor, "Armor" },
-            { ITEMCATEGORY.Item, "Item" },
+            { ITEMCATEGORY.Item, "Items" },
         };
+        private string FilterTxt => txtSearch.Text;
+        private bool IsEmptyFilter => FilterTxt == string.Empty;
+        private bool SearchAll => SearchAllCheckbox.IsChecked == true;
+
         public override void InitTab()
         {
             cmbCategory.ItemsSource = DS2Resource.ItemCategories.Select(ic => CategoryNames[ic.Type]);
@@ -140,34 +144,19 @@ namespace DS2S_META
         //Clear items and add the ones that match text in search box
         private void FilterItems()
         {
-            lbxItems.Items.Clear();
+            // get categories/items to apply filter to...
+            var allcats = DS2Resource.ItemCategories;
+            List<DS2SItemCategory> selcat = new() { allcats.ElementAt(cmbCategory.SelectedIndex) };
+            var catsOfInterest = (SearchAll && !IsEmptyFilter) ? allcats : selcat;
+            var itemsToCheck = catsOfInterest.SelectMany(c => c.Items);
 
-            if (SearchAllCheckbox.IsChecked == true && txtSearch.Text != "")
-            {
-                //search every item category
-                foreach (DS2SItemCategory category in DS2Resource.ItemCategories)
-                {
-                    foreach (DS2SItem item in category.Items)
-                    {
-                        if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
-                            lbxItems.Items.Add(item);
-                    }
-                }
-            }
-            else
-            {
-                // Note this adds all items if search is empty string
-                var cat = DS2Resource.ItemCategories.ElementAt(cmbCategory.SelectedIndex);
-                foreach (DS2SItem item in cat.Items)
-                {
-                    if (item.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
-                        lbxItems.Items.Add(item);
-                }
-            }
-
+            // filter and populate
+            var itemsToShow = itemsToCheck.Where(it => it.ShowInMeta && it.NameContains(FilterTxt)).ToList();
+            lbxItems.ItemsSource = itemsToShow;
+            
+            // reset cursor
             if (lbxItems.Items.Count > 0)
                 lbxItems.SelectedIndex = 0;
-
             HandleSearchLabel();
         }
 

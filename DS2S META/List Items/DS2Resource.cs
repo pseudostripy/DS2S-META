@@ -25,13 +25,14 @@ namespace DS2S_META
         public static readonly string PathBonfires = "Resources/Systems/Bonfires.txt";
         public static readonly string PathClasses = "Resources/Systems/Classes.txt";
 
+        private static readonly List<ITEMCATEGORY> WepTypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
 
+
+        // One-time setup (static constructors are "called at most once" in C#)
         static DS2Resource()
         {
             // Parse & group ItemCategories
             var protocats = ParseResource(PathCategories, DS2SItemCategoryEntry.ParseNew);
-            
-            // group by category and parse
             var groups = protocats.GroupBy(pcat => pcat.Type);
             foreach (var group in groups)
             {
@@ -45,8 +46,7 @@ namespace DS2S_META
             // Query handy things
             Items = ItemCategories.SelectMany(p => p.Items).ToList();
             ItemNames = Items.ToDictionary(it => it.ItemId, it => it.Name);
-            List<ITEMCATEGORY> weptypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
-            Weapons = ItemCategories.Where(cat => weptypes.Contains(cat.Type)).SelectMany(cat => cat.Items).ToList();
+            Weapons = ItemCategories.Where(cat => WepTypes.Contains(cat.Type)).SelectMany(cat => cat.Items).ToList();
 
             /////////////////////////////////
             Bonfires = ParseResource(PathBonfires, DS2SBonfire.ParseNew);
@@ -64,13 +64,11 @@ namespace DS2S_META
             return objs;
         }
 
-
         public static string GetTxtResource(string filePath)
         {
             //Get local directory + file path, read file, return string contents of file
             return File.ReadAllText($@"{ExeDir}/{filePath}");
         }
-
         public static bool IsValidTxtResource(string txtLine)
         {
             //see if txt resource line is valid and should be accepted 

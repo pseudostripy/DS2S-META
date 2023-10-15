@@ -1,18 +1,18 @@
- //Format: Item ID; Name [arbitrary]
- 60538000 Fire Seed
- 60970000 Titanite Shard
- 60975000 Large Titanite Shard
- 60980000 Titanite Chunk
- 60990000 Titanite Slab
- 61000000 Twinkling Titanite
- 61030000 Petrified Dragon Bone
- 61060000 Faintstone
- 61070000 Boltstone
- 61080000 Firedrake Stone
- 61090000 Darknight Stone
- 61100000 Poison Stone
- 61110000 Bleed Stone
- 61130000 Raw Stone
- 61140000 Magic Stone
- 61150000 Old Mundane Stone
- 61160000 Palestone
+ //Format: Item ID; MetaShowType; Name [arbitrary]
+ 60538000 1 Fire Seed
+ 60970000 1 Titanite Shard
+ 60975000 1 Large Titanite Shard
+ 60980000 1 Titanite Chunk
+ 60990000 1 Titanite Slab
+ 61000000 1 Twinkling Titanite
+ 61030000 1 Petrified Dragon Bone
+ 61060000 1 Faintstone
+ 61070000 1 Boltstone
+ 61080000 1 Firedrake Stone
+ 61090000 1 Darknight Stone
+ 61100000 1 Poison Stone
+ 61110000 1 Bleed Stone
+ 61130000 1 Raw Stone
+ 61140000 1 Magic Stone
+ 61150000 1 Old Mundane Stone
+ 61160000 1 Palestone

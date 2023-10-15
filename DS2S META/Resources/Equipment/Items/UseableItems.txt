@@ -1,21 +1,21 @@
- //Format: Item ID; Name [arbitrary]
- 6100000  Binoculars
- 60155000 Estus Flask
- 60355000 Aged Feather
- 60360000 Darksign
- 60405000 Dragon Head Stone
- 60405010 Dragon Head Stone
- 60406000 Dragon Torso Stone
- 60406010 Dragon Torso Stone
- 60420000 Torch
- 60470000 Hello Carving
- 60480000 Thank You Carving
- 60490000 I'm Sorry Carving
- 60500000 Very Good! Carving
- 62000000 Dried Fingers
- 62020000 Bone of Order
- 62030000 White Sign Soapstone
- 62040000 Small White Sign Soapstone
- 62045000 Red Sign Soapstone
- 62070000 Dragon Eye
- 62160000 Black Separation Crystal
+ //Format: Item ID; MetaShowType; Name [arbitrary]
+ 6100000  1 Binoculars
+ 60155000 1 Estus Flask
+ 60355000 1 Aged Feather
+ 60360000 1 Darksign
+ 60405000 1 Dragon Head Stone
+ 60405010 0 Dragon Head Stone
+ 60406000 1 Dragon Torso Stone
+ 60406010 0 Dragon Torso Stone
+ 60420000 1 Torch
+ 60470000 1 Hello Carving
+ 60480000 1 Thank You Carving
+ 60490000 1 I'm Sorry Carving
+ 60500000 1 Very Good! Carving
+ 62000000 1 Dried Fingers
+ 62020000 1 Bone of Order
+ 62030000 1 White Sign Soapstone
+ 62040000 1 Small White Sign Soapstone
+ 62045000 1 Red Sign Soapstone
+ 62070000 1 Dragon Eye
+ 62160000 1 Black Separation Crystal

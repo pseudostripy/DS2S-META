@@ -1,31 +1,31 @@
-//Format: Item ID; Name [arbitrary]
- 50600000 Soldier Key
- 50610000 Key to King's Passage
- 50800000 Bastille Key
- 50810000 Iron Key
- 50820000 Forgotten Key
- 50830000 Brightstone Key
- 50840000 Antiquated Key
- 50850000 Fang Key
- 50860000 House Key
- 50870000 Lenigrast's Key
- 50890000 Rotunda Lockstone
- 50900000 Giant's Kinship
- 50910000 Ashen Mist Heart
- 50930000 Tseldora Den Key
- 50940000 Champion's Tablet
- 50950000 Ladder Miniature
- 50970000 Undead Lockaway Key
- 50990000 Dull Ember
- 51000000 Crushed Eye Orb
- 51030000 Aldia Key
- 52000000 Dragon Talon
- 52100000 Heavy Iron Key
- 52200000 Frozen Flower
- 52300000 Eternal Sanctum Key
- 52400000 Tower Key
- 52500000 Garrison Ward Key
- 52650000 Dragon Stone
- 53100000 Scorching Iron Scepter
- 53600000 Eye of the Priestess
- 62190000 Petrified Egg
+//Format: Item ID; MetaShowType; Name [arbitrary]
+ 50600000 1 Soldier Key
+ 50610000 1 Key to King's Passage
+ 50800000 1 Bastille Key
+ 50810000 1 Iron Key
+ 50820000 1 Forgotten Key
+ 50830000 1 Brightstone Key
+ 50840000 1 Antiquated Key
+ 50850000 1 Fang Key
+ 50860000 1 House Key
+ 50870000 1 Lenigrast's Key
+ 50890000 1 Rotunda Lockstone
+ 50900000 1 Giant's Kinship
+ 50910000 1 Ashen Mist Heart
+ 50930000 1 Tseldora Den Key
+ 50940000 1 Champion's Tablet
+ 50950000 1 Ladder Miniature
+ 50970000 1 Undead Lockaway Key
+ 50990000 1 Dull Ember
+ 51000000 1 Crushed Eye Orb
+ 51030000 1 Aldia Key
+ 52000000 1 Dragon Talon
+ 52100000 1 Heavy Iron Key
+ 52200000 1 Frozen Flower
+ 52300000 1 Eternal Sanctum Key
+ 52400000 1 Tower Key
+ 52500000 1 Garrison Ward Key
+ 52650000 1 Dragon Stone
+ 53100000 1 Scorching Iron Scepter
+ 53600000 1 Eye of the Priestess
+ 62190000 1 Petrified Egg

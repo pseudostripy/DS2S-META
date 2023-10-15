@@ -1,8 +1,8 @@
-//Format: Item ID; Name [arbitrary]
- 5600000 Longsword
- 5610000 Murakumo
- 5620000 Blacksteel Katana
- 5630000 Rapier
- 5640000 Greataxe
- 5650000 Great Club
- 5660000 Caestus
+//Format: Item ID; MetaShowType; Name [arbitrary]
+ 5600000 1 Longsword (reskin)
+ 5610000 1 Murakumo (reskin)
+ 5620000 1 Blacksteel Katana (reskin)
+ 5630000 1 Rapier (reskin)
+ 5640000 1 Greataxe (reskin)
+ 5650000 1 Great Club (reskin)
+ 5660000 1 Caestus (reskin)

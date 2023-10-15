@@ -1,26 +1,26 @@
-//Format: Item ID; Name [arbitrary]
- 3800000 Sorcerer's Staff
- 3810000 Staff of Amana
- 3820000 Witchtree Branch
- 3830000 Lizard Staff
- 3850000 Olenford's Staff
- 3860000 Archdrake Staff
- 3870000 Bat Staff
- 3880000 Bone Staff
- 3890000 Staff of Wisdom
- 3900000 Sunset Staff
- 3930000 Azal's Staff
- 3940000 Retainer Staff
- 4010000 Cleric's Sacred Chime
- 4020000 Witchtree Bellvine
- 4030000 Priest's Chime
- 4040000 Dragon Chime
- 4050000 Chime of Want
- 4060000 Archdrake Chime
- 4080000 Idol's Chime
- 4090000 Caitha's Chime
- 4100000 Protective Chime
- 4110000 Disc Chime
- 4120000 Chime of Screams
- 4150000 Black Witch's Staff
- 5540000 Transgressor's Staff
+//Format: Item ID; MetaShowType; Name [arbitrary]
+ 3800000 1 Sorcerer's Staff
+ 3810000 1 Staff of Amana
+ 3820000 1 Witchtree Branch
+ 3830000 1 Lizard Staff
+ 3850000 1 Olenford's Staff
+ 3860000 1 Archdrake Staff
+ 3870000 1 Bat Staff
+ 3880000 1 Bone Staff
+ 3890000 1 Staff of Wisdom
+ 3900000 1 Sunset Staff
+ 3930000 1 Azal's Staff
+ 3940000 1 Retainer Staff
+ 4010000 1 Cleric's Sacred Chime
+ 4020000 1 Witchtree Bellvine
+ 4030000 1 Priest's Chime
+ 4040000 1 Dragon Chime
+ 4050000 1 Chime of Want
+ 4060000 1 Archdrake Chime
+ 4080000 1 Idol's Chime
+ 4090000 1 Caitha's Chime
+ 4100000 1 Protective Chime
+ 4110000 1 Disc Chime
+ 4120000 1 Chime of Screams
+ 4150000 1 Black Witch's Staff
+ 5540000 1 Transgressor's Staff
