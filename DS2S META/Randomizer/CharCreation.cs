@@ -35,7 +35,8 @@ namespace DS2S_META.Randomizer
             allItems = ParamMan.ItemRows.Values.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
             //
             consumables = allItems.FilterByType(eItemType.CONSUMABLE)
-                                    .FilterOutUsage(ITEMUSAGE.ITEMUSAGEKEY, ITEMUSAGE.BOSSSOULUSAGE).ToList();
+                                    .FilterOutUsage(ITEMUSAGE.ITEMUSAGEKEY, ITEMUSAGE.BOSSSOULUSAGE,
+                                                    ITEMUSAGE.DRAGONBODYSTONE, ITEMUSAGE.NADALIAORWEDGE).ToList();
             //
             rings = allItems.FilterByType(eItemType.RING).ToList();
             weapons = allItems.FilterByType(eItemType.WEAPON1, eItemType.WEAPON2).ToList();
@@ -78,10 +79,10 @@ namespace DS2S_META.Randomizer
             var randLegs = DrawSingleParamId(legs, 50);                      // Legs armour 50% (single)
              
             // Draw supplementary info: 
-            var randRHreinf = DrawWepReinforces(randRHweps.Count());
-            var randLHreinf = DrawWepReinforces(randLHweps.Count());
-            var arrowQuants = DrawAmmoQuants(randArrows.Count());
-            var boltQuants = DrawAmmoQuants(randBolts.Count());
+            var randRHreinf = DrawWepReinforces(randRHweps.Count);
+            var randLHreinf = DrawWepReinforces(randLHweps.Count);
+            var arrowQuants = DrawAmmoQuants(randArrows.Count);
+            var boltQuants = DrawAmmoQuants(randBolts.Count);
             var consumQuants = DrawItemQuants(randConsumItems);
             var consumIds = randConsumItems.Select(ir => ir.ItemID);
 
@@ -131,7 +132,7 @@ namespace DS2S_META.Randomizer
         internal static void RandomizeStartingGift(PlayerStatusClassRow giftrow)
         {
             // Draw items
-            var randItems = DrawItemsUntilLimit(consumables, 50, 5); // Items 50% (flat)
+            var randItems = DrawItemsUntilLimitWithMin(consumables, 50, 5, 1); // Items 50% (flat); at least 1 item
             
             // Supplementary info:
             var itemIds = randItems.Select(ir => ir.ItemID).ToList();
@@ -194,6 +195,17 @@ namespace DS2S_META.Randomizer
                 randdraws.Add(pool.RandomElement());
             };
             return randdraws;
+        }
+        internal static List<ItemRow> DrawItemsUntilLimitWithMin(List<ItemRow> pool, int percentpass, int maxdraws, int minsuccess)
+        {
+            // draw randomly
+            var rawdraws = DrawItemsUntilLimit(pool, percentpass, maxdraws);
+            
+            // forcefeed until minimum
+            var n = rawdraws.Count;
+            for (int i = n; i < minsuccess; i++)
+                rawdraws.Add(pool.RandomElement());
+            return rawdraws;
         }
 
         // Rng helpers:

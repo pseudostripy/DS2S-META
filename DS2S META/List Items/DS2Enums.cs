@@ -78,6 +78,8 @@ namespace DS2S_META
         BOSSSOULUSAGE = 2000,
         ITEMUSAGEKEY = 2700,
         SOULUSAGE = 1900,
+        DRAGONBODYSTONE = 2420,
+        NADALIAORWEDGE = 2704,
     }
     public enum CHRID
     {
