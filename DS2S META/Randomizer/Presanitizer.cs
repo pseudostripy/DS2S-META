@@ -41,11 +41,9 @@ namespace DS2S_META.Randomizer
         internal static List<PICKUPTYPE> BanFromBeingRandomized = new()
         {
             // List of places where loot cannot come from:
-            PICKUPTYPE.EXOTIC,
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
-            PICKUPTYPE.COVENANTHARD,
         };
         internal List<PICKUPTYPE> BanFromLoot = new()
         {
@@ -94,8 +92,8 @@ namespace DS2S_META.Randomizer
         };
         internal static Dictionary<int, int> AbnormalNgLinks = new() {
             // Key = NG plus ID, Value = assoc NG ID 
-            { 675010, 675000 }, // fume knight :/
-            { 0x393A6AE, 0x393A6A4 } // Betwixt Pursuer
+            { 675010, 675000 },         // Fume Knight
+            { 0x393A6AE, 0x393A6A4 }    // Betwixt Pursuer
         }; 
 
         // Output fields:
