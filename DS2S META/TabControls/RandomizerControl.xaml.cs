@@ -84,7 +84,8 @@ namespace DS2S_META
         private enum RANDOPROCTYPE { Rand, Unrand, Rerand }
         private async void rando_core_process(RANDOPROCTYPE rpt)
         {
-            RandomizerSetup();
+            if (!RandomizerSetup())
+                return;
             CreateItemRestrictions();
 
             // Inform user of progress..
@@ -153,8 +154,7 @@ namespace DS2S_META
             var vm = (RandoSettingsViewModel)DataContext;
             RM.IsRaceMode = vm.RaceMode;
 
-            // Warn user about the incoming warp
-            // hook.Loaded = true when in game (false on load screens)
+            // Warn user about the incoming warp when InGame
             if (VM.Hook.InGame && Settings.Default.ShowWarnRandowarp)
             {
                 var randowarning = new RandoWarpWarning()
@@ -164,6 +164,10 @@ namespace DS2S_META
                     Height = 175,
                 };
                 randowarning.ShowDialog();
+                
+                // user cancel
+                if (!randowarning.IsOk)
+                    return false;
             }
 
             // Sort out seeding
