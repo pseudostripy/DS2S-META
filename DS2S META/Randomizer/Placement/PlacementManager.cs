@@ -228,9 +228,12 @@ namespace DS2S_META.Randomizer.Placement
                         }
                     }
                 }
-                    
 
                 // Normal key logic:
+                // manual logic helper override...
+                if (IsRaceMode && diset.IsTrueKeys && ld.Count < 30 && ld.FilterByItem(ITEMID.ROTUNDALOCKSTONE).Count > 0)
+                    di = ld.FilterByItem(ITEMID.ROTUNDALOCKSTONE).First(); // deal with this now to avoid locking out too many bosses
+                
                 var rdz = FindElligibleRdz(di, diset.Type, availrdzs, out var placeres);
                 if (diset.IsTrueKeys) // special case when there's limited slots that might run into softlocks
                 {
@@ -735,17 +738,20 @@ namespace DS2S_META.Randomizer.Placement
             bool issafe = rdz.HasPickupType(FullySafeFlags);
             if (!(isboss || issafe)) return false; // volatile or uninterested
 
-            if (rdz is LotRdz)
+            if (rdz is LotRdz lrdz)
             {
-                LotRdz lrdz = (LotRdz)rdz;
                 if (lrdz.HasVanillaAnyItemID(RandoLogicHelper.TRUEKEYS))
                     return true;
             }
 
+            // balanced to just bosses and keys
+            return isboss;
+
+            // older:
             // add more logic here as you see fit
-            var majoritems = new List<ITEMID>() { ITEMID.ESTUSSHARD, ITEMID.BONEDUST, ITEMID.FRAGRANTBRANCH };
-            bool ismajorpickup = rdz.HasVanillaAnyItemID(majoritems);
-            return isboss || (issafe && ismajorpickup);
+            //var majoritems = new List<ITEMID>() { ITEMID.ESTUSSHARD, ITEMID.BONEDUST, ITEMID.FRAGRANTBRANCH };
+            //bool ismajorpickup = rdz.HasVanillaAnyItemID(majoritems);
+            //return isboss || (issafe && ismajorpickup);
         }
 
         // Key updates
