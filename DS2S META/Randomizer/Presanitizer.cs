@@ -230,9 +230,7 @@ namespace DS2S_META.Randomizer
                 return RDZ_TASKTYPE.EXCLUDE;
             if (CrowDuplicates.Contains(lotrow.ID))
                 return RDZ_TASKTYPE.EXCLUDE;
-            if (PlacementManager.LinkedDrops.ContainsKey(lotrow.ID))
-                return RDZ_TASKTYPE.LINKEDSLAVE;
-
+           
             // keep underlying status
             return ri.RandoHandleType;
         }

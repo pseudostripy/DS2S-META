@@ -355,11 +355,10 @@ namespace DS2S_META.Randomizer
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo LinkedSlave(MapArea area, string desc, PICKUPTYPE pickuptype, List<KeySet> kso)
+        internal static RandoInfo LinkedSlave(MapArea area, string desc, int refid, PICKUPTYPE pickuptype, List<KeySet> kso)
         {
-            // This method doesn't do anything different (it's caught during Presanitizer instead),
-            // but is here so that it can be obvious within CasualItemSet that it's a special case.
-            return new RandoInfo(area, desc, pickuptype, kso);
+            // See ShopCopy (but this is for non-shops)
+            return new RandoInfo(area, desc, pickuptype, RDZ_TASKTYPE.LINKEDSLAVE, refid, kso);
         }
         //
         internal static RandoInfo EnemyDropInfo(MapArea area, string desc, List<KeySet> kso)

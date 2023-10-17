@@ -877,7 +877,7 @@ namespace DS2S_META.Randomizer
                 // Forest of Fallen Giants:
                 { 309600, BossInfo(MapArea.FOFG, "[FOFG] Last Giant drop", KL()) },
                 { 318000, BossInfo(MapArea.FOFG, "[FOFG] Pursuer (in the proper arena) drop", KL(KEYID.SOLDIER)) },
-                { 60008000, LinkedSlave(MapArea.FOFG, "[FOFG] Pursuer (on the platform) drop", PICKUPTYPE.BOSS, KL()) },
+                { 60008000, LinkedSlave(MapArea.FOFG, "[FOFG] Pursuer (on the platform) drop", 318000, PICKUPTYPE.BOSS, KL()) },
                 { 10105020, WChestInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate", KL()) },
                 { 10105021, WChestNGPlusInfo(MapArea.FOFG, "[FOFG] Wooden chest under the bridge after the drawgate in NG+", KL()) },
                 { 10106110, SafeInfo(MapArea.FOFG, "[FOFG] Corpse in the watery cave in the beginning of the area", KL()) },

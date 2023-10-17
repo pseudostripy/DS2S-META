@@ -99,12 +99,7 @@ namespace DS2S_META.Randomizer.Placement
         private static List<int> IntArray(params int[] values) { return values.ToList(); }
         internal List<Randomization> RdzMajors;
         internal static List<eItemType> RequiredTypes = new() { eItemType.SPELLS, eItemType.WEAPON1, eItemType.WEAPON2 }; // todecprecate?
-        internal static Dictionary<int, int> LinkedDrops = new()
-        {
-            { 60008000, 318000 }, // Slave/Master Pursuer Fight/Platform
-        };
-
-
+        
         // Constructor
         public PlacementManager(Presanitizer scope, List<Restriction> restrictions, bool isRaceMode) 
         {
@@ -167,7 +162,7 @@ namespace DS2S_META.Randomizer.Placement
             PlaceSets();
             FillLeftovers();
             HandleTrivialities();
-            FixShopEvents();
+            FixAllMisc();
 
             // Sanity checks
             if (PTF.Where(rdz => !rdz.IsHandled).Any()) throw new Exception("Something not completed");
@@ -276,7 +271,7 @@ namespace DS2S_META.Randomizer.Placement
             foreach (var rdz in PTF.Where(rdz => rdz.Type == RDZ_TASKTYPE.CROWS))
                 rdz.MarkHandled();
         }
-        private void FixShopEvents()
+        private void FixAllMisc()
         {
             FixShopCopies();
             FixNormalTrade();
@@ -284,6 +279,7 @@ namespace DS2S_META.Randomizer.Placement
             FixShopTradeCopies();
             FixFreeTrade(); // needs to be after FixShopTradeCopies()
             FixShopsToRemove();
+            FixLotCopies();
         }
         internal void FixShopCopies()
         {
