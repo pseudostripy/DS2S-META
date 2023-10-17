@@ -19,7 +19,6 @@ namespace DS2S_META.Utils
         internal override int NumDrops => Quantities.Where(q => q != 0).Count();
         internal override ItemLotRow CloneBlank()
         {
-            // This should now fix the Ancient Dragon non-contiguous loot data issue?
             // Performs a deep clone on the Lot blanking all data
             var ilclone = new ItemLotRow(Param, Name, ID, DataOffset)
             {
@@ -28,6 +27,9 @@ namespace DS2S_META.Utils
                 _reinforcements = new List<byte>(new byte[10]),
                 _infusions = new List<byte>(new byte[10])
             };
+
+            for (int i = 0; i < 10; i++)
+                ilclone.StoreDataWrapper(MINILOTS.QUANT, i, 0); // ancient dragon memes
 
             return ilclone;
         }
