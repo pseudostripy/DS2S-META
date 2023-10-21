@@ -23,14 +23,19 @@ namespace DS2S_META.Utils.ParamRows
         internal List<byte> _quantities = null!;
         internal List<byte> _reinforcements = null!;
         internal List<byte> _infusions = null!;
+        internal List<byte> _repeatables = null!;
         internal List<float> _chances = null!;
+        internal List<byte>  _unknbytes = null!;
 
         // Property getters:
         internal List<int> Items => _items;
         internal List<byte> Quantities => _quantities;
         internal List<byte> Reinforcements => _reinforcements;
         internal List<byte> Infusions => _infusions;
+        internal List<byte> Repeatables => _repeatables; // currently not edited
         internal List<float> Chances => _chances;
+        internal List<byte> UnknBytes => _unknbytes;
+        internal int UnknByte0x0 => UnknBytes.ElementAt(0);
 
         internal abstract int NumDrops { get; }
         internal List<DropInfo> Flatlist => GetFlatlist();
@@ -47,7 +52,14 @@ namespace DS2S_META.Utils.ParamRows
             }
             return sb.ToString().TrimEnd('\n');
         }
-        protected enum MINILOTS { ITEMID = 44, QUANT = 4, REINFORCEMENT = 14, INFUSION = 24, CHANCES = 54 }
+        public enum MINILOTS {  // Note, these are in #fields not #bytes from start.
+                                UNKNBYTE = 0,
+                                QUANT = 4, 
+                                REINFORCEMENT = 14,
+                                INFUSION = 24,
+                                REPEATABLE = 34,
+                                ITEMID = 44,
+                                CHANCES = 54 }
 
         // Constructors:
         public ItemLotBaseRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
@@ -56,19 +68,22 @@ namespace DS2S_META.Utils.ParamRows
         }
         protected void UpdateLists()
         {
+            _unknbytes = ReadListOfSizeAt(4, (int)MINILOTS.UNKNBYTE).SelectMany(b => b).ToList();
             _items = ReadListAt((int)MINILOTS.ITEMID).Select(obj => BitConverter.ToInt32(obj)).ToList();
             _quantities = ReadListAt((int)MINILOTS.QUANT).SelectMany(b => b).ToList();
             _reinforcements = ReadListAt((int)MINILOTS.REINFORCEMENT).SelectMany(b => b).ToList();
             _infusions = ReadListAt((int)MINILOTS.INFUSION).SelectMany(b => b).ToList();
+            _repeatables = ReadListAt((int)MINILOTS.REPEATABLE).SelectMany(b => b).ToList();
             _chances = ReadListAt((int)MINILOTS.CHANCES).Select(obj => BitConverter.ToSingle(obj)).ToList();
         }
 
-        public List<byte[]> ReadListAt(int fieldindex)
+        public List<byte[]> ReadListOfSizeAt(int listsz, int fieldindex)
         {
+            // Generalized wrapper to handle non 10-element lists
             // Get 10 at once for this specific param:
             List<byte[]> objout = new();
             var F = Param.Fields[fieldindex];
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < listsz; i++)
             {
                 var outbytes = new byte[F.FieldLength];
                 Array.Copy(RowBytes, F.FieldOffset + i * F.FieldLength, outbytes, 0, F.FieldLength);
@@ -76,6 +91,7 @@ namespace DS2S_META.Utils.ParamRows
             }
             return objout;
         }
+        public List<byte[]> ReadListAt(int fieldindex) => ReadListOfSizeAt(10, fieldindex);
 
         // Methods:
         internal List<DropInfo> GetFlatlist()
@@ -129,10 +145,10 @@ namespace DS2S_META.Utils.ParamRows
             Infusions[id] = DI.Infusion;
 
             // Add to backend too (this is like an element-wise array property setter method)
-            StoreDataWrapper(MINILOTS.ITEMID, id, Items[id]);
-            StoreDataWrapper(MINILOTS.QUANT, id, Quantities[id]);
-            StoreDataWrapper(MINILOTS.REINFORCEMENT, id, Reinforcements[id]);
-            StoreDataWrapper(MINILOTS.INFUSION, id, Infusions[id]);
+            StoreItem(id, Items[id]);
+            StoreQuantity(id, Quantities[id]);
+            StoreReinforce(id, Reinforcements[id]);
+            StoreInfusion(id, Infusions[id]);
         }
         internal void SetDrop(DropInfo DI, int id)
         {
@@ -148,38 +164,35 @@ namespace DS2S_META.Utils.ParamRows
             Infusions[id] = DI.Infusion;
 
             // Add to backend too (this is like an element-wise array property setter method)
-            StoreDataWrapper(MINILOTS.ITEMID, id, Items[id]);
-            StoreDataWrapper(MINILOTS.QUANT, id, Quantities[id]);
-            StoreDataWrapper(MINILOTS.REINFORCEMENT, id, Reinforcements[id]);
-            StoreDataWrapper(MINILOTS.INFUSION, id, Infusions[id]);
+            StoreItem(id, Items[id]);
+            StoreQuantity(id, Quantities[id]);
+            StoreReinforce(id, Reinforcements[id]);
+            StoreInfusion(id, Infusions[id]);
         }
+
+        // Storing/Overwriting:
         private Param.Field GetField(MINILOTS fieldindex)
         {
             // Trivial wrapper for convenience
             return Param.Fields[(int)fieldindex];
         }
-        protected void StoreDataWrapper(MINILOTS fenum, int subindex, int value)
+        private void StoreVal(MINILOTS fenum, int subindex, byte[] bytes)
         {
             var F = GetField(fenum);
             int ind = F.FieldOffset + subindex * F.FieldLength;
-            byte[] bytes = BitConverter.GetBytes(value);
             Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
         }
-        protected void StoreDataWrapper(MINILOTS fenum, int subindex, float value)
-        {
-            var F = GetField(fenum);
-            int ind = F.FieldOffset + subindex * F.FieldLength;
-            byte[] bytes = BitConverter.GetBytes(value);
-            Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
-        }
-        protected void StoreDataWrapper(MINILOTS fenum, int subindex, byte value)
-        {
-            var F = GetField(fenum);
-            int ind = F.FieldOffset + subindex * F.FieldLength;
-            byte[] bytes = BitConverter.GetBytes(value);
-            Array.Copy(bytes, 0, RowBytes, ind, bytes.Length);
-        }
-        
+
+        // Exposed-interfaces
+        public void StoreUnkn(int subindex, byte v) => StoreVal(MINILOTS.UNKNBYTE, subindex, v.AsByteArray());
+        public void StoreQuantity(int subindex, byte v) => StoreVal(MINILOTS.QUANT, subindex, v.AsByteArray());
+        public void StoreReinforce(int subindex, byte v) => StoreVal(MINILOTS.REINFORCEMENT, subindex, v.AsByteArray());
+        public void StoreInfusion(int subindex, byte v) => StoreVal(MINILOTS.INFUSION, subindex, v.AsByteArray());
+        public void StoreRepeatable(int subindex, byte v) => StoreVal(MINILOTS.REPEATABLE, subindex, v.AsByteArray());
+        public void StoreItem(int subindex, int v) => StoreVal(MINILOTS.ITEMID, subindex, BitConverter.GetBytes(v));
+        public void StoreChance(int subindex, float v) => StoreVal(MINILOTS.CHANCES, subindex, BitConverter.GetBytes(v));
+
+
         // Query Utility
         internal bool HasItem(int itemid) => Items.Contains(itemid);
     }

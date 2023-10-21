@@ -29,7 +29,7 @@ namespace DS2S_META.Utils
             };
 
             for (int i = 0; i < 10; i++)
-                ilclone.StoreDataWrapper(MINILOTS.QUANT, i, 0); // ancient dragon memes
+                ilclone.StoreQuantity(i, 0); // ancient dragon memes
 
             return ilclone;
         }

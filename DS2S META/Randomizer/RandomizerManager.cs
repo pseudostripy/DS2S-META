@@ -158,6 +158,7 @@ namespace DS2S_META.Randomizer
         }
         internal void WriteShuffledDrops()
         {
+            // could speed up a tiny bit here by removing empties before write perhaps?
             var shuffleddrops = Scope.FullListRdz.OfType<DropRdz>()
                                     .Where(ldz => ldz.ShuffledLot is not null)
                                     .Select(ldz => ldz.ShuffledLot).ToList();

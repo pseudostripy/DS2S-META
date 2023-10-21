@@ -46,22 +46,22 @@ namespace DS2S_META.Utils.ParamRows
             {
                 // Add to backend too (this is like an element-wise array property setter method)
                 int id = i;
-                StoreDataWrapper(MINILOTS.ITEMID, id, cpyIt[i]);
-                StoreDataWrapper(MINILOTS.QUANT, id, cpyQ[i]);
-                StoreDataWrapper(MINILOTS.REINFORCEMENT, id, cpyR[i]);
-                StoreDataWrapper(MINILOTS.INFUSION, id, cpyI[i]);
-                StoreDataWrapper(MINILOTS.CHANCES, id, cpyC[i]);
+                StoreItem(id, cpyIt[i]);
+                StoreQuantity(id, cpyQ[i]);
+                StoreReinforce(id, cpyR[i]);
+                StoreInfusion(id, cpyI[i]);
+                StoreChance(id, cpyC[i]);
             }
 
             // Clear out the rest:
             for (int i = cpyIt.Count; i < 10; i++)
             {
                 int id = i;
-                StoreDataWrapper(MINILOTS.ITEMID, id, 0);
-                StoreDataWrapper(MINILOTS.QUANT, id, 0);
-                StoreDataWrapper(MINILOTS.REINFORCEMENT, id, 0);
-                StoreDataWrapper(MINILOTS.INFUSION, id, 0);
-                StoreDataWrapper(MINILOTS.CHANCES, id, 0);
+                StoreItem(id, 0);
+                StoreQuantity(id, 0);
+                StoreReinforce(id, 0);
+                StoreInfusion(id, 0);
+                StoreChance(id, 0);
             }
             UpdateLists();
         }
@@ -92,13 +92,14 @@ namespace DS2S_META.Utils.ParamRows
         internal override ItemDropRow CloneBlank()
         {
             // Performs a deep clone on the Lot object
+            var chancesnew = new List<float>(_chances);
             var ilclone = new ItemDropRow(Param, Name, ID, DataOffset)
             {
                 _items = new List<int>(new int[10]),
                 _quantities = new List<byte>(new byte[10]),
                 _reinforcements = new List<byte>(new byte[10]),
                 _infusions = new List<byte>(new byte[10]),
-                _chances = new List<float>(_chances) // clone chances from orig [todo chances aren't randomized yet]
+                _chances = chancesnew // clone chances from orig [todo chances aren't randomized yet]
             };
 
             return ilclone;

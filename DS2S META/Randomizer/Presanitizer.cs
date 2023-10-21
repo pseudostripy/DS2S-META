@@ -201,7 +201,6 @@ namespace DS2S_META.Randomizer
                     
 
                 var status = CalcDropRdzStatus(droprow, ri); // all OK until further notice
-                ri = new RandoInfo(MapArea.Undefined, "todo", PICKUPTYPE.ENEMYDROP, new List<KeySet>()); // temporary until desc added
                 var sdz = new DropRdz(droprow, ri, status);  // create combined information
                 droprdzs.Add(sdz);
             }
@@ -236,7 +235,9 @@ namespace DS2S_META.Randomizer
         }
         private static RDZ_TASKTYPE CalcDropRdzStatus(ItemDropRow droprow, RandoInfo ri)
         {
-            // still WIP
+            if (droprow.IsEmpty)
+                return RDZ_TASKTYPE.EXCLUDE;
+            
             var excltypes = new List<PICKUPTYPE>() { PICKUPTYPE.BADENEMYDROP, PICKUPTYPE.BADREGISTDROP };
             if (ri.HasType(excltypes))
                 return RDZ_TASKTYPE.EXCLUDE;

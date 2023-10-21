@@ -3090,7 +3090,7 @@ namespace DS2S_META.Randomizer
                 { 12901000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Forest Spirit [REG:12903000]", KL(KEYID.DARKLURKER)) },
                 { 83200000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Underworld Deadeye (Woods dungeon archer) [REG:81200000]", KL(KEYID.DARKLURKER)) },
                 { 83210000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Abyss Ironclad [REG:81210000]", KL(KEYID.DARKLURKER)) },
-                { 83220000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Pretender to the Xanthous Throen [REG:81220000]", KL(KEYID.DARKLURKER)) },
+                { 83220000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Pretender to the Xanthous Throne [REG:81220000]", KL(KEYID.DARKLURKER)) },
                 { 83230000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Pretender to the Xanthous Throne [REG:81230000]", KL(KEYID.DARKLURKER)) },
                 { 83240000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] Tenebrous Rogue [REG:81240000]", KL(KEYID.DARKLURKER)) },
                 { 83250000, EnemyRegistInfo(MapArea.Quantum, "[DarklurkerDungeons] The Ghost of Princes Past (Ricard) [REG:81250000]", KL(KEYID.DARKLURKER)) },
