@@ -98,7 +98,7 @@ namespace DS2S_META.ViewModels
             pBase = (int)Math.Floor( WepSel?.ReinforceRow?.GetPhysDmg(UpgradeVal) ?? 0 );
             OnPropertyChanged(nameof(pAR));
 
-            CounterDmg = WepSel?.CounterDmg ?? 0;
+            CounterDmg = WepSel?.CounterDamage ?? 0;
         }
 
         public float CalcScaling()

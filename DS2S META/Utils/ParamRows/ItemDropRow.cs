@@ -93,7 +93,7 @@ namespace DS2S_META.Utils.ParamRows
         {
             // Performs a deep clone on the Lot object
             var chancesnew = new List<float>(_chances);
-            var ilclone = new ItemDropRow(Param, Name, ID, DataOffset)
+            var ilclone = new ItemDropRow(Param, Name, ID, ParamRowOffset)
             {
                 _items = new List<int>(new int[10]),
                 _quantities = new List<byte>(new byte[10]),

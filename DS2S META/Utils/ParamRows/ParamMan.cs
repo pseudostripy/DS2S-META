@@ -9,6 +9,7 @@ using static SoulsFormats.PARAMDEF;
 using SoulsFormats;
 using DS2S_META.Randomizer;
 using DS2S_META.Utils.ParamRows;
+using System.Drawing;
 
 namespace DS2S_META.Utils
 {
@@ -39,6 +40,7 @@ namespace DS2S_META.Utils
             public const string CUSTOM_ATTR_SPEC = "CUSTOM_ATTR_SPEC_PARAM";
             public const string WEAPON_STATS_AFFECT = "WEAPON_STATS_AFFECT_PARAM";
             public const string PLAYER_STATUS = "PLAYER_STATUS_PARAM";
+            public const string ITEM_TYPE_PARAM = "ITEM_TYPE_PARAM";
             public const string ITEM_USAGE = "ITEM_USAGE_PARAM";
             public const string ARROW = "ARROW_PARAM";
             public const string PLAYER_STATUS_ITEM = "PLAYER_STATUS_ITEM_PARAM";
@@ -126,6 +128,7 @@ namespace DS2S_META.Utils
         public static Param? CustomAttrSpecParam => AllParams[PAliases.CUSTOM_ATTR_SPEC];
         public static Param? PlayerStatusClassParam => AllParams[PAliases.PLAYER_STATUS];
         public static Param? PlayerStatusItemParam => AllParams[PAliases.PLAYER_STATUS_ITEM];
+        public static Param? ItemTypeParam => AllParams[PAliases.ITEM_TYPE_PARAM];
         public static Param? ItemUsageParam => AllParams[PAliases.ITEM_USAGE];
         public static Param? ArrowParam => AllParams[PAliases.ARROW];
         public static Param? EnemyParam => AllParams[PAliases.ENEMY_PARAM];
@@ -135,18 +138,27 @@ namespace DS2S_META.Utils
         //public static Param? GenForestParam => AllParams[PAliases.GENFOREST];
 
         // Rows shorthand
-        public static Dictionary<int, ItemRow> ItemRows { get; set; }
-        public static List<ItemLotRow> ItemLotOtherRows => ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
-        public static List<ShopRow> ShopLineupRows => ShopLineupParam.AsRows<ShopRow>().ToList();
-        public static List<ItemDropRow> ItemLotChrRows => ItemLotChrParam.AsRows<ItemDropRow>().ToList();
-        public static List<PlayerStatusClassRow> PlayerStatusClassRows => PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
+        public static Dictionary<int, ItemRow> ItemRowsDict { get; set; }
+        public static List<ItemRow>? ItemRows { get; private set; }
+        public static List<ItemLotRow>? ItemLotOtherRows { get; private set; }
+        public static List<ItemDropRow>? ItemLotChrRows { get; private set; }
+        public static List<ShopRow>? ShopLineupRows { get; private set; }
+        public static List<PlayerStatusClassRow>? PlayerStatusClassRows { get; private set; }
 
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
             GetParams(Hook.IsVanilla);
-             ItemRows = ItemParam.AsRows<ItemRow>().ToDictionary(ir => ir.ItemID, ir => ir);
             IsLoaded = true;
+
+            // Setup speedy lookups:
+            ItemRows = ItemParam.AsRows<ItemRow>().ToList();
+            ItemLotOtherRows = ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
+            ItemLotChrRows = ItemLotChrParam.AsRows<ItemDropRow>().ToList();
+            ShopLineupRows = ShopLineupParam.AsRows<ShopRow>().ToList();
+            PlayerStatusClassRows = PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
+
+            ItemRowsDict = ItemRows.ToDictionary(ir => ir.ItemID, ir => ir);
         }
         public static void Uninitialise()
         {
@@ -278,6 +290,10 @@ namespace DS2S_META.Utils
 
                 case "WEAPON_TYPE_PARAM":
                     param.initialise<WeaponTypeRow>();
+                    break;
+
+                case PAliases.ITEM_TYPE_PARAM:
+                    param.initialise<ItemTypeRow>();
                     break;
 
                 case "ITEM_PARAM":

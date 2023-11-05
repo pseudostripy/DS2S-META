@@ -36,6 +36,7 @@ namespace DS2S_META.Utils.ParamRows
         internal List<float> Chances => _chances;
         internal List<byte> UnknBytes => _unknbytes;
         internal int UnknByte0x0 => UnknBytes.ElementAt(0);
+        internal int UnknByte0x1 => UnknBytes.ElementAt(1);
 
         internal abstract int NumDrops { get; }
         internal List<DropInfo> Flatlist => GetFlatlist();

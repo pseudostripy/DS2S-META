@@ -30,7 +30,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _itemid = value;
-                WriteAt(0, BitConverter.GetBytes(value));
+                WriteAtField(0, BitConverter.GetBytes(value));
             }
         }
         internal int EnableFlag 
@@ -39,7 +39,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _enableflag = value;
-                WriteAt(2, BitConverter.GetBytes(value));
+                WriteAtField(2, BitConverter.GetBytes(value));
             }
         }
         internal int DisableFlag 
@@ -48,7 +48,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _disableflag = value;
-                WriteAt(3, BitConverter.GetBytes(value));
+                WriteAtField(3, BitConverter.GetBytes(value));
             }
         }
         internal int MaterialID 
@@ -57,7 +57,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _materialid = value;
-                WriteAt(4, BitConverter.GetBytes(value));
+                WriteAtField(4, BitConverter.GetBytes(value));
             }
         }
         internal int DuplicateItemID 
@@ -66,7 +66,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _duplicateid = value;
-                WriteAt(5, BitConverter.GetBytes(value));
+                WriteAtField(5, BitConverter.GetBytes(value));
             }
         }
         internal float PriceRate 
@@ -75,7 +75,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _pricerate = value;
-                WriteAt(7, BitConverter.GetBytes(value));
+                WriteAtField(7, BitConverter.GetBytes(value));
             }
         }
         internal int Quantity
@@ -84,7 +84,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _quantity = value;
-                WriteAt(8, BitConverter.GetBytes(value));
+                WriteAtField(8, BitConverter.GetBytes(value));
             }
         }
 
@@ -96,13 +96,13 @@ namespace DS2S_META.Randomizer
         public ShopRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
             // Initial field setting:
-            ItemID = (int)ReadAt(0);
-            EnableFlag = (int)ReadAt(2);
-            DisableFlag = (int)ReadAt(3);
-            MaterialID = (int)ReadAt(4);
-            DuplicateItemID = (int)ReadAt(5);
-            PriceRate = (float)ReadAt(7);
-            Quantity = (int)ReadAt(8);
+            ItemID = (int)ReadAtFieldNum(0);
+            EnableFlag = (int)ReadAtFieldNum(2);
+            DisableFlag = (int)ReadAtFieldNum(3);
+            MaterialID = (int)ReadAtFieldNum(4);
+            DuplicateItemID = (int)ReadAtFieldNum(5);
+            PriceRate = (float)ReadAtFieldNum(7);
+            Quantity = (int)ReadAtFieldNum(8);
         }
 
         // Methods:

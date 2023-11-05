@@ -21,7 +21,7 @@ namespace DS2S_META.Utils
             set
             {
                 _maxReinforce = value;
-                WriteAt(18, BitConverter.GetBytes(value));
+                WriteAtField(18, BitConverter.GetBytes(value));
             }
         }
         public int WeaponStatsAffectID;
@@ -34,11 +34,11 @@ namespace DS2S_META.Utils
         // Constructor:
         public WeaponReinforceRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            MinUpgrDmgPhys = (float)ReadAt(0);
-            MaxUpgrDmgPhys = (float)ReadAt(9);
-            MaxReinforce = (int)ReadAt(18);
-            WeaponStatsAffectID = (int)ReadAt(19);
-            CustomSpecAttrID = (int)ReadAt(58);
+            MinUpgrDmgPhys = (float)ReadAtFieldNum(0);
+            MaxUpgrDmgPhys = (float)ReadAtFieldNum(9);
+            MaxReinforce = (int)ReadAtFieldNum(18);
+            WeaponStatsAffectID = (int)ReadAtFieldNum(19);
+            CustomSpecAttrID = (int)ReadAtFieldNum(58);
         }
 
         // Methods:

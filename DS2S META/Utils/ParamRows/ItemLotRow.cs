@@ -20,7 +20,7 @@ namespace DS2S_META.Utils
         internal override ItemLotRow CloneBlank()
         {
             // Performs a deep clone on the Lot blanking all data
-            var ilclone = new ItemLotRow(Param, Name, ID, DataOffset)
+            var ilclone = new ItemLotRow(Param, Name, ID, ParamRowOffset)
             {
                 _items = new List<int>(new int[10]),
                 _quantities = new List<byte>(new byte[10]),

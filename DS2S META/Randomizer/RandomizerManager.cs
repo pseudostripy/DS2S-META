@@ -55,8 +55,8 @@ namespace DS2S_META.Randomizer
         {
             if (Hook == null)
                 return;
+            DebugParamQueries.QueryTesting();
 
-            
             // Setup for re-randomization:
             if (!EnsureSeedCompatibility(seed)) return;
             SetSeed(seed);          // reset Rng Twister
@@ -71,6 +71,8 @@ namespace DS2S_META.Randomizer
             // Printout the current shuffled lots:
             PrintKeysNeat();
             PrintAllRdz();
+            TestPrintUnknByte0And1();
+            TestPrintUnknByte0And1Drops();
 
             // Randomize Game!
             await Task.Run(() => WriteShuffledLots());
@@ -233,6 +235,79 @@ namespace DS2S_META.Randomizer
             // Write file:
             File.WriteAllLines("./all_answers.txt", lines.ToArray());
         }
+
+        internal void TestPrintUnknByte0And1Drops()
+        {
+            // Prep:
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing itemlot unkn bytes for itemlot2_chr",
+                "---------------------------------------------",
+            };
+            List<string> linesinterest = new()
+            {
+                $"Printing itemlot2_chr of note",
+                "---------------------------------------------",
+            };
+
+            if (ParamMan.ItemLotChrRows == null)
+                return;
+
+            foreach (var row in ParamMan.ItemLotChrRows)
+            {
+                var ri = CasualItemSet.DropData[row.ID];
+                var line = $"{row.ID,10}: {row.UnknByte0x0} {row.UnknByte0x1}  {ri.Description}";
+                lines.Add(line);
+
+                if (row.UnknByte0x0 == 0 && row.UnknByte0x1 == 1)
+                    continue; // uninteresting
+                linesinterest.Add(line);
+            }
+
+            // put together.
+            linesinterest.Add("");
+            linesinterest.AddRange(lines);
+
+            // Write file:
+            File.WriteAllLines("./unknbyte_testing_drops.txt", linesinterest.ToArray());
+        }
+        internal void TestPrintUnknByte0And1()
+        {
+            // Prep:
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing itemlot unkn bytes for itemlot2_other",
+                "---------------------------------------------",
+            };
+            List<string> linesinterest = new()
+            {
+                $"Printing itemlot2_other of note",
+                "---------------------------------------------",
+            };
+
+            if (ParamMan.ItemLotOtherRows == null)
+                return;
+            foreach (var row in ParamMan.ItemLotOtherRows)
+            {
+                var ri = CasualItemSet.LotData[row.ID];
+                var line = $"{row.ID,10}: {row.UnknByte0x0} {row.UnknByte0x1}  {ri.Description}";
+                lines.Add(line);
+
+                if (row.UnknByte0x0 == 3 && row.UnknByte0x1 == 1)
+                    continue; // uninteresting
+                linesinterest.Add(line);
+            }
+
+            // put together.
+            linesinterest.Add("");
+            linesinterest.AddRange(lines);
+
+            // Write file:
+            File.WriteAllLines("./unknbyte_testing.txt", linesinterest.ToArray());
+        }
+
 
         // Seed / CRC related        
         internal static string CRC = "AA";

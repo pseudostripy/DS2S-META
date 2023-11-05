@@ -24,7 +24,7 @@ namespace DS2S_META.Utils.ParamRows
             set
             {
                 _ArmorID = value;
-                WriteAt(indArmorID, BitConverter.GetBytes(value));
+                WriteAtField(indArmorID, BitConverter.GetBytes(value));
             }
         }
         public byte SlotCategory
@@ -33,7 +33,7 @@ namespace DS2S_META.Utils.ParamRows
             set
             {
                 _SlotCategory = value;
-                WriteAt(indSlotCategory, BitConverter.GetBytes(value));
+                WriteAtField(indSlotCategory, BitConverter.GetBytes(value));
             }
         }
         public int ReinforceID
@@ -42,7 +42,7 @@ namespace DS2S_META.Utils.ParamRows
             set
             {
                 _ReinforceID = value;
-                WriteAt(indArmorID, BitConverter.GetBytes(value));
+                WriteAtField(indArmorID, BitConverter.GetBytes(value));
             }
         }
         
@@ -56,9 +56,9 @@ namespace DS2S_META.Utils.ParamRows
             SetupIndices();
 
             // Initialise Values:
-            ArmorID = (int)ReadAt(indArmorID);
-            SlotCategory = (byte)ReadAt(indSlotCategory);
-            ReinforceID = (int)ReadAt(indReinforceID);
+            ArmorID = (int)ReadAtFieldNum(indArmorID);
+            SlotCategory = (byte)ReadAtFieldNum(indSlotCategory);
+            ReinforceID = (int)ReadAtFieldNum(indReinforceID);
         }
         private void SetupIndices()
         {

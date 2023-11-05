@@ -26,7 +26,7 @@ namespace DS2S_META.Utils
         // Constructor:
         public CustomAttrSpecRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            AllowedInfusionsBitfield = (int)ReadAt(0);
+            AllowedInfusionsBitfield = (int)ReadAtFieldNum(0);
         }
     }
 }

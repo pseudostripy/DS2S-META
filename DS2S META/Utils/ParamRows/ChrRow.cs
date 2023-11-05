@@ -25,7 +25,7 @@ namespace DS2S_META.Randomizer
             set
             {
                 _itemlotid = value;
-                WriteAt(0, BitConverter.GetBytes(value));
+                WriteAtField(0, BitConverter.GetBytes(value));
             }
         }
 
@@ -36,7 +36,7 @@ namespace DS2S_META.Randomizer
         public ChrRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
             // Initial field setting:
-            ItemLotID = (int)ReadAt(90);
+            ItemLotID = (int)ReadAtFieldNum(90);
         }
 
         // Methods:

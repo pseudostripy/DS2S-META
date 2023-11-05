@@ -142,13 +142,13 @@ namespace DS2S_META
                 return name;
             return string.Empty;
         }
-        public static ItemRow AsItemRow(this int itemid) => ParamMan.ItemRows[itemid];
+        public static ItemRow AsItemRow(this int itemid) => ParamMan.ItemRowsDict[itemid];
         public static ItemRow? TryAsItemRow(this int itemid)
         {
-            ParamMan.ItemRows.TryGetValue(itemid, out var item);
+            ParamMan.ItemRowsDict.TryGetValue(itemid, out var item);
             return item;
         }
-        public static ItemRow AsItemRow(this DropInfo di) => ParamMan.ItemRows[di.ItemID];
+        public static ItemRow AsItemRow(this DropInfo di) => ParamMan.ItemRowsDict[di.ItemID];
         public static IList<T> AsRows<T>(this Param? param)
         {
             if (param == null) throw new ArgumentNullException(nameof(param));

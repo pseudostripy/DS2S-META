@@ -21,7 +21,7 @@ namespace DS2S_META.Utils
             set
             {
                 _Level = value;
-                WriteAt(indLevel, BitConverter.GetBytes(value));
+                WriteAtField(indLevel, BitConverter.GetBytes(value));
             }
         }
         public int LevelCost
@@ -30,7 +30,7 @@ namespace DS2S_META.Utils
             set
             {
                 _LevelCost = value;
-                WriteAt(indLevelCost, BitConverter.GetBytes(value));
+                WriteAtField(indLevelCost, BitConverter.GetBytes(value));
             }
         }
         
@@ -41,8 +41,8 @@ namespace DS2S_META.Utils
             SetupIndices();
 
             // Initialise Values:
-            Level = (int)ReadAt(indLevel);
-            LevelCost = (int)ReadAt(indLevelCost);
+            Level = (int)ReadAtFieldNum(indLevel);
+            LevelCost = (int)ReadAtFieldNum(indLevelCost);
         }
         private void SetupIndices()
         {

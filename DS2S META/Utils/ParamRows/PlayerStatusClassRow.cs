@@ -36,7 +36,7 @@ namespace DS2S_META.Utils
             set
             {
                 _soulLevel = value;
-                WriteAt(1, BitConverter.GetBytes(value));
+                WriteAtField(1, BitConverter.GetBytes(value));
             }
         }
         internal short Vigor
@@ -45,7 +45,7 @@ namespace DS2S_META.Utils
             set
             {
                 _vigor = value;
-                WriteAt(2, BitConverter.GetBytes(value));
+                WriteAtField(2, BitConverter.GetBytes(value));
             }
         }
         internal short Endurance
@@ -54,7 +54,7 @@ namespace DS2S_META.Utils
             set
             {
                 _endurance = value;
-                WriteAt(4, BitConverter.GetBytes(value));
+                WriteAtField(4, BitConverter.GetBytes(value));
             }
         }
         internal short Attunement
@@ -63,7 +63,7 @@ namespace DS2S_META.Utils
             set
             {
                 _attunement = value;
-                WriteAt(5, BitConverter.GetBytes(value));
+                WriteAtField(5, BitConverter.GetBytes(value));
             }
         }
         internal short Vitality
@@ -72,7 +72,7 @@ namespace DS2S_META.Utils
             set
             {
                 _vitality = value;
-                WriteAt(6, BitConverter.GetBytes(value));
+                WriteAtField(6, BitConverter.GetBytes(value));
             }
         }
         internal short Strength
@@ -81,7 +81,7 @@ namespace DS2S_META.Utils
             set
             {
                 _strength = value;
-                WriteAt(7, BitConverter.GetBytes(value));
+                WriteAtField(7, BitConverter.GetBytes(value));
             }
         }
         internal short Dexterity
@@ -90,7 +90,7 @@ namespace DS2S_META.Utils
             set
             {
                 _dexterity = value;
-                WriteAt(8, BitConverter.GetBytes(value));
+                WriteAtField(8, BitConverter.GetBytes(value));
             }
         }
         internal short Intelligence
@@ -99,7 +99,7 @@ namespace DS2S_META.Utils
             set
             {
                 _intelligence = value;
-                WriteAt(9, BitConverter.GetBytes(value));
+                WriteAtField(9, BitConverter.GetBytes(value));
             }
         }
         internal short Faith
@@ -108,7 +108,7 @@ namespace DS2S_META.Utils
             set
             {
                 _faith = value;
-                WriteAt(10, BitConverter.GetBytes(value));
+                WriteAtField(10, BitConverter.GetBytes(value));
             }
         }
         internal short Adaptability
@@ -117,7 +117,7 @@ namespace DS2S_META.Utils
             set
             {
                 _adaptability = value;
-                WriteAt(11, BitConverter.GetBytes(value));
+                WriteAtField(11, BitConverter.GetBytes(value));
             }
         }
         //
@@ -127,7 +127,7 @@ namespace DS2S_META.Utils
             set
             {
                 _headArmor = value;
-                WriteAt(52, BitConverter.GetBytes(value));
+                WriteAtField(52, BitConverter.GetBytes(value));
             }
         }
         internal int BodyArmor 
@@ -136,7 +136,7 @@ namespace DS2S_META.Utils
             set
             {
                 _bodyArmor = value;
-                WriteAt(53, BitConverter.GetBytes(value));
+                WriteAtField(53, BitConverter.GetBytes(value));
             }
         }
         internal int ArmsArmor
@@ -145,7 +145,7 @@ namespace DS2S_META.Utils
             set
             {
                 _armsArmor = value;
-                WriteAt(54, BitConverter.GetBytes(value));
+                WriteAtField(54, BitConverter.GetBytes(value));
             }
         }
         internal int LegsArmor
@@ -154,17 +154,17 @@ namespace DS2S_META.Utils
             set
             {
                 _legsArmor = value;
-                WriteAt(55, BitConverter.GetBytes(value));
+                WriteAtField(55, BitConverter.GetBytes(value));
             }
         }
 
         // Constructor:
         public PlayerStatusClassRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            HeadArmor = (int)ReadAt(52);
-            BodyArmor = (int)ReadAt(53);
-            ArmsArmor = (int)ReadAt(54);
-            LegsArmor = (int)ReadAt(55);
+            HeadArmor = (int)ReadAtFieldNum(52);
+            BodyArmor = (int)ReadAtFieldNum(53);
+            ArmsArmor = (int)ReadAtFieldNum(54);
+            LegsArmor = (int)ReadAtFieldNum(55);
         }
 
         public void Wipe()

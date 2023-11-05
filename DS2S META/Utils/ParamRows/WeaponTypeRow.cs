@@ -21,7 +21,7 @@ namespace DS2S_META.Utils
             set
             {
                 _lMod = value;
-                WriteAt(36, BitConverter.GetBytes(value));
+                WriteAtField(36, BitConverter.GetBytes(value));
             }
         }
         internal float rMod
@@ -30,15 +30,15 @@ namespace DS2S_META.Utils
             set
             {
                 _rMod = value;
-                WriteAt(39, BitConverter.GetBytes(value));
+                WriteAtField(39, BitConverter.GetBytes(value));
             }
         }
         
         // Constructor:
         public WeaponTypeRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            lMod = (float)ReadAt(36);
-            rMod = (float)ReadAt(39);
+            lMod = (float)ReadAtFieldNum(36);
+            rMod = (float)ReadAtFieldNum(39);
         }
     }
 }

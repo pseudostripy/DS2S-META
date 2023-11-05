@@ -23,7 +23,7 @@ namespace DS2S_META.Utils
             set
             {
                 _enemyID = value;
-                WriteAt(indEnemyID, BitConverter.GetBytes(value));
+                WriteAtField(indEnemyID, BitConverter.GetBytes(value));
             }
         }
 
@@ -36,7 +36,7 @@ namespace DS2S_META.Utils
             SetupIndices();
             
             // Initialise Values:
-            EnemyID = (int)ReadAt(indEnemyID);
+            EnemyID = (int)ReadAtFieldNum(indEnemyID);
         }
         private void SetupIndices()
         {

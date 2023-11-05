@@ -50,7 +50,7 @@ namespace DS2S_META.Utils
             set
             {
                 _SlashDef = value;
-                WriteAt(indSlashDef, BitConverter.GetBytes(value));
+                WriteAtField(indSlashDef, BitConverter.GetBytes(value));
             }
         }
         public float ThrustDef
@@ -59,7 +59,7 @@ namespace DS2S_META.Utils
             set
             {
                 _ThrustDef = value;
-                WriteAt(indThrustDef, BitConverter.GetBytes(value));
+                WriteAtField(indThrustDef, BitConverter.GetBytes(value));
             }
         }
         public float StrikeDef
@@ -68,7 +68,7 @@ namespace DS2S_META.Utils
             set
             {
                 _StrikeDef = value;
-                WriteAt(indSlashDef, BitConverter.GetBytes(value));
+                WriteAtField(indSlashDef, BitConverter.GetBytes(value));
             }
         }
         public float StandardDef
@@ -77,7 +77,7 @@ namespace DS2S_META.Utils
             set
             {
                 _StandardDef = value;
-                WriteAt(indStandardDef, BitConverter.GetBytes(value));
+                WriteAtField(indStandardDef, BitConverter.GetBytes(value));
             }
         }
         public float MagicAbsorb
@@ -86,7 +86,7 @@ namespace DS2S_META.Utils
             set
             {
                 _MagicAbsorb = value;
-                WriteAt(indMagicAbsorb, BitConverter.GetBytes(value));
+                WriteAtField(indMagicAbsorb, BitConverter.GetBytes(value));
             }
         }
         public float LightningAbsorb
@@ -95,7 +95,7 @@ namespace DS2S_META.Utils
             set
             {
                 _LightningAbsorb = value;
-                WriteAt(indLightningAbsorb, BitConverter.GetBytes(value));
+                WriteAtField(indLightningAbsorb, BitConverter.GetBytes(value));
             }
         }
         public float FireAbsorb
@@ -104,7 +104,7 @@ namespace DS2S_META.Utils
             set
             {
                 _FireAbsorb = value;
-                WriteAt(indFireAbsorb, BitConverter.GetBytes(value));
+                WriteAtField(indFireAbsorb, BitConverter.GetBytes(value));
             }
         }
         public float DarkAbsorb
@@ -113,7 +113,7 @@ namespace DS2S_META.Utils
             set
             {
                 _DarkAbsorb = value;
-                WriteAt(indDarkAbsorb, BitConverter.GetBytes(value));
+                WriteAtField(indDarkAbsorb, BitConverter.GetBytes(value));
             }
         }
         public float PoisonResist
@@ -122,7 +122,7 @@ namespace DS2S_META.Utils
             set
             {
                 _PoisonResist = value;
-                WriteAt(indPoisonResist, BitConverter.GetBytes(value));
+                WriteAtField(indPoisonResist, BitConverter.GetBytes(value));
             }
         }
         public float BleedResist
@@ -131,7 +131,7 @@ namespace DS2S_META.Utils
             set
             {
                 _BleedResist = value;
-                WriteAt(indBleedResist, BitConverter.GetBytes(value));
+                WriteAtField(indBleedResist, BitConverter.GetBytes(value));
             }
         }
         public float PetrifyResist
@@ -140,7 +140,7 @@ namespace DS2S_META.Utils
             set
             {
                 _PetrifyResist = value;
-                WriteAt(indPetrifyResist, BitConverter.GetBytes(value));
+                WriteAtField(indPetrifyResist, BitConverter.GetBytes(value));
             }
         }
         public float CurseResist
@@ -149,7 +149,7 @@ namespace DS2S_META.Utils
             set
             {
                 _CurseResist = value;
-                WriteAt(indCurseResist, BitConverter.GetBytes(value));
+                WriteAtField(indCurseResist, BitConverter.GetBytes(value));
             }
         }
         public int MaxReinforceLevel
@@ -158,7 +158,7 @@ namespace DS2S_META.Utils
             set
             {
                 _MaxReinforceLevel = value;
-                WriteAt(indMaxReinforceLevel, BitConverter.GetBytes(value));
+                WriteAtField(indMaxReinforceLevel, BitConverter.GetBytes(value));
             }
         }
         public int UpgradeMaterial
@@ -167,7 +167,7 @@ namespace DS2S_META.Utils
             set
             {
                 _UpgradeMaterial = value;
-                WriteAt(indUpgradeMaterial, BitConverter.GetBytes(value));
+                WriteAtField(indUpgradeMaterial, BitConverter.GetBytes(value));
             }
         }
         public int ReinforceCostID
@@ -176,7 +176,7 @@ namespace DS2S_META.Utils
             set
             {
                 _ReinforceCostID = value;
-                WriteAt(indReinforceCostID, BitConverter.GetBytes(value));
+                WriteAtField(indReinforceCostID, BitConverter.GetBytes(value));
             }
         }
         
@@ -191,21 +191,21 @@ namespace DS2S_META.Utils
             SetupIndices();
 
             // Initialise Values:
-            SlashDef = (float)ReadAt(indSlashDef);
-            ThrustDef = (float)ReadAt(indThrustDef);
-            StrikeDef = (float)ReadAt(indStrikeDef);
-            StandardDef = (float)ReadAt(indStandardDef);
-            MagicAbsorb = (float)ReadAt(indMagicAbsorb);
-            LightningAbsorb = (float)ReadAt(indLightningAbsorb);
-            FireAbsorb = (float)ReadAt(indFireAbsorb);
-            DarkAbsorb = (float)ReadAt(indDarkAbsorb);
-            PoisonResist = (float)ReadAt(indPoisonResist);
-            BleedResist = (float)ReadAt(indBleedResist);
-            PetrifyResist = (float)ReadAt(indPetrifyResist);
-            CurseResist = (float)ReadAt(indCurseResist);
-            MaxReinforceLevel = (int)ReadAt(indMaxReinforceLevel);
-            UpgradeMaterial = (int)ReadAt(indUpgradeMaterial);
-            ReinforceCostID = (int)ReadAt(indReinforceCostID);
+            SlashDef = (float)ReadAtFieldNum(indSlashDef);
+            ThrustDef = (float)ReadAtFieldNum(indThrustDef);
+            StrikeDef = (float)ReadAtFieldNum(indStrikeDef);
+            StandardDef = (float)ReadAtFieldNum(indStandardDef);
+            MagicAbsorb = (float)ReadAtFieldNum(indMagicAbsorb);
+            LightningAbsorb = (float)ReadAtFieldNum(indLightningAbsorb);
+            FireAbsorb = (float)ReadAtFieldNum(indFireAbsorb);
+            DarkAbsorb = (float)ReadAtFieldNum(indDarkAbsorb);
+            PoisonResist = (float)ReadAtFieldNum(indPoisonResist);
+            BleedResist = (float)ReadAtFieldNum(indBleedResist);
+            PetrifyResist = (float)ReadAtFieldNum(indPetrifyResist);
+            CurseResist = (float)ReadAtFieldNum(indCurseResist);
+            MaxReinforceLevel = (int)ReadAtFieldNum(indMaxReinforceLevel);
+            UpgradeMaterial = (int)ReadAtFieldNum(indUpgradeMaterial);
+            ReinforceCostID = (int)ReadAtFieldNum(indReinforceCostID);
         }
         private void SetupIndices()
         {

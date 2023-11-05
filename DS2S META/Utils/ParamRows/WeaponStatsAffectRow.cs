@@ -33,19 +33,19 @@ namespace DS2S_META.Utils
             set
             {
                 _baseDmgMultiplier = value;
-                WriteAt(0, BitConverter.GetBytes(value));
+                WriteAtField(0, BitConverter.GetBytes(value));
             }
         }
         
         // Constructor:
         public WeaponStatsAffectRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            _baseDmgMultiplier = (float)ReadAt(0);
+            _baseDmgMultiplier = (float)ReadAtFieldNum(0);
         }
 
         public float ReadScalingValue(SCTYPE sctype, int upgr)
         {
-            return (float)ReadAt(2 + upgr * 9 + (int)sctype);
+            return (float)ReadAtFieldNum(2 + upgr * 9 + (int)sctype);
         }
     }
 }

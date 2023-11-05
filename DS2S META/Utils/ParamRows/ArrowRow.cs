@@ -27,14 +27,14 @@ namespace DS2S_META.Utils
             set
             {
                 _ammunitionType = value;
-                WriteAt(29, BitConverter.GetBytes(value));
+                WriteAtField(29, BitConverter.GetBytes(value));
             }
         }
         
         // Constructor:
         public ArrowRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
         {
-            AmmunitionType = (byte)ReadAt(29);
+            AmmunitionType = (byte)ReadAtFieldNum(29);
         }
     }
 }

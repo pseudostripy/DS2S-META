@@ -52,7 +52,7 @@ namespace DS2S_META.Utils
             // Populate list:
             Data = new List<T>();
             for (int i = 0; i < N; i++)
-                Data.Add( (T)Row.ReadAt(FirstFieldInd + i) );
+                Data.Add( (T)Row.ReadAtFieldNum(FirstFieldInd + i) );
             
         }
 
@@ -83,7 +83,7 @@ namespace DS2S_META.Utils
 
             int FInd = FirstFieldInd + index;
             byte[] valbytes = GetTBytes(value);
-            Row.WriteAt(FInd, valbytes);
+            Row.WriteAtField(FInd, valbytes);
             Row.StoreRow();
         }
 

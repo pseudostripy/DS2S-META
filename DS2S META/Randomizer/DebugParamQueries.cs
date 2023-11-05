@@ -130,6 +130,13 @@ namespace DS2S_META.Randomizer
 
         internal static void QueryTesting()
         {
+            //var temp = ParamMan.ItemRows?.Where(it => it.ItemTypeParamId == 1300).ToList();
+            var temp = ParamMan.ItemRows?.Where(it => ((it.ItemState >> 3) & 1) == 1).ToList(); // & 8
+
+            var test = ParamMan.ItemTypeParam;
+            QuickPrint();
+            var debug = 1;
+
             //var testx = AllPtf.OfType<ShopRdz>()
             //                    .Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
             //var testx2 = okShops.Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
@@ -141,6 +148,37 @@ namespace DS2S_META.Randomizer
 
             //var test4 = LTR_flatlist.Where(di => di.Infusion != 0).ToList();
             //var test5 = AllP.Where(rdz => rdz.Flatlist.Any(di => di.Infusion != 0)).ToList();
+        }
+        internal static void QuickPrint()
+        {
+            var itemTypes18 = ParamMan.ItemRows?.GroupBy(it => it.ItemTypeRow?.Unk18);
+
+            // Prep:
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing ItemType18",
+                "---------------------------------------------",
+            };
+
+            foreach (var grp in itemTypes18)
+            {
+                List<string> grplines = new()
+                {
+                    "",
+                    "-------------------------------------",
+                    $"Printing items in group: {grp.Key}"
+                };
+
+                foreach (var itemrow in grp)
+                {
+                    grplines.Add($"{itemrow.MetaItemName}");
+                }
+                lines.AddRange( grplines );
+            }
+
+            // Write file:
+            File.WriteAllLines("./itemtype18_testing.txt", lines.ToArray());
         }
 
         internal class RandoInfo2

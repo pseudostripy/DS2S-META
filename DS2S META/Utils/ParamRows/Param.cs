@@ -217,7 +217,7 @@ namespace DS2S_META
             if (row.RowBytes.Length != RowLength)
                 throw new ArrayTypeMismatchException("Row bytes size does not match expected length for param row size");
 
-            Array.Copy(row.RowBytes, 0, NewBytes, row.DataOffset, RowLength);
+            Array.Copy(row.RowBytes, 0, NewBytes, row.ParamRowOffset, RowLength);
         }
 
         public override string ToString()
@@ -337,7 +337,7 @@ namespace DS2S_META
             public Param Param { get; private set; }
             public string Name { get; private set; }
             public int ID { get; private set; }
-            public int DataOffset { get; private set; }
+            public int ParamRowOffset { get; private set; }
             public byte[] RowBytes { get; set;} = Array.Empty<byte>();
             private static readonly Regex re = new(@"\w+ -?(?<desc>.*)");
             public object[] Data => ReadRow();
@@ -348,11 +348,11 @@ namespace DS2S_META
                 Param = param;
                 Name = name;
                 ID = id;
-                DataOffset = offset;
+                ParamRowOffset = offset;
 
                 if (Param.Bytes == null)
                     return;
-                RowBytes = Param.Bytes.Skip(DataOffset).Take(Param.RowLength).ToArray();
+                RowBytes = Param.Bytes.Skip(ParamRowOffset).Take(Param.RowLength).ToArray();
             }
             public override string ToString()
             {
@@ -369,7 +369,7 @@ namespace DS2S_META
             public void WriteRow()
             {
                 if (Param.Pointer == null) throw new Exception("Missing table pointer");
-                Param.Pointer.WriteBytes(DataOffset, RowBytes);
+                Param.Pointer.WriteBytes(ParamRowOffset, RowBytes);
             }
             public string GetName()
             {
@@ -378,14 +378,36 @@ namespace DS2S_META
                     throw new NullReferenceException("Catch this if they ever don't abide by this scheme");
                 return match.Groups["desc"].Value.Trim();
             }
-            public object ReadAt(int fieldindex) => Data[fieldindex];
+
+            // Utility read/write
+            // byte offsets:
+            public byte[] ReadAt(int offset, uint len) {
+                var bytes = new byte[len];
+                Array.Copy(RowBytes, offset, bytes, 0, len);
+                return bytes;
+            }
+            public byte ReadByteAt(object offset) => ReadAt((int)offset, 1).First();
+            public short ReadShortAt(object offset) => BitConverter.ToInt16(ReadAt((int)offset, 2), 0);
+            public int ReadIntAt(object offset) => BitConverter.ToInt32(ReadAt((int)offset, 4),0);
+            public float ReadFloatAt(object offset) => BitConverter.ToSingle(ReadAt((int)offset, 4),0);
+            //
+            public void WriteAt(int offset, byte[] valuebytes) => Array.Copy(valuebytes, 0, RowBytes, offset, valuebytes.Length);
+            public void WriteByteAt(object offset, byte val) => WriteAt((int)offset, val.AsByteArray());
+            public void WriteShortAt(object offset, short val) => WriteAt((int)offset, BitConverter.GetBytes(val));
+            public void WriteIntAt(object offset, int val) => WriteAt((int)offset, BitConverter.GetBytes(val));
+            public void WriteFloatAt(object offset, float val) => WriteAt((int)offset, BitConverter.GetBytes(val));
             
-            public void WriteAt(int fieldindex, byte[] valuebytes)
+            // defs Field index:
+            public object ReadAtFieldNum(object fieldindex) => Data[(int)fieldindex]; // allow enum indices
+            public void WriteByteAtField(object fieldind_orenum, object value) => WriteAtField(fieldind_orenum, ((byte)value).AsByteArray());
+            public void WriteAtField(object fieldind_orenum, byte[] valuebytes)
             {
+                int fieldindex = (int)fieldind_orenum; // allow enum for easier code
                 // Note: this function isn't generalised properly yet
                 int fieldoffset = Param.Fields[fieldindex].FieldOffset;
                 Array.Copy(valuebytes, 0, RowBytes, fieldoffset, valuebytes.Length);
             }
+
             public void StoreRow()
             {
                 // Convenience wrapper

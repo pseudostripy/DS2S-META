@@ -26,7 +26,7 @@ namespace DS2S_META.Utils
             set
             {
                 _itemlotID = value;
-                WriteAt(IndItemLotId, BitConverter.GetBytes(value));
+                WriteAtField(IndItemLotId, BitConverter.GetBytes(value));
             }
         }
         public int GeneratorRegistID
@@ -35,7 +35,7 @@ namespace DS2S_META.Utils
             set
             {
                 _genRegistID = value;
-                WriteAt(IndGenRegist, BitConverter.GetBytes(value));
+                WriteAtField(IndGenRegist, BitConverter.GetBytes(value));
             }
         }
         
@@ -57,8 +57,8 @@ namespace DS2S_META.Utils
             SetupIndices();
             
             // Initialise Values:
-            ItemLotID = (int)ReadAt(IndItemLotId);
-            GeneratorRegistID = (int)ReadAt(IndGenRegist);
+            ItemLotID = (int)ReadAtFieldNum(IndItemLotId);
+            GeneratorRegistID = (int)ReadAtFieldNum(IndGenRegist);
         }
         private void SetupIndices()
         {

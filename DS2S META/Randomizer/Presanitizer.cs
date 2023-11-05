@@ -150,7 +150,7 @@ namespace DS2S_META.Randomizer
             var rawflDrops = potentialRdzs.OfType<DropRdz>()                    // all droprdzs
                                     .SelectMany(ddz => ddz.Flatlist).ToList();  // all dropinfos from droprdzs
             //
-            var test = ParamMan.ItemRows.ToList();
+            var test = ParamMan.ItemRowsDict.ToList();
             //var test = rawflDrops.FilterByItemType(WepSpellsArmour).ToList();
             var flBalDrops = rawflDrops.FilterByItemType(WepSpellsArmour)       // only those with matching item type
                                     .DistinctBy(di => di.ItemID);               // keep only 1 of each item 
@@ -177,6 +177,9 @@ namespace DS2S_META.Randomizer
         {
             // Get copy of all VanillaLots
             List<LotRdz> all_lots = new(); // preallocate empty
+            if (ParamMan.ItemLotOtherRows == null)
+                throw new Exception("Unexpected null list for ItemLotOtherRows param");
+
             foreach (var lotrow in ParamMan.ItemLotOtherRows)
             {
                 var ri = lotrow.ID.GetGlotRandoInfo(); // todo if ever extend CasualItemSet
@@ -208,7 +211,11 @@ namespace DS2S_META.Randomizer
         }
         internal static List<Randomization> DefineShopRdzs()
         {
+            if (ParamMan.ShopLineupRows == null)
+                throw new Exception("Null shop lineup param rows, should not have gotten here");
+
             List<ShopRdz> shoprdzs = new(); // preallocate empty
+
             foreach (var shoprow in ParamMan.ShopLineupRows)
             {
                 var ri = shoprow.ID.GetShopRandoInfo();

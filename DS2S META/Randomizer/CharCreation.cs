@@ -32,7 +32,7 @@ namespace DS2S_META.Randomizer
         static CharCreation()
         {
             // Define lists that can be used for CharCreation random draws
-            allItems = ParamMan.ItemRows.Values.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
+            allItems = ParamMan.ItemRowsDict.Values.Where(it => it.HasName).ToList().FilterOutId(bannedItems).ToList();
             //
             consumables = allItems.FilterByType(eItemType.CONSUMABLE)
                                     .FilterOutUsage(ITEMUSAGE.ITEMUSAGEKEY, ITEMUSAGE.BOSSSOULUSAGE,
@@ -49,6 +49,9 @@ namespace DS2S_META.Randomizer
             arrows = ammo.Where(it => it.ArrowRow?.AmmunitionType == (int)ArrowRow.AmmoType.ARROW).ToList();
             bolts = ammo.Where(it => it.ArrowRow?.AmmunitionType == (int)ArrowRow.AmmoType.BOLT).ToList();
             //
+
+            if (ParamMan.PlayerStatusClassRows == null)
+                throw new Exception("Unexpected null variable for PlayerStatusClassRows");
             classrows = ParamMan.PlayerStatusClassRows.Where(row => classids.Contains(row.ID)).ToList();
             giftsrows = ParamMan.PlayerStatusClassRows.Where(row => row.ID > 400 & row.ID < 1000).ToList();
         }
