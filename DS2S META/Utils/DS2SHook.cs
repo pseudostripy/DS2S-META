@@ -573,8 +573,8 @@ namespace DS2S_META
             // in certain versions, can veto here.
             return feature switch
             {
-                METAFEATURE.OHKO_FIST => IsSOTFS,
-                METAFEATURE.OHKO_RAPIER => IsSOTFS,
+                METAFEATURE.OHKO_FIST => IsValidVer,
+                METAFEATURE.OHKO_RAPIER => IsValidVer,
                 METAFEATURE.NODEATH => IsSOTFS,
                 METAFEATURE.DISABLEAI => IsSOTFS_CP,
                 METAFEATURE.GIVE17KREWARD => Hooked, // should be fine for all versions
