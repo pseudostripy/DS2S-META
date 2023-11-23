@@ -24,7 +24,7 @@ namespace DS2S_META
     /// </summary>
     public partial class PlayerControl : METAControl
     {
-        public float DMGMOD = 1000;
+        public float DMGMOD = 50000;
         private DS2SBonfire? LastSetBonfire;
 
         public PlayerControl()
