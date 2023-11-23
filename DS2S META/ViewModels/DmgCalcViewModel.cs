@@ -90,8 +90,8 @@ namespace DS2S_META.ViewModels
                 return;
 
             // Update the ones we care about:
-            lMod = WepSel?.WTypeRow?.lMod ?? 0;
-            rMod = WepSel?.WTypeRow?.rMod ?? 0;
+            lMod = WepSel?.WTypeRow?.LMod ?? 0;
+            rMod = WepSel?.WTypeRow?.RMod ?? 0;
 
             // Calc scaling:
             pScale = (int)Math.Floor( CalcScaling() );

@@ -151,17 +151,20 @@ namespace DS2S_META.Randomizer
         }
         internal static void QuickPrint()
         {
-            var itemTypes18 = ParamMan.ItemRows?.GroupBy(it => it.ItemTypeRow?.Unk18);
+            var wtype130 = ParamMan.ItemRows?.Where(it => it.WeaponID != -1)
+                                                .GroupBy(it => it.WeaponRow?.WTypeRow?.MenuCategoryParamId)
+                                                .OrderBy(gr => gr.Key.Value)
+                                                .ToList();
 
             // Prep:
             List<string> lines = new()
             {
                 // Intro line
-                $"Printing ItemType18",
+                $"Printing WeaponTypeRow130",
                 "---------------------------------------------",
             };
 
-            foreach (var grp in itemTypes18)
+            foreach (var grp in wtype130)
             {
                 List<string> grplines = new()
                 {
@@ -178,7 +181,7 @@ namespace DS2S_META.Randomizer
             }
 
             // Write file:
-            File.WriteAllLines("./itemtype18_testing.txt", lines.ToArray());
+            File.WriteAllLines("./wtype130_testing.txt", lines.ToArray());
         }
 
         internal class RandoInfo2

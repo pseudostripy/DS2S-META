@@ -26,8 +26,8 @@ namespace DS2S_META
         public List<Param> Params = new();
 
 
-        public int LOADEDINGAME = 30;
-        public int MAINMENU = 10;
+        public int LOADEDINGAME = 0x1e;
+        public int MAINMENU = 0xa;
 
         public MainWindow MW { get; set; }
 
