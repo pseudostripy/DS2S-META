@@ -155,19 +155,19 @@ namespace DS2S_META
         //        vm.UpdateViewModel();
         //}
         
-        private void ReloadAllTabs()
-        {
-            metaPlayer.ReloadCtrl();
-            metaStats.ReloadCtrl();
-            metaItems.ReloadCtrl();
-            metatabDmgCalc.ReloadCtrl();
-        }
-        private void UpdateAllTabs()
-        {
-            metaPlayer.UpdateCtrl();
-            metaStats.UpdateCtrl();
-            metaItems.UpdateCtrl();
-        }
+        //private void ReloadAllTabs()
+        //{
+        //    metaPlayer.ReloadCtrl();
+        //    metaStats.ReloadCtrl();
+        //    metaItems.ReloadCtrl();
+        //    metatabDmgCalc.ReloadCtrl();
+        //}
+        //private void UpdateAllTabs()
+        //{
+        //    metaPlayer.UpdateCtrl();
+        //    metaStats.UpdateCtrl();
+        //    metaItems.UpdateCtrl();
+        //}
 
 
         private void SaveAllTabs()

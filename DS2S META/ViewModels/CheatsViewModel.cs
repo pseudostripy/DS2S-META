@@ -63,10 +63,24 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(IsSpawned));
             }
         }
+        private bool _chkBIKP1 = false;
+        public bool ChkBIKP1
+        {
+            get => _chkBIKP1;
+            set
+            {
+                var isModEnabled = Hook?.BIKP1Skip(value);  // request mod enablement toggle
+                if (isModEnabled == null) return;           // not hooked
+                _chkBIKP1 = (bool)isModEnabled;             // success
+                OnPropertyChanged();                        // notify
+            }
+        }
+        
         public bool EnGive17kReward => Hook.InGameAndFeature(METAFEATURE.GIVE17KREWARD);
         public bool EnGive3Chunk1Slab => Hook.InGameAndFeature(METAFEATURE.GIVE3CHUNK1SLAB);
         public bool EnMadWarrior => Hook.InGameAndFeature(METAFEATURE.MADWARRIOR);
         public bool EnRubbishChallenge => Hook.CheckFeature(METAFEATURE.RUBBISHCHALLENGE);
+        public bool EnBIKP1Skip => Hook.CheckFeature(METAFEATURE.BIKP1SKIP);
 
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()
@@ -90,6 +104,11 @@ namespace DS2S_META.ViewModels
             if (Hook == null)
                 return;
             EnableElements(); // refresh UI elements
+
+            
+            // things that need to be reset on load:
+            if (ChkBIKP1)
+                Hook?.BIKP1Skip(true);
         }
         private void EnableElements()
         {
@@ -97,6 +116,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnGive3Chunk1Slab));
             OnPropertyChanged(nameof(EnMadWarrior));
             OnPropertyChanged(nameof(EnRubbishChallenge));
+            OnPropertyChanged(nameof(EnBIKP1Skip));
         }
     }
 }

@@ -30,6 +30,7 @@
                 <CheckBox x:Name="cbxEnableMadWarrior" Content="Show Mad Warrior Spawn" IsEnabled="{Binding EnMadWarrior}" IsChecked="{Binding ChkMadWarrior}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="2" />
                 <Label x:Name="lblSpawned" Grid.Column="2" Content="{Binding LblSpawnedTxt}" HorizontalAlignment="Center" Visibility="{Binding lblSpawnVisibility}" Foreground="{Binding MWSpawnColor}" Margin="0,5,0,5" Grid.Row="2" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" FontSize="16" FontWeight="Bold"/>
                 <CheckBox x:Name="cbxRubbishMode" Content="Rubbish Challenge" IsEnabled="{Binding EnRubbishChallenge}" IsChecked="False" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Checked="cbxRubbishMode_Checked" Unchecked="cbxRubbishMode_Unchecked" Grid.Row="3" />
+                <CheckBox x:Name="cbxNoBIK" Content="Skip BIK Phase 1" IsEnabled="{Binding EnBIKP1Skip}" IsChecked="{Binding ChkBIKP1}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="4" />
             </Grid>
         </StackPanel>
     </Grid>

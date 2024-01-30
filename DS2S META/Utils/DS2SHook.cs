@@ -133,6 +133,7 @@ namespace DS2S_META
 
         public PHPointer LoadingState;
         public PHPointer phDisableAI; // pointer head (missing final offset)
+        public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
 
 
         public DS2SHook(int refreshInterval, int minLifetime) :
@@ -522,6 +523,8 @@ namespace DS2S_META
             {
                 phDisableAI = CreateChildPointer(BaseA, Offsets.DisableAI[0..^1]);
             }
+            if (Offsets.BIKP1Skip_Val1 != null)
+                phBIKP1SkipVals = CreateChildPointer(BaseA, Offsets.BIKP1Skip_Val1[0..^1]); // parent for both
         }
         public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         {
@@ -581,6 +584,7 @@ namespace DS2S_META
                 METAFEATURE.GIVE3CHUNK1SLAB => Hooked,
                 METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
+                METAFEATURE.BIKP1SKIP => IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -925,6 +929,27 @@ namespace DS2S_META
             warped = true;
             return warped;
         }
+        internal bool BIKP1Skip(bool enable)
+        {
+            if (!Hooked) return false;
+
+            // Change some constants read by the BIK fight I guess.
+            // Carbon copy from https://www.nexusmods.com/darksouls2/mods/1043 .
+            // Haven't bothered to figure out how it works.
+            byte[] DISABLEMOD = new byte[2] { 0x0, 0x0 };
+            byte[] ENABLEMOD_VAL1 = new byte[2] { 0x80, 0x9c };
+            byte[] ENABLEMOD_VAL2 = new byte[2] { 0x0e, 0x3c };
+            var val1_bytes = enable? ENABLEMOD_VAL1: DISABLEMOD;
+            var val2_bytes = enable? ENABLEMOD_VAL2: DISABLEMOD;
+
+            // enable/disable phase1
+            if (Offsets.BIKP1Skip_Val1 == null || Offsets.BIKP1Skip_Val2 == null)
+                throw new Exception("Shouldn't get here. Handle via feature enable logic.");
+            phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
+            phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
+            return enable; // turned on or off now
+        }
+
 
         // WIP
 //        private Engine Engine;

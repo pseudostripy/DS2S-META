@@ -16,5 +16,6 @@ namespace DS2S_META.Utils
         GIVE17KREWARD,
         GIVE3CHUNK1SLAB,
         RUBBISHCHALLENGE,
+        BIKP1SKIP,
     }
 }

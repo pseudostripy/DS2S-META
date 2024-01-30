@@ -52,9 +52,10 @@ namespace DS2S_META
         }
         internal override void ReloadCtrl()
         {
+            // to deprecate properly
             // so sneaky..
-            if (Properties.Settings.Default.AlwaysRestAfterWarp)
-                Hook.AwaitBonfireRest();
+            //if (Properties.Settings.Default.AlwaysRestAfterWarp)
+            //    Hook.AwaitBonfireRest();
         }
 
         public void StorePosition()
