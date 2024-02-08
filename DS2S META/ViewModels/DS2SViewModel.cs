@@ -116,7 +116,6 @@ namespace DS2S_META.ViewModels
         public PlayerViewModel PlayerViewModel { get; set; }
         public StatsViewModel StatsViewModel { get; set; }
 
-
         // Wrapper exposures:
         private Settings Settings = Settings.Default;
         public DS2SHook Hook { get; private set; }
@@ -173,6 +172,11 @@ namespace DS2S_META.ViewModels
             PlayerViewModel.OnUnHooked();
             CheatsViewModel.OnUnHooked();
             StatsViewModel.OnUnHooked();
+        }
+        public void CleanupAll()
+        {
+            foreach (var vm in ViewModels)
+                vm.CleanupVM();
         }
 
 

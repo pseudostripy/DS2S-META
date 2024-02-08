@@ -24,7 +24,6 @@ namespace DS2S_META
     /// </summary>
     public partial class PlayerControl : METAControl
     {
-        public float DMGMOD = 50000;
         private DS2SBonfire? LastSetBonfire;
 
         public PlayerControl()
@@ -262,9 +261,9 @@ namespace DS2S_META
         {
             cbxDisableAI.IsChecked = !cbxDisableAI.IsChecked;
         }
-        public void ToggleOHKO()
+        public void ToggleRapierOhko()
         {
-            cbxOHKO.IsChecked = !cbxOHKO.IsChecked;
+            cbxRapierOHKO.IsChecked = !cbxRapierOHKO.IsChecked;
             cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
         }
         public void ToggleNoDeath()
@@ -272,42 +271,7 @@ namespace DS2S_META
             cbxNoDeath.IsChecked = !cbxNoDeath.IsChecked;
         }
         
-        private void cbxOHKO_Checked(object sender, RoutedEventArgs e)
-        {
-            if (VM.Hook == null || !VM.Hook.Hooked)
-                return; // first call
-
-            float dmgmod = cbxOHKO.IsChecked == true ? DMGMOD : 1;
-
-            // Write to memory
-            var rapierrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.RAPIER) as WeaponRow ?? throw new NullReferenceException(); // Rapier
-            rapierrow.DamageMultiplier = dmgmod;
-            rapierrow.WriteRow();
-        }
-        private void cbxFistOHKO_Checked(object sender, RoutedEventArgs e)
-        {
-            if (VM.Hook == null || !VM.Hook.Hooked)
-                return; // first call
-
-            float dmgmod = cbxFistOHKO.IsChecked == true ? DMGMOD : 1;
-
-            // Write to memory
-            var fistrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)ITEMID.FISTS) as WeaponRow ?? throw new NullReferenceException(); // Fists
-            fistrow.DamageMultiplier = dmgmod;
-            fistrow.WriteRow();
-        }
-        private void cbxNoDeath_UnChecked(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null)
-                return;
-            VM.Hook.SetYesDeath();
-        }
-        private void cbxNoDeath_Checked(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            VM.Hook.SetNoDeath();
-        }
-
+        
         // UI events
         private void btnStore_Click(object sender, RoutedEventArgs e)
         {
@@ -484,5 +448,7 @@ namespace DS2S_META
             txtSearch.Focus();
             e.Handled=true;
         }
+
+        
     }
 }

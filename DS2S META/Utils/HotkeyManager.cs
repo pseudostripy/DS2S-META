@@ -71,7 +71,7 @@ namespace DS2S_META
                 "Give 17k" => () => MW.metaCheats.Hook.Give17kReward(),
                 "Toggle AI" => () => MW.metaPlayer.ToggleAI(),
                 "Toggle No Death" => () => MW.metaPlayer.ToggleNoDeath(),
-                "Toggle OHKO" => () => MW.metaPlayer.ToggleOHKO(),
+                "Toggle OHKO" => () => MW.metaPlayer.ToggleRapierOhko(),
                 "Give 3/1" => () => MW.metaCheats.Hook.Give3Chunk1Slab(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };

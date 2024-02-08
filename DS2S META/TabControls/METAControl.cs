@@ -31,6 +31,5 @@ namespace DS2S_META
         internal virtual void EnableOnHooked(bool v) { }
         public virtual void InitTab() { }
 
-
     }
 }

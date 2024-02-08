@@ -58,6 +58,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -75,6 +76,8 @@
                           IsChecked="{Binding UpdateMaxLive, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" VerticalContentAlignment="Center"/>
                 <CheckBox Margin="10,5,0,5" Content="Rest on all Load Screens" 
                           IsChecked="{Binding AlwaysRestAfterWarp, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" VerticalContentAlignment="Center"/>
+                <CheckBox Margin="10,5,0,5" Content="Maintain No Gravity / No Collision through loads" 
+                          IsChecked="{Binding NoGravThroughLoads, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" VerticalContentAlignment="Center"/>
             </Grid>
         </StackPanel>
     </Grid>

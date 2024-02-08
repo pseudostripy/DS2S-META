@@ -113,11 +113,14 @@
     <Setting Name="hkyGive31" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">27</Value>
     </Setting>
-	  <Setting Name="hkyNoDeath" Type="System.Int32" Scope="User">
-	    <Value Profile="(Default)">27</Value>
-	  </Setting>
+    <Setting Name="hkyNoDeath" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">27</Value>
+    </Setting>
     <Setting Name="RandoRaceMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="NoGravThroughLoads" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

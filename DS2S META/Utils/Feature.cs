@@ -17,5 +17,7 @@ namespace DS2S_META.Utils
         GIVE3CHUNK1SLAB,
         RUBBISHCHALLENGE,
         BIKP1SKIP,
+        NOGRAVITY,
+        NOCOLLISION,
     }
 }

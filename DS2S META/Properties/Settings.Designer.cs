@@ -490,5 +490,17 @@ namespace DS2S_META.Properties {
                 this["RandoRaceMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool NoGravThroughLoads {
+            get {
+                return ((bool)(this["NoGravThroughLoads"]));
+            }
+            set {
+                this["NoGravThroughLoads"] = value;
+            }
+        }
     }
 }

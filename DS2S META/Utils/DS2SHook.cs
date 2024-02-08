@@ -569,25 +569,6 @@ namespace DS2S_META
         }
 
         // To improve slowly over time:
-        public bool IsFeatureCompatible(METAFEATURE feature)
-        {
-            // can add extra specific switches on Versions too soon...
-            // aka if the Offsets are defined but it's not working
-            // in certain versions, can veto here.
-            return feature switch
-            {
-                METAFEATURE.OHKO_FIST => IsValidVer,
-                METAFEATURE.OHKO_RAPIER => IsValidVer,
-                METAFEATURE.NODEATH => IsSOTFS,
-                METAFEATURE.DISABLEAI => IsSOTFS_CP,
-                METAFEATURE.GIVE17KREWARD => Hooked, // should be fine for all versions
-                METAFEATURE.GIVE3CHUNK1SLAB => Hooked,
-                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
-                METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
-                METAFEATURE.BIKP1SKIP => IsSOTFS_CP,
-                _ => throw new NotImplementedException("Add many more here!")
-            };
-        }
         public bool CheckLoadedEnemies(CHRID chrid) => CheckLoadedEnemies((int)chrid);
         public bool CheckLoadedEnemies(int queryChrId)
         {
@@ -947,47 +928,74 @@ namespace DS2S_META
                 throw new Exception("Shouldn't get here. Handle via feature enable logic.");
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
+            WarpLast(); // force a reload to fix some memes
             return enable; // turned on or off now
         }
 
 
         // WIP
-//        private Engine Engine;
-//        private void AsmExecute(string asm)
-//        {
-//            //Assemble once to get the size
-//            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
+        //        private Engine Engine;
+        //        private void AsmExecute(string asm)
+        //        {
+        //            //Assemble once to get the size
+        //            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
+
+        //            KeystoneError error = Engine.GetLastKeystoneError();
+        //            if (error != KeystoneError.KS_ERR_OK)
+        //                throw new("Something went wrong during assembly. Code could not be assembled.");
+
+        //            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
+
+        //            //Reassemble with the location of the isertPtr to support relative instructions
+        //            bytes = Engine.Assemble(asm, (ulong)insertPtr);
+        //            error = Engine.GetLastKeystoneError();
+
+        //            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
+        //#if DEBUG
+        //            DebugPrintArray(bytes.Buffer);
+        //#endif
+
+        //            Execute(insertPtr);
+        //            Free(insertPtr);
+        //        }
+
+        //#if DEBUG
+        //        private static void DebugPrintArray(byte[] bytes)
+        //        {
+        //            Debug.WriteLine("");
+        //            foreach (byte b in bytes)
+        //            {
+        //                Debug.Write($"{b:X2} ");
+        //            }
+        //            Debug.WriteLine("");
+        //        }
+        //#endif
+        public bool IsFeatureCompatible(METAFEATURE feature)
+        {
+            if (!Hooked)
+                return false; // no way of figuring out versions
             
-//            KeystoneError error = Engine.GetLastKeystoneError();
-//            if (error != KeystoneError.KS_ERR_OK)
-//                throw new("Something went wrong during assembly. Code could not be assembled.");
+            // can add extra specific switches on Versions too soon...
+            // aka if the Offsets are defined but it's not working
+            // in certain versions, can veto here.
+            return feature switch
+            {
+                METAFEATURE.OHKO_FIST => IsValidVer,
+                METAFEATURE.OHKO_RAPIER => IsValidVer,
+                METAFEATURE.NOGRAVITY => IsValidVer,
+                METAFEATURE.NOCOLLISION => IsValidVer,
+                METAFEATURE.NODEATH => IsSOTFS,
+                METAFEATURE.DISABLEAI => IsSOTFS_CP,
+                METAFEATURE.GIVE17KREWARD => Hooked, // should be fine for all versions
+                METAFEATURE.GIVE3CHUNK1SLAB => Hooked,
+                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
+                METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
+                METAFEATURE.BIKP1SKIP => IsSOTFS_CP,
+                _ => throw new NotImplementedException("Add many more here!")
+            };
+        }
+        public bool InGameAndFeature(METAFEATURE feat) => InGame && IsFeatureCompatible(feat);
 
-//            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
-
-//            //Reassemble with the location of the isertPtr to support relative instructions
-//            bytes = Engine.Assemble(asm, (ulong)insertPtr);
-//            error = Engine.GetLastKeystoneError();
-
-//            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
-//#if DEBUG
-//            DebugPrintArray(bytes.Buffer);
-//#endif
-
-//            Execute(insertPtr);
-//            Free(insertPtr);
-//        }
-
-//#if DEBUG
-//        private static void DebugPrintArray(byte[] bytes)
-//        {
-//            Debug.WriteLine("");
-//            foreach (byte b in bytes)
-//            {
-//                Debug.Write($"{b:X2} ");
-//            }
-//            Debug.WriteLine("");
-//        }
-//#endif
         internal void RestoreHumanity()
         {
             ApplySpecialEffect((int)SPECIAL_EFFECT.RESTOREHUMANITY);
@@ -2023,7 +2031,7 @@ namespace DS2S_META
                 BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
             }
         }
-        public byte DisableAI
+        internal byte DisableAI
         {
             get => InGame && (Offsets.DisableAI != null) ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
             set
@@ -2042,18 +2050,40 @@ namespace DS2S_META
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
-
-        public void SetNoDeath()
+        
+        public void SetNoGravity(bool noGravity)
         {
-            if (Hooked)
-                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, 1);
+            if (!InGameAndFeature(METAFEATURE.NOGRAVITY)) return;
+            Gravity = !noGravity;
+        }
+        public void SetNoCollision(bool noCollision)
+        {
+            if (!InGameAndFeature(METAFEATURE.NOCOLLISION)) return;
+            Collision = !noCollision;
+        }
+        public void SetDisableAI(bool disableAI)
+        {
+            if (!InGameAndFeature(METAFEATURE.DISABLEAI)) return;
+            DisableAI = (byte)(disableAI ? 1 : 0);
+        }
+        public void SetNoDeath(bool noDeath)
+        {
+            if (!InGameAndFeature(METAFEATURE.NODEATH)) return;
+            HealthMin = noDeath ? 1 : -99999;
+        }
+        public void SetRapierOHKO(bool ohko) => SetWeaponOHKO(ITEMID.RAPIER, ohko);
+        public void SetFistOHKO(bool ohko) => SetWeaponOHKO(ITEMID.FISTS, ohko);
+        private void SetWeaponOHKO(ITEMID wpn, bool ohko)
+        {
+            if (!Hooked) return;
+            float DMGMOD = 50000;
+            
+            // Write to memory
+            var wpnrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)wpn) as WeaponRow ?? throw new NullReferenceException();
+            wpnrow.DamageMultiplier = ohko ? DMGMOD : 1;
+            wpnrow.WriteRow();
         }
 
-        public void SetYesDeath()
-        {
-            if (Hooked)
-                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, -99999);
-        }
 
         public int HealthMax
         {
@@ -2069,6 +2099,11 @@ namespace DS2S_META
                 return cap < HealthMax ? cap : HealthMax;
             }
             set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
+        }
+        public int HealthMin
+        {
+            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMin) : 0;
+            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, value);
         }
         public float Stamina
         {

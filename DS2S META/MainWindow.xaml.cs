@@ -72,7 +72,7 @@ namespace DS2S_META
                 Hook.EnableSpeedFactors = false;
 
             Hook.ClearSpeedhackInject();
-
+            ViewModel.CleanupAll();
 
             UpdateTimer.Stop();
             SaveAllTabs();
@@ -169,7 +169,7 @@ namespace DS2S_META
         //    metaItems.UpdateCtrl();
         //}
 
-
+        
         private void SaveAllTabs()
         {
             //HKM.SaveHotkeys();
