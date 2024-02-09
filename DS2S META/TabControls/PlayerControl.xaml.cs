@@ -45,7 +45,6 @@ namespace DS2S_META
             cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
             Positions = SavedPos.GetSavedPositions()?? new();
             cmbStoredPositions.Items.Add(new SavedPos());
-            btnWarp.IsEnabled = true;
             UpdatePositions();
             VM = (PlayerViewModel)DataContext; // todo setup command objects to the ViewModel in xaml
         }

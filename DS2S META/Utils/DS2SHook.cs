@@ -970,31 +970,7 @@ namespace DS2S_META
         //            Debug.WriteLine("");
         //        }
         //#endif
-        public bool IsFeatureCompatible(METAFEATURE feature)
-        {
-            if (!Hooked)
-                return false; // no way of figuring out versions
-            
-            // can add extra specific switches on Versions too soon...
-            // aka if the Offsets are defined but it's not working
-            // in certain versions, can veto here.
-            return feature switch
-            {
-                METAFEATURE.OHKO_FIST => IsValidVer,
-                METAFEATURE.OHKO_RAPIER => IsValidVer,
-                METAFEATURE.NOGRAVITY => IsValidVer,
-                METAFEATURE.NOCOLLISION => IsValidVer,
-                METAFEATURE.NODEATH => IsSOTFS,
-                METAFEATURE.DISABLEAI => IsSOTFS_CP,
-                METAFEATURE.GIVE17KREWARD => Hooked, // should be fine for all versions
-                METAFEATURE.GIVE3CHUNK1SLAB => Hooked,
-                METAFEATURE.MADWARRIOR => Hooked && Offsets?.LoadedEnemiesTable != null, // sotfs 1.03 only
-                METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
-                METAFEATURE.BIKP1SKIP => IsSOTFS_CP,
-                _ => throw new NotImplementedException("Add many more here!")
-            };
-        }
-        public bool InGameAndFeature(METAFEATURE feat) => InGame && IsFeatureCompatible(feat);
+        
 
         internal void RestoreHumanity()
         {
@@ -2053,22 +2029,22 @@ namespace DS2S_META
         
         public void SetNoGravity(bool noGravity)
         {
-            if (!InGameAndFeature(METAFEATURE.NOGRAVITY)) return;
+            if (MetaFeature.IsInactive(METAFEATURE.NOGRAVITY)) return;
             Gravity = !noGravity;
         }
         public void SetNoCollision(bool noCollision)
         {
-            if (!InGameAndFeature(METAFEATURE.NOCOLLISION)) return;
+            if (MetaFeature.IsInactive(METAFEATURE.NOCOLLISION)) return;
             Collision = !noCollision;
         }
         public void SetDisableAI(bool disableAI)
         {
-            if (!InGameAndFeature(METAFEATURE.DISABLEAI)) return;
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLEAI)) return;
             DisableAI = (byte)(disableAI ? 1 : 0);
         }
         public void SetNoDeath(bool noDeath)
         {
-            if (!InGameAndFeature(METAFEATURE.NODEATH)) return;
+            if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
             HealthMin = noDeath ? 1 : -99999;
         }
         public void SetRapierOHKO(bool ohko) => SetWeaponOHKO(ITEMID.RAPIER, ohko);

@@ -76,11 +76,11 @@ namespace DS2S_META.ViewModels
             }
         }
         
-        public bool EnGive17kReward => Hook?.InGameAndFeature(METAFEATURE.GIVE17KREWARD) ?? false;
-        public bool EnGive3Chunk1Slab => Hook?.InGameAndFeature(METAFEATURE.GIVE3CHUNK1SLAB) ?? false;
-        public bool EnMadWarrior => Hook?.InGameAndFeature(METAFEATURE.MADWARRIOR) ?? false;
-        public bool EnRubbishChallenge => Hook?.IsFeatureCompatible(METAFEATURE.RUBBISHCHALLENGE) ?? false;
-        public bool EnBIKP1Skip => Hook?.IsFeatureCompatible(METAFEATURE.BIKP1SKIP) ?? false;
+        public bool EnGive17kReward => MetaFeature.IsActive(METAFEATURE.GIVE17KREWARD);
+        public bool EnGive3Chunk1Slab => MetaFeature.IsActive(METAFEATURE.GIVE3CHUNK1SLAB);
+        public bool EnMadWarrior => MetaFeature.IsActive(METAFEATURE.MADWARRIOR);
+        public bool EnRubbishChallenge => MetaFeature.IsActive(METAFEATURE.RUBBISHCHALLENGE);
+        public bool EnBIKP1Skip => MetaFeature.IsActive(METAFEATURE.BIKP1SKIP);
 
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()

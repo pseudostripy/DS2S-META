@@ -21,16 +21,16 @@ namespace DS2S_META.ViewModels
     public class PlayerViewModel : ViewModelBase
     {
         // Binding Variables:
-        public bool EnNoDeath => Hook?.InGameAndFeature(METAFEATURE.NODEATH) ?? false;
-        public bool EnRapierOHKO => Hook?.InGameAndFeature(METAFEATURE.OHKO_RAPIER) ?? false;
-        public bool EnFistOHKO => Hook?.InGameAndFeature(METAFEATURE.OHKO_FIST) ?? false;
-        public bool EnSpeedhack => Hook?.Hooked == true;
-        public bool EnGravity => Hook?.InGameAndFeature(METAFEATURE.NOGRAVITY) ?? false;
-        public bool EnCollision => Hook?.InGameAndFeature(METAFEATURE.NOCOLLISION) ?? false;
-        public bool EnDisableAi => Hook?.InGameAndFeature(METAFEATURE.DISABLEAI) ?? false;
-        public bool EnStorePosition => Hook?.InGame == true;
-        public bool EnRestorePosition => Hook?.InGame == true;
-        public bool EnWarp => Hook?.InGame == true; // TODO
+        public bool EnNoDeath => MetaFeature.IsActive(METAFEATURE.NODEATH);
+        public bool EnRapierOHKO => MetaFeature.IsActive(METAFEATURE.OHKO_RAPIER);
+        public bool EnFistOHKO => MetaFeature.IsActive(METAFEATURE.OHKO_FIST);
+        public bool EnSpeedhack => MetaFeature.IsActive(METAFEATURE.SPEEDHACK);
+        public bool EnGravity => MetaFeature.IsActive(METAFEATURE.NOGRAVITY);
+        public bool EnCollision => MetaFeature.IsActive(METAFEATURE.NOCOLLISION);
+        public bool EnDisableAi => MetaFeature.IsActive(METAFEATURE.DISABLEAI);
+        public bool EnStorePosition => MetaFeature.IsActive(METAFEATURE.STOREPOSITION);
+        public bool EnRestorePosition => MetaFeature.IsActive(METAFEATURE.RESTOREPOSITION);
+        public bool EnWarp => MetaFeature.IsActive(METAFEATURE.WARP);
 
         private bool _chkNoDeath = false;
         public bool ChkNoDeath {
@@ -220,6 +220,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnDisableAi));
             OnPropertyChanged(nameof(EnStorePosition));
             OnPropertyChanged(nameof(EnRestorePosition));
+            OnPropertyChanged(nameof(EnWarp));
         }
 
     }

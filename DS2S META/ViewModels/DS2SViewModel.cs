@@ -171,6 +171,7 @@ namespace DS2S_META.ViewModels
             PlayerViewModel.OnHooked();
             CheatsViewModel.OnHooked();
             StatsViewModel.OnHooked();
+            MetaFeature.Initialize(Hook);
         }
         private void RivaOnHookedEventHandler(object? sender, PHEventArgs e)
         {
