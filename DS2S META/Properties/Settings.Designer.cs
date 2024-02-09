@@ -502,5 +502,41 @@ namespace DS2S_META.Properties {
                 this["NoGravThroughLoads"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int RivaXPixels {
+            get {
+                return ((int)(this["RivaXPixels"]));
+            }
+            set {
+                this["RivaXPixels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int RivaYPixels {
+            get {
+                return ((int)(this["RivaYPixels"]));
+            }
+            set {
+                this["RivaYPixels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int RivaTextSize {
+            get {
+                return ((int)(this["RivaTextSize"]));
+            }
+            set {
+                this["RivaTextSize"] = value;
+            }
+        }
     }
 }

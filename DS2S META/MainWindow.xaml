@@ -135,7 +135,7 @@
                     </TabItem>
                     <TabItem Header="Settings" >
                         <Grid Background="LightGray">
-                            <local:SettingsControl x:Name="metaSettings" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                            <local:SettingsControl x:Name="metaSettings" DataContext="{Binding SettingsViewModel}" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Dmg Calc PLACEHOLDER" >

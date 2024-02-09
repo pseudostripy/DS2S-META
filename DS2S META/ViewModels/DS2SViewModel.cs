@@ -115,6 +115,7 @@ namespace DS2S_META.ViewModels
         public CheatsViewModel CheatsViewModel { get; set; }
         public PlayerViewModel PlayerViewModel { get; set; }
         public StatsViewModel StatsViewModel { get; set; }
+        public SettingsViewModel SettingsViewModel { get; set; }
 
         // Wrapper exposures:
         private Settings Settings = Settings.Default;
@@ -123,7 +124,7 @@ namespace DS2S_META.ViewModels
         public bool GameLoaded => Hook.InGame;
         public bool DS2Loading => Hook.IsLoading;
 
-        private MetaVersionInfo MVI = new();
+        public static MetaVersionInfo MVI = new();
 
         public string WindowName => $"META {MVI.MetaVersionStr}";
 
@@ -140,7 +141,9 @@ namespace DS2S_META.ViewModels
 
             Hook = new DS2SHook(5000, 5000);
             Hook.OnHooked += AllTabsOnHooked;
+            Hook.OnHooked += RivaOnHookedEventHandler;
             Hook.OnUnhooked += AllTabsOnUnhooked;
+            Hook.OnUnhooked += RivaOnUnhookedEventHandler;
             Hook.OnGameStateHandler += OnGameStateChange;
 
             // Setup ViewModels
@@ -149,11 +152,13 @@ namespace DS2S_META.ViewModels
             CheatsViewModel = new CheatsViewModel();
             RandoSettingsViewModel = new RandoSettingsViewModel();
             StatsViewModel = new StatsViewModel();
+            SettingsViewModel = new SettingsViewModel();
             ViewModels.Add(DmgCalcViewModel);
             ViewModels.Add(CheatsViewModel);
             ViewModels.Add(PlayerViewModel);
             ViewModels.Add(RandoSettingsViewModel);
             ViewModels.Add(StatsViewModel);
+            ViewModels.Add(SettingsViewModel);
 
 
             Hook.Start();
@@ -166,6 +171,14 @@ namespace DS2S_META.ViewModels
             PlayerViewModel.OnHooked();
             CheatsViewModel.OnHooked();
             StatsViewModel.OnHooked();
+        }
+        private void RivaOnHookedEventHandler(object? sender, PHEventArgs e)
+        {
+            RivaHook.OnHooked();
+        }
+        private void RivaOnUnhookedEventHandler(object? sender, PHEventArgs e)
+        {
+            RivaHook.OnUnhooked();
         }
         private void AllTabsOnUnhooked(object? sender, PHEventArgs e)
         {

@@ -154,6 +154,9 @@
   <data name="OgSpeedFactorAccel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\ogspeedfactoraccel.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="RivaHook" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DLLs\RivaHook.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="SpeedFactor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\speedfactor.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

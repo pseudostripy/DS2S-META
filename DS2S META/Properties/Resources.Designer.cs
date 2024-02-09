@@ -265,6 +265,16 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] RivaHook {
+            get {
+                object obj = ResourceManager.GetObject("RivaHook", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0:  50                      push   rax
         ///1:  48 b8 00 00 00 00 ff    movabs rax,0xffffffff00000000
         ///8:  ff ff ff

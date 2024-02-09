@@ -33,6 +33,7 @@ namespace DS2S_META
         public HotkeyManager HKM;
         DS2SHook Hook => ViewModel.Hook;
         Timer UpdateTimer = new();
+        private int ElapsedCtr = 0;
 
         //public DmgCalcViewModel DmgCalcViewModel { get; set; }
 
@@ -54,7 +55,7 @@ namespace DS2S_META
         // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
         //DmgCalcViewModel = new DmgCalcViewModel();
         //ViewModels.Add(DmgCalcViewModel);
-    }
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //EnableTabsOnHooked(false);
@@ -62,6 +63,7 @@ namespace DS2S_META
 
             UpdateTimer.Interval = 16;
             UpdateTimer.Elapsed += UpdateTimer_Elapsed;
+            UpdateTimer.Elapsed += UpdateTimeElapsed_4HzUpdates;
             UpdateTimer.Enabled = true;
         }
 
@@ -73,6 +75,7 @@ namespace DS2S_META
 
             Hook.ClearSpeedhackInject();
             ViewModel.CleanupAll();
+            RivaHook.OnUnhooked();
 
             UpdateTimer.Stop();
             SaveAllTabs();
@@ -97,6 +100,16 @@ namespace DS2S_META
 
             HKM.ClearHooks();
             Settings.Save();
+        }
+        private void UpdateTimeElapsed_4HzUpdates(object? sender, EventArgs e)
+        {
+            // Increment counter
+            ElapsedCtr++;
+            if (ElapsedCtr % 16 != 0) return;
+
+            // 16*16ms ~ 4Hz
+            if (Hook.Hooked)
+                RivaHook.Refresh();
         }
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {

@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.3.4</AssemblyVersion>
+	<AssemblyVersion>0.7.3.5</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
@@ -100,6 +100,9 @@
     <None Update="Resources\ParamFiles\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\DLLs\RivaHook.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Systems\BonfireHubs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -184,6 +187,10 @@
 
   <ItemGroup>
     <NativeLibs Remove="Resources\DLLs\keystone.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <NativeLibs Remove="Resources\RivaHook.dll" />
   </ItemGroup>
 
 </Project>
