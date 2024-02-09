@@ -12,10 +12,16 @@ namespace DS2S_META
     internal static class RivaHook
     {
         // C++ definitions
-        [DllImport("./Resources/DLLs/RivaHook.dll", CharSet = CharSet.Ansi)]
+        //private const string dllpath = "./Resources/DLLs/RivaHook.dll";
+        private const string dllpath = "RivaHook.dll";
+#pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
+        [DllImport(dllpath, CharSet = CharSet.Unicode)]
+#pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
         private static extern int displayText(string id, string txt, int x, int y, int sz);
 
-        [DllImport("./Resources/DLLs/RivaHook.dll", CharSet = CharSet.Ansi)]
+#pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
+        [DllImport(dllpath, CharSet = CharSet.Unicode)]
+#pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
         private static extern int clearText(string id);
 
         // C# Wrappers

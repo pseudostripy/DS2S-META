@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using System.Text.RegularExpressions;
 
 namespace DS2S_META
 {
@@ -53,6 +54,7 @@ namespace DS2S_META
 
 
         private readonly object _logFileLock = new object();
+        private string NL = Environment.NewLine;
         private void LogException(Exception exception)
         {
             lock (_logFileLock)
@@ -68,8 +70,17 @@ namespace DS2S_META
                     File.Delete(logFile);
                 }
 
+                // clean out build paths:
+                string pattern = @"\S+?(?=\\META)"; // find all no-space paths ending in \META
+                string replacement = "METAPARENTDIR";
+                string cleanStackTrace;
+                if (exception?.StackTrace == null)
+                    cleanStackTrace = "NULL STACK TRACE!";
+                else
+                    cleanStackTrace = Regex.Replace(exception.StackTrace, pattern, replacement);
+                
                 //Log the error
-                var error = $"{exception.Message}\n\n\n{exception.StackTrace}\n";
+                var error = $"[{DateTime.Now}]{NL}{exception?.Message}{NL}{NL}{cleanStackTrace}{NL}";
                 File.AppendAllText(logFile, error);
             }
         }
