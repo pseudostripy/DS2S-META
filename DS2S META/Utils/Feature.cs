@@ -62,6 +62,6 @@ namespace DS2S_META.Utils
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
-        public static bool IsInactive(METAFEATURE feat) => IsActive(feat);
+        public static bool IsInactive(METAFEATURE feat) => !IsActive(feat);
     }
 }

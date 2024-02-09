@@ -2047,8 +2047,16 @@ namespace DS2S_META
             if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
             HealthMin = noDeath ? 1 : -99999;
         }
-        public void SetRapierOHKO(bool ohko) => SetWeaponOHKO(ITEMID.RAPIER, ohko);
-        public void SetFistOHKO(bool ohko) => SetWeaponOHKO(ITEMID.FISTS, ohko);
+        public void SetRapierOHKO(bool ohko)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.OHKO_RAPIER)) return;
+            SetWeaponOHKO(ITEMID.RAPIER, ohko);
+        } 
+        public void SetFistOHKO(bool ohko)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.OHKO_FIST)) return;
+            SetWeaponOHKO(ITEMID.FISTS, ohko);
+        } 
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)
         {
             if (!Hooked) return;
