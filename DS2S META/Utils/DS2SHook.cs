@@ -910,7 +910,7 @@ namespace DS2S_META
             warped = true;
             return warped;
         }
-        internal bool BIKP1Skip(bool enable)
+        internal bool BIKP1Skip(bool enable, bool doLoad)
         {
             if (!Hooked) return false;
 
@@ -928,7 +928,8 @@ namespace DS2S_META
                 throw new Exception("Shouldn't get here. Handle via feature enable logic.");
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
-            WarpLast(); // force a reload to fix some memes
+            if (doLoad) 
+                WarpLast(); // force a reload to fix some memes; only on first click
             return enable; // turned on or off now
         }
 

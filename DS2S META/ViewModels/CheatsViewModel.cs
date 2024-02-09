@@ -69,7 +69,8 @@ namespace DS2S_META.ViewModels
             get => _chkBIKP1;
             set
             {
-                var isModEnabled = Hook?.BIKP1Skip(value);  // request mod enablement toggle
+                bool forceLoad = true;
+                var isModEnabled = Hook?.BIKP1Skip(value, forceLoad);  // request mod enablement toggle
                 if (isModEnabled == null) return;           // not hooked
                 _chkBIKP1 = (bool)isModEnabled;             // success
                 OnPropertyChanged();                        // notify
@@ -108,7 +109,7 @@ namespace DS2S_META.ViewModels
             
             // things that need to be reset on load:
             if (ChkBIKP1)
-                Hook?.BIKP1Skip(true);
+                Hook?.BIKP1Skip(true, false); // no inf load
         }
         private void EnableElements()
         {
