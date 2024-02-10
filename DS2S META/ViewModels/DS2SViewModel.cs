@@ -126,7 +126,19 @@ namespace DS2S_META.ViewModels
 
         public static MetaVersionInfo MVI = new();
 
-        public string WindowName => $"META {MVI.MetaVersionStr}";
+        private static string DebugStr
+        {
+            get
+            {
+                var dbgstring = string.Empty;
+#if DEBUG
+                dbgstring = "DEBUG";
+#endif
+                return dbgstring;
+            }
+        }
+        public static string WindowName => $"META {MVI.MetaVersionStr} {DebugStr}";
+ 
 
         public static bool DesignMode
         {

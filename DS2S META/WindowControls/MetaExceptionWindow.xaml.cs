@@ -18,10 +18,10 @@ namespace DS2S_META
     /// <summary>
     /// Interaction logic for RandoWarpWarning.xaml
     /// </summary>
-    public partial class MetaException : Window
+    public partial class MetaExceptionWindow : Window
     {
         private readonly string ExceptionStr = "TEMP";
-        public MetaException(string exceptionStr)
+        public MetaExceptionWindow(string exceptionStr)
         {
             InitializeComponent();
             ExceptionStr = $"{exceptionStr}{Environment.NewLine}{Environment.NewLine}Dumped to <METADIR>\\log.txt";

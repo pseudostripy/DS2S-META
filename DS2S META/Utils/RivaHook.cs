@@ -33,7 +33,7 @@ namespace DS2S_META
         private static void DisplayText()
         {
             if (!DllLoadable) return; // error already displayed don't retry
-            
+
             // get user settings
             var xpx = Properties.Settings.Default.RivaXPixels;
             var ypx = Properties.Settings.Default.RivaYPixels;
@@ -41,19 +41,14 @@ namespace DS2S_META
 
             try
             {
-                var str = $"META v{DS2SViewModel.MVI.MetaVersionStr}";
-                _ = displayText(MetaIDStr, str, xpx, ypx, txtsz);
+                var displayStr = DS2SViewModel.WindowName;
+                _ = displayText(MetaIDStr, displayStr, xpx, ypx, txtsz);
             }
             catch (Exception e)
             {
                 DllLoadable = false; // only try once
-                HandleMetaException(e);
+                MetaException.Handle(e);
             }
-        }
-        private static void ShowMetaExceptionWindow(string logmsg)
-        {
-            var meWindow = new MetaException(logmsg); // notify user on screen
-            meWindow.ShowDialog();
         }
         private static void ClearText()
         {
@@ -65,18 +60,8 @@ namespace DS2S_META
             catch (Exception e)
             {
                 DllLoadable = false; // only try once
-                HandleMetaException(e);
+                MetaException.Handle(e);
             }
-        }
-        public static void HandleMetaException(Exception e)
-        {
-            // Used to cleanup exception message cleanup before passing into Dispatcher
-            // thread for handling UI error messaging
-            ((App)Application.Current).LogCaughtException(e);   // dump to log file
-
-            // Invoke on Dispatcher thread to avoid STA errors
-            var logmsg = e.ToLogString(Environment.StackTrace); // get clean stack trace
-            Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindow(logmsg));
         }
         public static void Refresh()
         {

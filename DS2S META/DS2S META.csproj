@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.4.3</AssemblyVersion>
+	<AssemblyVersion>0.7.4.4</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
@@ -165,6 +165,7 @@
 	  <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" DestinationFolder="@(OutputDir)" />
 	  <Copy SourceFiles="$(TargetDir)$(ProjectName).runtimeconfig.json" DestinationFolder="@(OutputDir)" />
 	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
+	  <Copy Condition="'$(Configuration)' == 'DEBUG'" SourceFiles="$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(OutputPath)" />
 	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
 	  <Exec Condition="" Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />

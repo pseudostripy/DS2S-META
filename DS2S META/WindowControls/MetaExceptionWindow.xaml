@@ -1,4 +1,4 @@
-﻿<Window x:Class="DS2S_META.MetaException"
+﻿<Window x:Class="DS2S_META.MetaExceptionWindow"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              x:Name="Window"
