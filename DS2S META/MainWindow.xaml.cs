@@ -108,8 +108,7 @@ namespace DS2S_META
             if (ElapsedCtr % 16 != 0) return;
 
             // 16*16ms ~ 4Hz
-            if (Hook.Hooked)
-                RivaHook.Refresh();
+            RivaHook.Refresh();
         }
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {

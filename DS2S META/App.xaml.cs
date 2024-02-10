@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Utils;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using System.Text.RegularExpressions;
+
 
 namespace DS2S_META
 {
@@ -24,7 +25,6 @@ namespace DS2S_META
             //WPF specific - setting this event as handled can prevent crashes
             Dispatcher.UnhandledException += WpfExceptionHandler;
         }
-
         
 
         void GlobalExceptionHandler(object sender, UnhandledExceptionEventArgs e)
@@ -32,7 +32,7 @@ namespace DS2S_META
             try
             {
                 var exception = (Exception)e.ExceptionObject;
-                LogException(exception);
+                LogGlobalException(exception);
             } 
             //This catch hides an exception, but can't really help it at this point.
             catch { }
@@ -43,7 +43,7 @@ namespace DS2S_META
         {
             try
             {
-                LogException(e.Exception);
+                LogGlobalException(e.Exception);
             }
             //This catch hides an exception, but can't really help it at this point.
             catch{ }
@@ -53,9 +53,16 @@ namespace DS2S_META
 
 
 
-        private readonly object _logFileLock = new object();
-        private string NL = Environment.NewLine;
-        private void LogException(Exception exception)
+        private readonly object _logFileLock = new();
+        private void LogGlobalException(Exception exception)
+        {
+            var logMessage = exception.ToGlobalExLogString(); // clean build paths
+            WriteToLog(logMessage);
+        }
+        public void LogCaughtException(Exception e) => WriteToLog(e.ToLogString(Environment.StackTrace));
+        public void LogCaughtExceptionMessage(string msg) => WriteToLog(msg);
+        private static readonly string NL = Environment.NewLine;
+        private void WriteToLog(string message)
         {
             lock (_logFileLock)
             {
@@ -70,17 +77,8 @@ namespace DS2S_META
                     File.Delete(logFile);
                 }
 
-                // clean out build paths:
-                string pattern = @"\S+?(?=\\META)"; // find all no-space paths ending in \META
-                string replacement = "METAPARENTDIR";
-                string cleanStackTrace;
-                if (exception?.StackTrace == null)
-                    cleanStackTrace = "NULL STACK TRACE!";
-                else
-                    cleanStackTrace = Regex.Replace(exception.StackTrace, pattern, replacement);
-                
                 //Log the error
-                var error = $"[{DateTime.Now}]{NL}{exception?.Message}{NL}{NL}{cleanStackTrace}{NL}";
+                var error = $"[{DateTime.Now}]{NL}{message}{NL}{NL}";
                 File.AppendAllText(logFile, error);
             }
         }
