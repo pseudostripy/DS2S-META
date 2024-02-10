@@ -30,7 +30,7 @@ A
 **[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) and [Property Hook](https://github.com/JKAnderson/PropertyHook)\
 **[Lord Radai](https://github.com/LordRadai)** Author of the CE table used for this tool and good mentor\
 **[R3sus](https://github.com/r3sus)** Contributor and absolute wealth of knowledge\
-**[Stennis](https://github.com/StenniHub)** Contributions to code refactoring and speedhack fixes\
+**[Stennis](https://github.com/StenniHub)** Contributions to code refactoring, speedhack fixes, and RivaHook API dll\
 **[Meander5](https://github.com/meander5)** Contributions with bug fixes, testing & example feature implementations\
 **[JeffTheBigLizard](https://github.com/GeckoGary)** Feature contributions
 
@@ -46,6 +46,35 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
+#### v0.7.4 [RivaOverlay]
+ - MetaBugFix: Updated RivaHook dll to release to remove debug dependency on ucrtbased.dll which be unavailable
+ - MetaUpdate: Upgraded the log dump on crash to remove build dependency directory paths
+ - MetaUpdate: Big update to Meta error and crash recovery and log reporting process
+ - MetaUpdate: Added code scope for slow-time event updates that might need performing
+ - MetaFeature: Added RivaOverlay hook using Stennis API dll (ty!)
+ - MetaRefactor: Moved the OHKO code to the standard Hook place where it belongs
+ - MetaUpdate: More robust and standardized Meta version checks for all meta features 
+ - MetaFeature: Added option for NoGrav / NoCollision maintained through load screens
+ - MetaUpdate: Updated remaining UI components to MVVM implementation
+ - MetaBugFix: Proper cleanup of meta features on exit to avoid one-shotting after closure
+ - MetaFeature: BIK Phase 1 skip added to SOTFS CP (taken from BobLord's nexusmods implementation)
+ - RandoBugFix: Mysterious guaranteed Betwixt enemy drops properly fixed (ItemLot Param backend improvement)
+ - MetaUpdate: Lots of backend rewriting to improve Param structure and in-code querying
+ - MetaBugFix: OHKO re-enabled for all vanilla versions
+ - MetaBugFix: OHKO dmg factor increased to "ensure" 1-shot
+ - RandoBugFix: Ancient Dragon drop leak
+ - RandoBalance: Change Race Mode to Bosses/Keys only
+ - RandoBugFix: Update to logic for RaceMode to avoid key softlock stuff
+ - RandoBugFix: Pursuer platform drops now working
+ - RandoBugFix: Exotic/Covenant items re-added to loot pool
+ - RandoBugFix: Character creation no longer missing items or giving bad ones
+ - RandoBugFix: Very rare bug in not outputting all key locations when they share the same loot table
+ - RandoBugFix: Seeds possibly incorrectly asserted as invalid due to CRC memes with linebreaks
+ - MetaRefactor/QoL: Updated the item list to remove impossible ones and add reskin/cut content information
+ - MetaBugFix: Enabled buttons during rerandomization allowed for possible bugs if user spam clicked
+ - RandoBugFix: Fixed possible setup procedure that lead to the seed generator starting from a known state
+ - RandoBugFix: Cancelling the warp warning did nothing
+
 #### v0.7.3 [RefactorHell]
  - RandoFeature: Added initial RaceMode (for change/improvement/balancing)
  - RandoMinorFeature: Added flag to printout for whether seed was randomly generated (not crypto crced yet)
@@ -104,7 +133,7 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 * Warp-rest improved to restore full hp (applied after max hp boosting effects)
 * Added IsLoading flag for all Versions enabling more robust future code
 
-### META v0.7 [Combiner]:
+### META v0.7 [MetaCombined]:
 #### v0.7.0
 * Merge DS2 META Vanilla into single program DS2S combined!
 * Variety Stability upgrades (crash fixes) on meta/ds2 open/close
