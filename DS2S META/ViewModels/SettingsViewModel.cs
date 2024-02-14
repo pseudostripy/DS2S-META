@@ -20,9 +20,13 @@ namespace DS2S_META.ViewModels
     // Note: CheatsControl has CheatsViewModel data context set in MainWindow.xaml
     public class SettingsViewModel : ViewModelBase
     {
+        // This impacts a wide variety of things that might need events triggered
+        private readonly DS2SViewModel VMParent;
+
         // Constructor
-        public SettingsViewModel()
+        public SettingsViewModel(DS2SViewModel parent)
         {
+            VMParent = parent;
         }
 
         // Properties
@@ -60,6 +64,22 @@ namespace DS2S_META.ViewModels
                 if (!isInt) return; // do nothing
                 Properties.Settings.Default.RivaTextSize = sz;
                 RefreshRivaOverlay();
+            }
+        }
+
+        // Extra state here because impacts (overrides) PlayerViewModel
+        //private bool _chkAlwaysRestOnWarp = Properties.Settings.Default.AlwaysRestAfterWarp;
+        public bool ChkAlwaysRestOnWarp
+        {
+            get => Properties.Settings.Default.AlwaysRestAfterWarp;
+            set
+            {
+                // Update myself
+                Properties.Settings.Default.AlwaysRestAfterWarp = value;
+                OnPropertyChanged();
+                
+                // Reset other things for somewhat consistency (and call their onPropertyEvents)
+                VMParent.PlayerViewModel.ChkWarpRest = value;
             }
         }
 

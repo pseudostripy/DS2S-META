@@ -14,6 +14,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DS2S_META.Randomizer;
 using System.Diagnostics;
+using System.Windows.Controls;
+using DS2S_META.Commands;
 
 namespace DS2S_META.ViewModels
 {
@@ -21,16 +23,16 @@ namespace DS2S_META.ViewModels
     public class PlayerViewModel : ViewModelBase
     {
         // Binding Variables:
-        public bool EnNoDeath => MetaFeature.IsActive(METAFEATURE.NODEATH);
-        public bool EnRapierOHKO => MetaFeature.IsActive(METAFEATURE.OHKO_RAPIER);
-        public bool EnFistOHKO => MetaFeature.IsActive(METAFEATURE.OHKO_FIST);
-        public bool EnSpeedhack => MetaFeature.IsActive(METAFEATURE.SPEEDHACK);
-        public bool EnGravity => MetaFeature.IsActive(METAFEATURE.NOGRAVITY);
-        public bool EnCollision => MetaFeature.IsActive(METAFEATURE.NOCOLLISION);
-        public bool EnDisableAi => MetaFeature.IsActive(METAFEATURE.DISABLEAI);
-        public bool EnStorePosition => MetaFeature.IsActive(METAFEATURE.STOREPOSITION);
-        public bool EnRestorePosition => MetaFeature.IsActive(METAFEATURE.RESTOREPOSITION);
-        public bool EnWarp => MetaFeature.IsActive(METAFEATURE.WARP);
+        public bool EnNoDeath => MetaFeature.FtNoDeath;
+        public bool EnRapierOHKO => MetaFeature.FtRapierOHKO;
+        public bool EnFistOHKO => MetaFeature.FtFistOHKO;
+        public bool EnSpeedhack => MetaFeature.FtSpeedhack;
+        public bool EnNoGravity => MetaFeature.FtNoGravity;
+        public bool EnNoCollision => MetaFeature.FtNoCollision;
+        public bool EnDisableAi => MetaFeature.FtDisableAi;
+        public bool EnStorePosition => MetaFeature.FtStorePosition;
+        public bool EnRestorePosition => MetaFeature.FtRestorePosition;
+        public bool EnWarp => MetaFeature.FtWarp;
 
         private bool _chkNoDeath = false;
         public bool ChkNoDeath {
@@ -99,6 +101,21 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        public bool EnWarpRest => Hook?.Hooked == true && !Properties.Settings.Default.AlwaysRestAfterWarp;  
+        
+        private bool _chkWarpRest = Properties.Settings.Default.RestAfterWarp; // load from previous opening
+        public bool ChkWarpRest
+        {
+            get => _chkWarpRest;
+            set
+            {
+                _chkWarpRest = value;
+                Properties.Settings.Default.RestAfterWarp = value; // save preferences
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(EnWarpRest)); // possibly needs rechecking
+            }
+        }
+
         private bool _liveGravity = true;
         public bool LiveGravity
         {
@@ -130,10 +147,27 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        // Hotkey commands:
+        public void ToggleGravity() => ChkGravity = !ChkGravity;
+        public void ToggleCollision() => ChkCollision = !ChkCollision;
+        //public void ToggleSpeed() => cbxSpeed.IsChecked = !cbxSpeed.IsChecked;
+        
+        public void ToggleAI() => ChkDisableAi = !ChkDisableAi;
+        
+        // TODO
+        //public void ToggleRapierOhko()
+        //{
+        //    cbxRapierOHKO.IsChecked = !cbxRapierOHKO.IsChecked;
+        //    cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
+        //}
+        public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
 
         // Constructor
         public PlayerViewModel()
         {
+            // initialize commands
+            BtnWarpCommand = new RelayCommand(BtnWarpExecute, BtnWarpCanExecute);
+            BtnUnlockBfsCommand = new RelayCommand(BtnUnlockBfsExecute, BtnUnlockBfsCanExec);
         }
 
         // Update (called on mainwindow update interval)
@@ -150,6 +184,17 @@ namespace DS2S_META.ViewModels
             Hook?.SetRapierOHKO(false);
             Hook?.SetFistOHKO(false);
         }
+
+        // Command Definitions
+        public ICommand BtnWarpCommand { get; set; }
+        public ICommand BtnUnlockBfsCommand { get; set; }
+        //
+        private bool BtnWarpCanExecute(object? parameter) => MetaFeature.FtWarp; 
+        private bool BtnUnlockBfsCanExec(object? parameter) => Hook?.Hooked == true; 
+        //
+        private void BtnWarpExecute(object? parameter) => Warp();
+        private void BtnUnlockBfsExecute(object? parameter) => Hook?.UnlockBonfires();
+
 
         // install special event handler for LiveGravity stuff
         internal void OnHookPropertyUpdate(object? sender, PropertyChangedEventArgs e)
@@ -178,6 +223,8 @@ namespace DS2S_META.ViewModels
             if (coll == null) return;
             LiveCollision = coll ?? true;
         }
+        
+        // Event based updates
         internal void OnHooked()
         {
             EnableElements();
@@ -208,20 +255,56 @@ namespace DS2S_META.ViewModels
         {
             EnableElements(); // disable stuff that requires InGame
         }
-
         private void EnableElements() 
         {
             OnPropertyChanged(nameof(EnNoDeath));
             OnPropertyChanged(nameof(EnRapierOHKO));
             OnPropertyChanged(nameof(EnFistOHKO));
             OnPropertyChanged(nameof(EnSpeedhack));
-            OnPropertyChanged(nameof(EnGravity));
-            OnPropertyChanged(nameof(EnCollision));
+            OnPropertyChanged(nameof(EnNoGravity));
+            OnPropertyChanged(nameof(EnNoCollision));
             OnPropertyChanged(nameof(EnDisableAi));
             OnPropertyChanged(nameof(EnStorePosition));
             OnPropertyChanged(nameof(EnRestorePosition));
             OnPropertyChanged(nameof(EnWarp));
+            OnPropertyChanged(nameof(EnWarpRest));
         }
 
+
+        public void Warp()
+        {
+        //    if (VM.Hook == null)
+        //        return;
+
+        //    _ = ChangeColor(Brushes.DarkGray);
+        //    if (VM.Hook.Multiplayer)
+        //    {
+        //        MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        return;
+        //    }
+
+        //    var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
+
+        //    // Handle betwixt start warps:
+        //    bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
+        //    if (NoPrevBonfire)
+        //    {
+        //        int BETWIXTAREA = 167903232;
+        //        ushort BETWIXTBFID = 2650;
+        //        VM.Hook.LastBonfireAreaID = BETWIXTAREA;
+        //        VM.Hook.Warp(BETWIXTBFID, true);
+        //        return;
+        //    }
+
+
+        //    if (bonfire == null)
+        //        throw new Exception("How do we get here intellisense??");
+
+        //    VM.Hook.LastBonfireID = bonfire.ID;
+        //    VM.Hook.LastBonfireAreaID = bonfire.AreaID;
+        //    var warped = VM.Hook.Warp(bonfire.ID);
+        //    if (warped && cbxWarpRest.IsChecked == true)
+        //        WarpRest = true;
+        }
     }
 }

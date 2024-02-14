@@ -23,7 +23,7 @@ using static DS2S_META.MainWindow;
 
 namespace DS2S_META.ViewModels
 {
-    internal class DS2SViewModel : ObservableObject
+    public class DS2SViewModel : ObservableObject
     {
         // Binding Variables:
         public string ContentLoaded
@@ -164,7 +164,7 @@ namespace DS2S_META.ViewModels
             CheatsViewModel = new CheatsViewModel();
             RandoSettingsViewModel = new RandoSettingsViewModel();
             StatsViewModel = new StatsViewModel();
-            SettingsViewModel = new SettingsViewModel();
+            SettingsViewModel = new SettingsViewModel(this);
             ViewModels.Add(DmgCalcViewModel);
             ViewModels.Add(CheatsViewModel);
             ViewModels.Add(PlayerViewModel);

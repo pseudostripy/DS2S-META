@@ -65,5 +65,23 @@ namespace DS2S_META.Utils
             };
         }
         public static bool IsInactive(METAFEATURE feat) => !IsActive(feat);
+
+        // Specific feature shorthands
+        public static bool FtGive17kReward => IsActive(METAFEATURE.GIVE17KREWARD);
+        public static bool FtGive3Chunk1Slab => IsActive(METAFEATURE.GIVE3CHUNK1SLAB);
+        public static bool FtMadWarrior => IsActive(METAFEATURE.MADWARRIOR);
+        public static bool FtRubbishChallenge => IsActive(METAFEATURE.RUBBISHCHALLENGE);
+        public static bool FtBIKP1Skip => IsActive(METAFEATURE.BIKP1SKIP);
+        public static bool FtDmgMod => IsActive(METAFEATURE.DMGMOD);
+        public static bool FtNoDeath => IsActive(METAFEATURE.NODEATH);
+        public static bool FtRapierOHKO => IsActive(METAFEATURE.OHKO_RAPIER);
+        public static bool FtFistOHKO => IsActive(METAFEATURE.OHKO_FIST);
+        public static bool FtSpeedhack => IsActive(METAFEATURE.SPEEDHACK);
+        public static bool FtNoGravity => IsActive(METAFEATURE.NOGRAVITY);
+        public static bool FtNoCollision => IsActive(METAFEATURE.NOCOLLISION);
+        public static bool FtDisableAi => IsActive(METAFEATURE.DISABLEAI);
+        public static bool FtStorePosition => IsActive(METAFEATURE.STOREPOSITION);
+        public static bool FtRestorePosition => IsActive(METAFEATURE.RESTOREPOSITION);
+        public static bool FtWarp => IsActive(METAFEATURE.WARP);
     }
 }

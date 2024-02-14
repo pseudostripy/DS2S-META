@@ -50,7 +50,7 @@ namespace DS2S_META.ViewModels
                 return "SPAWNED";
             }
         }
-        public Visibility lblSpawnVisibility => ChkMadWarrior ? Visibility.Visible : Visibility.Hidden;
+        public Visibility LblSpawnVisibility => ChkMadWarrior ? Visibility.Visible : Visibility.Hidden;
         private bool _chkMadWarrior;
         public bool ChkMadWarrior // isChecked
         {
@@ -59,7 +59,7 @@ namespace DS2S_META.ViewModels
             {
                 _chkMadWarrior = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(lblSpawnVisibility));
+                OnPropertyChanged(nameof(LblSpawnVisibility));
                 OnPropertyChanged(nameof(IsSpawned));
             }
         }
@@ -125,14 +125,14 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
-        
 
-        public bool EnGive17kReward => MetaFeature.IsActive(METAFEATURE.GIVE17KREWARD);
-        public bool EnGive3Chunk1Slab => MetaFeature.IsActive(METAFEATURE.GIVE3CHUNK1SLAB);
-        public bool EnMadWarrior => MetaFeature.IsActive(METAFEATURE.MADWARRIOR);
-        public bool EnRubbishChallenge => MetaFeature.IsActive(METAFEATURE.RUBBISHCHALLENGE);
-        public bool EnBIKP1Skip => MetaFeature.IsActive(METAFEATURE.BIKP1SKIP);
-        public bool EnDmgMod => MetaFeature.IsActive(METAFEATURE.DMGMOD);
+        // Enable buttons of valid features
+        public bool EnGive17kReward => MetaFeature.FtGive17kReward;
+        public bool EnGive3Chunk1Slab => MetaFeature.FtGive3Chunk1Slab;
+        public bool EnMadWarrior => MetaFeature.FtMadWarrior;
+        public bool EnRubbishChallenge => MetaFeature.FtRubbishChallenge;
+        public bool EnBIKP1Skip => MetaFeature.FtBIKP1Skip;
+        public bool EnDmgMod => MetaFeature.FtDmgMod;
 
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()

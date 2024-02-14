@@ -60,18 +60,18 @@ namespace DS2S_META
             {
                 "Store Position" => () => MW.metaPlayer.StorePosition(),
                 "Restore Position" => () => MW.metaPlayer.RestorePosition(),
-                "Toggle Gravity" => () => MW.metaPlayer.ToggleGravity(),
-                "Toggle Collision" => () => MW.metaPlayer.ToggleCollision(),
+                "Toggle Gravity" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(),
+                "Toggle Collision" => () => MW.ViewModel.PlayerViewModel.ToggleCollision(),
                 "Move Up" => () => MW.metaPlayer.DeltaHeight(+5),
                 "Move Down" => () => MW.metaPlayer.DeltaHeight(-5),
-                "Toggle Speedup" => () => MW.metaPlayer.ToggleSpeed(),
+                "Toggle Speedup" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
                 "Warp" => () => MW.metaPlayer.Warp(),
                 "Create Item" => () => MW.metaItems.CreateItem(),
                 "Fast Quit" => () => MW.metaPlayer.FastQuit(),
                 "Give 17k" => () => MW.metaCheats.Hook.Give17kReward(),
-                "Toggle AI" => () => MW.metaPlayer.ToggleAI(),
-                "Toggle No Death" => () => MW.metaPlayer.ToggleNoDeath(),
-                "Toggle OHKO" => () => MW.metaPlayer.ToggleRapierOhko(),
+                "Toggle AI" => () => MW.ViewModel.PlayerViewModel.ToggleAI(),
+                "Toggle No Death" => () => MW.ViewModel.PlayerViewModel.ToggleNoDeath(),
+                "Toggle OHKO" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
                 "Give 3/1" => () => MW.metaCheats.Hook.Give3Chunk1Slab(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };

@@ -8,25 +8,26 @@
              xmlns:p="clr-namespace:DS2S_META.Properties"
              xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
                    mc:Ignorable="d" 
-             d:DesignHeight="692.468" d:DesignWidth="429.026" Background="LightGray"
+             d:DesignHeight="785.468" d:DesignWidth="440.0" Background="LightGray"
              d:DataContext="{d:DesignInstance viewmodels:PlayerViewModel, IsDesignTimeCreatable=True}">
-    <Grid Grid.Row="0" Grid.RowSpan="2" Margin="10,0,10,47">
+    <Grid Grid.Row="0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="247*"/>
-            <ColumnDefinition Width="163*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="StatusRow" Height="*"/>
-            <RowDefinition Height="1.3*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Margin="0,0,0,10" Grid.ColumnSpan="2" >
+        <StackPanel Margin="0,0,0,10">
             <Label Content="Status"/>
             <Border BorderBrush="Gray" BorderThickness="1" >
                 <StackPanel Margin="5,5,5,5">
                     <Grid Grid.Row="0" Grid.RowSpan="2" Margin="0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="*"/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
@@ -58,13 +59,13 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <StackPanel Margin="0,0,0,10" Grid.Row="1" Grid.ColumnSpan="2">
+        <StackPanel Margin="0,0,0,10" Grid.Row="1">
             <Label Content="Position"/>
             <Border BorderBrush="Gray" BorderThickness="1" >
                 <StackPanel Margin="5,5,5,5">
                     <Grid VerticalAlignment="Stretch" >
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.5*"/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
@@ -107,7 +108,7 @@
                         <wpfTool:DecimalUpDown x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
                         <wpfTool:DecimalUpDown x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
 
-                        <Grid Grid.Row="4" Grid.Column="1" Margin="2">
+                        <Grid Grid.Row="4" Grid.Column="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
@@ -132,36 +133,54 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <StackPanel Margin="0,0,0,10" Grid.Row="2" Grid.ColumnSpan="2">
+        <StackPanel Margin="0,0,0,10" Grid.Row="2">
+            <Label Content="Cheats"></Label>
+        </StackPanel>
+        <Expander Grid.Row="3" HorizontalContentAlignment="Stretch" Margin="10,0,0,0">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Bonfire"/></TextBlock>
+            </Expander.Header>
+            <StackPanel>
+                <Grid Margin="0,10,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition MinHeight="25"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0.75*"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Content="Quick Select" x:Name="cbxQuickSelectBonfire" VerticalAlignment="Center" Grid.Row="2" Margin="10,5,0,0" VerticalContentAlignment="Stretch"/>
+                    <CheckBox Content="Rest After Warp" IsEnabled="{Binding EnWarpRest}" x:Name="cbxWarpRest" IsChecked="{Binding ChkWarpRest}" Margin="10,5,0,0" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Stretch"/>
+                    <TextBox x:Name="txtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Margin="0,0,0,5"/>
+                    <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,5" VerticalContentAlignment="Center"/>
+                    <ComboBox x:Name="cmbBonfire" SelectionChanged="cmbBonfire_SelectionChanged" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch"/>
+                    <Button Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" x:Name="btnWarp" Grid.Column="2" HorizontalContentAlignment="Center" Margin="5,0,5,0" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
+                    <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="3" Margin="75,5,75,5"/>
+                </Grid>
+                <StackPanel Margin="25,0,25,0">
+                    <Separator Visibility="Hidden" Height="10"/>
+                    <Separator Visibility="Hidden" Height="3"/>
+                    <Label Content="Manage Bonfire Levels"/>
+                    <Border BorderBrush="Gray" BorderThickness="1" >
+                        <StackPanel Margin="25,10,25,10">
+                            <ComboBox x:Name="cmbBonfirHub" SelectionChanged="cmbBonfirHub_SelectionChanged" />
+                            <Separator Visibility="Hidden" Height="10"/>
+                            <StackPanel x:Name="spBonfires">
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </Expander>
+        <StackPanel Margin="0,0,0,10" Grid.Row="4">
             <Label Content="Misc"/>
             <Border BorderBrush="Gray" BorderThickness="1">
                 <StackPanel Margin="5">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Bonfire Warp" VerticalAlignment="Stretch" VerticalContentAlignment="Center"/>
-                        <CheckBox Content="Quick Select" x:Name="cbxQuickSelectBonfire" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="1"/>
-                        <CheckBox Content="Rest After Warp" x:Name="cbxWarpRest" IsChecked="{Binding RestAfterWarp, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2"/>
-                    </Grid>
-                    <Grid HorizontalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" Width="385" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="4" Margin="0,5,0,0"/>
-                        <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,5,0,0" IsHitTestVisible="False" Grid.ColumnSpan="4"/>
-                        <ComboBox x:Name="cmbBonfire" SelectionChanged="cmbBonfire_SelectionChanged" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,10"/>
-                        <Button Content="Warp" Click="WarpButton_Click" IsEnabled="{Binding EnWarp}" x:Name="btnWarp" Grid.Row="1" Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,10"/>
-                    </Grid>
+                    
                     <Grid VerticalAlignment="Bottom" Margin="50,5,50,5">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -173,8 +192,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <CheckBox  Width="100" IsChecked="{Binding ChkGravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="{Binding EnGravity}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <CheckBox  Width="100" IsChecked="{Binding ChkCollision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnCollision}" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
+                        <CheckBox  Width="100" IsChecked="{Binding ChkGravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="{Binding EnNoGravity}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <CheckBox  Width="100" IsChecked="{Binding ChkCollision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnNoCollision}" Grid.Row="1" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                         <CheckBox  Width="100" IsChecked="{Binding ChkDisableAi}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" Grid.Row="2" VerticalContentAlignment="Center" Padding="0,0,0,0" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                         <CheckBox  Width="100" IsChecked="{Binding ChkRapierOHKO}" Content="Rapier OHKO" x:Name="cbxRapierOHKO" IsEnabled="{Binding EnRapierOHKO}" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3"/>
                         <CheckBox  Width="100" IsChecked="{Binding ChkFistOHKO}"  Content="Fist OHKO" x:Name="cbxFistOHKO" IsEnabled="{Binding EnFistOHKO}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>

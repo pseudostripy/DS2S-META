@@ -178,11 +178,35 @@ namespace DS2S_META
                 //}
 
             }
+        }
+        private void cmbBonfirHub_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Hook == null)
+                return;
 
+            spBonfires.Children.Clear();
+            var bonfireHub = cmbBonfirHub.SelectedItem as DS2SBonfireHub;
+            if (bonfireHub == null)
+                return;
+
+            foreach (var bonfire in bonfireHub.Bonfires)
+            {
+                var bonfireControl = new LabelNudControl();
+                Binding binding = new Binding("Value")
+                {
+                    Source = Hook,
+                    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")", ""))
+                };
+                bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+                bonfireControl.nudValue.Minimum = 0;
+                bonfireControl.nudValue.Maximum = 99;
+                bonfireControl.Label = bonfire;
+                bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+                spBonfires.Children.Add(bonfireControl);
+            }
         }
         
-
-        public bool WarpRest { get; private set; }
+        
 
         internal override void UpdateCtrl() 
         {
@@ -241,33 +265,6 @@ namespace DS2S_META
                 lblSearch.Visibility = Visibility.Visible;
             else
                 lblSearch.Visibility = Visibility.Hidden;
-        }
-        
-        // <ViewModel_todo>:
-        public void ToggleGravity()
-        {
-            cbxGravity.IsChecked = !cbxGravity.IsChecked;
-        }
-        public void ToggleCollision()
-        {
-            cbxCollision.IsChecked = !cbxCollision.IsChecked;
-        }
-        public void ToggleSpeed()
-        {
-            cbxSpeed.IsChecked = !cbxSpeed.IsChecked;
-        }
-        public void ToggleAI()
-        {
-            cbxDisableAI.IsChecked = !cbxDisableAI.IsChecked;
-        }
-        public void ToggleRapierOhko()
-        {
-            cbxRapierOHKO.IsChecked = !cbxRapierOHKO.IsChecked;
-            cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
-        }
-        public void ToggleNoDeath()
-        {
-            cbxNoDeath.IsChecked = !cbxNoDeath.IsChecked;
         }
         
         
@@ -356,38 +353,38 @@ namespace DS2S_META
         }
         public void Warp()
         {
-            if (VM.Hook == null)
-                return;
+            //if (VM.Hook == null)
+            //    return;
 
-            _ = ChangeColor(Brushes.DarkGray);
-            if (VM.Hook.Multiplayer)
-            {
-                MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            //_ = ChangeColor(Brushes.DarkGray);
+            //if (VM.Hook.Multiplayer)
+            //{
+            //    MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
 
-            var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
+            //var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
 
-            // Handle betwixt start warps:
-            bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
-            if (NoPrevBonfire)
-            {
-                int BETWIXTAREA = 167903232;
-                ushort BETWIXTBFID = 2650;
-                VM.Hook.LastBonfireAreaID = BETWIXTAREA;
-                VM.Hook.Warp(BETWIXTBFID, true);
-                return;
-            }
+            //// Handle betwixt start warps:
+            //bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
+            //if (NoPrevBonfire)
+            //{
+            //    int BETWIXTAREA = 167903232;
+            //    ushort BETWIXTBFID = 2650;
+            //    VM.Hook.LastBonfireAreaID = BETWIXTAREA;
+            //    VM.Hook.Warp(BETWIXTBFID, true);
+            //    return;
+            //}
 
 
-            if (bonfire == null)
-                throw new Exception("How do we get here intellisense??");
+            //if (bonfire == null)
+            //    throw new Exception("How do we get here intellisense??");
 
-            VM.Hook.LastBonfireID = bonfire.ID;
-            VM.Hook.LastBonfireAreaID = bonfire.AreaID;
-            var warped = VM.Hook.Warp(bonfire.ID);
-            if (warped && cbxWarpRest.IsChecked == true)
-                WarpRest = true; 
+            //VM.Hook.LastBonfireID = bonfire.ID;
+            //VM.Hook.LastBonfireAreaID = bonfire.AreaID;
+            //var warped = VM.Hook.Warp(bonfire.ID);
+            //if (warped && cbxWarpRest.IsChecked == true)
+            //    WarpRest = true; 
         }
 
         private async Task ChangeColor(Brush new_color)
