@@ -241,6 +241,26 @@ namespace DS2S_META.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0:  49 8b 46 08             mov    rax,QWORD PTR [r14+0x8]
+        ///4:  f3 41 0f 5e f1          divss  xmm6,xmm9
+        ///9:  f3 0f 59 70 1c          mulss  xmm6,DWORD PTR [rax+0x1c]
+        ///e:  48 a1 FF FF FF FF 00    movabs rax,ds:0xFFFFFFFF00000000
+        ///15: 00 00 00
+        ///18: 48 85 c0                test   rax,rax
+        ///1b: 0f 84 23 00 00 00       je     0x44
+        ///21: 48 a1 FF FF FF FF 00    movabs rax,ds:0xFFFFFFFF00000000
+        ///28: 00 00 00
+        ///2b: 48 85 c0                test   rax,rax
+        ///2e: 0f 84 2e 00 00 00       je     0x62
+        ///34: 68 00 00 00 00     [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string NoDmgMod {
+            get {
+                return ResourceManager.GetString("NoDmgMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0:  f3 0f 59 99 a8 02 00    mulss  xmm3,DWORD PTR [rcx+0x2a8]
         ///7:  00
         ///8:  f3 0f 10 12             movss  xmm2,DWORD PTR [rdx]

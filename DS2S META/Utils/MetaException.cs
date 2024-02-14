@@ -88,6 +88,11 @@ namespace DS2S_META
             var logmsg = e.ToLogString(Environment.StackTrace); // get clean stack trace
             Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindow(logmsg));
         }
+        public static void Raise(string message)
+        {
+            var e = new Exception(message);
+            Handle(e);
+        }
 
         // Log Cleaner
         private static readonly string NL = Environment.NewLine;

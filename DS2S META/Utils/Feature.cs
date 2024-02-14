@@ -25,6 +25,7 @@ namespace DS2S_META.Utils
         STOREPOSITION,
         RESTOREPOSITION,
         WARP,
+        DMGMOD,
     }
     public static class MetaFeature
     {
@@ -59,6 +60,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.STOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.RESTOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }

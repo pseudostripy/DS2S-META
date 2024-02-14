@@ -148,6 +148,9 @@
   <data name="GiveItem64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Assembly\GiveItem64.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="NoDmgMod" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Assembly\NoDmgMod.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="OgSpeedFactor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\assembly\ogspeedfactor.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
