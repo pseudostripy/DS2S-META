@@ -83,9 +83,9 @@
                         <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
                         <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4"/>
                         <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Hook.PosX, Mode=OneWay}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Hook.PosY, Mode=OneWay}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Hook.PosZ, Mode=OneWay}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Pos[0]}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Pos[1]}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Pos[2]}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
 
                         <Grid Grid.Row="4" Grid.Column="3">
                             <Grid.RowDefinitions>
@@ -95,18 +95,18 @@
                             </Grid.RowDefinitions>
                             <CheckBox Content="Restore State" x:Name="cbxRestoreState" IsChecked="{Binding RestoreState,Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <Button Content="Store" x:Name="btnPosStore" IsEnabled="{Binding EnStorePosition}" Margin="2" Click="btnStore_Click" Grid.Row="1"/>
-                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="{Binding EnRestorePosition}" Grid.Column="3" Grid.Row="5" Margin="2" Click="btnRestore_Click"/>
+                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="{Binding EnRestorePosition}" Grid.Column="3" Grid.Row="5" Margin="2" Command="{Binding BtnRestorePositionCommand}"/>
                         </Grid>
 
                         <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableX, Mode=OneWay}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableY, Mode=OneWay}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding Hook.StableZ, Mode=OneWay}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[0]}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[1]}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[2]}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
 
                         <Label Content="Stored" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" />
-                        <wpfTool:DecimalUpDown x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
-                        <wpfTool:DecimalUpDown x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[0]}" x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
+                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[1]}" x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[2]}" x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
 
                         <Grid Grid.Row="4" Grid.Column="1">
                             <Grid.RowDefinitions>
@@ -114,9 +114,9 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBox x:Name="txtAngX" Text="{Binding Hook.AngX, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngY" Text="{Binding Hook.AngY, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngZ" Text="{Binding Hook.AngZ, Mode=OneWay, StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngX" Text="{Binding Ang[0], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngY" Text="{Binding Ang[1], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtAngZ" Text="{Binding Ang[2], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                         </Grid>
                         <Grid Grid.Row="4" Grid.Column="2">
                             <Grid.RowDefinitions>
@@ -125,7 +125,7 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Label Content="Stored Positions" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                            <ComboBox x:Name="cmbStoredPositions" Margin ="2" KeyDown="storedPositions_KeyDown" SelectionChanged="storedPositions_SelectionChanged" IsEditable="True" Grid.Row="1" />
+                            <ComboBox x:Name="cmbStoredPositions" Margin ="2" KeyDown="StoredPositions_KeyDown" SelectionChanged="StoredPositions_SelectionChanged" IsEditable="True" Grid.Row="1" />
                             <Button x:Name="deleteButton" Margin="2" Content="Del" Click="DeleteButton_Click" Grid.Row="2"/>
                         </Grid>
 
@@ -157,7 +157,8 @@
                     <CheckBox Content="Rest After Warp" IsEnabled="{Binding EnWarpRest}" x:Name="cbxWarpRest" IsChecked="{Binding ChkWarpRest}" Margin="10,5,0,0" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Stretch"/>
                     <TextBox x:Name="txtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Margin="0,0,0,5"/>
                     <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,5" VerticalContentAlignment="Center"/>
-                    <ComboBox x:Name="cmbBonfire" SelectionChanged="cmbBonfire_SelectionChanged" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch"/>
+                    <ComboBox 
+                        x:Name="cmbBonfire" ItemsSource="{Binding BonfireList}" SelectedItem="{Binding SelectedBf, NotifyOnSourceUpdated=True}" SourceUpdated="CmbBonfire_SourceUpdated" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch"/>
                     <Button Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" x:Name="btnWarp" Grid.Column="2" HorizontalContentAlignment="Center" Margin="5,0,5,0" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
                     <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="3" Margin="75,5,75,5"/>
                 </Grid>
@@ -198,9 +199,8 @@
                         <CheckBox  Width="100" IsChecked="{Binding ChkRapierOHKO}" Content="Rapier OHKO" x:Name="cbxRapierOHKO" IsEnabled="{Binding EnRapierOHKO}" Padding="0,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0" Grid.Row="3"/>
                         <CheckBox  Width="100" IsChecked="{Binding ChkFistOHKO}"  Content="Fist OHKO" x:Name="cbxFistOHKO" IsEnabled="{Binding EnFistOHKO}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Top" Margin="0,5,0,0"/>
                         <CheckBox  Width="100" IsChecked="{Binding ChkNoDeath}" Content="No Death" x:Name="cbxNoDeath" IsEnabled="{Binding EnNoDeath}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <CheckBox  Width="100" Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding EnSpeedhack}" Checked="cbxSpeed_Checked" Unchecked="cbxSpeed_Checked" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown Value="{Binding SpeedValue, Mode=TwoWay, Source={x:Static p:Settings.Default}, 
-                    UpdateSourceTrigger=PropertyChanged}" IsEnabled="False" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" ValueChanged="nudSpeed_ValueChanged" LostFocus="nudSpeed_LostFocus" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
+                        <CheckBox  Width="100" IsChecked="{Binding ChkSpeedhack}" Content="Modify Speed" x:Name="cbxSpeed" IsEnabled="{Binding EnSpeedhack}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="0,5,0,0"/>
+                        <wpfTool:DecimalUpDown Value="{Binding SpeedhackFactor}" IsEnabled="{Binding EnSpeedhackFactor}" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,5,0,0"/>
                     </Grid>
                 </StackPanel>
             </Border>

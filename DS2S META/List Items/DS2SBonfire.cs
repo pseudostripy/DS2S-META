@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace DS2S_META
 {
-    class DS2SBonfire : IComparable<DS2SBonfire>
+    public class DS2SBonfire : IComparable<DS2SBonfire>
     {
         private static readonly Regex BonfireEntryRx = new(@"^(?<area>\S+) (?<id>\S+) (?<name>.+)$");
 

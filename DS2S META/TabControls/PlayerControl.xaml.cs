@@ -31,6 +31,11 @@ namespace DS2S_META
             InitializeComponent();
         }
 
+        public void OnManualBonfireSelect(object obj, DataTransferEventArgs e)
+        {
+            MetaException.RaiseUserWarning("Did I click it?");
+        }
+
         private State.PlayerState PlayerState;
         PlayerViewModel VM; // todo setup command objects to the ViewModel in xaml
 
@@ -39,51 +44,43 @@ namespace DS2S_META
         public override void InitTab()
         {
             PlayerState.Set = false;
-            foreach (var bonfire in DS2Resource.Bonfires)
-                cmbBonfire.Items.Add(bonfire);
+            //foreach (var bonfire in DS2Resource.Bonfires)
+            //    cmbBonfire.Items.Add(bonfire);
             LastSetBonfire = new DS2SBonfire(0, 0, "Last Set: _Game Start"); //last set bonfire (default values) // TODO cleaner.
-            cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
+            //cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
             Positions = SavedPos.GetSavedPositions()?? new();
             cmbStoredPositions.Items.Add(new SavedPos());
             UpdatePositions();
             VM = (PlayerViewModel)DataContext; // todo setup command objects to the ViewModel in xaml
         }
-        internal override void ReloadCtrl()
-        {
-            // to deprecate properly
-            // so sneaky..
-            //if (Properties.Settings.Default.AlwaysRestAfterWarp)
-            //    Hook.AwaitBonfireRest();
-        }
-
+        
         public void StorePosition()
         {
-            if (VM.Hook == null)
-                return;
-            var pos = new SavedPos();
-            pos.Name = cmbStoredPositions.Text;
-            nudPosStoredX.Value = (decimal)VM.Hook.StableX;
-            nudPosStoredY.Value = (decimal)VM.Hook.StableY;
-            nudPosStoredZ.Value = (decimal)VM.Hook.StableZ;
-            PlayerState.AngX = VM.Hook.AngX;
-            PlayerState.AngY = VM.Hook.AngY;
-            PlayerState.AngZ = VM.Hook.AngZ;
-            PlayerState.HP = nudHealth.Value?? 0; // default to 0 if null
-            PlayerState.Stamina = nudStamina.Value?? 0;
-            PlayerState.FollowCam = VM.Hook.CameraData;
-            PlayerState.FollowCam2 = VM.Hook.CameraData2;
-            PlayerState.Set = true;
-            pos.X = VM.Hook.StableX;
-            pos.Y = VM.Hook.StableY;
-            pos.Z = VM.Hook.StableZ;
-            pos.PlayerState = PlayerState;
-            ProcessSavedPos(pos);
-            UpdatePositions();
-            SavedPos.Save(Positions);
+            //if (VM.Hook == null)
+            //    return;
+            //var pos = new SavedPos{ Name = cmbStoredPositions.Text };
+            //nudPosStoredX.Value = (decimal)VM.Hook.StableX;
+            //nudPosStoredY.Value = (decimal)VM.Hook.StableY;
+            //nudPosStoredZ.Value = (decimal)VM.Hook.StableZ;
+            //PlayerState.AngX = VM.Hook.AngX;
+            //PlayerState.AngY = VM.Hook.AngY;
+            //PlayerState.AngZ = VM.Hook.AngZ;
+            //PlayerState.HP = nudHealth.Value?? 0; // default to 0 if null
+            //PlayerState.Stamina = nudStamina.Value?? 0;
+            //PlayerState.FollowCam = VM.Hook.CameraData;
+            //PlayerState.FollowCam2 = VM.Hook.CameraData2;
+            //PlayerState.Set = true;
+            //pos.X = VM.Hook.StableX;
+            //pos.Y = VM.Hook.StableY;
+            //pos.Z = VM.Hook.StableZ;
+            //pos.PlayerState = PlayerState;
+            //ProcessSavedPos(pos);
+            //UpdatePositions();
+            //SavedPos.Save(Positions);
 
-            txtAngX.Text = PlayerState.AngX.ToString("N2");
-            txtAngY.Text = PlayerState.AngY.ToString("N2");
-            txtAngZ.Text = PlayerState.AngZ.ToString("N2");
+            //txtAngX.Text = PlayerState.AngX.ToString("N2");
+            //txtAngY.Text = PlayerState.AngY.ToString("N2");
+            //txtAngZ.Text = PlayerState.AngZ.ToString("N2");
         }
         public void ProcessSavedPos(SavedPos pos)
         {
@@ -105,7 +102,7 @@ namespace DS2S_META
             }
 
         }
-        private void storedPositions_KeyDown(object sender, KeyEventArgs e)
+        private void StoredPositions_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -124,8 +121,7 @@ namespace DS2S_META
             if (cmbStoredPositions.SelectedItem != new SavedPos())
             {
                 var blank = cmbStoredPositions.Items[0] as SavedPos;
-                if (blank == null)
-                    blank = new SavedPos();
+                blank ??= new SavedPos();
 
                 cmbStoredPositions.Items.Clear();
                 cmbStoredPositions.Items.Add(blank);
@@ -136,49 +132,35 @@ namespace DS2S_META
             }
 
         }
-        public void RestorePosition()
-        {
-            if (!btnPosRestore.IsEnabled)
-                return;
+        //public void RestorePosition()
+        //{
+        //    if (!btnPosRestore.IsEnabled)
+        //        return;
 
-            if (!nudPosStoredX.Value.HasValue || !nudPosStoredY.Value.HasValue || !nudPosStoredZ.Value.HasValue)
-                return;
+        //    if (!nudPosStoredX.Value.HasValue || !nudPosStoredY.Value.HasValue || !nudPosStoredZ.Value.HasValue)
+        //        return;
 
-            if (VM.Hook == null)
-                return;
+        //    if (VM.Hook == null)
+        //        return;
 
-            VM.Hook.StableX = (float)nudPosStoredX.Value;
-            VM.Hook.StableY = (float)nudPosStoredY.Value;
-            VM.Hook.StableZ = (float)nudPosStoredZ.Value;
-            VM.Hook.AngX = PlayerState.AngX;
-            VM.Hook.AngY = PlayerState.AngY;
-            VM.Hook.AngZ = PlayerState.AngZ;
-            //Hook.CameraData = PlayerState.FollowCam;
-            //Hook.CamX = CamX;
-            //Hook.CamY = CamY;
-            //Hook.CamZ = CamZ;
-            if (cbxRestoreState.IsChecked == true)
-            {
-                nudHealth.Value = PlayerState.HP;
-                nudStamina.Value = PlayerState.Stamina;
-            }
-        }
+        //    VM.Hook.StableX = (float)nudPosStoredX.Value;
+        //    VM.Hook.StableY = (float)nudPosStoredY.Value;
+        //    VM.Hook.StableZ = (float)nudPosStoredZ.Value;
+        //    VM.Hook.AngX = PlayerState.AngX;
+        //    VM.Hook.AngY = PlayerState.AngY;
+        //    VM.Hook.AngZ = PlayerState.AngZ;
+        //    //Hook.CameraData = PlayerState.FollowCam;
+        //    //Hook.CamX = CamX;
+        //    //Hook.CamY = CamY;
+        //    //Hook.CamZ = CamZ;
+        //    if (cbxRestoreState.IsChecked == true)
+        //    {
+        //        nudHealth.Value = PlayerState.HP;
+        //        nudStamina.Value = PlayerState.Stamina;
+        //    }
+        //}
 
-        public void RemoveSavedPos()
-        {
-            if (Positions.Any(n => n.Name == cmbStoredPositions.Text))
-            {
-                //if (MessageBox.Show("Are you sure you want to delete this positon?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                //{
-                //    var old = Positions.Single(n => n.Name == cmbStoredPositions.Text);
-                //    Positions.Remove(old);
-                //    cmbStoredPositions.SelectedIndex = 0;
-                //    UpdatePositions();
-                //    SavedPos.Save(Positions);
-                //}
-
-            }
-        }
+        
         private void cmbBonfirHub_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Hook == null)
@@ -210,62 +192,62 @@ namespace DS2S_META
 
         internal override void UpdateCtrl() 
         {
-            //manage unknown warps and current warps that are not in filter
-            if (VM.Hook == null) return;
-            var bonfireID = VM.Hook.LastBonfireID;
+            ////manage unknown warps and current warps that are not in filter
+            //if (VM.Hook == null) return;
+            //var bonfireID = VM.Hook.LastBonfireID;
 
-            if (LastSetBonfire == null)
-                return;
+            //if (LastSetBonfire == null)
+            //    return;
 
-            if (LastSetBonfire.ID != bonfireID) // lastSetBonfire does not match game LastBonfire
-            {
-                //target warp is not in filter
-                var result = DS2Resource.Bonfires.FirstOrDefault(b => b.ID == bonfireID); //check if warp is in bonfire resource
-                if (result == null)
-                {
-                    //bonfire not in filter. Add to filter as unknown
-                    result = new DS2SBonfire(VM.Hook.LastBonfireAreaID ,bonfireID, $"Unknown {VM.Hook.LastBonfireAreaID}: {bonfireID}");
-                    DS2Resource.Bonfires.Add(result);
-                    FilterBonfires();
-                }
+            //if (LastSetBonfire.ID != bonfireID) // lastSetBonfire does not match game LastBonfire
+            //{
+            //    //target warp is not in filter
+            //    var result = DS2Resource.Bonfires.FirstOrDefault(b => b.ID == bonfireID); //check if warp is in bonfire resource
+            //    if (result == null)
+            //    {
+            //        //bonfire not in filter. Add to filter as unknown
+            //        result = new DS2SBonfire(VM.Hook.LastBonfireAreaID ,bonfireID, $"Unknown {VM.Hook.LastBonfireAreaID}: {bonfireID}");
+            //        DS2Resource.Bonfires.Add(result);
+            //        FilterBonfires();
+            //    }
 
-                //manage lastSetBonfire
-                cmbBonfire.Items.Remove(LastSetBonfire); //remove from filter (if there)
+            //    //manage lastSetBonfire
+            //    cmbBonfire.Items.Remove(LastSetBonfire); //remove from filter (if there)
 
-                LastSetBonfire.AreaID = result.AreaID;
-                LastSetBonfire.ID = result.ID;
-                LastSetBonfire.Name = "Last Set: " + result.Name;
+            //    LastSetBonfire.AreaID = result.AreaID;
+            //    LastSetBonfire.ID = result.ID;
+            //    LastSetBonfire.Name = "Last Set: " + result.Name;
 
-                cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
-                cmbBonfire.SelectedItem = LastSetBonfire;
-                //AddLastSetBonfire();
-            }
+            //    cmbBonfire.Items.Add(LastSetBonfire); //add to end of filter
+            //    cmbBonfire.SelectedItem = LastSetBonfire;
+            //    //AddLastSetBonfire();
+            //}
         }
-        private void FilterBonfires()
-        {
-            //warp filter management
+        //private void FilterBonfires()
+        //{
+        //    //warp filter management
 
-            cmbBonfire.Items.Clear();
-            cmbBonfire.SelectedItem = null;
+        //    cmbBonfire.Items.Clear();
+        //    cmbBonfire.SelectedItem = null;
 
-            //go through bonfire resource and add to filter
-            foreach (var bonfire in DS2Resource.Bonfires)
-            {
-                if (bonfire.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
-                {
-                    cmbBonfire.Items.Add(bonfire);
-                }
-            }
+        //    //go through bonfire resource and add to filter
+        //    foreach (var bonfire in DS2Resource.Bonfires)
+        //    {
+        //        if (bonfire.ToString().ToLower().Contains(txtSearch.Text.ToLower()))
+        //        {
+        //            cmbBonfire.Items.Add(bonfire);
+        //        }
+        //    }
 
-            cmbBonfire.Items.Add(LastSetBonfire); //add lastSetBonfire to end of filter
+        //    cmbBonfire.Items.Add(LastSetBonfire); //add lastSetBonfire to end of filter
 
-            cmbBonfire.SelectedIndex = 0;
+        //    cmbBonfire.SelectedIndex = 0;
 
-            if (txtSearch.Text == "")
-                lblSearch.Visibility = Visibility.Visible;
-            else
-                lblSearch.Visibility = Visibility.Hidden;
-        }
+        //    if (txtSearch.Text == "")
+        //        lblSearch.Visibility = Visibility.Visible;
+        //    else
+        //        lblSearch.Visibility = Visibility.Hidden;
+        //}
         
         
         // UI events
@@ -273,28 +255,24 @@ namespace DS2S_META
         {
             StorePosition();
         }
-        private void btnRestore_Click(object sender, RoutedEventArgs e)
-        {
-            RestorePosition();
-        }
-        private void cbxSpeed_Checked(object sender, RoutedEventArgs e)
-        {
-            if (VM.Hook == null) return;
-            nudSpeed.IsEnabled = cbxSpeed.IsChecked == true;
-            VM.Hook.Speedhack(cbxSpeed.IsChecked == true);
-        }
+        
+        //private void cbxSpeed_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    if (VM.Hook == null) return;
+        //    nudSpeed.IsEnabled = cbxSpeed.IsChecked == true;
+        //    VM.Hook.Speedhack(cbxSpeed.IsChecked == true);
+        //}
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            RemoveSavedPos();
+            //RemoveSavedPos();
         }
         private void WarpButton_Click(object sender, RoutedEventArgs e)
         {
             Warp();
         }
-        private void storedPositions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void StoredPositions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var savedPos = cmbStoredPositions.SelectedItem as SavedPos;
-            if (savedPos == null)
+            if (cmbStoredPositions.SelectedItem is not SavedPos savedPos)
                 return;
 
             nudPosStoredX.Value = (decimal)savedPos.X;
@@ -322,35 +300,23 @@ namespace DS2S_META
                 return;
             VM.Hook.FastQuit = 6;
         }
-        private void SetGameSpeed()
-        {
-            if (VM?.Hook == null || VM.Hook.Hooked == false) return;
-            VM.Hook.SetSpeed((double)(nudSpeed.Value ?? 1));
-        }
-        private void nudSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            SetGameSpeed();
-        }
-        private void nudSpeed_LostFocus(object sender, RoutedEventArgs e)
-        {
-            SetGameSpeed();
-        }
-        private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Guard clauses
-            if (VM.Hook == null)
-                return;
-            if (!VM.Hook.InGame)
-                return;
-            if (cbxQuickSelectBonfire.IsChecked != true)
-                return;
-            if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
-                throw new NullReferenceException("Unexpected bonfire");
+        
+        //private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    // Guard clauses
+        //    if (VM.Hook == null)
+        //        return;
+        //    if (!VM.Hook.InGame)
+        //        return;
+        //    if (cbxQuickSelectBonfire.IsChecked != true)
+        //        return;
+        //    if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
+        //        throw new NullReferenceException("Unexpected bonfire");
             
-            // Do stuff
-            VM.Hook.LastBonfireID = bonfire.ID;
-            VM.Hook.LastBonfireAreaID = bonfire.AreaID;
-        }
+        //    // Do stuff
+        //    VM.Hook.LastBonfireID = bonfire.ID;
+        //    VM.Hook.LastBonfireAreaID = bonfire.AreaID;
+        //}
         public void Warp()
         {
             //if (VM.Hook == null)
@@ -387,18 +353,9 @@ namespace DS2S_META
             //    WarpRest = true; 
         }
 
-        private async Task ChangeColor(Brush new_color)
-        {
-            btnWarp.Background = new_color;
-
-            await Task.Delay(TimeSpan.FromSeconds(.25));
-
-            btnWarp.Background = default(Brush);
-        }
-
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            FilterBonfires();
+            //FilterBonfires();
         }
         private void KeyPressed(object sender, KeyEventArgs e)
         {
@@ -409,34 +366,34 @@ namespace DS2S_META
         }
         private void KeyDownListbox(KeyEventArgs e)
         {
-            if (e.Key == Key.Down)
-            {
-                e.Handled = true;
+            //if (e.Key == Key.Down)
+            //{
+            //    e.Handled = true;
 
-                if (cmbBonfire.SelectedIndex < cmbBonfire.Items.Count - 1)
-                {
-                    cmbBonfire.SelectedIndex += 1;
-                    return;
-                }
-            }
+            //    if (cmbBonfire.SelectedIndex < cmbBonfire.Items.Count - 1)
+            //    {
+            //        cmbBonfire.SelectedIndex += 1;
+            //        return;
+            //    }
+            //}
 
-            if (e.Key == Key.Up)
-            {
-                e.Handled = true;
+            //if (e.Key == Key.Up)
+            //{
+            //    e.Handled = true;
 
-                if (cmbBonfire.SelectedIndex != 0)
-                {
-                    cmbBonfire.SelectedIndex -= 1;
-                    return;
-                }
-            }
+            //    if (cmbBonfire.SelectedIndex != 0)
+            //    {
+            //        cmbBonfire.SelectedIndex -= 1;
+            //        return;
+            //    }
+            //}
 
-            if (e.Key == Key.Enter)
-            {
-                e.Handled = true;
-                Warp();
-                return;
-            }
+            //if (e.Key == Key.Enter)
+            //{
+            //    e.Handled = true;
+            //    Warp();
+            //    return;
+            //}
         }
         private void txtSearch_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -445,6 +402,12 @@ namespace DS2S_META
             e.Handled=true;
         }
 
-        
+        // This has to stay here for now cause of crash in .net reflection if I put it in ViewModel
+        // Happy to hear about whether anyone can fix that...
+        public void CmbBonfire_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            // Only triggers when updating *explicitly* from a user input
+            VM.OnManualBonfireSelect(sender, e);
+        }
     }
 }

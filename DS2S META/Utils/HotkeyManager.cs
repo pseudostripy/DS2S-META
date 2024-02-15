@@ -59,12 +59,12 @@ namespace DS2S_META
             return hkname switch
             {
                 "Store Position" => () => MW.metaPlayer.StorePosition(),
-                "Restore Position" => () => MW.metaPlayer.RestorePosition(),
+                "Restore Position" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
                 "Toggle Gravity" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(),
                 "Toggle Collision" => () => MW.ViewModel.PlayerViewModel.ToggleCollision(),
                 "Move Up" => () => MW.metaPlayer.DeltaHeight(+5),
                 "Move Down" => () => MW.metaPlayer.DeltaHeight(-5),
-                "Toggle Speedup" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
+                "Toggle Speedup" => () => MW.ViewModel.PlayerViewModel.ToggleSpeedhack(),
                 "Warp" => () => MW.metaPlayer.Warp(),
                 "Create Item" => () => MW.metaItems.CreateItem(),
                 "Fast Quit" => () => MW.metaPlayer.FastQuit(),

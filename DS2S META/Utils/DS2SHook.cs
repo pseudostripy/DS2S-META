@@ -647,9 +647,7 @@ namespace DS2S_META
             OnPropertyChanged(nameof(AngZ));
             OnPropertyChanged(nameof(Collision));
             OnPropertyChanged(nameof(Gravity));
-            OnPropertyChanged(nameof(StableX));
-            OnPropertyChanged(nameof(StableY));
-            OnPropertyChanged(nameof(StableZ));
+            OnPropertyChanged(nameof(StablePos));
             OnPropertyChanged(nameof(LastBonfireAreaID));
             OnPropertyChanged(nameof(Hooked));
         }
@@ -1300,6 +1298,7 @@ namespace DS2S_META
         }
 
         // No Damage injects:
+        private const int HIGHDMG = 0x4b18967f; // float 9999999.0
         private void InstallInject(Inject inj)
         {
             // Wrapper for slightly tidier handling of injects
@@ -1309,7 +1308,6 @@ namespace DS2S_META
         {
             Kernel32.WriteBytes(Handle, inj.InjAddr, inj.OrigBytes); // revert to original
         }
-        private const int HIGHDMG = 0x4b18967f; // float 9999999.0
         public bool OHKO(bool dealFullDmg, bool recvNoDmg)
         {
             if (dealFullDmg || recvNoDmg)
@@ -2281,6 +2279,16 @@ namespace DS2S_META
             get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
             //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
         }
+        public float[] Pos
+        {
+            get => new float[3] { PosX, PosY, PosZ};
+            set
+            {
+                PosX = value[0];
+                PosY = value[1];
+                PosZ = value[2];
+            }
+        }
         public float PosX
         {
             get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
@@ -2308,22 +2316,42 @@ namespace DS2S_META
                 PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
             }
         }
-        public float AngX
+        public float[] Ang
+        {
+            get => new float[3] { AngX, AngY, AngZ };
+            set
+            {
+                AngX = value[0];
+                AngY = value[1];
+                AngZ = value[2];
+            }
+        }
+        private float AngX
         {
             get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
         }
-        public float AngY
+        private float AngY
         {
             get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
         }
-        public float AngZ
+        private float AngZ
         {
             get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
             set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
         }
-        public float StableX
+        public float[] StablePos
+        {
+            get => new float[3] { StableX, StableY, StableZ };
+            set
+            {
+                StableX = value[0];
+                StableY = value[1];
+                StableZ = value[2];
+            }
+        }
+        private float StableX
         {
             get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
             set
@@ -2333,7 +2361,7 @@ namespace DS2S_META
                 PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
             }
         }
-        public float StableY
+        private float StableY
         {
             get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
             set
@@ -2343,7 +2371,7 @@ namespace DS2S_META
                 PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
             }
         }
-        public float StableZ
+        private float StableZ
         {
             get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
             set

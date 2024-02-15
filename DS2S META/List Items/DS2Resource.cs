@@ -26,6 +26,7 @@ namespace DS2S_META
         public static readonly string PathClasses = "Resources/Systems/Classes.txt";
 
         private static readonly List<ITEMCATEGORY> WepTypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
+        private static readonly Dictionary<int, DS2SBonfire> BonfireHashDict;
 
 
         // One-time setup (static constructors are "called at most once" in C#)
@@ -51,7 +52,16 @@ namespace DS2S_META
             /////////////////////////////////
             Bonfires = ParseResource(PathBonfires, DS2SBonfire.ParseNew);
             Classes = ParseResource(PathClasses, DS2SClass.ParseNew);
+
+            // Setup fast lookup:
+            BonfireHashDict = Bonfires.ToDictionary(bf => Bfidhash(bf.AreaID, bf.ID), bf => bf);
         }
+        private static int Bfidhash(int areaid, int id) => areaid*10000 + id; // maybe?
+        public static DS2SBonfire? LookupBonfire(int areaid, int id)
+        {
+            return BonfireHashDict.TryGetValue(Bfidhash(areaid, id), out var bonfire) ? bonfire : null;
+        }
+
         public static List<T> ParseResource<T>(string path, Func<string, T>parser)
         {
             // read and split entries:
