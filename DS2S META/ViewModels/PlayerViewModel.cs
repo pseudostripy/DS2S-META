@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Windows.Controls;
 using DS2S_META.Commands;
 using static DS2S_META.State;
+using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META.ViewModels
 {
@@ -34,8 +35,10 @@ namespace DS2S_META.ViewModels
         public bool EnStorePosition => MetaFeature.FtStorePosition;
         public bool EnRestorePosition => MetaFeature.FtRestorePosition;
         public bool EnWarp => MetaFeature.FtWarp && !IsWarping;
+        public bool EnManageBfs => MetaFeature.FtWarp && !IsWarping;
         public bool EnWarpRest => Hook?.Hooked == true && !Properties.Settings.Default.AlwaysRestAfterWarp;  
         public bool EnSpeedhackFactor => MetaFeature.FtSpeedhack && ChkSpeedhack; // allowed and enabled  
+        public bool EnLockChoice => Hook?.Hooked == true;
 
         // Other properties
         private bool IsWarping = false;
@@ -117,6 +120,18 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(EnWarpRest)); // possibly needs rechecking
             }
         }
+        private bool _chkLockChoice = Properties.Settings.Default.LockBfChoice; // load from previous opening
+        public bool ChkLockChoice
+        {
+            get => _chkLockChoice;
+            set
+            {
+                _chkLockChoice = value;
+                Properties.Settings.Default.LockBfChoice = value; // save preferences
+                ResetAutoBfUpdate(); // reset to "auto"
+                OnPropertyChanged();
+            }
+        }
         private bool _chkSpeedhack = false; // start off
         public bool ChkSpeedhack
         {
@@ -141,6 +156,26 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
+        private bool _chkTogManageBfs = false;
+        public bool ChkTogManageBfs 
+        { 
+            get => _chkTogManageBfs;
+            set { 
+                _chkTogManageBfs = value;
+                UpdateBfMan(value);
+                OnPropertyChanged();
+            } 
+        }
+        
+        // Bonfire Combobox Property Management
+        private void ResetAutoBfUpdate()
+        {
+            // call on ChkLocked unticked and on DS2 loads for QoL
+            if (ChkLockChoice) 
+                return; // locked. leave it alone
+            UserSelectedABonfireOrHub = false; // allow relief to auto
+            BonfireList = AllBonfireList;
+        }
         public DS2SBonfire? GameLastBonfire
         {
             get
@@ -155,14 +190,73 @@ namespace DS2S_META.ViewModels
         private DS2SBonfire? _selectedBf;
         public DS2SBonfire? SelectedBf
         {
-            get => (UserSelectedABonfire || GameLastBonfire == null) ? _selectedBf : GameLastBonfire;
+            get
+            {
+                if (ChkLockChoice && UserSelectedABonfireOrHub)
+                    return _selectedBf; // they chose something and want to use it
+                if (ChkLockChoice && !UserSelectedABonfireOrHub)
+                    return GameLastBonfire; // possible if only locked via saved pref.
+
+                // Not ChkLocked
+                if (UserSelectedABonfireOrHub) return _selectedBf; // recent selection
+                return GameLastBonfire; // auto
+            }
             set
             {
                 _selectedBf = value;
+                UserSelectedABonfireOrHub = true;
                 OnPropertyChanged();
             }
         }
-        private bool UserSelectedABonfire = false;
+        private DS2SBonfireHub? _selectedBfHub = null;
+        public DS2SBonfireHub? SelectedBfHub
+        {
+            get => SelectedBf?.Hub;
+            set
+            {
+                _selectedBfHub = value;
+                UserSelectedABonfireOrHub = true;
+                if (_selectedBfHub?.Bonfires == null)
+                    BonfireList = AllBonfireList; // reset to all options
+                else
+                    BonfireList = new ObservableCollection<DS2SBonfire>(_selectedBfHub?.Bonfires!);
+
+                //var testbf = DS2Resource.Bonfires[8];
+                //var bonfireControl = new LabelNudControl();
+                ////Binding binding = new Binding("Value")
+                ////{
+                ////    Source = Hook,
+                ////    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")", ""))
+                ////};
+                ////bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+                //bonfireControl.nudValue.Minimum = 0;
+                //bonfireControl.nudValue.Maximum = 99;
+                //bonfireControl.Label = testbf.Name;
+                //bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+                ////spBonfires.Children.Add(bonfireControl);
+                //MyNewStuffTest.Add(bonfireControl);
+                //List<string> testlist = new() { "hello", "world" };
+                //MyNewStuffTest = new() { "hello", "world" };
+                //OnPropertyChanged(nameof(MyNewStuffTest));
+                //OnPropertyChanged(nameof(BonfireList));
+            }
+        }
+
+        private bool UserSelectedABonfireOrHub = false;
+        public static readonly ObservableCollection<DS2SBonfire> AllBonfireList = new(DS2Resource.Bonfires);
+        private ObservableCollection<DS2SBonfire> _bonfireList = AllBonfireList;
+        public ObservableCollection<DS2SBonfire> BonfireList {
+            get => _bonfireList;
+            set
+            {
+                _bonfireList = value;
+                OnPropertyChanged();
+            }
+        }
+        public static List<DS2SBonfireHub> BonfireHubList => DS2Resource.BonfireHubs;
+
+        
+        public List<string> MyNewStuffTest { get; set; }
 
         // Integer updown binding stuff:
         private readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
@@ -177,18 +271,14 @@ namespace DS2S_META.ViewModels
         public void ToggleAI() => ChkDisableAi = !ChkDisableAi;
         public void ToggleSpeedhack() => ChkSpeedhack = !ChkSpeedhack;
         private void SetGameSpeed() => Hook?.SetSpeed((double)_speedHackFactor);
-        
-        
-        // TODO
-        //public void ToggleRapierOhko()
-        //{
-        //    cbxRapierOHKO.IsChecked = !cbxRapierOHKO.IsChecked;
-        //    cbxFistOHKO.IsChecked = !cbxFistOHKO.IsChecked;
-        //}
         public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
+        //public void ToggleOhko() // TODO
+
+        public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
+        public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
 
 
-        public event RoutedEventHandler LostFocusEventHandler;
+        private void UpdateBfMan(bool enable) { } // todo
 
         // Constructor
         public PlayerViewModel()
@@ -215,8 +305,13 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ChkCollision));
             OnPropertyChanged(nameof(ChkGravity));
             OnPropertyChanged(nameof(GameLastBonfire));
-            OnPropertyChanged(nameof(SelectedBf));
 ;       }
+        public override void DoSlowUpdates()
+        {
+            // put things here if performance issues
+            OnPropertyChanged(nameof(SelectedBf));
+            OnPropertyChanged(nameof(SelectedBfHub));
+        }
         public override void CleanupVM()
         {
             Hook?.SetNoDeath(false);
@@ -290,6 +385,7 @@ namespace DS2S_META.ViewModels
                 Hook?.SetNoCollision(ChkNoCollision);
             }
             IsWarping = false;
+            ResetAutoBfUpdate();
         }
         internal void OnMainMenu()
         {
@@ -307,19 +403,12 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnStorePosition));
             OnPropertyChanged(nameof(EnRestorePosition));
             OnPropertyChanged(nameof(EnWarp));
+            OnPropertyChanged(nameof(EnManageBfs));
             OnPropertyChanged(nameof(EnWarpRest));
+            OnPropertyChanged(nameof(EnLockChoice));
         }
 
-
-        public static List<DS2SBonfire> BonfireList => DS2Resource.Bonfires;
-        
-        public void OnManualBonfireSelect(object obj, DataTransferEventArgs e)
-        {
-            UserSelectedABonfire = true;
-        }
-        
-
-        public void Warp()
+        public void Warp() // todo
         {
             //IsWarping = true;
             OnPropertyChanged(nameof(EnWarp));

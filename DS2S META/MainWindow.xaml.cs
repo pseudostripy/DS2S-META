@@ -109,6 +109,7 @@ namespace DS2S_META
 
             // 16*16ms ~ 4Hz
             RivaHook.Refresh();
+            ViewModel.DoSlowUpdates();
         }
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {

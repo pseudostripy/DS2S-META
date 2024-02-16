@@ -26,6 +26,7 @@ namespace DS2S_META.Utils
         RESTOREPOSITION,
         WARP,
         DMGMOD,
+        MANAGEBFS,
     }
     public static class MetaFeature
     {
@@ -61,6 +62,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.RESTOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
+                METAFEATURE.MANAGEBFS => Hook.InGame,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -83,5 +85,6 @@ namespace DS2S_META.Utils
         public static bool FtStorePosition => IsActive(METAFEATURE.STOREPOSITION);
         public static bool FtRestorePosition => IsActive(METAFEATURE.RESTOREPOSITION);
         public static bool FtWarp => IsActive(METAFEATURE.WARP);
+        public static bool FtManageBfs => IsActive(METAFEATURE.MANAGEBFS);
     }
 }

@@ -31,11 +31,7 @@ namespace DS2S_META
             InitializeComponent();
         }
 
-        public void OnManualBonfireSelect(object obj, DataTransferEventArgs e)
-        {
-            MetaException.RaiseUserWarning("Did I click it?");
-        }
-
+        
         private State.PlayerState PlayerState;
         PlayerViewModel VM; // todo setup command objects to the ViewModel in xaml
 
@@ -161,32 +157,32 @@ namespace DS2S_META
         //}
 
         
-        private void cmbBonfirHub_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Hook == null)
-                return;
+        //private void cmbBonfirHub_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (Hook == null)
+        //        return;
 
-            spBonfires.Children.Clear();
-            var bonfireHub = cmbBonfirHub.SelectedItem as DS2SBonfireHub;
-            if (bonfireHub == null)
-                return;
+        //    spBonfires.Children.Clear();
+        //    var bonfireHub = cmbBonfirHub.SelectedItem as DS2SBonfireHub;
+        //    if (bonfireHub == null)
+        //        return;
 
-            foreach (var bonfire in bonfireHub.Bonfires)
-            {
-                var bonfireControl = new LabelNudControl();
-                Binding binding = new Binding("Value")
-                {
-                    Source = Hook,
-                    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")", ""))
-                };
-                bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
-                bonfireControl.nudValue.Minimum = 0;
-                bonfireControl.nudValue.Maximum = 99;
-                bonfireControl.Label = bonfire;
-                bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
-                spBonfires.Children.Add(bonfireControl);
-            }
-        }
+        //    foreach (var bonfire in bonfireHub.Bonfires)
+        //    {
+        //        var bonfireControl = new LabelNudControl();
+        //        Binding binding = new Binding("Value")
+        //        {
+        //            Source = Hook,
+        //            Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")", ""))
+        //        };
+        //        bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+        //        bonfireControl.nudValue.Minimum = 0;
+        //        bonfireControl.nudValue.Maximum = 99;
+        //        bonfireControl.Label = bonfire;
+        //        bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+        //        spBonfires.Children.Add(bonfireControl);
+        //    }
+        //}
         
         
 
@@ -360,7 +356,7 @@ namespace DS2S_META
         private void KeyPressed(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
-                txtSearch.Clear();
+                TxtSearch.Clear();
 
             KeyDownListbox(e);
         }
@@ -397,17 +393,9 @@ namespace DS2S_META
         }
         private void txtSearch_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            txtSearch.SelectAll();
-            txtSearch.Focus();
+            TxtSearch.SelectAll();
+            TxtSearch.Focus();
             e.Handled=true;
-        }
-
-        // This has to stay here for now cause of crash in .net reflection if I put it in ViewModel
-        // Happy to hear about whether anyone can fix that...
-        public void CmbBonfire_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            // Only triggers when updating *explicitly* from a user input
-            VM.OnManualBonfireSelect(sender, e);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace DS2S_META
         public string Name;
         public ushort ID;
         public int AreaID;
+        public DS2SBonfireHub? Hub { get; set; } // parent Hub
 
         public DS2SBonfire(int areaId, ushort id, string name)
         {

@@ -133,10 +133,7 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <StackPanel Margin="0,0,0,10" Grid.Row="2">
-            <Label Content="Cheats"></Label>
-        </StackPanel>
-        <Expander Grid.Row="3" HorizontalContentAlignment="Stretch" Margin="10,0,0,0">
+        <Expander Grid.Row="2" HorizontalContentAlignment="Stretch" Margin="10,36,0,0" Grid.RowSpan="2">
             <Expander.Header>
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Bonfire"/></TextBlock>
             </Expander.Header>
@@ -145,30 +142,32 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                         <RowDefinition MinHeight="25"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.8*"/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="0.75*"/>
+                        <ColumnDefinition Width="0.8*"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox Content="Quick Select" x:Name="cbxQuickSelectBonfire" VerticalAlignment="Center" Grid.Row="2" Margin="10,5,0,0" VerticalContentAlignment="Stretch"/>
-                    <CheckBox Content="Rest After Warp" IsEnabled="{Binding EnWarpRest}" x:Name="cbxWarpRest" IsChecked="{Binding ChkWarpRest}" Margin="10,5,0,0" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Stretch"/>
-                    <TextBox x:Name="txtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Margin="0,0,0,5"/>
-                    <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,5" VerticalContentAlignment="Center"/>
-                    <ComboBox 
-                        x:Name="cmbBonfire" ItemsSource="{Binding BonfireList}" SelectedItem="{Binding SelectedBf, NotifyOnSourceUpdated=True}" SourceUpdated="CmbBonfire_SourceUpdated" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch"/>
-                    <Button Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" x:Name="btnWarp" Grid.Column="2" HorizontalContentAlignment="Center" Margin="5,0,5,0" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
-                    <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="3" Margin="75,5,75,5"/>
+                    <CheckBox x:Name="CbxLockChoice" Content="Lock Choice" IsEnabled="{Binding EnLockChoice}" IsChecked="{Binding ChkLockChoice}" VerticalAlignment="Center" Margin="0,5,0,0" VerticalContentAlignment="Stretch" />
+                    <CheckBox x:Name="cbxWarpRest" Content="Rest On Warp" IsEnabled="{Binding EnWarpRest}"  IsChecked="{Binding ChkWarpRest}" Margin="0,5,0,0" VerticalAlignment="Center" Grid.Row="1" VerticalContentAlignment="Stretch"/>
+                    <TextBox x:Name="TxtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1"/>
+                    <Label x:Name="LblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,0" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1"/>
+                    <ComboBox x:Name="CmbBonfireHubs" ItemsSource="{Binding BonfireHubList}" SelectedItem="{Binding SelectedBfHub}" Grid.Row="0" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
+                    <ComboBox x:Name="CmbBonfire" ItemsSource="{Binding BonfireList}" SelectedItem="{Binding SelectedBf}" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
+                    <Button x:Name="BtnWarp" Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,2,5,2" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
+                    <ToggleButton x:Name="BtnManageBfs" Content="Manage" IsChecked="{Binding ChkTogManageBfs}" IsEnabled="{Binding EnManageBfs}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,0,5,0" VerticalContentAlignment="Center" Grid.Row="2"/>
+                    <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5,0,5" Grid.Column="1"/>
                 </Grid>
-                <StackPanel Margin="25,0,25,0">
-                    <Separator Visibility="Hidden" Height="10"/>
-                    <Separator Visibility="Hidden" Height="3"/>
+                <StackPanel Margin="0,0,0,0">
                     <Label Content="Manage Bonfire Levels"/>
+                    <ItemsControl Margin="10" ItemsSource="{Binding MyNewStuffTest}"/>
                     <Border BorderBrush="Gray" BorderThickness="1" >
-                        <StackPanel Margin="25,10,25,10">
-                            <ComboBox x:Name="cmbBonfirHub" SelectionChanged="cmbBonfirHub_SelectionChanged" />
+                        <StackPanel Margin="0,0,0,0">
+                            <ComboBox x:Name="cmbBonfirHub" ItemsSource="{Binding BonfireHubList}" SelectedItem="{Binding SelectedBfHub}" />
                             <Separator Visibility="Hidden" Height="10"/>
                             <StackPanel x:Name="spBonfires">
                             </StackPanel>
@@ -181,7 +180,7 @@
             <Label Content="Misc"/>
             <Border BorderBrush="Gray" BorderThickness="1">
                 <StackPanel Margin="5">
-                    
+
                     <Grid VerticalAlignment="Bottom" Margin="50,5,50,5">
                         <Grid.RowDefinitions>
                             <RowDefinition/>

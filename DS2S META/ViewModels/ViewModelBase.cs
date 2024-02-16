@@ -42,5 +42,6 @@ namespace DS2S_META.ViewModels
         public DS2SHook? Hook { get; set; }
         public void InitViewModel(DS2SHook hook) { Hook = hook; }
         public virtual void CleanupVM() { }
+        public virtual void DoSlowUpdates() { } // stuff that just needs updating occasionally (4Hz?)
     }
 }

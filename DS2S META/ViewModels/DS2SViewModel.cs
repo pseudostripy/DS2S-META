@@ -226,6 +226,13 @@ namespace DS2S_META.ViewModels
             //PlayerViewModel.UpdateViewModel();
 
         }
+        public void DoSlowUpdates()
+        {
+            foreach (var vm in ViewModels)
+                vm.DoSlowUpdates();
+        }
+
+
 
         public void InitViewModels()
         {

@@ -24,8 +24,8 @@ namespace DS2S_META
         public BonfireMainControl()
         {
             InitializeComponent();
-            cmbBonfirHub.ItemsSource = DS2SBonfireHub.All;
-            cmbBonfirHub.SelectedIndex = -1;
+            //cmbBonfirHub.ItemsSource = DS2SBonfireHub.All;
+            //cmbBonfirHub.SelectedIndex = -1;
         }
 
         internal override void UpdateCtrl() 
@@ -48,29 +48,29 @@ namespace DS2S_META
 
         private void cmbBonfirHub_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Hook == null)
-                return;
+            //if (Hook == null)
+            //    return;
 
-            spBonfires.Children.Clear();
-            var bonfireHub = cmbBonfirHub.SelectedItem as DS2SBonfireHub;
-            if (bonfireHub == null)
-                return;
+            //spBonfires.Children.Clear();
+            //var bonfireHub = cmbBonfirHub.SelectedItem as DS2SBonfireHub;
+            //if (bonfireHub == null)
+            //    return;
 
-            foreach (var bonfire in bonfireHub.Bonfires)
-            {
-                var bonfireControl = new LabelNudControl();
-                Binding binding = new Binding("Value")
-                {
-                    Source = Hook,
-                    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", ""))
-                };
-                bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
-                bonfireControl.nudValue.Minimum = 0;
-                bonfireControl.nudValue.Maximum = 99;
-                bonfireControl.Label = bonfire;
-                bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
-                spBonfires.Children.Add(bonfireControl);
-            }
+            //foreach (var bonfire in bonfireHub.Bonfires)
+            //{
+            //    var bonfireControl = new LabelNudControl();
+            //    Binding binding = new Binding("Value")
+            //    {
+            //        Source = Hook,
+            //        Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", ""))
+            //    };
+            //    bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+            //    bonfireControl.nudValue.Minimum = 0;
+            //    bonfireControl.nudValue.Maximum = 99;
+            //    bonfireControl.Label = bonfire;
+            //    bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+            //    spBonfires.Children.Add(bonfireControl);
+            //}
         }
     }
 }

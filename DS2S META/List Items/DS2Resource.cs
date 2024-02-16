@@ -19,11 +19,13 @@ namespace DS2S_META
         public static List<DS2SItem> Weapons;
         public static List<DS2SBonfire> Bonfires;
         public static List<DS2SClass> Classes;
+        public static List<DS2SBonfireHub> BonfireHubs;
 
         public static readonly string? ExeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        public static readonly string PathCategories = "Resources/Equipment/DS2SItemCategories.txt";
-        public static readonly string PathBonfires = "Resources/Systems/Bonfires.txt";
-        public static readonly string PathClasses = "Resources/Systems/Classes.txt";
+        private static readonly string PathCategories = "Resources/Equipment/DS2SItemCategories.txt";
+        private static readonly string PathBonfires = "Resources/Systems/Bonfires.txt";
+        private static readonly string PathClasses = "Resources/Systems/Classes.txt";
+        private static readonly string PathBonfireHubs = "Resources/Systems/BonfireHubs.txt";
 
         private static readonly List<ITEMCATEGORY> WepTypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
         private static readonly Dictionary<int, DS2SBonfire> BonfireHashDict;
@@ -51,8 +53,12 @@ namespace DS2S_META
 
             /////////////////////////////////
             Bonfires = ParseResource(PathBonfires, DS2SBonfire.ParseNew);
+            var unlinkedBfHubs = ParseResource(PathBonfireHubs, DS2SBonfireHub.ParseNew);
+            BonfireHubs = unlinkedBfHubs.Select(ubfh => DS2SBonfireHub.LinkBonfireObjects(ubfh, Bonfires)).ToList();
             Classes = ParseResource(PathClasses, DS2SClass.ParseNew);
-
+            foreach (var bf in Bonfires)
+                bf.Hub = BonfireHubs.Where(bfh => bfh.Bonfires.Contains(bf)).FirstOrDefault();
+            
             // Setup fast lookup:
             BonfireHashDict = Bonfires.ToDictionary(bf => Bfidhash(bf.AreaID, bf.ID), bf => bf);
         }
