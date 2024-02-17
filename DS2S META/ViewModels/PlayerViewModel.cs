@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using DS2S_META.Commands;
 using static DS2S_META.State;
 using DS2S_META.Utils.Offsets;
+using System.Diagnostics.Metrics;
 
 namespace DS2S_META.ViewModels
 {
@@ -162,12 +163,15 @@ namespace DS2S_META.ViewModels
             get => _chkTogManageBfs;
             set { 
                 _chkTogManageBfs = value;
-                UpdateBfMan(value);
+                if (value)
+                    SetManagedBonfireList();
+                else
+                    ManagedBfs.Clear();
                 OnPropertyChanged();
             } 
         }
         
-        // Bonfire Combobox Property Management
+        // Bonfire Combobox Property Management [StateHell]
         private void ResetAutoBfUpdate()
         {
             // call on ChkLocked unticked and on DS2 loads for QoL
@@ -187,6 +191,10 @@ namespace DS2S_META.ViewModels
                 return DS2Resource.LookupBonfire((int)lastBonfireAreaId, (int)lastBonfireId);
             }
         }
+        private bool autoHubUpdate = false;
+        private bool simpleSetBf = false;
+        private bool bfListUpdate = false;
+        private bool bfseltrig = false; // required to break the inf recursion on doubly dependent events
         private DS2SBonfire? _selectedBf;
         public DS2SBonfire? SelectedBf
         {
@@ -199,49 +207,71 @@ namespace DS2S_META.ViewModels
 
                 // Not ChkLocked
                 if (UserSelectedABonfireOrHub) return _selectedBf; // recent selection
-                return GameLastBonfire; // auto
+
+                // auto
+                var autobf = GameLastBonfire;
+                if (autobf?.Hub != SelectedBfHub)
+                {
+                    autoHubUpdate = true;
+                    SelectedBfHub = autobf?.Hub;
+                    autoHubUpdate = false;
+                }
+                return autobf;
             }
             set
             {
+                if (bfListUpdate)
+                    return;
+                if (simpleSetBf)
+                {
+                    _selectedBf = value;
+                    OnPropertyChanged();
+                    return;
+                }
+
+                // actual user bonfire selection:
                 _selectedBf = value;
                 UserSelectedABonfireOrHub = true;
+                bfseltrig = true;
+                SelectedBfHub = value?.Hub;
+                bfseltrig = false; // done
                 OnPropertyChanged();
             }
         }
         private DS2SBonfireHub? _selectedBfHub = null;
         public DS2SBonfireHub? SelectedBfHub
         {
-            get => SelectedBf?.Hub;
+            get => _selectedBfHub;
             set
             {
+                var origval = _selectedBfHub;
                 _selectedBfHub = value;
-                UserSelectedABonfireOrHub = true;
-                if (_selectedBfHub?.Bonfires == null)
-                    BonfireList = AllBonfireList; // reset to all options
-                else
-                    BonfireList = new ObservableCollection<DS2SBonfire>(_selectedBfHub?.Bonfires!);
+                if (!autoHubUpdate)
+                    UserSelectedABonfireOrHub = true;
 
-                //var testbf = DS2Resource.Bonfires[8];
-                //var bonfireControl = new LabelNudControl();
-                ////Binding binding = new Binding("Value")
-                ////{
-                ////    Source = Hook,
-                ////    Path = new PropertyPath(bonfire.Replace(" ", "").Replace("'", "").Replace("(", "").Replace(")", ""))
-                ////};
-                ////bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
-                //bonfireControl.nudValue.Minimum = 0;
-                //bonfireControl.nudValue.Maximum = 99;
-                //bonfireControl.Label = testbf.Name;
-                //bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
-                ////spBonfires.Children.Add(bonfireControl);
-                //MyNewStuffTest.Add(bonfireControl);
-                //List<string> testlist = new() { "hello", "world" };
-                //MyNewStuffTest = new() { "hello", "world" };
-                //OnPropertyChanged(nameof(MyNewStuffTest));
-                //OnPropertyChanged(nameof(BonfireList));
+                if (!autoHubUpdate && !bfseltrig)
+                {
+                    // Manual hub selection
+                    // Update bonfire list but don't desync the SelectedBf Property inside an event
+                    bfListUpdate = true;
+                    if (_selectedBfHub?.Bonfires == null)
+                        BonfireList = AllBonfireList; // reset to all options
+                    else
+                        BonfireList = new ObservableCollection<DS2SBonfire>(_selectedBfHub?.Bonfires!);
+                    bfListUpdate = false;
+
+                    simpleSetBf = true;
+                    SelectedBf = BonfireList.FirstOrDefault(); // triggers only on user hub selection
+                    simpleSetBf = false;
+                }
+
+                // Update managed bonfires
+                if (ChkTogManageBfs && origval != _selectedBfHub)
+                    SetManagedBonfireList();
+                    
+                OnPropertyChanged(nameof(ManagedBfs));
             }
         }
-
         private bool UserSelectedABonfireOrHub = false;
         public static readonly ObservableCollection<DS2SBonfire> AllBonfireList = new(DS2Resource.Bonfires);
         private ObservableCollection<DS2SBonfire> _bonfireList = AllBonfireList;
@@ -254,10 +284,26 @@ namespace DS2S_META.ViewModels
             }
         }
         public static List<DS2SBonfireHub> BonfireHubList => DS2Resource.BonfireHubs;
-
+        private ObservableCollection<LabelNudControl> _managedBfs = new();
+        public ObservableCollection<LabelNudControl> ManagedBfs
+        {
+            get => _managedBfs;
+            set 
+            {
+                _managedBfs = value;
+                OnPropertyChanged();
+            } 
+        }
+        public void SetManagedBonfireList()
+        {
+            if (SelectedBfHub == null)
+                return;
+            ManagedBfs.Clear();
+            foreach (var bf in SelectedBfHub.Bonfires)
+                ManagedBfs.Add(CreateLabelNudControl(bf));
+        }
         
-        public List<string> MyNewStuffTest { get; set; }
-
+        
         // Integer updown binding stuff:
         private readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
         public float[] Ang => Hook?.Ang ?? ZEROVECFLOAT;
@@ -277,8 +323,24 @@ namespace DS2S_META.ViewModels
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
 
-
-        private void UpdateBfMan(bool enable) { } // todo
+        // Programmatic ItemControl Management
+        private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
+        {
+            var bonfireControl = new LabelNudControl();
+            var hookPropName = Hook?.Bfs2Properties[bf] ?? string.Empty;
+            Binding binding = new("Value")
+            {
+                Source = Hook,
+                Path = new PropertyPath(hookPropName)
+            };
+            bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+            bonfireControl.nudValue.Minimum = 0;
+            bonfireControl.nudValue.Maximum = 99;
+            bonfireControl.Label = bf.Name;
+            bonfireControl.HorizontalAlignment = HorizontalAlignment.Center;
+            bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+            return bonfireControl;
+        }
 
         // Constructor
         public PlayerViewModel()
@@ -308,9 +370,10 @@ namespace DS2S_META.ViewModels
 ;       }
         public override void DoSlowUpdates()
         {
-            // put things here if performance issues
+            // put things here if less concerned about fastest updates
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
+            OnPropertyChanged(nameof(ManagedBfs));
         }
         public override void CleanupVM()
         {
@@ -373,7 +436,6 @@ namespace DS2S_META.ViewModels
         {
             // called upon transition from load-screen or main-menu to in-game
             if (Hook == null) return;
-            EnableElements(); // refresh UI element enables
 
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
@@ -384,8 +446,13 @@ namespace DS2S_META.ViewModels
                 Hook?.SetNoGravity(ChkNoGravity);
                 Hook?.SetNoCollision(ChkNoCollision);
             }
-            IsWarping = false;
-            ResetAutoBfUpdate();
+
+            // fix post-warp
+            if (IsWarping)
+                IsWarping = false; // complete. reenable warps
+            else
+                ResetAutoBfUpdate();
+            EnableElements(); // refresh UI element enables
         }
         internal void OnMainMenu()
         {
@@ -408,13 +475,9 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnLockChoice));
         }
 
-        public void Warp() // todo
+        public void Warp()
         {
-            //IsWarping = true;
             OnPropertyChanged(nameof(EnWarp));
-
-            //testing();
-            MetaException.RaiseUserWarning($"current bonfire: {GameLastBonfire}");
 
             // no idea if multiplayer hook even implemented properly
             if (Hook?.Multiplayer == true)
@@ -423,30 +486,17 @@ namespace DS2S_META.ViewModels
                 return;
             }
 
-            //var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
+            // Do Warp
+            if (SelectedBf == null) return;
+            // [neat fix for GameLastBonf undef after warp]
+            UserSelectedABonfireOrHub = true; // keep the selection after warp
+            var ww = SelectedBf.Name == "_Game Start";
+            Hook?.WarpBonfire(SelectedBf, ww, ChkWarpRest);
 
-            //// Handle betwixt start warps:
-            //bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
-            //if (NoPrevBonfire)
-            //{
-            //    int BETWIXTAREA = 167903232;
-            //    ushort BETWIXTBFID = 2650;
-            //    VM.Hook.LastBonfireAreaID = BETWIXTAREA;
-            //    VM.Hook.Warp(BETWIXTBFID, true);
-            //    return;
-            //}
-
-
-            //if (bonfire == null)
-            //    throw new Exception("How do we get here intellisense??");
-
-            //VM.Hook.LastBonfireID = bonfire.ID;
-            //VM.Hook.LastBonfireAreaID = bonfire.AreaID;
-            //var warped = VM.Hook.Warp(bonfire.ID);
-            //if (warped && cbxWarpRest.IsChecked == true)
-            //    WarpRest = true;
+            // save warp location to fix an interesting meme due to the thread area overwrite
+            IsWarping = true; // fixed on next load screen
         }
-
+        
 
         //public void RemoveSavedPos()
         //{

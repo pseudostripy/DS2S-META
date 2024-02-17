@@ -149,5 +149,4 @@ namespace DS2S_META
         BONFIREREST = 110000010,
         AREALOAD_POSSIBLY = 130000010,
     }
-
 }

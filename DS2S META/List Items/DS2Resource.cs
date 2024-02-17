@@ -28,7 +28,7 @@ namespace DS2S_META
         private static readonly string PathBonfireHubs = "Resources/Systems/BonfireHubs.txt";
 
         private static readonly List<ITEMCATEGORY> WepTypes = new() { ITEMCATEGORY.MeleeWeapon, ITEMCATEGORY.RangedWeapons, ITEMCATEGORY.Shields, ITEMCATEGORY.StaffChimes };
-        private static readonly Dictionary<int, DS2SBonfire> BonfireHashDict;
+        private static readonly Dictionary<long, DS2SBonfire> BonfireHashDict;
 
 
         // One-time setup (static constructors are "called at most once" in C#)
@@ -62,10 +62,20 @@ namespace DS2S_META
             // Setup fast lookup:
             BonfireHashDict = Bonfires.ToDictionary(bf => Bfidhash(bf.AreaID, bf.ID), bf => bf);
         }
-        private static int Bfidhash(int areaid, int id) => areaid*10000 + id; // maybe?
+        private static long Bfidhash(int areaid, int id) => areaid*0x10000 + id; // maybe?
         public static DS2SBonfire? LookupBonfire(int areaid, int id)
         {
             return BonfireHashDict.TryGetValue(Bfidhash(areaid, id), out var bonfire) ? bonfire : null;
+        }
+        public static DS2SBonfire GetBonfireByName(string name)
+        {
+            var bf = Bonfires.Where(bf => bf.Name == name).FirstOrDefault();
+            if (bf != null)
+                return bf;
+
+            // Issue
+            MetaException.Raise($"Cannot establish link between bonfire name {name} and Hook property.");
+            return DS2SBonfire.EmptyBonfire;
         }
 
         public static List<T> ParseResource<T>(string path, Func<string, T>parser)

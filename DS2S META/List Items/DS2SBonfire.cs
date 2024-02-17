@@ -14,6 +14,7 @@ namespace DS2S_META
         public int AreaID;
         public DS2SBonfireHub? Hub { get; set; } // parent Hub
 
+        public static readonly DS2SBonfire EmptyBonfire = new(0, 0, "not found");
         public DS2SBonfire(int areaId, ushort id, string name)
         {
             ID = id;

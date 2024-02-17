@@ -83,6 +83,11 @@ namespace DS2S_META
             var meWindow = new MetaWarningWindow(warnmsg); // notify user on screen
             meWindow.ShowDialog();
         }
+        private static void ShowMetaInfoWindow(string warnmsg)
+        {
+            var meWindow = new MetaWarningWindow(warnmsg); // notify user on screen
+            meWindow.ShowDialog();
+        }
         public static void Handle(Exception e)
         {
             // Used to cleanup exception message cleanup before passing into Dispatcher
@@ -101,6 +106,10 @@ namespace DS2S_META
         public static void RaiseUserWarning(string msg)
         {
             Application.Current.Dispatcher.Invoke(() => ShowMetaWarningWindow(msg));
+        }
+        public static void RaiseInfo(string msg)
+        {
+            Application.Current.Dispatcher.Invoke(() => ShowMetaInfoWindow(msg));
         }
 
         // Log Cleaner

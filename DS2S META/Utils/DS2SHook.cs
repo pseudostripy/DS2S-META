@@ -821,9 +821,17 @@ namespace DS2S_META
             WARPREST,
             WARPONLY,
         }
+        internal bool WarpBonfire(DS2SBonfire toBonfire, bool bWrongWarp, bool restAfterWarp) // Events one day surely
+        {
+            if (toBonfire == null) return false;
+            LastBonfireAreaID = toBonfire.AreaID;
+            var wopt = restAfterWarp ? WARPOPTIONS.WARPREST : WARPOPTIONS.WARPONLY;
+            var bfid = toBonfire.ID != 0 ? toBonfire.ID : DS2Resource.GetBonfireByName("Fire Keepers' Dwelling").ID; // fix _Game Start
+            return Warp(bfid, bWrongWarp, wopt);
+        }
         internal bool Warp(ushort id, bool areadefault = false, WARPOPTIONS wopt = WARPOPTIONS.DEFAULT)
         {
-            bool bsuccess = false;
+            bool bsuccess;
             if (Is64Bit)
                 bsuccess = Warp64(id, areadefault);
             else
@@ -833,13 +841,19 @@ namespace DS2S_META
             if (!bsuccess)
                 return false;
 
+            if (!Enum.IsDefined(typeof(WARPOPTIONS), wopt))
+            {
+                MetaException.Raise($"Unexpected enum type for WARPOPTIONS. Value received: {wopt}");
+                return false;
+            }
+
             // Apply rest after warp
             bool do_rest = wopt switch
             {
                 WARPOPTIONS.DEFAULT => Properties.Settings.Default.RestAfterWarp,
                 WARPOPTIONS.WARPREST => true,
                 WARPOPTIONS.WARPONLY => false,
-                _ => throw new Exception("Unexpected flag for Silent Item switch")
+                _ => throw new Exception("Impossible, thrown properly above")
             };
             if (do_rest)
                 AwaitBonfireRest();
@@ -1857,7 +1871,6 @@ namespace DS2S_META
             else
                 DisableSpeedhack();
         }
-
         internal void ClearSpeedhackInject()
         {
             if (!SpeedhackInitialised)
@@ -1867,14 +1880,12 @@ namespace DS2S_META
             SpeedhackDllPtr = IntPtr.Zero;
             SpeedhackInitialised = false;
         }
-
         public void DisableSpeedhack()
         {
             if (!SpeedhackInitialised)
                 return;
             SetSpeed(1.0d);
         }
-
         private static readonly string TempDir = $"{ExeDir}\\Resources\\temp";
         public static void ClearupDuplicateSpeedhacks()
         {
@@ -1905,7 +1916,6 @@ namespace DS2S_META
                 }
             }
         }
-
         private void EnableSpeedhack()
         {
             if (SpeedhackDllPtr == IntPtr.Zero)
@@ -2471,6 +2481,87 @@ namespace DS2S_META
         }
         private BonfireLevels Bfs => Offsets.BonfireLevels; // shorthand
         //
+        public Dictionary<DS2SBonfire, string> Bfs2Properties = new()
+        {
+            [DS2Resource.GetBonfireByName("Fire Keepers' Dwelling")] = nameof(FireKeepersDwelling),
+            [DS2Resource.GetBonfireByName("The Far Fire")] = nameof(TheFarFire),
+            [DS2Resource.GetBonfireByName("The Crestfallen's Retreat")] = nameof(CrestfallensRetreat),
+            [DS2Resource.GetBonfireByName("Cardinal Tower")] = nameof(CardinalTower),
+            [DS2Resource.GetBonfireByName("Soldiers' Rest")] = nameof(SoldiersRest),
+            [DS2Resource.GetBonfireByName("The Place Unbeknownst")] = nameof(ThePlaceUnbeknownst),
+            [DS2Resource.GetBonfireByName("Heide's Ruin")] = nameof(HeidesRuin),
+            [DS2Resource.GetBonfireByName("Tower of Flame")] = nameof(TowerOfFlame),
+            [DS2Resource.GetBonfireByName("The Blue Cathedral")] = nameof(TheBlueCathedral),
+            [DS2Resource.GetBonfireByName("Unseen Path to Heide")] = nameof(UnseenPathtoHeide),
+            [DS2Resource.GetBonfireByName("Exile Holding Cells")] = nameof(ExileHoldingCells),
+            [DS2Resource.GetBonfireByName("McDuff's Workshop")] = nameof(McDuffsWorkshop),
+            [DS2Resource.GetBonfireByName("Servants' Quarters")] = nameof(ServantsQuarters),
+            [DS2Resource.GetBonfireByName("Straid's Cell")] = nameof(StraidsCell),
+            [DS2Resource.GetBonfireByName("The Tower Apart")] = nameof(TheTowerApart),
+            [DS2Resource.GetBonfireByName("The Saltfort")] = nameof(TheSaltfort),
+            [DS2Resource.GetBonfireByName("Upper Ramparts")] = nameof(UpperRamparts),
+            [DS2Resource.GetBonfireByName("Undead Refuge")] = nameof(UndeadRefuge),
+            [DS2Resource.GetBonfireByName("Bridge Approach")] = nameof(BridgeApproach),
+            [DS2Resource.GetBonfireByName("Undead Lockaway")] = nameof(UndeadLockaway),
+            [DS2Resource.GetBonfireByName("Undead Purgatory")] = nameof(UndeadPurgatory),
+            [DS2Resource.GetBonfireByName("Poison Pool")] = nameof(PoisonPool),
+            [DS2Resource.GetBonfireByName("The Mines")] = nameof(TheMines),
+            [DS2Resource.GetBonfireByName("Lower Earthen Peak")] = nameof(LowerEarthenPeak),
+            [DS2Resource.GetBonfireByName("Central Earthen Peak")] = nameof(CentralEarthenPeak),
+            [DS2Resource.GetBonfireByName("Upper Earthen Peak")] = nameof(UpperEarthenPeak),
+            [DS2Resource.GetBonfireByName("Threshold Bridge")] = nameof(ThresholdBridge),
+            [DS2Resource.GetBonfireByName("Ironhearth Hall")] = nameof(IronhearthHall),
+            [DS2Resource.GetBonfireByName("Eygil's Idol")] = nameof(EygilsIdol),
+            [DS2Resource.GetBonfireByName("Belfry Sol Approach")] = nameof(BelfrySolApproach),
+            [DS2Resource.GetBonfireByName("Old Akelarre")] = nameof(OldAkelarre),
+            [DS2Resource.GetBonfireByName("Ruined Fork Road")] = nameof(RuinedForkRoad),
+            [DS2Resource.GetBonfireByName("Shaded Ruins")] = nameof(ShadedRuins),
+            [DS2Resource.GetBonfireByName("Gyrm's Respite")] = nameof(GyrmsRespite),
+            [DS2Resource.GetBonfireByName("Ordeal's End")] = nameof(OrdealsEnd),
+            [DS2Resource.GetBonfireByName("Royal Army Campsite")] = nameof(RoyalArmyCampsite),
+            [DS2Resource.GetBonfireByName("Chapel Threshold")] = nameof(ChapelThreshold),
+            [DS2Resource.GetBonfireByName("Lower Brightstone Cove")] = nameof(LowerBrightstoneCove),
+            [DS2Resource.GetBonfireByName("Harval's Resting Place")] = nameof(HarvalsRestingPlace),
+            [DS2Resource.GetBonfireByName("Grave Entrance")] = nameof(GraveEntrance),
+            [DS2Resource.GetBonfireByName("Upper Gutter")] = nameof(UpperGutter),
+            [DS2Resource.GetBonfireByName("Central Gutter")] = nameof(CentralGutter),
+            [DS2Resource.GetBonfireByName("Black Gulch Mouth")] = nameof(BlackGulchMouth),
+            [DS2Resource.GetBonfireByName("Hidden Chamber")] = nameof(HiddenChamber),
+            [DS2Resource.GetBonfireByName("King's Gate")] = nameof(KingsGate),
+            [DS2Resource.GetBonfireByName("Under Castle Drangleic")] = nameof(UnderCastleDrangleic),
+            [DS2Resource.GetBonfireByName("Central Castle Drangleic")] = nameof(CentralCastleDrangleic),
+            [DS2Resource.GetBonfireByName("Forgotten Chamber")] = nameof(ForgottenChamber),
+            [DS2Resource.GetBonfireByName("Tower of Prayer (Amana)")] = nameof(TowerOfPrayerAmana),
+            [DS2Resource.GetBonfireByName("Crumbled Ruins")] = nameof(CrumbledRuins),
+            [DS2Resource.GetBonfireByName("Rhoy's Resting Place")] = nameof(RhoysRestingPlace),
+            [DS2Resource.GetBonfireByName("Rise of the Dead")] = nameof(RiseOfTheDead),
+            [DS2Resource.GetBonfireByName("Undead Crypt Entrance")] = nameof(UndeadCryptEntrance),
+            [DS2Resource.GetBonfireByName("Undead Ditch")] = nameof(UndeadDitch),
+            [DS2Resource.GetBonfireByName("Foregarden")] = nameof(Foregarden),
+            [DS2Resource.GetBonfireByName("Ritual Site")] = nameof(RitualSite),
+            [DS2Resource.GetBonfireByName("Dragon Aerie")] = nameof(DragonAerie),
+            [DS2Resource.GetBonfireByName("Shrine Entrance")] = nameof(ShrineEntrance),
+            [DS2Resource.GetBonfireByName("Sanctum Walk")] = nameof(SanctumWalk),
+            [DS2Resource.GetBonfireByName("Tower of Prayer (Shulva)")] = nameof(TowerOfPrayerShulva),
+            [DS2Resource.GetBonfireByName("Priestess' Chamber")] = nameof(PriestessChamber),
+            [DS2Resource.GetBonfireByName("Hidden Sanctum Chamber")] = nameof(HiddenSanctumChamber),
+            [DS2Resource.GetBonfireByName("Lair of the Imperfect")] = nameof(LairOfTheImperfect),
+            [DS2Resource.GetBonfireByName("Sanctum Interior")] = nameof(SanctumInterior),
+            [DS2Resource.GetBonfireByName("Sanctum Nadir")] = nameof(SanctumNadir),
+            [DS2Resource.GetBonfireByName("Throne Floor")] = nameof(ThroneFloor),
+            [DS2Resource.GetBonfireByName("Upper Floor")] = nameof(UpperFloor),
+            [DS2Resource.GetBonfireByName("Foyer")] = nameof(Foyer),
+            [DS2Resource.GetBonfireByName("Lowermost Floor")] = nameof(LowermostFloor),
+            [DS2Resource.GetBonfireByName("The Smelter Throne")] = nameof(TheSmelterThrone),
+            [DS2Resource.GetBonfireByName("Iron Hallway Entrance")] = nameof(IronHallwayEntrance),
+            [DS2Resource.GetBonfireByName("Outer Wall")] = nameof(OuterWall),
+            [DS2Resource.GetBonfireByName("Abandoned Dwelling")] = nameof(AbandonedDwelling),
+            [DS2Resource.GetBonfireByName("Expulsion Chamber")] = nameof(ExpulsionChamber),
+            [DS2Resource.GetBonfireByName("Inner Wall")] = nameof(InnerWall),
+            [DS2Resource.GetBonfireByName("Lower Garrison")] = nameof(LowerGarrison),
+            [DS2Resource.GetBonfireByName("Grand Cathedral")] = nameof(GrandCathedral),
+        };
+
         public byte FireKeepersDwelling{ get => ReadBfLevel(Bfs.FireKeepersDwelling); set { WriteBfLevel(Bfs.FireKeepersDwelling, value); }}
         public byte TheFarFire{ get => ReadBfLevel(Bfs.TheFarFire); set { WriteBfLevel(Bfs.TheFarFire, value); }}
         public byte CrestfallensRetreat { get => ReadBfLevel(Bfs.CrestfallensRetreat); set { WriteBfLevel(Bfs.CrestfallensRetreat, value); }}

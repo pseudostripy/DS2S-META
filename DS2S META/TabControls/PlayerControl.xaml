@@ -157,22 +157,13 @@
                     <TextBox x:Name="TxtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1"/>
                     <Label x:Name="LblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,0" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1"/>
                     <ComboBox x:Name="CmbBonfireHubs" ItemsSource="{Binding BonfireHubList}" SelectedItem="{Binding SelectedBfHub}" Grid.Row="0" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
-                    <ComboBox x:Name="CmbBonfire" ItemsSource="{Binding BonfireList}" SelectedItem="{Binding SelectedBf}" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
+                    <ComboBox x:Name="CmbBonfire" ItemsSource="{Binding BonfireList, Mode=TwoWay}" SelectedItem="{Binding SelectedBf}" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
                     <Button x:Name="BtnWarp" Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,2,5,2" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
                     <ToggleButton x:Name="BtnManageBfs" Content="Manage" IsChecked="{Binding ChkTogManageBfs}" IsEnabled="{Binding EnManageBfs}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,0,5,0" VerticalContentAlignment="Center" Grid.Row="2"/>
                     <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5,0,5" Grid.Column="1"/>
                 </Grid>
                 <StackPanel Margin="0,0,0,0">
-                    <Label Content="Manage Bonfire Levels"/>
-                    <ItemsControl Margin="10" ItemsSource="{Binding MyNewStuffTest}"/>
-                    <Border BorderBrush="Gray" BorderThickness="1" >
-                        <StackPanel Margin="0,0,0,0">
-                            <ComboBox x:Name="cmbBonfirHub" ItemsSource="{Binding BonfireHubList}" SelectedItem="{Binding SelectedBfHub}" />
-                            <Separator Visibility="Hidden" Height="10"/>
-                            <StackPanel x:Name="spBonfires">
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
+                    <ItemsControl Margin="10" ItemsSource="{Binding ManagedBfs}"/>
                 </StackPanel>
             </StackPanel>
         </Expander>
