@@ -477,8 +477,6 @@ namespace DS2S_META.ViewModels
 
         public void Warp()
         {
-            OnPropertyChanged(nameof(EnWarp));
-
             // no idea if multiplayer hook even implemented properly
             if (Hook?.Multiplayer == true)
             {
@@ -486,15 +484,21 @@ namespace DS2S_META.ViewModels
                 return;
             }
 
+            // Final checks
+            var bfChosen = SelectedBf; // race condition avoidance
+            SelectedBf = bfChosen; // just in case its still null
+            if (bfChosen == null)
+                return;
+
             // Do Warp
-            if (SelectedBf == null) return;
             // [neat fix for GameLastBonf undef after warp]
             UserSelectedABonfireOrHub = true; // keep the selection after warp
-            var ww = SelectedBf.Name == "_Game Start";
-            Hook?.WarpBonfire(SelectedBf, ww, ChkWarpRest);
+            var ww = bfChosen.Name == "_Game Start";
+            Hook?.WarpBonfire(bfChosen, ww, ChkWarpRest);
 
             // save warp location to fix an interesting meme due to the thread area overwrite
             IsWarping = true; // fixed on next load screen
+            OnPropertyChanged(nameof(EnWarp)); // disable until next load
         }
         
 

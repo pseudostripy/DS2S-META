@@ -262,10 +262,7 @@ namespace DS2S_META
         {
             //RemoveSavedPos();
         }
-        private void WarpButton_Click(object sender, RoutedEventArgs e)
-        {
-            Warp();
-        }
+        
         private void StoredPositions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbStoredPositions.SelectedItem is not SavedPos savedPos)
@@ -297,58 +294,6 @@ namespace DS2S_META
             VM.Hook.FastQuit = 6;
         }
         
-        //private void cmbBonfire_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    // Guard clauses
-        //    if (VM.Hook == null)
-        //        return;
-        //    if (!VM.Hook.InGame)
-        //        return;
-        //    if (cbxQuickSelectBonfire.IsChecked != true)
-        //        return;
-        //    if (cmbBonfire.SelectedItem is not DS2SBonfire bonfire)
-        //        throw new NullReferenceException("Unexpected bonfire");
-            
-        //    // Do stuff
-        //    VM.Hook.LastBonfireID = bonfire.ID;
-        //    VM.Hook.LastBonfireAreaID = bonfire.AreaID;
-        //}
-        public void Warp()
-        {
-            //if (VM.Hook == null)
-            //    return;
-
-            //_ = ChangeColor(Brushes.DarkGray);
-            //if (VM.Hook.Multiplayer)
-            //{
-            //    MessageBox.Show("Warning: Cannot warp while engaging in Multiplayer", "Multiplayer Warp Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    return;
-            //}
-
-            //var bonfire = cmbBonfire.SelectedItem as DS2SBonfire;
-
-            //// Handle betwixt start warps:
-            //bool NoPrevBonfire = bonfire == null || bonfire.ID == 0 || bonfire.AreaID == 0;
-            //if (NoPrevBonfire)
-            //{
-            //    int BETWIXTAREA = 167903232;
-            //    ushort BETWIXTBFID = 2650;
-            //    VM.Hook.LastBonfireAreaID = BETWIXTAREA;
-            //    VM.Hook.Warp(BETWIXTBFID, true);
-            //    return;
-            //}
-
-
-            //if (bonfire == null)
-            //    throw new Exception("How do we get here intellisense??");
-
-            //VM.Hook.LastBonfireID = bonfire.ID;
-            //VM.Hook.LastBonfireAreaID = bonfire.AreaID;
-            //var warped = VM.Hook.Warp(bonfire.ID);
-            //if (warped && cbxWarpRest.IsChecked == true)
-            //    WarpRest = true; 
-        }
-
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             //FilterBonfires();
