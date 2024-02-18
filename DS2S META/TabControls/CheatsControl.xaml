@@ -34,9 +34,6 @@
                 <Label x:Name="lblSpawned" Grid.Column="2" Content="{Binding LblSpawnedTxt}" HorizontalAlignment="Center" Visibility="{Binding LblSpawnVisibility}" Foreground="{Binding MWSpawnColor}" Margin="0,5,0,5" Grid.Row="2" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto" FontSize="16" FontWeight="Bold"/>
                 <CheckBox x:Name="cbxRubbishMode" Content="Rubbish Challenge" IsEnabled="{Binding EnRubbishChallenge}" IsChecked="False" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Checked="cbxRubbishMode_Checked" Unchecked="cbxRubbishMode_Unchecked" Grid.Row="3" />
                 <CheckBox x:Name="cbxNoBIK" Content="Skip BIK Phase 1" IsEnabled="{Binding EnBIKP1Skip}" IsChecked="{Binding ChkBIKP1}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="4" />
-                <CheckBox x:Name="cbxDealNoDmg" Content="Deal No Dmg" IsEnabled="{Binding EnDmgMod}" IsChecked="{Binding ChkDealNoDmg}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="5" />
-                <CheckBox x:Name="cbxTakeNoDmg" Content="Take No Dmg" IsEnabled="{Binding EnDmgMod}" IsChecked="{Binding ChkTakeNoDmg}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="6" />
-                <CheckBox x:Name="cbxOHKO" Content="OHKO" IsEnabled="{Binding EnDmgMod}" IsChecked="{Binding ChkOHKO}" Padding="0,5,0,5" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Column="1" Grid.Row="7" />
             </Grid>
         </StackPanel>
     </Grid>

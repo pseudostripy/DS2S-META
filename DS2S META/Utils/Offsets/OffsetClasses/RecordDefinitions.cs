@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Utils.Offsets
 {
-    public readonly record struct PlayerCtrlOffsets(int HP, int HPMin, int HPMax, int HPCap, int SP, int SPMax, int SpeedModifier);
+    public readonly record struct PlayerCtrlOffsets(int HP, int HPMin, int HPMax, int HPCap, int SP, int SPMax, int SpeedModifier, int CurrPoise);
     public readonly record struct PlayerName(int Name);
     public readonly record struct ForceQuit(int Quit);
     public record class PlayerType

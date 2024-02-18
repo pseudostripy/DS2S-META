@@ -342,5 +342,10 @@ namespace DS2S_META
             TxtSearch.Focus();
             e.Handled=true;
         }
+
+        //private void NudHealth_GotFocus(object sender, RoutedEventArgs e)
+        //{
+        //    MetaException.RaiseInfo("TEST");
+        //}
     }
 }

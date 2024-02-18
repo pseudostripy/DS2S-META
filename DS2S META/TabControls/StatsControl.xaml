@@ -115,8 +115,7 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
             <Label Content="Misc"/>
-            <Button Content="Restore Humanity" Margin="0" IsEnabled="{Binding EnRestoreHumanity}" Width="110" Click="RestoreHumanity_Click" x:Name="btnRestoreHumanity"/>
-            <Button Content="New Test Character" Margin="10" IsEnabled="{Binding EnNewTestCharacter}" Width="110" x:Name="btnNewTestCharacter" Click="NewTestCharacter_Click"/>
+            
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <Grid Margin="15,15,15,15">
                     <Grid.ColumnDefinitions>

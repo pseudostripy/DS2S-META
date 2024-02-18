@@ -632,21 +632,21 @@ namespace DS2S_META
         }
         public void UpdatePlayerProperties()
         {
-            OnPropertyChanged(nameof(Health));
-            OnPropertyChanged(nameof(HealthMax));
-            OnPropertyChanged(nameof(HealthCap));
-            OnPropertyChanged(nameof(Stamina));
-            OnPropertyChanged(nameof(MaxStamina));
-            OnPropertyChanged(nameof(TeamType));
-            OnPropertyChanged(nameof(CharType));
-            OnPropertyChanged(nameof(PosX));
-            OnPropertyChanged(nameof(PosY));
-            OnPropertyChanged(nameof(PosZ));
-            OnPropertyChanged(nameof(AngX));
-            OnPropertyChanged(nameof(AngY));
-            OnPropertyChanged(nameof(AngZ));
-            OnPropertyChanged(nameof(Collision));
-            OnPropertyChanged(nameof(Gravity));
+            //OnPropertyChanged(nameof(Health));
+            //OnPropertyChanged(nameof(HealthMax));
+            //OnPropertyChanged(nameof(HealthCap));
+            //OnPropertyChanged(nameof(Stamina));
+            //OnPropertyChanged(nameof(MaxStamina));
+            //OnPropertyChanged(nameof(TeamType));
+            //OnPropertyChanged(nameof(CharType));
+            //OnPropertyChanged(nameof(PosX));
+            //OnPropertyChanged(nameof(PosY));
+            //OnPropertyChanged(nameof(PosZ));
+            //OnPropertyChanged(nameof(AngX));
+            //OnPropertyChanged(nameof(AngY));
+            //OnPropertyChanged(nameof(AngZ));
+            //OnPropertyChanged(nameof(Collision));
+            //OnPropertyChanged(nameof(Gravity));
             OnPropertyChanged(nameof(StablePos));
             OnPropertyChanged(nameof(LastBonfireAreaID));
             OnPropertyChanged(nameof(Hooked));
@@ -2273,6 +2273,11 @@ namespace DS2S_META
         {
             get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
             set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
+        }
+        public float CurrPoise
+        {
+            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.CurrPoise) : 0;
+            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.CurrPoise, value);
         }
         public byte NetworkPhantomID
         {

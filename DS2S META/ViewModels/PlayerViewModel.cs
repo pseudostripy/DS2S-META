@@ -19,6 +19,7 @@ using DS2S_META.Commands;
 using static DS2S_META.State;
 using DS2S_META.Utils.Offsets;
 using System.Diagnostics.Metrics;
+using Xceed.Wpf.Toolkit;
 
 namespace DS2S_META.ViewModels
 {
@@ -40,9 +41,12 @@ namespace DS2S_META.ViewModels
         public bool EnWarpRest => Hook?.Hooked == true && !Properties.Settings.Default.AlwaysRestAfterWarp;  
         public bool EnSpeedhackFactor => MetaFeature.FtSpeedhack && ChkSpeedhack; // allowed and enabled  
         public bool EnLockChoice => Hook?.Hooked == true;
+        public bool EnDmgMod => MetaFeature.FtDmgMod;
+        public bool EnMoneyBags => MetaFeature.FtGiveSouls;
+        public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
+        public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
         // Other properties
-        private bool IsWarping = false;
         private bool _chkNoDeath = false;
         public bool ChkNoDeath {
             get => _chkNoDeath;
@@ -170,8 +174,74 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             } 
         }
+
+        // Status Properties [not entirely sure why these must have setters to work]
+        public int HealthCurr
+        {
+            get => Hook?.Health ?? 0;
+            set
+            {
+                if (Hook?.Health != null)
+                    Hook.Health = value;
+                OnPropertyChanged();
+                HealthLock = false;
+            }
+        }
+        public int HealthCap
+        {
+            get => Hook?.HealthCap ?? 0;
+            set
+            {
+                if (Hook?.HealthCap != null)
+                    Hook.HealthCap = value;
+                OnPropertyChanged();
+            }
+        }
+        public int HealthMax
+        {
+            get => Hook?.HealthMax ?? 0;
+            set
+            {
+                if (Hook?.HealthMax != null)
+                    Hook.HealthMax = value;
+                OnPropertyChanged();
+            }
+        }
+        public int StaminaCurr
+        {
+            get => (int)(Hook?.Stamina ?? 0);
+            set
+            {
+                if (Hook?.Stamina != null)
+                    Hook.Stamina = value;
+                OnPropertyChanged();
+                StaminaLock = false; // onLostFocus
+            }
+        }
+        public int StaminaMax
+        {
+            get => (int)(Hook?.MaxStamina ?? 0);
+            set
+            {
+                if (Hook?.MaxStamina != null)
+                    Hook.MaxStamina = value;
+                OnPropertyChanged();
+            }
+        }
+        public float PoiseCurr
+        {
+            get => Hook?.CurrPoise ?? 0;
+            set
+            {
+                if (Hook?.CurrPoise != null)
+                    Hook.CurrPoise = value;
+                OnPropertyChanged();
+            }
+        }
+
         
         // Bonfire Combobox Property Management [StateHell]
+        private bool IsWarping = false;
         private void ResetAutoBfUpdate()
         {
             // call on ChkLocked unticked and on DS2 loads for QoL
@@ -302,8 +372,59 @@ namespace DS2S_META.ViewModels
             foreach (var bf in SelectedBfHub.Bonfires)
                 ManagedBfs.Add(CreateLabelNudControl(bf));
         }
+
+        // Utility Properties
+        private bool _chkDealNoDmg = false;
+        public bool ChkDealNoDmg
+        {
+            get => _chkDealNoDmg;
+            set
+            {
+                var bworked = Hook?.GeneralizedDmgMod(false, value, _chkTakeNoDmg);
+                if (bworked != true)
+                    return; // likely bug or inject failure. exit gracefully
+
+                // Success, update properties and FE
+                _chkDealNoDmg = value;
+                _chkOHKO = false; // overruled
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkOHKO));
+            }
+        }
+        private bool _chkOHKO = false;
+        public bool ChkOHKO
+        {
+            get => _chkOHKO;
+            set
+            {
+                var bworked = Hook?.GeneralizedDmgMod(value, false, _chkTakeNoDmg);
+                if (bworked != true)
+                    return; // likely bug or inject failure. exit gracefully
+
+                // Success, update properties and FE
+                _chkOHKO = value;
+                _chkDealNoDmg = false; // overruled
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDealNoDmg));
+            }
+        }
+        private bool _chkTakeNoDmg = false;
+        public bool ChkTakeNoDmg
+        {
+            get => _chkTakeNoDmg;
+            set
+            {
+                var bworked = Hook?.GeneralizedDmgMod(_chkOHKO, _chkDealNoDmg, value);
+                if (bworked != true)
+                    return; // likely bug or inject failure. exit gracefully
+
+                // Done. Update FE
+                _chkTakeNoDmg = value;
+                OnPropertyChanged();
+            }
+        }
         
-        
+
         // Integer updown binding stuff:
         private readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
         public float[] Ang => Hook?.Ang ?? ZEROVECFLOAT;
@@ -318,8 +439,7 @@ namespace DS2S_META.ViewModels
         public void ToggleSpeedhack() => ChkSpeedhack = !ChkSpeedhack;
         private void SetGameSpeed() => Hook?.SetSpeed((double)_speedHackFactor);
         public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
-        //public void ToggleOhko() // TODO
-
+        public void ToggleOHKO() => ChkOHKO = !ChkOHKO;
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
 
@@ -346,28 +466,37 @@ namespace DS2S_META.ViewModels
         public PlayerViewModel()
         {
             // initialize commands
-            BtnWarpCommand = new RelayCommand(BtnWarpExecute, BtnWarpCanExecute);
+            BtnWarpCommand = new RelayCommand(BtnWarpExecute, BtnWarpCanExec);
             BtnUnlockBfsCommand = new RelayCommand(BtnUnlockBfsExecute, BtnUnlockBfsCanExec);
             BtnRestorePositionCommand = new RelayCommand(BtnRestorePositionExecute, BtnRestorePositionCanExec);
+            BtnMoneybagsCommand = new RelayCommand(BtnMoneybagsExecute, BtnMoneybagsCanExec);
+            BtnRestoreHumanityCommand = new RelayCommand(BtnRestoreHumanityExecute, BtnRestoreHumanityCanExec);
+            BtnNewTestCharCommand = new RelayCommand(BtnNewTestCharExecute, BtnNewTestCharCanExec);
+            HealthCurrGotFocusCommand = new RelayCommand(HealthCurrGotFocusExecute, AlwaysCanExec);
+            StaminaCurrGotFocusCommand = new RelayCommand(StaminaCurrGotFocusExecute, AlwaysCanExec);
+            StaminaKeyDownCommand = new RelayCommand(StaminaKeyDownExecute, AlwaysCanExec);
+            HealthKeyDownCommand = new RelayCommand(HealthKeyDownExecute, AlwaysCanExec);
         }
 
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()
         {
-            //OnPropertyChanged(nameof(Health));
-            //OnPropertyChanged(nameof(HealthMax));
-            //OnPropertyChanged(nameof(HealthCap));
-            //OnPropertyChanged(nameof(Stamina));
-            //OnPropertyChanged(nameof(MaxStamina));
-            //OnPropertyChanged(nameof(TeamType));
-            //OnPropertyChanged(nameof(CharType));
-            OnPropertyChanged(nameof(Pos));
+            if (!HealthLock)
+                OnPropertyChanged(nameof(HealthCurr));
+            OnPropertyChanged(nameof(HealthMax));
+            OnPropertyChanged(nameof(HealthCap));
+            if (!StaminaLock)
+                OnPropertyChanged(nameof(StaminaCurr));
+            OnPropertyChanged(nameof(StaminaMax));
+            OnPropertyChanged(nameof(StaminaMax));
+            OnPropertyChanged(nameof(PoiseCurr));
             OnPropertyChanged(nameof(StablePos));
             OnPropertyChanged(nameof(Ang));
             OnPropertyChanged(nameof(ChkCollision));
             OnPropertyChanged(nameof(ChkGravity));
             OnPropertyChanged(nameof(GameLastBonfire));
-;       }
+            OnPropertyChanged(nameof(EnDmgMod));
+        }
         public override void DoSlowUpdates()
         {
             // put things here if less concerned about fastest updates
@@ -390,10 +519,21 @@ namespace DS2S_META.ViewModels
         public ICommand BtnWarpCommand { get; set; }
         public ICommand BtnUnlockBfsCommand { get; set; }
         public ICommand BtnRestorePositionCommand { get; set; }
+        public ICommand BtnMoneybagsCommand { get; set; }
+        public ICommand BtnRestoreHumanityCommand { get; set; }
+        public ICommand BtnNewTestCharCommand { get; set; }
+        public ICommand HealthCurrGotFocusCommand { get; set; }
+        public ICommand StaminaCurrGotFocusCommand { get; set; }
+        public ICommand StaminaKeyDownCommand { get; set; }
+        public ICommand HealthKeyDownCommand { get; set; }
         //
-        private bool BtnWarpCanExecute(object? parameter) => MetaFeature.FtWarp; 
+        private bool BtnWarpCanExec(object? parameter) => MetaFeature.FtWarp; 
         private bool BtnUnlockBfsCanExec(object? parameter) => Hook?.Hooked == true; 
         private bool BtnRestorePositionCanExec(object? parameter) => Hook?.Hooked == true; 
+        private bool BtnMoneybagsCanExec(object? parameter) => MetaFeature.FtGiveSouls; 
+        private bool BtnRestoreHumanityCanExec(object? parameter) => MetaFeature.FtRestoreHumanity; 
+        private bool BtnNewTestCharCanExec(object? parameter) => MetaFeature.FtNewTestCharacter; 
+        private static bool AlwaysCanExec(object? parameter) => true;
         //
         private void BtnWarpExecute(object? parameter) => Warp();
         private void BtnUnlockBfsExecute(object? parameter) => Hook?.UnlockBonfires();
@@ -422,6 +562,34 @@ namespace DS2S_META.ViewModels
             //    nudStamina.Value = PlayerState.Stamina;
             //}
         }
+        private void BtnMoneybagsExecute(object? parameter) => Hook?.AddSouls(9999999);
+        private void BtnRestoreHumanityExecute(object? parameter) => Hook?.RestoreHumanity();
+        private void BtnNewTestCharExecute(object? parameter) => Hook?.NewTestCharacter();
+        private void HealthCurrGotFocusExecute(object? parameter) => HealthLock = true;
+        private void StaminaCurrGotFocusExecute(object? parameter) => StaminaLock = true;
+
+        private void StaminaKeyDownExecute(object? parameter)
+        {
+            var keyargs = (KeyEventArgs?)parameter;
+            if (keyargs?.Key != Key.Enter)
+                return;
+
+            if (keyargs.OriginalSource is not WatermarkTextBox textbox) return;
+            StaminaCurr = int.Parse(textbox.Text);
+        }
+        private void HealthKeyDownExecute(object? parameter)
+        {
+            var keyargs = (KeyEventArgs?)parameter;
+            if (keyargs?.Key != Key.Enter)
+                return;
+
+            if (keyargs.OriginalSource is not WatermarkTextBox textbox) return;
+            HealthCurr = int.Parse(textbox.Text);
+        }
+
+        // used to allow user to type without updating things
+        public bool HealthLock { get; set; } = false;
+        public bool StaminaLock { get; set; } = false;
 
         // Event based updates
         internal void OnHooked()
@@ -473,6 +641,9 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnManageBfs));
             OnPropertyChanged(nameof(EnWarpRest));
             OnPropertyChanged(nameof(EnLockChoice));
+            OnPropertyChanged(nameof(EnMoneyBags));
+            OnPropertyChanged(nameof(EnRestoreHumanity));
+            OnPropertyChanged(nameof(EnNewTestCharacter));
         }
 
         public void Warp()

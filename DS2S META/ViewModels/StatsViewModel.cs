@@ -19,12 +19,8 @@ namespace DS2S_META.ViewModels
     // Note: CheatsControl has CheatsViewModel data context set in MainWindow.xaml
     public class StatsViewModel : ViewModelBase
     {
-        // Binding Variables:
-        public bool EnGiveSouls => Hook?.InGame == true;
-        public bool EnRestoreHumanity => Hook?.InGame == true;
-        public bool EnNewTestCharacter => Hook?.InGame == true;
 
-
+        public bool EnGiveSouls => MetaFeature.FtGiveSouls;
 
         // Constructor
         public StatsViewModel()
@@ -59,8 +55,6 @@ namespace DS2S_META.ViewModels
         private void EnableElements() 
         {
             OnPropertyChanged(nameof(EnGiveSouls));
-            OnPropertyChanged(nameof(EnRestoreHumanity));
-            OnPropertyChanged(nameof(EnNewTestCharacter));
         }
 
     }

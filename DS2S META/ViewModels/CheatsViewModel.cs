@@ -76,55 +76,7 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();                        // notify
             }
         }
-        private bool _chkDealNoDmg = false;
-        public bool ChkDealNoDmg
-        {
-            get => _chkDealNoDmg;
-            set
-            {
-                var bworked = Hook?.GeneralizedDmgMod(false, value, _chkTakeNoDmg);
-                if (bworked != true) 
-                    return; // likely bug or inject failure. exit gracefully
-                
-                // Success, update properties and FE
-                _chkDealNoDmg = value;
-                _chkOHKO = false; // overruled
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ChkOHKO));
-            }
-        }
-        private bool _chkOHKO = false;
-        public bool ChkOHKO
-        {
-            get => _chkOHKO;
-            set
-            {
-                var bworked = Hook?.GeneralizedDmgMod(value, false, _chkTakeNoDmg);
-                if (bworked != true)
-                    return; // likely bug or inject failure. exit gracefully
-
-                // Success, update properties and FE
-                _chkOHKO = value;
-                _chkDealNoDmg = false; // overruled
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ChkDealNoDmg));
-            }
-        }
-        private bool _chkTakeNoDmg = false;
-        public bool ChkTakeNoDmg
-        {
-            get => _chkTakeNoDmg;
-            set
-            {
-                var bworked = Hook?.GeneralizedDmgMod(_chkOHKO, _chkDealNoDmg, value);
-                if (bworked != true)
-                    return; // likely bug or inject failure. exit gracefully
-
-                // Done. Update FE
-                _chkTakeNoDmg = value;
-                OnPropertyChanged();
-            }
-        }
+        
 
         // Enable buttons of valid features
         public bool EnGive17kReward => MetaFeature.FtGive17kReward;
@@ -132,8 +84,7 @@ namespace DS2S_META.ViewModels
         public bool EnMadWarrior => MetaFeature.FtMadWarrior;
         public bool EnRubbishChallenge => MetaFeature.FtRubbishChallenge;
         public bool EnBIKP1Skip => MetaFeature.FtBIKP1Skip;
-        public bool EnDmgMod => MetaFeature.FtDmgMod;
-
+        
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()
         {
@@ -174,7 +125,6 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMadWarrior));
             OnPropertyChanged(nameof(EnRubbishChallenge));
             OnPropertyChanged(nameof(EnBIKP1Skip));
-            OnPropertyChanged(nameof(EnDmgMod));
         }
     }
 }

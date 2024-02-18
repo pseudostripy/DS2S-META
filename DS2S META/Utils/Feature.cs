@@ -27,6 +27,9 @@ namespace DS2S_META.Utils
         WARP,
         DMGMOD,
         MANAGEBFS,
+        GIVESOULS,
+        RESTOREHUMANITY,
+        NEWTESTCHARACTER,
     }
     public static class MetaFeature
     {
@@ -63,6 +66,9 @@ namespace DS2S_META.Utils
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
                 METAFEATURE.MANAGEBFS => Hook.InGame,
+                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        // should work on all supported versions
+                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
+                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -86,5 +92,8 @@ namespace DS2S_META.Utils
         public static bool FtRestorePosition => IsActive(METAFEATURE.RESTOREPOSITION);
         public static bool FtWarp => IsActive(METAFEATURE.WARP);
         public static bool FtManageBfs => IsActive(METAFEATURE.MANAGEBFS);
+        public static bool FtGiveSouls => IsActive(METAFEATURE.GIVESOULS);
+        public static bool FtRestoreHumanity => IsActive(METAFEATURE.RESTOREHUMANITY);
+        public static bool FtNewTestCharacter => IsActive(METAFEATURE.NEWTESTCHARACTER);
     }
 }

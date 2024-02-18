@@ -71,7 +71,7 @@ namespace DS2S_META
                 "Give 17k" => () => MW.metaCheats.Hook.Give17kReward(),
                 "Toggle AI" => () => MW.ViewModel.PlayerViewModel.ToggleAI(),
                 "Toggle No Death" => () => MW.ViewModel.PlayerViewModel.ToggleNoDeath(),
-                "Toggle OHKO" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
+                "Toggle OHKO" => () => MW.ViewModel.PlayerViewModel.ToggleOHKO(),
                 "Give 3/1" => () => MW.metaCheats.Hook.Give3Chunk1Slab(),
                 _ => throw new NotImplementedException("Unknown hotkey request method")
             };

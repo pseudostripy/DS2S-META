@@ -39,6 +39,7 @@
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
     <PackageReference Include="GlobalHotkeys" Version="1.0.0.6" />
     <PackageReference Include="keystoneengine.csharp" Version="0.9.1.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
     <PackageReference Include="Octokit" Version="4.0.3" />
     <PackageReference Include="PortableSettingsProvider" Version="0.2.4" />
   </ItemGroup>
