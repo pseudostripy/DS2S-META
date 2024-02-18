@@ -16,13 +16,12 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="145*"/>
+            <RowDefinition Height="278*"/>
+            <RowDefinition Height="166*"/>
+            <RowDefinition Height="196*"/>
         </Grid.RowDefinitions>
-        <Expander Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="10,20,0,0" IsExpanded="True">
+        <Expander Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
             <Expander.Header>
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Player"/></TextBlock>
             </Expander.Header>
@@ -38,7 +37,7 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Label Content="Health" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="Health" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5"/>
                 <wpfTool:IntegerUpDown x:Name="NudHealth" Value="{Binding HealthCurr, UpdateSourceTrigger=LostFocus}" Maximum="{Binding HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" Grid.Row="1">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotFocus">
@@ -49,11 +48,11 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </wpfTool:IntegerUpDown>
-                <Label Content="Health Cap" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                <Label Content="Health Cap" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5" />
                 <wpfTool:IntegerUpDown Value="{Binding HealthCap}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1"/>
-                <Label Content="Health Max" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+                <Label Content="Health Max" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5" />
                 <wpfTool:IntegerUpDown Value="{Binding HealthMax}" TextAlignment="Center" IsEnabled="False" Grid.Column="2" Grid.Row="1"/>
-                <Label Content="Stamina" Grid.Row="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="Stamina" Grid.Row="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5"/>
                 <wpfTool:IntegerUpDown x:Name="NudStamina" Value="{Binding StaminaCurr, UpdateSourceTrigger=LostFocus}" TextAlignment="Center" Maximum="{Binding StaminaMax}" ClipValueToMinMax="True" Grid.Row="3" >
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="GotFocus">
@@ -64,87 +63,66 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </wpfTool:IntegerUpDown>
-                <Label Content="Stamina Max" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="Stamina Max" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5"/>
                 <wpfTool:IntegerUpDown Value="{Binding StaminaMax}" TextAlignment="Center" IsEnabled="False" Grid.Row="3" Grid.Column="1"/>
-                <Label Content="Poise" Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                <Label Content="Poise" Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5"/>
                 <wpfTool:DecimalUpDown Value="{Binding PoiseCurr}" TextAlignment="Center" IsEnabled="False" Grid.Row="3" Grid.Column="2"/>
             </Grid>
         </Expander>
-        <StackPanel Margin="0,0,0,10" Grid.Row="1">
-            <Label Content="Position"/>
-            <Border BorderBrush="Gray" BorderThickness="1" >
-                <StackPanel Margin="5,5,5,5">
-                    <Grid VerticalAlignment="Stretch" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.5*"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Label Content="X" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
-                        <Label Content="Y" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
-                        <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
-                        <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4"/>
-                        <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Pos[0]}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Pos[1]}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
-                        <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Pos[2]}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0" IsEnabled="False"/>
+        <Expander Grid.Row="1" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Position"/></TextBlock>
+            </Expander.Header>
+            <Grid VerticalAlignment="Stretch" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                    <RowDefinition MinHeight="25"/>
+                </Grid.RowDefinitions>
+                <Label Content="X" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                <Label Content="Y" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+                <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
+                <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4" Grid.RowSpan="3"/>
+                <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Pos[0]}" FormatString="F2" Grid.Column="1" Grid.Row="1" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Pos[1]}" FormatString="F2" Grid.Column="1" Grid.Row="2" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Pos[2]}" FormatString="F2" Grid.Column="1" Grid.Row="3" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
 
-                        <Grid Grid.Row="4" Grid.Column="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <CheckBox Content="Restore State" x:Name="CbxRestoreState" IsChecked="{Binding RestoreState,Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Button Content="Store" x:Name="btnPosStore" IsEnabled="{Binding EnStorePosition}" Margin="2" Click="btnStore_Click" Grid.Row="1"/>
-                            <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="{Binding EnRestorePosition}" Grid.Column="3" Grid.Row="5" Margin="2" Command="{Binding BtnRestorePositionCommand}"/>
-                        </Grid>
+                <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
+                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[0]}" FormatString="F2" Grid.Row="1" TextAlignment="Right" Margin="0,5,0,0" HorizontalContentAlignment="Right" Padding="0,0,38,0" />
+                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[1]}" FormatString="F2" Grid.Row="2" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0"/>
+                <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[2]}" FormatString="F2" Grid.Row="3" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0"/>
 
-                        <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[0]}" Grid.Row="1" TextAlignment="Center" Margin="0,5,0,0" />
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[1]}" Grid.Row="2" TextAlignment="Center" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[2]}" Grid.Row="3" TextAlignment="Center" Margin="0,5,0,0"/>
+                <Label Content="Stored" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" />
+                <wpfTool:DecimalUpDown Value="{Binding StoredPos[0]}" FormatString="F2" x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
+                <wpfTool:DecimalUpDown Value="{Binding StoredPos[1]}" FormatString="F2" x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
+                <wpfTool:DecimalUpDown Value="{Binding StoredPos[2]}" FormatString="F2" x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
 
-                        <Label Content="Stored" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center" />
-                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[0]}" x:Name="nudPosStoredX" Grid.Column="3" Grid.Row="1" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0" />
-                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[1]}" x:Name="nudPosStoredY" Grid.Column="3" Grid.Row="2" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
-                        <wpfTool:DecimalUpDown Value="{Binding StoredPos[2]}" x:Name="nudPosStoredZ" Grid.Column="3" Grid.Row="3" IsEnabled="False" TextAlignment="Center" Margin="0,5,0,0"/>
+                <CheckBox Content="Restore State" x:Name="CbxRestoreState" IsChecked="{Binding ChkRestoreState}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="3"/>
+                <Button Content="Store" x:Name="btnPosStore" IsEnabled="{Binding EnStorePosition}" Margin="2" Command="{Binding StorePositionCommand}" Grid.Row="5" Grid.Column="3"/>
+                <Button Content="Restore" x:Name="btnPosRestore" IsEnabled="{Binding EnRestorePosition}" Grid.Column="3" Grid.Row="6" Margin="2" Command="{Binding RestorePositionCommand}"/>
 
-                        <Grid Grid.Row="4" Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBox x:Name="txtAngX" Text="{Binding Ang[0], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngY" Text="{Binding Ang[1], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="txtAngZ" Text="{Binding Ang[2], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        </Grid>
-                        <Grid Grid.Row="4" Grid.Column="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Label Content="Stored Positions" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                            <ComboBox x:Name="cmbStoredPositions" Margin ="2" KeyDown="StoredPositions_KeyDown" SelectionChanged="StoredPositions_SelectionChanged" IsEditable="True" Grid.Row="1" />
-                            <Button x:Name="deleteButton" Margin="2" Content="Del" Click="DeleteButton_Click" Grid.Row="2"/>
-                        </Grid>
+                <TextBox x:Name="txtAngX" Text="{Binding Ang[0], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1"/>
+                <TextBox x:Name="txtAngY" Text="{Binding Ang[1], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1"/>
+                <TextBox x:Name="txtAngZ" Text="{Binding Ang[2], StringFormat='{}{0,5:0.00}'}" TextAlignment="Center" IsEnabled="False" Grid.Row="6" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1"/>
 
-                    </Grid>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-        <Expander Grid.Row="2" HorizontalContentAlignment="Stretch" Margin="10,20,0,0">
+                <Label Content="Stored Positions" VerticalAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="4" Grid.Column="2"/>
+                <ComboBox x:Name="cmbStoredPositions" Margin ="2" IsEditable="False" Grid.Row="5" Grid.Column="2" />
+                <Button x:Name="deleteButton" Margin="2" Content="Del" Grid.Row="6" Grid.Column="2" IsEnabled="False"/>
+
+            </Grid>
+        </Expander>
+        <Expander Grid.Row="2" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
             <Expander.Header>
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Bonfire"/></TextBlock>
             </Expander.Header>
@@ -165,8 +143,14 @@
                     </Grid.ColumnDefinitions>
                     <CheckBox x:Name="CbxLockChoice" Content="Lock Choice" IsEnabled="{Binding EnLockChoice}" IsChecked="{Binding ChkLockChoice}" VerticalAlignment="Center" Margin="0,5,0,0" VerticalContentAlignment="Stretch" />
                     <CheckBox x:Name="cbxWarpRest" Content="Rest On Warp" IsEnabled="{Binding EnWarpRest}"  IsChecked="{Binding ChkWarpRest}" Margin="0,5,0,0" VerticalAlignment="Center" Grid.Row="1" VerticalContentAlignment="Stretch"/>
-                    <TextBox x:Name="TxtSearch" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" AutoWordSelection="True" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1"/>
-                    <Label x:Name="LblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,0" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1"/>
+                    <TextBox x:Name="TxtSearch" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1" Padding="5,2,0,0">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <i:InvokeCommandAction Command="{Binding BfSearchTextChangedCommand}" PassEventArgsToCommand="True" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <Label x:Name="LblSearch" Foreground="LightSlateGray" Content="Search..." Visibility="{Binding LblSearchVisibility}" IsEnabled="False" IsHitTestVisible="False" Grid.ColumnSpan="2" Margin="5,0,0,0" VerticalContentAlignment="Bottom" Grid.Row="2" Grid.Column="1"/>
                     <ComboBox x:Name="CmbBonfireHubs" ItemsSource="{Binding BonfireHubList}" SelectedItem="{Binding SelectedBfHub}" Grid.Row="0" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
                     <ComboBox x:Name="CmbBonfire" ItemsSource="{Binding BonfireList, Mode=TwoWay}" SelectedItem="{Binding SelectedBf}" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
                     <Button x:Name="BtnWarp" Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,2,5,2" Grid.RowSpan="2" VerticalContentAlignment="Center"/>

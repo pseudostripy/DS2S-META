@@ -56,25 +56,30 @@ namespace DS2S_META
         // Assign actions to hotkeys:
         internal Action GetHotkeyMethod(string hkname)
         {
-            return hkname switch
+            Action? action = hkname switch
             {
-                "Store Position" => () => MW.metaPlayer.StorePosition(),
-                "Restore Position" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(), // TODO
-                "Toggle Gravity" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(),
+                "Store Position" => () => MW.ViewModel.PlayerViewModel.StorePositionCommand.Execute("HKM"),
+                "Restore Position" => () => MW.ViewModel.PlayerViewModel.RestorePositionCommand.Execute("HKM"),                "Toggle Gravity" => () => MW.ViewModel.PlayerViewModel.ToggleGravity(),
                 "Toggle Collision" => () => MW.ViewModel.PlayerViewModel.ToggleCollision(),
-                "Move Up" => () => MW.metaPlayer.DeltaHeight(+5),
-                "Move Down" => () => MW.metaPlayer.DeltaHeight(-5),
+                "Move Up" => () => MW.ViewModel.PlayerViewModel.DeltaHeight(+5),
+                "Move Down" => () => MW.ViewModel.PlayerViewModel.DeltaHeight(-5),
                 "Toggle Speedup" => () => MW.ViewModel.PlayerViewModel.ToggleSpeedhack(),
                 "Warp" => () => MW.ViewModel.PlayerViewModel.Warp(),
                 "Create Item" => () => MW.metaItems.CreateItem(),
-                "Fast Quit" => () => MW.metaPlayer.FastQuit(),
-                "Give 17k" => () => MW.metaCheats.Hook.Give17kReward(),
+                "Fast Quit" => () => MW.ViewModel.PlayerViewModel.FastQuit(),
+                "Give 17k" => () => MW.ViewModel.Hook.Give17kReward(),
                 "Toggle AI" => () => MW.ViewModel.PlayerViewModel.ToggleAI(),
                 "Toggle No Death" => () => MW.ViewModel.PlayerViewModel.ToggleNoDeath(),
                 "Toggle OHKO" => () => MW.ViewModel.PlayerViewModel.ToggleOHKO(),
-                "Give 3/1" => () => MW.metaCheats.Hook.Give3Chunk1Slab(),
-                _ => throw new NotImplementedException("Unknown hotkey request method")
+                "Give 3/1" => () => MW.ViewModel.Hook.Give3Chunk1Slab(),
+                _ => null
             };
+
+            if (action != null)
+                return action;
+
+            MetaException.Raise("Unexpected hotkey action request. Please check HotkeyManager.cs");
+            return () => { }; // warn and do nothing
         }
         
         private Action<HotKey> GetHotkeyAction1Method(string hkname)

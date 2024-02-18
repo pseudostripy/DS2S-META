@@ -47,6 +47,16 @@ namespace DS2S_META.ViewModels
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
         // Other properties
+        private Visibility _lblSearchVisibility = Visibility.Visible;
+        public Visibility LblSearchVisibility
+        {
+            get => _lblSearchVisibility;
+            set
+            {
+                _lblSearchVisibility = value;
+                OnPropertyChanged();
+            }
+        }
         private bool _chkNoDeath = false;
         public bool ChkNoDeath {
             get => _chkNoDeath;
@@ -239,13 +249,24 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        private bool _chkRestoreState = false;
+        public bool ChkRestoreState
+        {
+            get => _chkRestoreState;
+            set
+            {
+                _chkRestoreState = value;
+                OnPropertyChanged();
+            }
+        }
+        private PlayerState? LastPlayerState = null;
         
         // Bonfire Combobox Property Management [StateHell]
         private bool IsWarping = false;
         private void ResetAutoBfUpdate()
         {
             // call on ChkLocked unticked and on DS2 loads for QoL
-            if (ChkLockChoice) 
+            if (ChkLockChoice || ActiveFilter) 
                 return; // locked. leave it alone
             UserSelectedABonfireOrHub = false; // allow relief to auto
             BonfireList = AllBonfireList;
@@ -372,6 +393,7 @@ namespace DS2S_META.ViewModels
             foreach (var bf in SelectedBfHub.Bonfires)
                 ManagedBfs.Add(CreateLabelNudControl(bf));
         }
+        private bool ActiveFilter = false;
 
         // Utility Properties
         private bool _chkDealNoDmg = false;
@@ -426,11 +448,42 @@ namespace DS2S_META.ViewModels
         
 
         // Integer updown binding stuff:
-        private readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
-        public float[] Ang => Hook?.Ang ?? ZEROVECFLOAT;
+        private static readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
+        private float[] _ang = ZEROVECFLOAT;
+        public float[] Ang
+        {
+            get => Hook?.Ang ?? ZEROVECFLOAT;
+            set
+            {
+                _ang = value;
+                if (Hook?.Ang != null)
+                    Hook.Ang = _ang;
+                OnPropertyChanged();
+            }
+        }
         public float[] Pos => Hook?.Pos ?? ZEROVECFLOAT;
-        public float[] StablePos => Hook?.StablePos ?? ZEROVECFLOAT;
-        public float[] StoredPos => Hook?.StablePos ?? ZEROVECFLOAT;
+        public float[] _stablePos = ZEROVECFLOAT;
+        public float[] StablePos
+        {
+            get => Hook?.StablePos ?? ZEROVECFLOAT;
+            set
+            {
+                _stablePos = value;
+                if (Hook?.StablePos != null)
+                    Hook.StablePos = _stablePos;
+                OnPropertyChanged();
+            }
+        }
+        private float[] _storedPos = ZEROVECFLOAT;
+        public float[] StoredPos
+        {
+            get => Hook?.StablePos ?? ZEROVECFLOAT;
+            set
+            {
+                _storedPos = value;
+                OnPropertyChanged();
+            }
+        }
     
         // Hook tasks:
         public void ToggleGravity() => ChkGravity = !ChkGravity;
@@ -468,7 +521,7 @@ namespace DS2S_META.ViewModels
             // initialize commands
             BtnWarpCommand = new RelayCommand(BtnWarpExecute, BtnWarpCanExec);
             BtnUnlockBfsCommand = new RelayCommand(BtnUnlockBfsExecute, BtnUnlockBfsCanExec);
-            BtnRestorePositionCommand = new RelayCommand(BtnRestorePositionExecute, BtnRestorePositionCanExec);
+            RestorePositionCommand = new RelayCommand(RestorePositionExecute, RestorePositionCanExec);
             BtnMoneybagsCommand = new RelayCommand(BtnMoneybagsExecute, BtnMoneybagsCanExec);
             BtnRestoreHumanityCommand = new RelayCommand(BtnRestoreHumanityExecute, BtnRestoreHumanityCanExec);
             BtnNewTestCharCommand = new RelayCommand(BtnNewTestCharExecute, BtnNewTestCharCanExec);
@@ -476,49 +529,15 @@ namespace DS2S_META.ViewModels
             StaminaCurrGotFocusCommand = new RelayCommand(StaminaCurrGotFocusExecute, AlwaysCanExec);
             StaminaKeyDownCommand = new RelayCommand(StaminaKeyDownExecute, AlwaysCanExec);
             HealthKeyDownCommand = new RelayCommand(HealthKeyDownExecute, AlwaysCanExec);
+            StorePositionCommand = new RelayCommand(StorePositionExecute, StorePositionCanExec);
+            BfSearchTextChangedCommand = new RelayCommand(BfSearchTextChangedCommandExecute, AlwaysCanExec);
         }
-
-        // Update (called on mainwindow update interval)
-        public override void UpdateViewModel()
-        {
-            if (!HealthLock)
-                OnPropertyChanged(nameof(HealthCurr));
-            OnPropertyChanged(nameof(HealthMax));
-            OnPropertyChanged(nameof(HealthCap));
-            if (!StaminaLock)
-                OnPropertyChanged(nameof(StaminaCurr));
-            OnPropertyChanged(nameof(StaminaMax));
-            OnPropertyChanged(nameof(StaminaMax));
-            OnPropertyChanged(nameof(PoiseCurr));
-            OnPropertyChanged(nameof(StablePos));
-            OnPropertyChanged(nameof(Ang));
-            OnPropertyChanged(nameof(ChkCollision));
-            OnPropertyChanged(nameof(ChkGravity));
-            OnPropertyChanged(nameof(GameLastBonfire));
-            OnPropertyChanged(nameof(EnDmgMod));
-        }
-        public override void DoSlowUpdates()
-        {
-            // put things here if less concerned about fastest updates
-            OnPropertyChanged(nameof(SelectedBf));
-            OnPropertyChanged(nameof(SelectedBfHub));
-            OnPropertyChanged(nameof(ManagedBfs));
-        }
-        public override void CleanupVM()
-        {
-            Hook?.SetNoDeath(false);
-            Hook?.SetDisableAI(false);
-            Hook?.SetNoGravity(false);
-            Hook?.SetNoCollision(false);
-            Hook?.SetRapierOHKO(false);
-            Hook?.SetFistOHKO(false);
-        }
-        
 
         // Command Definitions
         public ICommand BtnWarpCommand { get; set; }
         public ICommand BtnUnlockBfsCommand { get; set; }
-        public ICommand BtnRestorePositionCommand { get; set; }
+        public ICommand StorePositionCommand { get; set; }
+        public ICommand RestorePositionCommand { get; set; }
         public ICommand BtnMoneybagsCommand { get; set; }
         public ICommand BtnRestoreHumanityCommand { get; set; }
         public ICommand BtnNewTestCharCommand { get; set; }
@@ -526,10 +545,12 @@ namespace DS2S_META.ViewModels
         public ICommand StaminaCurrGotFocusCommand { get; set; }
         public ICommand StaminaKeyDownCommand { get; set; }
         public ICommand HealthKeyDownCommand { get; set; }
+        public ICommand BfSearchTextChangedCommand { get; set; }
         //
         private bool BtnWarpCanExec(object? parameter) => MetaFeature.FtWarp; 
         private bool BtnUnlockBfsCanExec(object? parameter) => Hook?.Hooked == true; 
-        private bool BtnRestorePositionCanExec(object? parameter) => Hook?.Hooked == true; 
+        private bool StorePositionCanExec(object? parameter) => MetaFeature.FtStorePosition; 
+        private bool RestorePositionCanExec(object? parameter) => Hook?.Hooked == true; 
         private bool BtnMoneybagsCanExec(object? parameter) => MetaFeature.FtGiveSouls; 
         private bool BtnRestoreHumanityCanExec(object? parameter) => MetaFeature.FtRestoreHumanity; 
         private bool BtnNewTestCharCanExec(object? parameter) => MetaFeature.FtNewTestCharacter; 
@@ -537,30 +558,34 @@ namespace DS2S_META.ViewModels
         //
         private void BtnWarpExecute(object? parameter) => Warp();
         private void BtnUnlockBfsExecute(object? parameter) => Hook?.UnlockBonfires();
-        public void BtnRestorePositionExecute(object? paramter)
+        private void StorePositionExecute(object? paramter)
         {
-            //if (Hook == null) return;
-
-            //if (!nudPosStoredX.Value.HasValue || !nudPosStoredY.Value.HasValue || !nudPosStoredZ.Value.HasValue)
-            //    return;
-
+            if (Hook == null)
+                return;
+            var cam = new float[] {Hook.CamX, Hook.CamY, Hook.CamZ}; // unsure if implemented properly
+            LastPlayerState = new PlayerState(HealthCurr, StaminaCurr, StablePos, Ang, cam);
             
+            // update storedpos
+            StoredPos = StablePos;
+        }
+        private void RestorePositionExecute(object? paramter)
+        {
+            if (Hook == null) return;
+            if (LastPlayerState?.StablePos != null)
+                StablePos = LastPlayerState.StablePos;
+            if (LastPlayerState?.Ang != null)
+                Ang = LastPlayerState.Ang;
+            if (ChkRestoreState && LastPlayerState?.HP != null)
+                HealthCurr = LastPlayerState.HP;
+            if (ChkRestoreState && LastPlayerState?.Stamina != null)
+                StaminaCurr = LastPlayerState.Stamina;
 
-            //VM.Hook.StableX = (float)nudPosStoredX.Value;
-            //VM.Hook.StableY = (float)nudPosStoredY.Value;
-            //VM.Hook.StableZ = (float)nudPosStoredZ.Value;
-            //VM.Hook.AngX = PlayerState.AngX;
-            //VM.Hook.AngY = PlayerState.AngY;
-            //VM.Hook.AngZ = PlayerState.AngZ;
-            ////Hook.CameraData = PlayerState.FollowCam;
-            ////Hook.CamX = CamX;
-            ////Hook.CamY = CamY;
-            ////Hook.CamZ = CamZ;
-            //if (cbxRestoreState.IsChecked == true)
-            //{
-            //    nudHealth.Value = PlayerState.HP;
-            //    nudStamina.Value = PlayerState.Stamina;
-            //}
+            if (LastPlayerState?.Cam != null)
+            {
+                Hook.CamX = LastPlayerState.Cam[0];
+                Hook.CamY = LastPlayerState.Cam[1];
+                Hook.CamZ = LastPlayerState.Cam[2];
+            }
         }
         private void BtnMoneybagsExecute(object? parameter) => Hook?.AddSouls(9999999);
         private void BtnRestoreHumanityExecute(object? parameter) => Hook?.RestoreHumanity();
@@ -568,6 +593,7 @@ namespace DS2S_META.ViewModels
         private void HealthCurrGotFocusExecute(object? parameter) => HealthLock = true;
         private void StaminaCurrGotFocusExecute(object? parameter) => StaminaLock = true;
 
+        // KeyDown Events:
         private void StaminaKeyDownExecute(object? parameter)
         {
             var keyargs = (KeyEventArgs?)parameter;
@@ -586,10 +612,99 @@ namespace DS2S_META.ViewModels
             if (keyargs.OriginalSource is not WatermarkTextBox textbox) return;
             HealthCurr = int.Parse(textbox.Text);
         }
+        private void BfSearchTextChangedCommandExecute(object? parameter)
+        {
+            var txtchangedevargs = (TextChangedEventArgs?)parameter;
+            
+            if (txtchangedevargs?.Source is not TextBox tbx) return;
+            LblSearchVisibility = tbx.Text == string.Empty ? Visibility.Visible : Visibility.Hidden;
+            ActiveFilter = tbx.Text != string.Empty;
+            FilterBonfiresExecute(tbx.Text);
+        }
+        private void SelectFirstBonfireInList()
+        {
+            // wrapper to handle awkward state events
+            simpleSetBf = true;
+            if (BonfireList.Count == 0)
+                SelectedBf = null;
+            else    
+                SelectedBf = BonfireList.FirstOrDefault(); // triggers only on user hub selection
+            simpleSetBf = false;
+        }
+        private void FilterBonfiresExecute(string txt)
+        {
+            // when user clears their own text
+            if (txt == string.Empty)
+            {
+                BonfireList = AllBonfireList;
+                return;
+            }
+
+            var newbfs = DS2Resource.Bonfires.Where(bf => bf.Name.Contains(txt, StringComparison.OrdinalIgnoreCase)).ToList();
+            BonfireList = new ObservableCollection<DS2SBonfire>(newbfs);
+            SelectFirstBonfireInList();
+
+            // no filter match
+            if (SelectedBf == null)
+            {
+                autoHubUpdate = true;
+                SelectedBfHub = null;
+                autoHubUpdate = false;
+                OnPropertyChanged(nameof(SelectedBfHub));
+                return;
+            }
+
+            // Update to first selection
+            autoHubUpdate = true;
+            SelectedBfHub = SelectedBf.Hub;
+            autoHubUpdate = false;
+            return;
+        }
 
         // used to allow user to type without updating things
         public bool HealthLock { get; set; } = false;
         public bool StaminaLock { get; set; } = false;
+
+        // Misc.
+        public void DeltaHeight(float delta)
+        {
+            if (Hook == null) return;
+            Hook.PosZ += delta;
+
+            // QOL: AutoTurn off gravity
+            ChkGravity = false;
+        }
+        public void FastQuit()
+        {
+            if (Hook?.Hooked != true)
+                return;
+            Hook.FastQuit = 6;
+        }
+        public void Warp()
+        {
+            // no idea if multiplayer hook even implemented properly
+            if (Hook?.Multiplayer == true)
+            {
+                MetaException.RaiseUserWarning("Cannot warp while engaging in Multiplayer");
+                return;
+            }
+
+            // Final checks
+            var bfChosen = SelectedBf; // race condition avoidance
+            SelectedBf = bfChosen; // just in case its still null
+            if (bfChosen == null)
+                return;
+
+            // Do Warp
+            // [neat fix for GameLastBonf undef after warp]
+            UserSelectedABonfireOrHub = true; // keep the selection after warp
+            var ww = bfChosen.Name == "_Game Start";
+            Hook?.WarpBonfire(bfChosen, ww, ChkWarpRest);
+
+            // save warp location to fix an interesting meme due to the thread area overwrite
+            IsWarping = true; // fixed on next load screen
+            OnPropertyChanged(nameof(EnWarp)); // disable until next load
+        }
 
         // Event based updates
         internal void OnHooked()
@@ -645,48 +760,40 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
         }
-
-        public void Warp()
+        public override void UpdateViewModel()
         {
-            // no idea if multiplayer hook even implemented properly
-            if (Hook?.Multiplayer == true)
-            {
-                MetaException.RaiseUserWarning("Cannot warp while engaging in Multiplayer");
-                return;
-            }
-
-            // Final checks
-            var bfChosen = SelectedBf; // race condition avoidance
-            SelectedBf = bfChosen; // just in case its still null
-            if (bfChosen == null)
-                return;
-
-            // Do Warp
-            // [neat fix for GameLastBonf undef after warp]
-            UserSelectedABonfireOrHub = true; // keep the selection after warp
-            var ww = bfChosen.Name == "_Game Start";
-            Hook?.WarpBonfire(bfChosen, ww, ChkWarpRest);
-
-            // save warp location to fix an interesting meme due to the thread area overwrite
-            IsWarping = true; // fixed on next load screen
-            OnPropertyChanged(nameof(EnWarp)); // disable until next load
+            // Update (called on mainwindow update interval)
+            if (!HealthLock)
+                OnPropertyChanged(nameof(HealthCurr));
+            OnPropertyChanged(nameof(HealthMax));
+            OnPropertyChanged(nameof(HealthCap));
+            if (!StaminaLock)
+                OnPropertyChanged(nameof(StaminaCurr));
+            OnPropertyChanged(nameof(StaminaMax));
+            OnPropertyChanged(nameof(StaminaMax));
+            OnPropertyChanged(nameof(PoiseCurr));
+            OnPropertyChanged(nameof(StablePos));
+            OnPropertyChanged(nameof(Ang));
+            OnPropertyChanged(nameof(ChkCollision));
+            OnPropertyChanged(nameof(ChkGravity));
+            OnPropertyChanged(nameof(GameLastBonfire));
+            OnPropertyChanged(nameof(EnDmgMod));
         }
-        
-
-        //public void RemoveSavedPos()
-        //{
-        //    //if (Positions.Any(n => n.Name == cmbStoredPositions.Text))
-        //    //{
-        //    //    //if (MessageBox.Show("Are you sure you want to delete this positon?", "Warning!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-        //    //    //{
-        //    //    //    var old = Positions.Single(n => n.Name == cmbStoredPositions.Text);
-        //    //    //    Positions.Remove(old);
-        //    //    //    cmbStoredPositions.SelectedIndex = 0;
-        //    //    //    UpdatePositions();
-        //    //    //    SavedPos.Save(Positions);
-        //    //    //}
-
-        //    //}
-        //}
+        public override void DoSlowUpdates()
+        {
+            // put things here if less concerned about fastest updates
+            OnPropertyChanged(nameof(SelectedBf));
+            OnPropertyChanged(nameof(SelectedBfHub));
+            OnPropertyChanged(nameof(ManagedBfs));
+        }
+        public override void CleanupVM()
+        {
+            Hook?.SetNoDeath(false);
+            Hook?.SetDisableAI(false);
+            Hook?.SetNoGravity(false);
+            Hook?.SetNoCollision(false);
+            Hook?.SetRapierOHKO(false);
+            Hook?.SetFistOHKO(false);
+        }
     }
 }
