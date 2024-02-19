@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
@@ -90,6 +91,19 @@ namespace DS2S_META.Randomizer
                 return sb.Append("\tEMPTY").ToString();
 
             return sb.Append($"\t{ShuffledShop.ItemID.AsMetaName()} x{ShuffledShop.Quantity}").ToString();
+        }
+        public static Regex ShopMerchantRe = new(pattern: @"\[(?<name>.*?)(?=[-\]])");
+        internal override string GetNeatDescriptionNoId(int itemId, out string area)
+        {
+            area = "[UNKNOWN META AREA]";
+            var shpdesc = CasualItemSet.ShopData[ParamID].Description;
+            if (shpdesc == null)
+                return "Unknown Merchant";
+            
+            var merch = ShopMerchantRe.Match(shpdesc);
+            var shpnameSanitized = merch.Groups["name"].Value.Trim();
+            var shopMerchant = CasualItemSet.ShopMerchantNames[shpnameSanitized];
+            return $"[{shopMerchant}] Available from Merchant {shopMerchant}";
         }
         internal override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 15);
         internal override void ResetShuffled()

@@ -3,7 +3,9 @@ using DS2S_META.Utils.ParamRows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
@@ -34,5 +36,23 @@ namespace DS2S_META.Randomizer
             // Remove final newline:
             return sb.ToString().TrimEnd('\r', '\n');
         }
+        internal override string GetNeatDescriptionNoId(int itemId, out string area)
+        {
+            // return area and chopped desc
+            area = "[UNKNOWN META AREA]";
+            var rawdesc = CasualItemSet.LotData[ParamID].Description;
+            if (rawdesc == null)
+                return string.Empty;
+
+            var m = SplitArea.Match(rawdesc);
+            area = m.Groups["area"].Value;
+            var newdesc = m.Groups["desc"].Value.Trim();
+
+            // Add quantity
+            var di = VanillaLot?.Flatlist.Where(di => di.ItemID == itemId).FirstOrDefault();
+            string quant = di?.Quantity > 1 ? $"x{di.Quantity} " : string.Empty;
+            return $"{quant}{newdesc}";
+        }
+        private static readonly Regex SplitArea = new(@"(?<area>\[.*?\]) (?<desc>.*)");
     }
 }

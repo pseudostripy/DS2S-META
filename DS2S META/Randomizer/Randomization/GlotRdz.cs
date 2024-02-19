@@ -91,6 +91,7 @@ namespace DS2S_META.Randomizer
             // Remove final newline:
             return sb.ToString().TrimEnd('\r', '\n');
         }
+                
         internal override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 5);
         internal override string PrintData()
         {

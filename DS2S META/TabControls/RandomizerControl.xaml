@@ -37,6 +37,7 @@
                 <Label x:Name="lblWorking" Content="Working...." Grid.Column="1" Grid.Row="4" HorizontalContentAlignment="Center" FontWeight="Bold" Visibility="Hidden"/>
             </Grid>
             <local:RandomizerSettings x:Name="randoSettings"/>
+            <Button x:Name="BtnWorldItems" Content="Vanilla World Items" Command="{Binding AllItemsWorldCommand}" BorderBrush="#FFABADB3" Background="White" FontWeight="Bold" FontSize="16" />
         </StackPanel>
     </Grid>
 </local:METAControl>

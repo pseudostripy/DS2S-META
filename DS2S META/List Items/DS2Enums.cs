@@ -148,5 +148,5 @@ namespace DS2S_META
         RESTOREHUMANITY = 100000010,
         BONFIREREST = 110000010,
         AREALOAD_POSSIBLY = 130000010,
-    }
+    } 
 }

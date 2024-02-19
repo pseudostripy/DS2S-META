@@ -45,6 +45,7 @@ namespace DS2S_META
         public override void InitTab()
         {
             VM = (RandoSettingsViewModel)DataContext;
+            VM.RM = RM;
         }
 
         private void FixSeedVisibility()

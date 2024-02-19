@@ -1,4 +1,5 @@
-﻿using DS2S_META.Properties;
+﻿using DS2S_META.Commands;
+using DS2S_META.Properties;
 using DS2S_META.Randomizer;
 using DS2S_META.Utils;
 using DS2S_META.ViewModels.Commands;
@@ -47,6 +48,7 @@ namespace DS2S_META.ViewModels
             }
         }
 
+        internal RandomizerManager RM { get; set; } // set during code-behind init. TODO one day
 
         public void HandleUserPresetChange(object? sender, EventArgs e)
         {
@@ -79,7 +81,25 @@ namespace DS2S_META.ViewModels
             }
             SetupSaveCallbacks();
             UserPresetChange += HandleUserPresetChange; // subscribe event handler
+            AllItemsWorldCommand = new RelayCommand(AllItemsWorldExecute, AlwaysCanExec);
         }
+        private static bool AlwaysCanExec(object? parameter) => true;
+        private void AllItemsWorldExecute(object? parameter)
+        {
+            RM.PrintAllItemInfo(Hook);
+            var path = Path.GetFullPath(@$"{DS2Resource.ExeDir}/all_items.txt");
+            OpenWithDefaultProgram(path);
+        }
+        public static void OpenWithDefaultProgram(string path)
+        {
+            using Process fileopener = new();
+
+            fileopener.StartInfo.FileName = "explorer";
+            fileopener.StartInfo.Arguments = "\"" + path + "\"";
+            fileopener.Start();
+        }
+
+        public ICommand AllItemsWorldCommand { get; set; }
 
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()

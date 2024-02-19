@@ -9,6 +9,7 @@ using DS2S_META.ViewModels;
 using System.Security.Cryptography;
 using DS2S_META.Randomizer.Placement;
 using DS2S_META.Utils.ParamRows;
+using System.Text.RegularExpressions;
 
 namespace DS2S_META.Randomizer
 {
@@ -100,7 +101,102 @@ namespace DS2S_META.Randomizer
             Hook?.WarpLast();
             IsRandomized = false;
         }
-        
+        internal void PrintAllItemInfo(DS2SHook? hook)
+        {
+            // memes with too much stuff in code behind
+            Hook = hook;
+            if (Hook == null)
+                return;
+
+            // Setup for re-randomization:
+            if (!IsInitialized)
+                Initalize(Hook);
+            Scope.Reinitialize();
+            
+            PrintVanillaItemsNeat();
+        }
+
+        internal void PrintVanillaItemsNeat()
+        {
+            
+            // Prep:
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing all game items...(except a few meme things I cba to deal with).",
+                "---------------------------------------------",
+            };
+
+            var itemsByGroup = Scope.LTR_flatlist.GroupBy(di => di.ItemID)
+                                .OrderBy(grp => grp.Key.AsMetaName());
+
+            foreach (var item in DS2Resource.Items.OrderBy(i => i.ItemId.AsMetaName()).ToList() )
+            {
+                // item header
+                var itemId = item.ItemId;
+                var bfound = DS2Resource.ItemNames.TryGetValue(itemId, out var name);
+                string itemname = bfound ? name! : "MissingNameFromMeta";
+                string hdr = $"{itemname,-37}";// (id = {itemId,8}, hexid = 0x{itemId:X7})";
+                lines.Add(hdr);
+                
+                // extra parameters: reenable this if necessary
+                bool bIncludeItemIds = false;
+                bool bGuaranteedDropsOnly = true; // only show DropRdz of guaranteed kills like lizards
+                
+                if (bIncludeItemIds)
+                {
+                    string hdrid = $"(id {itemId,8}, hexid 0x{itemId:X7})";
+                    lines.Add(hdrid);
+                }
+
+                // find and order some things
+                var contentNotShops = new List<string>();
+                var contentShops = new List<string>();
+                var contentNGPlus = new List<string>();
+                var rdzContains = Scope.AllPtf.Where(rdz => rdz.HasVanillaItemID(itemId)).ToList();
+                foreach (var rdz in rdzContains)
+                {
+                    if (rdz is DropRdz rdzd)
+                    {
+                        // Add more logic here if need fine tuning
+                        if (!rdzd.IsGuaranteedDrop || bGuaranteedDropsOnly == false)
+                            continue;
+                    }
+
+                    string desc = rdz.GetNeatDescriptionNoId(itemId, out string area);
+                    
+                    if (rdz is ShopRdz)
+                        contentShops.Add($"{FOURSPACE}{desc}"); // shop area inside desc.
+                    else
+                    {
+                        if (desc.Contains("ng+", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var lnfix = $"{FOURSPACE}{area} NG+ ONLY. {desc}";
+                            contentNGPlus.Add(lnfix);
+                        }
+                        else
+                            contentNotShops.Add($"{FOURSPACE}{area} {desc}");
+                    }
+                    
+                }
+                contentShops.Sort();
+                contentNotShops.Sort();
+                contentNGPlus.Sort();
+                var content = contentNotShops;
+                content.AddRange(contentNGPlus);
+                content.AddRange(contentShops);
+                foreach (string ln in content)
+                    lines.Add(ln);
+                lines.Add("");
+            }
+            
+            // Write file:
+            File.WriteAllLines("./all_items.txt", lines.ToArray());
+        }
+        private static Regex SplitArea = new(@"(?<area>\[.*?\]) (?<desc>.*)");
+        private static string FOURSPACE = "    ";
+
+
         internal void SetupRestrictions()
         {
             // - Split restrictions and assign to associated arrays
