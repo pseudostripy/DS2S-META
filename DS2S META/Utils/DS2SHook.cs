@@ -932,6 +932,8 @@ namespace DS2S_META
         public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
         internal bool BIKP1Skip(bool enable, bool doLoad)
         {
+            if (!MetaFeature.FtBIKP1Skip)
+                return false;
             if (!Hooked) return false;
 
             // Change some constants read by the BIK fight I guess.
@@ -1920,6 +1922,11 @@ namespace DS2S_META
         {
             if (SpeedhackDllPtr == IntPtr.Zero)
                 SpeedhackDllPtr = GetSpeedhackPtr();
+            
+            // Exit gracefully on error:
+            if (SpeedhackDllPtr == IntPtr.Zero)
+                return;
+
 
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
@@ -1941,7 +1948,12 @@ namespace DS2S_META
             if (Is64Bit)
                 return InjectDLL(SpeedhackDllPathX64);
             else
-                return (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out _);
+            {
+                var injloc = (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out INJECTOR_ERRCODE errcode);
+                if (errcode != 0)
+                    return IntPtr.Zero;
+                return injloc;
+            }
         }
         
         private enum INJECTOR_ERRCODE
@@ -1949,6 +1961,7 @@ namespace DS2S_META
             PROCESS_NOT_START = -5,
             INCORRECT_NUMARGS = -2,
             HOOK_FAILED = -1,
+            FILENOTFOUND = -6,
             NONE = 0,
         }
         private static int Run32BitInjector(string dllfile, out INJECTOR_ERRCODE err)
@@ -1996,7 +2009,8 @@ namespace DS2S_META
             catch
             {
                 // Log error.
-                throw new Exception("Probably cannot find .exe");
+                MetaException.Raise("Probably cannot find .exe");
+                return (int)INJECTOR_ERRCODE.FILENOTFOUND;
             }
         }
 

@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.4.4</AssemblyVersion>
+	<AssemblyVersion>0.7.5.0</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
@@ -178,12 +178,22 @@
 	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.exe&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;" />
 	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.runtimeconfig.json&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;" />
 	  
+	  <!-- for debugging only-->
+	  <Exec Command="if not exist &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;&quot;&quot; md &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;" />
+	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\PropertyHook.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;&quot;&quot;" />
+	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;&quot;&quot;" />
+	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.exe&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;&quot;&quot;" />
+	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.runtimeconfig.json&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;&quot;&quot;" />
+
+	  <!--<Exec Condition="'$(Configuration)' == DEBUG" Command="if not exist &quot;@($TargetDir)TESTING&quot; md &quot;@($TargetDir)TESTING&quot;" />-->
+	  <!--<Exec Command="mkdir &quot;&quot;&quot;C:\Users\adaml\Documents\Coding\META\DS2S META\TESTING&quot;&quot;&quot;" />-->
+
 	  <Message Text="Copied files to build folder" Importance="High" />
 
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
 	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
 			
-	  <Exec Command="echo testing" />
+	  <Exec Command="echo $(TargetDir)" />
 	  
   </Target>
 
