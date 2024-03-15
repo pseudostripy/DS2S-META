@@ -461,7 +461,18 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
-        public float[] Pos => Hook?.Pos ?? ZEROVECFLOAT;
+        public float[] _currentPos = ZEROVECFLOAT;
+        public float[] CurrentPos
+        {
+            get => Hook?.Pos ?? ZEROVECFLOAT;
+            set
+            {
+                _currentPos = value;
+                if (Hook?.Pos != null)
+                    Hook.Pos = _currentPos;
+                OnPropertyChanged();
+            }
+        }
         public float[] _stablePos = ZEROVECFLOAT;
         public float[] StablePos
         {
@@ -773,6 +784,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(StaminaMax));
             OnPropertyChanged(nameof(PoiseCurr));
             OnPropertyChanged(nameof(StablePos));
+            OnPropertyChanged(nameof(CurrentPos));
             OnPropertyChanged(nameof(Ang));
             OnPropertyChanged(nameof(ChkCollision));
             OnPropertyChanged(nameof(ChkGravity));

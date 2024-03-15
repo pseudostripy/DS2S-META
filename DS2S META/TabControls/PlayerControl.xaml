@@ -94,9 +94,9 @@
                 <Label Content="Z" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3"/>
                 <Label Content="Angle" HorizontalAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4" Grid.RowSpan="3"/>
                 <Label Content="Current" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalContentAlignment="Center"/>
-                <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding Pos[0]}" FormatString="F2" Grid.Column="1" Grid.Row="1" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
-                <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding Pos[1]}" FormatString="F2" Grid.Column="1" Grid.Row="2" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
-                <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding Pos[2]}" FormatString="F2" Grid.Column="1" Grid.Row="3" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosX" Value="{Binding CurrentPos[0]}" FormatString="F2" Grid.Column="1" Grid.Row="1" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosY" Value="{Binding CurrentPos[1]}" FormatString="F2" Grid.Column="1" Grid.Row="2" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
+                <wpfTool:DecimalUpDown x:Name="nudPosZ" Value="{Binding CurrentPos[2]}" FormatString="F2" Grid.Column="1" Grid.Row="3" TextAlignment="Right" Margin="0,5,0,0" Padding="0,0,38,0" IsEnabled="False"/>
 
                 <Label Content="Stable" Grid.Column="2" Grid.Row="0" HorizontalContentAlignment="Center" VerticalAlignment="Center"/>
                 <wpfTool:DecimalUpDown IsEnabled="False" Grid.Column="2" Value="{Binding StablePos[0]}" FormatString="F2" Grid.Row="1" TextAlignment="Right" Margin="0,5,0,0" HorizontalContentAlignment="Right" Padding="0,0,38,0" />

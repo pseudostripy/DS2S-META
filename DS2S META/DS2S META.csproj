@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.5.0</AssemblyVersion>
+	<AssemblyVersion>0.7.5.1</AssemblyVersion>
 	<Platforms>AnyCPU;x86</Platforms>
 	<Configurations>Debug;Release;DryUpdate</Configurations>	  
   </PropertyGroup>
