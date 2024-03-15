@@ -1886,6 +1886,8 @@ namespace DS2S_META
         {
             if (!SpeedhackInitialised)
                 return;
+            if (!Hooked)
+                return; // game already closed
             SetSpeed(1.0d);
         }
         private static readonly string TempDir = $"{ExeDir}\\Resources\\temp";
