@@ -8,24 +8,39 @@ namespace DS2S_META.Utils
 {
     public class ItemUsageRow : Param.Row
     {
+        // 0-based bitfield indexers
+        private const int DROPPABLE = 2;
+        private const int LADDERUSAGE = 0;
+
         // Behind fields
-        private const int DROPPABLE = 2; // 0-based
-        private int indUsageBitfield { get; set; }
-        private byte _UsageBitfield;
+        private int IndUsageBitfield { get; set; }
+        private int IndLadderUsageBitfield { get; set; }
+        private byte _usageBitfield;
+        private byte _ladderUsageBitfield;
 
         // Properties
         public byte UsageBitfield
         {
-            get => _UsageBitfield;
+            get => _usageBitfield;
             set
             {
-                _UsageBitfield = value;
-                WriteAtField(indUsageBitfield, BitConverter.GetBytes(value));
+                _usageBitfield = value;
+                WriteAtField(IndUsageBitfield, value.AsByteArray());
+            }
+        }
+        public byte LadderUsageBitfield
+        {
+            get => _ladderUsageBitfield;
+            set
+            {
+                _ladderUsageBitfield = value;
+                WriteAtField(IndLadderUsageBitfield, value.AsByteArray());
             }
         }
 
         // Getter fields:
         public bool IsDroppable => GetBit(UsageBitfield, DROPPABLE);
+        public bool IsLadderUsable => GetBit(LadderUsageBitfield, LADDERUSAGE);
 
         // Constructor:
         public ItemUsageRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
@@ -33,11 +48,14 @@ namespace DS2S_META.Utils
             SetupIndices();
 
             // Initialise Values:
-            UsageBitfield = (byte)ReadAtFieldNum(indUsageBitfield);
+            UsageBitfield = (byte)ReadAtFieldNum(IndUsageBitfield);
+            LadderUsageBitfield = (byte)ReadAtFieldNum(IndLadderUsageBitfield);
         }
         private void SetupIndices()
         {
-            indUsageBitfield = 3; // 3rd field into def (unnamed)
+            // 0-based
+            IndUsageBitfield = 3; // 3rd field into def (unnamed)
+            IndLadderUsageBitfield = 2;
         }
 
 

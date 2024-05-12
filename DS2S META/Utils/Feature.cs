@@ -30,6 +30,7 @@ namespace DS2S_META.Utils
         GIVESOULS,
         RESTOREHUMANITY,
         NEWTESTCHARACTER,
+        COVENANTINFO,
     }
     public static class MetaFeature
     {
@@ -69,6 +70,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        // should work on all supported versions
                 METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
                 METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
+                METAFEATURE.COVENANTINFO => Hook.IsSOTFS && Hook.InGame,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -95,5 +97,6 @@ namespace DS2S_META.Utils
         public static bool FtGiveSouls => IsActive(METAFEATURE.GIVESOULS);
         public static bool FtRestoreHumanity => IsActive(METAFEATURE.RESTOREHUMANITY);
         public static bool FtNewTestCharacter => IsActive(METAFEATURE.NEWTESTCHARACTER);
+        public static bool FtCovenantInfo => IsActive(METAFEATURE.COVENANTINFO);
     }
 }

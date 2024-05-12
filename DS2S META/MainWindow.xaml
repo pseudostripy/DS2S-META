@@ -113,14 +113,9 @@
                             <local:CovenantControl x:Name="metaCovenant" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}"/>
                         </Grid>
                     </TabItem>-->
-                    <TabItem Header="Misc">
+                    <TabItem Header="Misc" >
                         <Grid Background="LightGray">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <local:InternalControl x:Name="metaInternal" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="3"/>
+                            <local:InternalControl x:Name="metaMisc" DataContext="{Binding InternalViewModel}" Hook="{Binding Hook}"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Randomizer" >

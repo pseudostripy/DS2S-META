@@ -33,7 +33,7 @@ namespace DS2S_META
 
         public int LOADEDINGAME = 0x1e;
         public int MAINMENU = 0xa;
-        
+
 
         public MainWindow MW { get; set; }
 
@@ -74,7 +74,7 @@ namespace DS2S_META
         public int GameState
         {
             get => _gamestate;
-            set {  
+            set {
                 if (value == _gamestate) return;
                 var oldstate = _gamestate;
                 _gamestate = value; // needs to be read during event
@@ -89,6 +89,23 @@ namespace DS2S_META
         public bool IsInitialized = false;
 
         // Pointer Setups
+        public Dictionary<string, CodeLocator> CodeLocators;
+        public List<PHPointer> PHPointers = new();
+        
+        //GoGetShit( Pointers["GiveSoulsFunc"] )
+        //LocateCode(CodeLocator)
+        //private void SetupPHPointers()
+        //{
+
+        //    foreach (var kvp in CodeLocators)
+        //    {
+        //        PHPointers.Add(DoLocator(kvp))
+        //    }
+        //}
+        //private PHPointer DoLocator()
+
+
+
         private PHPointer GiveSoulsFunc;
         private PHPointer RemoveSoulsFunc;
         private PHPointer ItemGiveFunc;
@@ -731,8 +748,54 @@ namespace DS2S_META
             OnPropertyChanged(nameof(LowerGarrison));
             OnPropertyChanged(nameof(GrandCathedral));
         }
+
+
+        // Covenants
+        public Dictionary<COV, Covenant> GameCovenantData { get; set; }
+        private CovenantOffsets.CovOff CovOff(COV id) => Offsets.Covenants2.Offsets[id];
+        public void SetCovenantDiscov(COV id, bool discov) => PlayerParam.WriteBoolean(CovOff(id).Discov, discov);
+        public void SetCovenantRank(COV id, int rank) => PlayerParam.WriteByte(CovOff(id).Rank, (byte)rank);
+        public void SetCovenantProgress(COV id, int prog) => PlayerParam.WriteInt16(CovOff(id).Progress, (short)prog);
+        public Covenant GetCovenantData(COV id)
+        {
+            var disc = PlayerParam.ReadBoolean(Offsets.Covenants2.Offsets[id].Discov);
+            var rank = PlayerParam.ReadByte(Offsets.Covenants2.Offsets[id].Rank);
+            var progress = PlayerParam.ReadInt16(Offsets.Covenants2.Offsets[id].Progress);
+            return new Covenant(id,disc,rank,progress);
+        }
+        public void UpdateCovenants()
+        {
+            if (GameCovenantData == null) 
+            {
+                GameCovenantData = new Dictionary<COV, Covenant>();
+                foreach (COV id in Enum.GetValues(typeof(COV)))
+                {
+                    if (id == COV.NONE)
+                        continue;
+                    GameCovenantData.Add(id, new Covenant(id));
+                }
+            }
+
+            foreach (var kvp in GameCovenantData)
+            {
+                COV id = kvp.Key;
+                var cov = kvp.Value;
+                if (!Offsets.Covenants2.Offsets.ContainsKey(id))
+                    continue;
+
+                Covenant newcov = GetCovenantData(id);
+                cov.Discovered = newcov.Discovered;
+                cov.Rank = newcov.Rank;
+                cov.Progress = newcov.Progress;
+            }
+            OnPropertyChanged(nameof(GameCovenantData));
+        }
+
         public void UpdateCovenantProperties()
         {
+            UpdateCovenants();
+            //OnPropertyChanged(nameof(Covenant))
+
             OnPropertyChanged(nameof(CurrentCovenant));
             OnPropertyChanged(nameof(CurrentCovenantName));
             OnPropertyChanged(nameof(HeirsOfTheSunDiscovered));
@@ -2843,6 +2906,7 @@ namespace DS2S_META
             speedFactorPointer.WriteBytes(0x0, inject);
         }
 
+
         public byte CurrentCovenant
         {
             get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
@@ -2885,7 +2949,7 @@ namespace DS2S_META
         }
         public bool BlueSentinelsDiscovered
         {
-            get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.BlueSentinelsDiscovered) : false;
+            get => InGame && PlayerParam.ReadBoolean(Offsets.Covenants.BlueSentinelsDiscovered);
             set
             {
                 if (Reading || !InGame) return;

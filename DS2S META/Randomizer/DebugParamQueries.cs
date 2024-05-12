@@ -134,8 +134,13 @@ namespace DS2S_META.Randomizer
             var temp = ParamMan.ItemRows?.Where(it => ((it.ItemState >> 3) & 1) == 1).ToList(); // & 8
 
             var test = ParamMan.ItemTypeParam;
-            QuickPrint();
+            //QuickPrint();
+            QuickPrint_ItemUsages();
             var debug = 1;
+
+
+
+            
 
             //var testx = AllPtf.OfType<ShopRdz>()
             //                    .Where(shp => shp.HasVanillaItemID(ITEMID.CRYSTALSOULSPEAR)).ToList();
@@ -182,6 +187,28 @@ namespace DS2S_META.Randomizer
 
             // Write file:
             File.WriteAllLines("./wtype130_testing.txt", lines.ToArray());
+        }
+        internal static void QuickPrint_ItemUsages()
+        {
+            var ladderItems = ParamMan.ItemRows?.Where(it => it.ItemUsageRow?.IsLadderUsable == true).ToList();
+            
+            // Prep:
+            List<string> lines = new()
+            {
+                // Intro line
+                $"Printing Ladder-Usable Items",
+                "---------------------------------------------",
+            };
+
+            if (ladderItems != null)
+            {
+                foreach (var it in ladderItems)
+                    lines.Add($"{it.MetaItemName} (itemid: {it.ItemID})");
+            }
+
+            // Write file:
+            File.WriteAllLines("./ladder_usable_items.txt", lines.ToArray());
+            
         }
 
         internal class RandoInfo2

@@ -5,14 +5,23 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                    xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:local="clr-namespace:DS2S_META"
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray">
+            xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
+            mc:Ignorable="d"
+            d:DesignHeight="500" d:DesignWidth="425" Background="LightGray"
+            d:DataContext="{d:DesignInstance viewmodels:InternalViewModel, IsDesignTimeCreatable=True}">
+
     <Grid>
-        <StackPanel>
-            <Label Content="Equipment"/>
-            <Border BorderBrush="Gray" BorderThickness="1" Margin="20,5,20,20" Height="160" VerticalAlignment="Top">
-                <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Expander Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Equipment"/></TextBlock>
+            </Expander.Header>
+            <Border BorderBrush="Gray" BorderThickness="1" Margin="20,5,20,20" VerticalAlignment="Top">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
@@ -35,14 +44,14 @@
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.Chest}" Grid.Row="1" Grid.Column="1"/>
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.Arms}" Grid.Row="2" Grid.Column="1"/>
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.Legs}" Grid.Row="3" Grid.Column="1"/>
-                    
+
                     <Label Content="R Hand 1:" Grid.Column="2" />
                     <Label Content="R Hand 2:" Grid.Column="2" Grid.Row="1"/>
                     <Label Content="R Hand 3:" Grid.Row="2" Grid.Column="2"/>
                     <Label Content="L Hand 1:" Grid.Row="3" Grid.Column="2"/>
                     <Label Content="L Hand 2:" Grid.Row="4" Grid.Column="2"/>
                     <Label Content="L Hand 3:" Grid.Row="5" Grid.Column="2"/>
-                    
+
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand1}" Grid.Column="3"/>
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand2}" Grid.Row="1" Grid.Column="3"/>
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.RightHand3}" Grid.Row="2" Grid.Column="3"/>
@@ -51,45 +60,35 @@
                     <Label Content="{Binding ElementName=InternalCon, Path=Hook.LeftHand3}" Grid.Row="5" Grid.Column="3"/>
                 </Grid>
             </Border>
-
-            <Label Content="Bonfires" Margin="0,-10,0,0"/>
-            <StackPanel Margin="25,0,25,0">
-                <Separator Visibility="Hidden" Height="10"/>
-                <Button Content="Unlock All Bonfires" Click="UnlockBonfires_Click" Width="125" HorizontalAlignment="Center" Margin="25,-15,25,0"/>
-                <Separator Visibility="Hidden" Height="3"/>
-                <Label Content="Manage Bonfire Levels"/>
-                <Border BorderBrush="Gray" BorderThickness="1" >
-                    <StackPanel Margin="25,10,25,10">
-                        <ComboBox x:Name="cmbBonfirHub" SelectionChanged="cmbBonfirHub_SelectionChanged" />
-                        <Separator Visibility="Hidden" Height="10"/>
-                        <StackPanel x:Name="spBonfires">
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-
-            <Label Content="Covenants" Margin="0,12,0,0"/>
-            <StackPanel Margin="25,0,25,25">
-                <Border BorderBrush="Gray" BorderThickness="1" >
-                    <StackPanel Margin="20,0,20,20">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Width="250">
-                            <Label Content="Current Covenant: "/>
-                            <Label Content="{Binding ElementName=InternalCon, Path=Hook.CurrentCovenantName}" />
-                        </StackPanel>
-                        <Separator  Visibility="Hidden" Height="10"/>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox x:Name="cmbCovenant" SelectionChanged="cmbCovenant_SelectionChanged" Width="280"/>
-                            <Button Content="Set" Width="35" Margin="15,0,0,0" Click="SetCovenant_Click" x:Name="btnSet"/>
-                        </StackPanel>
-                        <Separator Visibility="Hidden" Height="10"/>
-                        <StackPanel x:Name="spCovenants">
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-
-        </StackPanel>
-        
-
+        </Expander>
+        <Expander Grid.Row="1" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Covenant"/></TextBlock>
+            </Expander.Header>
+            <Grid Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="30" MaxHeight="30"/>
+                    <RowDefinition Height="0" MinHeight="{Binding CovExtraRowMinHeight}" MaxHeight="{Binding RowMaxH}"/>
+                    <RowDefinition Height="0" MinHeight="{Binding CovExtraRowMinHeight}" MaxHeight="{Binding RowMaxH}"/>
+                    <RowDefinition Height="0" MinHeight="{Binding CovExtraRowMinHeight}" MaxHeight="{Binding RowMaxH}"/>
+                </Grid.RowDefinitions>
+                <Label Content="{Binding CurrentCovenant}" Grid.ColumnSpan="3" Margin="0,0,0,0" HorizontalAlignment="Center" Foreground="#FF000DD0"/>
+                <ComboBox IsEnabled="{Binding EnCovCombo}" ItemsSource="{Binding CovenantsList}" SelectedItem="{Binding CovSelected}" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Grid.Row="1"/>
+                <Button Content="Set" Margin="10,0,10,0" IsEnabled="{Binding EnCovCombo}" Command="{Binding SetCovenantCommand}" Grid.Column="3" Grid.Row="1"/>
+                <Label Content="{Binding SelCovDiscovString}" Visibility="{Binding CovExtraRowVis}" Grid.ColumnSpan="2" Grid.Row="2"/>
+                <CheckBox Visibility="{Binding CovExtraRowVis}" IsChecked="{Binding CovDiscovered}" Padding="0,0,0,0" VerticalContentAlignment="Center" Margin="0,5,20,5" Grid.Row="2" HorizontalAlignment="Center" Grid.Column="2" Height="NaN"/>
+                <Label Content="{Binding SelCovRankString}" Visibility="{Binding CovExtraRowVis}" Grid.ColumnSpan="2" Grid.Row="3"/>
+                <wpfTool:IntegerUpDown Value="{Binding CovRank}" Visibility="{Binding CovExtraRowVis}" Minimum="0" Maximum="3" TextAlignment="Center" IsEnabled="True" Grid.Row="3" Grid.Column="2"/>
+                <Label Content="{Binding SelCovProgressString}" Visibility="{Binding CovExtraRowVis}" Grid.ColumnSpan="2" Grid.Row="4"/>
+                <wpfTool:IntegerUpDown Value="{Binding CovProgress}" Visibility="{Binding CovExtraRowVis}" Minimum="0" TextAlignment="Center" IsEnabled="True" Grid.Row="4" Grid.Column="2"/>
+            </Grid>
+        </Expander>
     </Grid>
 </local:METAControl>

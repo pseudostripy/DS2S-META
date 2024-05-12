@@ -93,11 +93,11 @@ namespace DS2S_META.ViewModels
                 IsSpawned = Hook?.CheckLoadedEnemies(CHRID.MADWARRIOR) == true; // Confirmed OK for model reading:
         }
 
-        internal void OnHooked()
+        public override void OnHooked()
         {
             EnableElements();
         }
-        internal void OnUnHooked()
+        public override void OnUnHooked()
         {
             EnableElements();
         }

@@ -116,6 +116,7 @@ namespace DS2S_META.ViewModels
         public PlayerViewModel PlayerViewModel { get; set; }
         public StatsViewModel StatsViewModel { get; set; }
         public SettingsViewModel SettingsViewModel { get; set; }
+        public InternalViewModel InternalViewModel { get; set; }
 
         // Wrapper exposures:
         private Settings Settings = Settings.Default;
@@ -154,7 +155,7 @@ namespace DS2S_META.ViewModels
             Hook = new DS2SHook(5000, 5000);
             Hook.OnHooked += AllTabsOnHooked;
             Hook.OnHooked += RivaOnHookedEventHandler;
-            Hook.OnUnhooked += AllTabsOnUnhooked;
+            Hook.OnUnhooked += AllTabsOnUnHooked;
             Hook.OnUnhooked += RivaOnUnhookedEventHandler;
             Hook.OnGameStateHandler += OnGameStateChange;
 
@@ -165,12 +166,14 @@ namespace DS2S_META.ViewModels
             RandoSettingsViewModel = new RandoSettingsViewModel();
             StatsViewModel = new StatsViewModel();
             SettingsViewModel = new SettingsViewModel(this);
+            InternalViewModel = new InternalViewModel();
             ViewModels.Add(DmgCalcViewModel);
             ViewModels.Add(CheatsViewModel);
             ViewModels.Add(PlayerViewModel);
             ViewModels.Add(RandoSettingsViewModel);
             ViewModels.Add(StatsViewModel);
             ViewModels.Add(SettingsViewModel);
+            ViewModels.Add(InternalViewModel);
 
 
             Hook.Start();
@@ -180,10 +183,14 @@ namespace DS2S_META.ViewModels
 
         private void AllTabsOnHooked(object? sender, PHEventArgs e)
         {
-            PlayerViewModel.OnHooked();
-            CheatsViewModel.OnHooked();
-            StatsViewModel.OnHooked();
+            foreach (var vm in ViewModels)
+                vm.OnHooked();
             MetaFeature.Initialize(Hook);
+        }
+        private void AllTabsOnUnHooked(object? sender, PHEventArgs e)
+        {
+            foreach (var vm in ViewModels) 
+                vm.OnUnHooked();
         }
         private void RivaOnHookedEventHandler(object? sender, PHEventArgs e)
         {
@@ -192,12 +199,6 @@ namespace DS2S_META.ViewModels
         private void RivaOnUnhookedEventHandler(object? sender, PHEventArgs e)
         {
             RivaHook.OnUnhooked();
-        }
-        private void AllTabsOnUnhooked(object? sender, PHEventArgs e)
-        {
-            PlayerViewModel.OnUnHooked();
-            CheatsViewModel.OnUnHooked();
-            StatsViewModel.OnUnHooked();
         }
         public void CleanupAll()
         {
@@ -253,6 +254,7 @@ namespace DS2S_META.ViewModels
             PlayerViewModel.OnInGame();
             CheatsViewModel?.OnInGame();
             StatsViewModel?.OnInGame();
+            InternalViewModel?.OnInGame();
             //PlayerViewModel.EnableCtrls(enable);
             //metaStats.EnableCtrls(enable);
             //metaInternal.EnableCtrls(enable);

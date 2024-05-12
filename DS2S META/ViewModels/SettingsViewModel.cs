@@ -93,15 +93,5 @@ namespace DS2S_META.ViewModels
         public override void UpdateViewModel()
         {
         }
-
-        internal void OnHooked()
-        {
-        }
-        internal void OnUnHooked()
-        {
-        }
-        private void EnableElements()
-        {
-        }
     }
 }

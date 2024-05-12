@@ -41,6 +41,10 @@ namespace DS2S_META.Utils.Offsets
         public Camera Camera { get; init; }
         public Core? Core { get; init; }
         public Func? Func { get; set; }
+
+
+        public CovenantOffsets Covenants2 { get; init; }
+
         
         // Towards better version-specific functionality:
         public int[]? DisableAI;

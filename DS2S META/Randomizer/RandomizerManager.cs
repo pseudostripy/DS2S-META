@@ -57,6 +57,9 @@ namespace DS2S_META.Randomizer
             if (Hook == null)
                 return;
             DebugParamQueries.QueryTesting();
+            Hook.GiveItem(60155010, 1, 0, 0);
+            return;
+
 
             // Setup for re-randomization:
             if (!EnsureSeedCompatibility(seed)) return;

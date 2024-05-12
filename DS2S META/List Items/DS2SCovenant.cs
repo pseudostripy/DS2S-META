@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DS2S_META
 {
-    internal class DS2SCovenant
+    public class DS2SCovenant
     {
         private static Regex BonfireEntryRx = new Regex(@"^(?<id>\S+) (?<name>.+) \((?<levels>\S+)\)$");
 

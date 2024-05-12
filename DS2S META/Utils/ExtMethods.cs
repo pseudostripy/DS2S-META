@@ -23,5 +23,11 @@ namespace DS2S_META.Utils
             Array.Copy(data, 0x0, xdata, 0x0, data.Length);
             return xdata;
         }
+        public static int UDSaturate(this int val, int min, int max)
+        {
+            if (val < min) val = min;
+            if (val > max) val = max;
+            return val;
+        }
     }
 }

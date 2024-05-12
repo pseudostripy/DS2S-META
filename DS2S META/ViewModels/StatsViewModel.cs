@@ -33,11 +33,11 @@ namespace DS2S_META.ViewModels
             //EnableElements();
         }
 
-        internal void OnHooked()
+        public override void OnHooked()
         {
             EnableElements();
         }
-        internal void OnUnHooked()
+        public override void OnUnHooked()
         {
             EnableElements();
         }
