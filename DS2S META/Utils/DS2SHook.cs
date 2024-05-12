@@ -751,7 +751,11 @@ namespace DS2S_META
 
 
         // Covenants
-        public Dictionary<COV, Covenant> GameCovenantData { get; set; }
+        public Dictionary<COV, Covenant> GameCovenantData { get; set; } = new
+            (
+                DS2Resource.Covenants.Where(cv => cv.ID != COV.NONE)
+                .ToDictionary(cv => cv.ID, cv => new Covenant(cv.ID))
+            );
         private CovenantOffsets.CovOff CovOff(COV id) => Offsets.Covenants2.Offsets[id];
         public void SetCovenantDiscov(COV id, bool discov) => PlayerParam.WriteBoolean(CovOff(id).Discov, discov);
         public void SetCovenantRank(COV id, int rank) => PlayerParam.WriteByte(CovOff(id).Rank, (byte)rank);
@@ -765,17 +769,6 @@ namespace DS2S_META
         }
         public void UpdateCovenants()
         {
-            if (GameCovenantData == null) 
-            {
-                GameCovenantData = new Dictionary<COV, Covenant>();
-                foreach (COV id in Enum.GetValues(typeof(COV)))
-                {
-                    if (id == COV.NONE)
-                        continue;
-                    GameCovenantData.Add(id, new Covenant(id));
-                }
-            }
-
             foreach (var kvp in GameCovenantData)
             {
                 COV id = kvp.Key;
@@ -797,7 +790,7 @@ namespace DS2S_META
             //OnPropertyChanged(nameof(Covenant))
 
             OnPropertyChanged(nameof(CurrentCovenant));
-            OnPropertyChanged(nameof(CurrentCovenantName));
+            //OnPropertyChanged(nameof(CurrentCovenantName));
             OnPropertyChanged(nameof(HeirsOfTheSunDiscovered));
             OnPropertyChanged(nameof(HeirsOfTheSunRank));
             OnPropertyChanged(nameof(HeirsOfTheSunProgress));
@@ -2916,10 +2909,7 @@ namespace DS2S_META
                 PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
             }
         }
-        public string? CurrentCovenantName
-        {
-            get => InGame ? DS2SCovenant.All.FirstOrDefault(x => x.ID == CurrentCovenant)?.Name : "";
-        }
+        
         public bool HeirsOfTheSunDiscovered
         {
             get => InGame ? PlayerParam.ReadBoolean(Offsets.Covenants.HeirsOfTheSunDiscovered) : false;

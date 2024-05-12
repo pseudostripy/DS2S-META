@@ -79,7 +79,7 @@
                     <RowDefinition Height="0" MinHeight="{Binding CovExtraRowMinHeight}" MaxHeight="{Binding RowMaxH}"/>
                     <RowDefinition Height="0" MinHeight="{Binding CovExtraRowMinHeight}" MaxHeight="{Binding RowMaxH}"/>
                 </Grid.RowDefinitions>
-                <Label Content="{Binding CurrentCovenant}" Grid.ColumnSpan="3" Margin="0,0,0,0" HorizontalAlignment="Center" Foreground="#FF000DD0"/>
+                <Label Content="{Binding CurrentCovenantName}" Grid.ColumnSpan="3" Margin="0,0,0,0" HorizontalAlignment="Center" Foreground="#FF000DD0"/>
                 <ComboBox IsEnabled="{Binding EnCovCombo}" ItemsSource="{Binding CovenantsList}" SelectedItem="{Binding CovSelected}" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Grid.Row="1"/>
                 <Button Content="Set" Margin="10,0,10,0" IsEnabled="{Binding EnCovCombo}" Command="{Binding SetCovenantCommand}" Grid.Column="3" Grid.Row="1"/>
                 <Label Content="{Binding SelCovDiscovString}" Visibility="{Binding CovExtraRowVis}" Grid.ColumnSpan="2" Grid.Row="2"/>

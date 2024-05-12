@@ -7,35 +7,33 @@ using System.Threading.Tasks;
 
 namespace DS2S_META
 {
+    public enum COV : int
+    {
+        NONE = 0,
+        HEIRSOFTHESUN = 1,
+        BLUESENTINELS = 2,
+        BROTHERHOODOFBLOOD = 3,
+        WAYOFTHEBLUE = 4,
+        RATKING = 5,
+        BELLKEEPERS = 6,
+        DRAGONREMNANTS = 7,
+        COVENANTOFCHAMPIONS = 8,
+        PILGRIMSOFDARKNESS = 9,
+    }
+
     public class DS2SCovenant
     {
-        private static Regex BonfireEntryRx = new Regex(@"^(?<id>\S+) (?<name>.+) \((?<levels>\S+)\)$");
-
+        public COV ID;
         public string Name;
-        public byte ID;
-        public string Levels;
+        public Dictionary<int,int> RankLevels;
 
-        private DS2SCovenant(string config)
+        public DS2SCovenant(COV iD, string name, Dictionary<int, int> rankLevels)
         {
-            Match bonfireEntry = BonfireEntryRx.Match(config);
-            Name = bonfireEntry.Groups["name"].Value;
-            ID = Convert.ToByte(bonfireEntry.Groups["id"].Value);
-            Levels = bonfireEntry.Groups["levels"].Value;
-        }
-        public override string ToString()
-        {
-            return Name;
+            ID = iD;
+            Name = name;
+            RankLevels = rankLevels;
         }
 
-        public static List<DS2SCovenant> All = new();
-
-        static DS2SCovenant()
-        {
-            foreach (string line in Regex.Split(GetTxtResourceClass.GetTxtResource("Resources/Systems/Covenants.txt"), "[\r\n]+"))
-            {
-                if (GetTxtResourceClass.IsValidTxtResource(line)) //determine if line is a valid resource or not
-                    All.Add(new DS2SCovenant(line));
-            };
-        }
+        public override string ToString() => Name;
     }
 }

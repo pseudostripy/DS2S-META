@@ -7,22 +7,19 @@ namespace DS2S_META
 {
     public class DS2SBonfireHub : IComparable<DS2SBonfireHub>
     {
-        // be careful on names with ":" inside them. Regex won't catch it.
-        private static readonly Regex BonfireHubEntryRx = new(@"^(?<name>.+?):\s+(?<bonfires>.+)$");
-
         public string Name;
         public List<string> BonfireNames = new();
         public List<DS2SBonfire> Bonfires = new();
         private readonly bool _isLinked = false;
         public bool IsLinked => _isLinked;
 
-        private DS2SBonfireHub(string hubname, List<string> bfnames)
+        public DS2SBonfireHub(string hubname, List<string> bfnames)
         {
             Name = hubname;
             BonfireNames = bfnames;
             _isLinked = false; // incomplete class
         }
-        private DS2SBonfireHub(string hubname, List<string> bfnames, List<DS2SBonfire> bfs)
+        public DS2SBonfireHub(string hubname, List<string> bfnames, List<DS2SBonfire> bfs)
         {
             Name = hubname;
             BonfireNames = bfnames;
@@ -50,18 +47,6 @@ namespace DS2S_META
         public int CompareTo(DS2SBonfireHub? other)
         {
             return Name.CompareTo(other?.Name);
-        }
-
-        public static DS2SBonfireHub ParseNew(string line)
-        {
-            Match m = BonfireHubEntryRx.Match(line);
-
-            var name = m.Groups["name"].Value;
-            var bfnames = m.Groups["bonfires"].Value
-                                .Split('-')
-                                .Select(x => x.Trim())
-                                .ToList();
-            return new DS2SBonfireHub(name, bfnames);
         }
     }
 }

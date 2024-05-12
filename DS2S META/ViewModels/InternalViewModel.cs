@@ -54,12 +54,20 @@ namespace DS2S_META.ViewModels
         public int CovExtraRowMinHeight => ShowExtraRows ? EXTRAROWMINHEIGHT : 0;
         public int RowMaxH => EXTRAROWMAXHEIGHT;
         public Visibility CovExtraRowVis => ShowExtraRows ? Visibility.Visible : Visibility.Hidden;
-        public string CurrentCovenant => Hook?.CurrentCovenantName ?? string.Empty;
+        public string CurrentCovenantName
+        {
+            get
+            {
+                var currCovId = Hook?.CurrentCovenant;
+                if (currCovId == null)
+                    return string.Empty;
+                return DS2Resource.GetCovById((COV)currCovId).Name;
+            }
+        }
         public string SelCovDiscovString => $"{SelCovName} Discovered";
         public string SelCovRankString => $"{SelCovName} Rank";
         public string SelCovProgressString => $"{SelCovName} Progress";
-
-
+        
         private Covenant? SelCovData => GetCovData();
         private Covenant? GetCovData()
         {
@@ -68,11 +76,11 @@ namespace DS2S_META.ViewModels
                 return covenant;
             return null;
         }
-        private string SelCovName => DS2SCovenant.All.First(x => (COV)x.ID == SelCovId).Name;
+        private string SelCovName => DS2Resource.GetCovById(SelCovId).Name;
 
 
         // Binding Properties:
-        public static ObservableCollection<DS2SCovenant> CovenantsList => new(DS2SCovenant.All);
+        public static ObservableCollection<DS2SCovenant> CovenantsList => new(DS2Resource.Covenants);
         public DS2SCovenant CovSelected
         {
             get => _covSelected;
@@ -83,7 +91,7 @@ namespace DS2S_META.ViewModels
                 UpdateCovData();
             }
         }
-        private DS2SCovenant _covSelected = DS2SCovenant.All.First(); // default NONE
+        private DS2SCovenant _covSelected = DS2Resource.Covenants.First(); // default NONE
         public bool CovDiscovered
         {
             get => SelCovData?.Discovered == true;
@@ -122,23 +130,26 @@ namespace DS2S_META.ViewModels
 
         private void FixRankOnProgressChange(int newprog)
         {
-            var lvls = DS2SCovenant.All.Where(x => (COV)x.ID == SelCovId).First().Levels.Split('/').ToList();
-            var newrank = lvls.FindIndex(lvl => newprog < int.Parse(lvl));
-            if (newrank < 0)
+            var rankLvls = DS2Resource.GetCovById(SelCovId).RankLevels.Values.ToList();
+            var newrankSearch = rankLvls.FindIndex(lvl => newprog < lvl);
+            int newrank;
+            if (newrankSearch < 0)
                 newrank = 3;
+            else
+                newrank = newrankSearch - 1;
             Hook?.SetCovenantRank(SelCovId, newrank);
         }
         private void FixProgressOnRankChange(int newrank)
         {
             // fix progress:
-            var lvls = DS2SCovenant.All.Where(x => (COV)x.ID == SelCovId).First().Levels.Split('/');
+            var lvls = DS2Resource.GetCovById(SelCovId).RankLevels;
             var currProg = CovProgress;
             var newProg = currProg;
-            var rankLB = newrank > 0 ? int.Parse(lvls[newrank - 1]) : 0;
-            var rankUB = newrank < 3 ? int.Parse(lvls[newrank - 1 + 1]) - 1 : 999;
+            var rankLB = lvls[newrank];
+            var rankUB = newrank < 3 ? lvls[newrank + 1] -1 : 999;
             if (currProg > rankUB || currProg < rankLB)
-                currProg = rankLB;
-            CovProgress = currProg;
+                newProg = rankLB;
+            CovProgress = newProg;
         }
 
         private void UpdateCovData()
@@ -184,7 +195,7 @@ namespace DS2S_META.ViewModels
         public override void UpdateViewModel()
         {
             // Update (called on mainwindow update interval)
-            OnPropertyChanged(nameof(CurrentCovenant));
+            OnPropertyChanged(nameof(CurrentCovenantName));
             OnPropertyChanged(nameof(CovDiscovered));
             OnPropertyChanged(nameof(CovRank));
             OnPropertyChanged(nameof(CovProgress));
