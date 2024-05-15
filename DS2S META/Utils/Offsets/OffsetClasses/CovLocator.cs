@@ -14,10 +14,10 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
 
         public CovLocator(int doff, int roff, int poff)
         {
-            int PlayerParam = 0xA;
-            Discovered = new OffsetLocator(PlayerParam, doff);
-            Rank = new OffsetLocator(PlayerParam, roff);
-            Progress = new OffsetLocator(PlayerParam, poff);
+            //int PlayerParam = 0xA;
+            //Discovered = new OffsetLocator(PlayerParam, doff);
+            //Rank = new OffsetLocator(PlayerParam, roff);
+            //Progress = new OffsetLocator(PlayerParam, poff);
         }
     }
 }
