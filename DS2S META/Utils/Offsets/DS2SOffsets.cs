@@ -64,6 +64,8 @@ namespace DS2S_META.Utils.Offsets
                 PilgrimsOfDarknessProgress = 0x1D4
             };
 
+
+
             Covenants2 = new();
             Covenants2.AddOffsets(COV.HEIRSOFTHESUN, 0x1af, 0x1b9, 0x1c4);
             Covenants2.AddOffsets(COV.BLUESENTINELS, 0x1b0, 0x1ba, 0x1c6);
@@ -75,37 +77,6 @@ namespace DS2S_META.Utils.Offsets
             Covenants2.AddOffsets(COV.COVENANTOFCHAMPIONS, 0x1b6, 0x1c0, 0x1d2);
             Covenants2.AddOffsets(COV.PILGRIMSOFDARKNESS, 0x1b7, 0x1c1, 0x1d4);
 
-
-            //{
-            //    CurrentCovenant = 0x1AD,
-            //    HeirsOfTheSunDiscovered = 0x1AF,
-            //    HeirsOfTheSunRank = 0x1B9,
-            //    HeirsOfTheSunProgress = 0x1C4,
-            //    BlueSentinelsDiscovered = 0x1B0,
-            //    BlueSentinelsRank = 0x1BA,
-            //    BlueSentinelsProgress = 0x1C6,
-            //    BrotherhoodOfBloodDiscovered = 0x1B1,
-            //    BrotherhoodOfBloodRank = 0x1BB,
-            //    BrotherhoodOfBloodProgress = 0x1CB,
-            //    WayOfTheBlueDiscovered = 0x1B2,
-            //    WayOfTheBlueRank = 0x1BC,
-            //    WayOfTheBlueProgress = 0x1CA,
-            //    RatKingDiscovered = 0x1B3,
-            //    RatKingRank = 0x1BD,
-            //    RatKingProgress = 0x1CC,
-            //    BellKeepersDiscovered = 0x1B4,
-            //    BellKeepersRank = 0x1BE,
-            //    BellKeepersProgress = 0x1CE,
-            //    DragonRemnantsDiscovered = 0x1B5,
-            //    DragonRemnantsRank = 0x1BF,
-            //    DragonRemnantsProgress = 0x1D0,
-            //    CompanyOfChampionsDiscovered = 0x1B6,
-            //    CompanyOfChampionsRank = 0x1C0,
-            //    CompanyOfChampionsProgress = 0x1D2,
-            //    PilgrimsOfDarknessDiscovered = 0x1B7,
-            //    PilgrimsOfDarknessRank = 0x1C1,
-            //    PilgrimsOfDarknessProgress = 0x1D4
-            //};
 
             Gravity = new(0x134);
             PlayerMapData = new()

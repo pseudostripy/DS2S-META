@@ -138,7 +138,8 @@ namespace DS2S_META.Randomizer
             QuickPrint_ItemUsages();
             var debug = 1;
 
-
+            //ParamMan.ItemRows.Where(it => it.ItemID == (int)ITEMID.RAPIER).First()
+            //    .WeaponRow.BaseRepairCost = 6000;
 
             
 

@@ -43,7 +43,7 @@ namespace DS2S_META.Utils.Offsets
         public Func? Func { get; set; }
 
 
-        public CovenantOffsets Covenants2 { get; init; }
+        public Covenant3 Covenants2 { get; init; }
 
         
         // Towards better version-specific functionality:
