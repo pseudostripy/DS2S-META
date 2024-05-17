@@ -58,7 +58,7 @@ namespace DS2S_META
             OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
         }
 
-        public IntPtr BaseAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
+        public IntPtr ModuleAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
         private readonly GIVEOPTIONS GIVESILENT = GIVEOPTIONS.GIVESILENTLY;
@@ -107,8 +107,6 @@ namespace DS2S_META
         private PHPointer ItemGiveFunc;
         private PHPointer ItemStruct2dDisplay;
         private PHPointer phpDisplayItem;
-        private Int64 DisplayItem64;
-        private Int32 DisplayItem32;
         private PHPointer SetWarpTargetFunc;
         private PHPointer WarpManager;
         private PHPointer WarpFunc;
@@ -1625,13 +1623,13 @@ namespace DS2S_META
 
             // Figure out the more complicated displayItem pointer (can't remember
             // whether I made a function for this :/)
-            if (Offsets?.Func == null) throw new Exception("Null reference");
-            string bytestring = Offsets.Func.DisplayItem;
-            var aob_sz = bytestring.Trim().Split(" ").Length;
-            var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
-            DisplayItem32 = phpDisplayItem.Resolve().ToInt32() + addr_jump_rel + aob_sz; // deal with rel jmp
-
-
+            //if (Offsets?.Func == null) throw new Exception("Null reference");
+            
+            //string bytestring = Offsets.Func.DisplayItem;
+            //var aob_sz = bytestring.Trim().Split(" ").Length;
+            //var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
+            //DisplayItem32 = phpDisplayItem.Resolve().ToInt32() + addr_jump_rel + aob_sz; // deal with rel jmp
+            
             // Setup assembly fields for substitution
             var numItems_bytes = BitConverter.GetBytes(numitems);
             var pItemStruct_bytes = BitConverter.GetBytes(itemStruct.ToInt32());
@@ -1640,7 +1638,8 @@ namespace DS2S_META
             var itemStruct2Display_bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt32());
             var itemGiveWindow_bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt32());
             var pfloat_bytes = BitConverter.GetBytes(pfloat_store.ToInt32());
-            var displayItem_bytes = BitConverter.GetBytes(DisplayItem32);
+            var displayItem32_bytes = BitConverter.GetBytes(phpDisplayItem.Resolve().ToInt32());
+            //var displayItem_bytes = BitConverter.GetBytes(DisplayItem32);
             var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
 
             // Load and fix assembly:
@@ -1656,7 +1655,7 @@ namespace DS2S_META
             Array.Copy(itemStruct2Display_bytes, 0, asm, 0x3e, itemStruct2Display_bytes.Length);
             Array.Copy(pfloat_bytes, 0, asm, 0x48, pfloat_bytes.Length);
             Array.Copy(itemGiveWindow_bytes, 0, asm, 0x4e, itemGiveWindow_bytes.Length);
-            Array.Copy(displayItem_bytes, 0, asm, 0x53, displayItem_bytes.Length);
+            Array.Copy(displayItem32_bytes, 0, asm, 0x53, displayItem32_bytes.Length);
 
 
             //// inject ret instr at mid_ret index and escape early
@@ -2227,10 +2226,7 @@ namespace DS2S_META
         #region Internal
         public byte FastQuit
         {
-            set
-            {
-                BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
-            }
+            set => BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
         }
         internal byte DisableAI
         {
@@ -2513,7 +2509,16 @@ namespace DS2S_META
             set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
         }
         public bool Multiplayer => !InGame || ConnectionType > 1;
-        public bool Online => !InGame || ConnectionType > 0;
+        public string Online
+        {
+            get
+            {
+                if (!Hooked) return "Unhooked";
+                if (!InGame) return "";
+                if (Offsets.Connection.Online == DS2HookOffsets.UNSET) return "unknown";
+                return ConnectionType > 0 ? "YES" : "NO";
+            }
+        }
         public int ConnectionType => Hooked && Connection != null ? Connection.ReadInt32(Offsets.Connection.Online) : 0;
 
         // Bonfire Get/Setter related:

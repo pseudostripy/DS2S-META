@@ -12,26 +12,105 @@ namespace DS2S_META.Utils.Offsets
     public class Covenant3
     {
         // Version shorthands
-        public readonly static List<DS2VER> ANYVER = new() { DS2VER.SOTFS_V103, DS2VER.SOTFS_V102, DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
-        public readonly static List<DS2VER> ANYSOTFS = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
-        public readonly static List<DS2VER> ANYVANILLA = new() { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
-        public readonly static List<DS2VER> V102 = new() { DS2VER.VANILLA_V102 };
-        public readonly static List<DS2VER> V111 = new() { DS2VER.VANILLA_V111 };
-        public readonly static List<DS2VER> V112 = new() { DS2VER.VANILLA_V112 };
-        public readonly static List<DS2VER> V111OR112 = new() { DS2VER.VANILLA_V111, DS2VER.VANILLA_V111 };
-        public readonly static string STRBASEA = "BaseA";
+        private readonly static List<DS2VER> ANYVER = new() { DS2VER.SOTFS_V103, DS2VER.SOTFS_V102, DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
+        private readonly static List<DS2VER> ANYSOTFS = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
+        private readonly static List<DS2VER> ANYVANILLA = new() { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
+        private readonly static List<DS2VER> V102 = new() { DS2VER.VANILLA_V102 };
+        private readonly static List<DS2VER> V111 = new() { DS2VER.VANILLA_V111 };
+        private readonly static List<DS2VER> V112 = new() { DS2VER.VANILLA_V112 };
+        private readonly static List<DS2VER> S102 = new() { DS2VER.SOTFS_V102 };
+        private readonly static List<DS2VER> S103 = new() { DS2VER.SOTFS_V103 };
+        private readonly static List<DS2VER> V111OR112 = new() { DS2VER.VANILLA_V111, DS2VER.VANILLA_V111 };
+        private readonly static string STRBASEA = "BaseA";
+
+        public List<PointerDefn> PointerDefns = new()
+        {
+            new(STRBASEA, new List<LocatorDefn>()
+            {
+                new(ANYSOTFS, new RelInstructionAOBCL("48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6",3,7)),
+                new(ANYVANILLA, new RelModuleAOBCL("8B F1 8B 0D ? ? ? ? 8B 01 8B 50 28 FF D2 84 C0 74 0C",3))
+            })
+
+        };
 
         // BaseA, BaseB
-        public PointerDefn BaseA = new(STRBASEA, new List<LocatorDefn>()
-        {
-            new(ANYSOTFS, new RelInstructionAOBCL("48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6",3,7)),
-            new(ANYVANILLA, new RelModuleAOBCL("8B F1 8B 0D ? ? ? ? 8B 01 8B 50 28 FF D2 84 C0 74 0C",3))
-        });
+        //public PointerDefn BaseA = );
         public PointerDefn BaseB = new("BaseB", new List<LocatorDefn>()
         {
             new(ANYSOTFS, new RelInstructionAOBCL("48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8",3,7)),
             new(ANYVANILLA, new RelModuleAOBCL("89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0",3))
         });
+
+        // AoB Pointers:
+        public PointerDefn ItemGiveFunc = new("ItemGiveFunc", new List<LocatorDefn>()
+        { 
+            new(ANYSOTFS, new AbsoluteAOBCL("48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41")),
+            new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9"))
+        });
+        public PointerDefn ItemStruct2dDisplay = new("ItemStruct2dDisplay", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11")),
+            new(V102, new AbsoluteAOBCL("55 8b ec 8b 45 08 8b 4d 14 53 8b 5d 10 56 33 f6")),
+            new(V111OR112, new AbsoluteAOBCL("55 8B EC 8B 45 08 0F 57 C0 8B 4D 14 53"))
+        });
+        public PointerDefn GiveSoulsFuncAoB = new("GiveSoulsFuncAoB", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("48 83 EC 28 48 8b 01 48 85 C0 74 23 48 8b 80 b8 00 00 00")),
+            new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 8B 01 83 EC 08 85 C0 74 20 8B 80 94 00 00 00"))
+        });
+        public PointerDefn RemoveSoulsFuncAoB = new("RemoveSoulsFuncAoB", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("44 8b 81 ec 00 00 00 41 3b d0 73 05 44 2b c2 eb 03")),
+            new(ANYVANILLA, new AbsoluteAOBCL("55 8b ec 8b 81 e8 00 00 00 8b 55 08 83 ec 08 3b d0 73 04"))
+        });
+        public PointerDefn SetWarpTargetFuncAoB = new("SetWarpTargetFuncAoB", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("48 89 5C 24 08 48 89 74 24 20 57 48 83 EC 60 0F B7 FA")),
+            new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 83 EC 44 53 56 8B 75 0C 57 56 8D 4D 0C"))
+        });
+        public PointerDefn WarpFuncAoB = new("WarpFuncAoB", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("40 53 48 83 EC 60 8B 02 48 8B D9 89 01 8B 42 04")),
+            new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 83 EC 40 53 56 8B 75 08 8B D9 57 B9 10 00 00 00"))
+        });
+        public PointerDefn DisplayItemFuncAoB = new("DisplayItemFuncAoB", new List<LocatorDefn>()
+        {
+            new(S102, new AbsoluteAOBCL("48 8B 89 D8 00 00 00 48 85 C9 0F 85 40 5E 00 00")),
+            new(S103, new AbsoluteAOBCL("48 8B 89 D8 00 00 00 48 85 C9 0F 85 20 5E 00 00")),
+            new(ANYVANILLA, new RelInstructionAOBCL("83 c4 10 8d 95 6c fe ff ff 52 8b ce e8 ? ? ? ?", 13, 17))
+            //new(ANYVANILLA, new AbsoluteAOBCL("83 c4 10 8d 95 6c fe ff ff 52 8b ce e8 ? ? ? ?"))
+        });
+        public PointerDefn ApplySpEffectAoB = new("ApplySpEffectAoB", new List<LocatorDefn>()
+        {
+            new(S102, new AbsoluteAOBCL("E9 ? ? ? ? E9 ? ? ? ? 50 5A 41 51 59")),
+            new(S103, new AbsoluteAOBCL("48 89 6C 24 f8 48 8d 64 24 f8 48 8D 2d 33 A7 0A 00")),
+            new(V102, new AbsoluteAOBCL("55 8b ec 8b 45 08 83 ec 10 56 8b f1")),
+            new(V111, new AbsoluteAOBCL("E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?")),
+            new(V112, new AbsoluteAOBCL("89 6c 24 fc 8d 64 24 fc 54 5d 8b 45 08 83 ec 10 89 74 24 fc 8d 64")),
+        });
+
+        // To deprecate?
+        public PointerDefn SpeedFactorAccelOffset = new("SpeedFactorAccelOffset", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 9F A8 02 00 00 F3 0F 10 16")),
+            new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9"))
+        });
+        public PointerDefn SpeedFactorAnimOffset = new("SpeedFactorAnimOffset", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 99 A8 02 00 00")),
+            new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 89 08 02 00 00 8B 89 B4 00 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 89"))
+        });
+        public PointerDefn SpeedFactorJumpOffset = new("SpeedFactorJumpOffset", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E0 00 00 00")),
+            new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D F4 0F 5A C0 0F 5A C9 F2 0F 59 C1 66 0F 5A C0 F3 0F 11 45 F4"))
+        });
+        public PointerDefn SpeedFactorBuildupOffset = new("SpeedFactorBuildupOffset", new List<LocatorDefn>()
+        {
+            new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00")),
+            new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC"))
+        });
+
 
         // BaseA ChildPointers:
         public PointerDefn PlayerTypeOffset = new("PlayerTypeOffset",
@@ -69,13 +148,17 @@ namespace DS2S_META.Utils.Offsets
         public PointerDefn BonfireLevelsPtr = new("BonfireLevelsPtr",
             new OFLD(ANYSOTFS, "EventManager", 0x58, 0x20),
             new OFLD(ANYVANILLA, "EventManager", 0x2c, 0x10));
-        public PointerDefn Connection = new("Connection",
-            new OFLD(ANYSOTFS, "BaseB", 0x38));
         public PointerDefn Camera2 = new("Camera2",
             new OFLD(ANYVER, STRBASEA, 0x0, 0x20));
         public PointerDefn PlayerBaseMisc = new("PlayerBaseMisc",
             new OFLD(ANYSOTFS, STRBASEA, 0xa8, 0xc0),
             new OFLD(ANYVANILLA, STRBASEA, 0x60)); // should probably align these?
+        public PointerDefn LoadedEnemiesTable = new("LoadedEnemiesTable",
+            new OFLD(S103, STRBASEA, 0x18));
+        public LeafHeadPointerDefn ScalingBonusTable = new("ScalingBonusTablePtr",
+            new OFLD(S102, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718, 0x7a8),
+            new OFLD(S103, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x7a8)
+        );
 
         // Leaves:
         public LeafDefn PlayerName = new("PlayerName",
@@ -95,7 +178,22 @@ namespace DS2S_META.Utils.Offsets
         public LeafDefn ForceQuit = new("ForceQuit",
             new OFLD(ANYSOTFS, STRBASEA, 0x24b1),
             new OFLD(ANYVANILLA, STRBASEA, 0xdf1));
+        public LeafDefn ConnectionOnline = new("ConnectionType",
+            new OFLD(ANYVANILLA, "BaseB", 0x38, 0x8));
+        public LeafDefn DisableAI = new("DisableAI",
+            new OFLD(S103, STRBASEA, 0x28, 0x18));
+        public LeafDefn BIKP1Skip_Val1 = new("BIKP1Skip_Val1",
+            new OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xe34));
+        public LeafDefn BIKP1Skip_Val2 = new("BIKP1Skip_Val2",
+            new OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52));
 
+
+        // Leaf Groups
+        public LeafLocatorGroup CameraGroup = new("CameraGroup",
+            new DetachedLeaf("CamX", (ANYVER, 0x1a0)),
+            new DetachedLeaf("CamZ", (ANYVER, 0x1a4)),
+            new DetachedLeaf("CamY", (ANYVER, 0x1a8))
+        );
 
         public LeafLocatorGroup BonfireLevelsGroup = new("BonfireLevelsPtr",
             new DetachedLeaf("TheFarFire", (ANYSOTFS, 0x1a), (ANYVANILLA, 0x12)),

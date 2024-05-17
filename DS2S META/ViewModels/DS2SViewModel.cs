@@ -35,18 +35,7 @@ namespace DS2S_META.ViewModels
                 return "No";
             }
         }
-        public string ContentOnline
-        {
-            get
-            {
-                if (!Hook.Hooked)
-                    return string.Empty;
-
-                if (Hook.Online)
-                    return "Yes";
-                return "No";
-            }
-        }
+        public string ContentOnline => Hook.Online;
         public Brush ForegroundID
         {
             get
@@ -72,7 +61,7 @@ namespace DS2S_META.ViewModels
                 if (!Hook.Hooked)
                     return Brushes.Black;
 
-                if (Hook.Online)
+                if (Hook.Online == "YES")
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
