@@ -25,7 +25,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             InstrLength = instrlen;
         }
 
-        public override PHPointer Register()
+        public override PHPointer Init(PHook PH)
         {
             throw new NotImplementedException();
         }

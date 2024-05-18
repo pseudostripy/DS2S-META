@@ -22,11 +22,5 @@ namespace DS2S_META.Utils.Offsets
             AoB = aob;
             Offset = off;
         }
-
-        public override PHPointer Register()
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

@@ -21,5 +21,8 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             Identifier = id;
             Locators = locators.ToList();
         }
+        public bool HasVerLocator(DS2VER ver) => Locators.Any(x => x.ValidVersions.Contains(ver));
+        public CodeLocator? TryGetVerLocator(DS2VER ver) => Locators.FirstOrDefault(x => x.ValidVersions.Contains(ver))?.CodeLocator;
+        public CodeLocator GetVerLocator(DS2VER ver) => Locators.First(x => x.ValidVersions.Contains(ver)).CodeLocator;
     }
 }

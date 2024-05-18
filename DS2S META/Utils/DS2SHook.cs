@@ -58,7 +58,7 @@ namespace DS2S_META
             OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
         }
 
-        public IntPtr ModuleAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
+        //public IntPtr ModuleAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
         private readonly GIVEOPTIONS GIVESILENT = GIVEOPTIONS.GIVESILENTLY;
