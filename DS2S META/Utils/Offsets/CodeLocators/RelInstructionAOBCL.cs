@@ -5,29 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Utils.Offsets.OffsetClasses
+namespace DS2S_META.Utils.Offsets.CodeLocators
 {
     /// <summary>
     /// Provides an AoB + offset which defines a relative jump
     /// to the current instruction. The output pointer is found at
     /// ptrAob + instrlen + reljumpval
     /// </summary>
-    internal class RelInstructionAOBCL : CodeLocator
+    internal class RelInstructionAOBCL : AobCodeLocator
     {
-        internal string AoB;
-        internal int AoBOffset; // how far into instruction the relative jump int is found
         internal int InstrLength; // reljump starts after instruction completes
+        internal int[] ChildOffsets; // offsets to follow once you've reached base for this ptr
 
-        public RelInstructionAOBCL(string aob, int reljumpoff, int instrlen)
+        public RelInstructionAOBCL(string aob, int reljumpoff, int instrlen, params int[] childOffsets) : base(aob)
         {
-            AoB = aob;
-            AoBOffset = reljumpoff;
+            Offset = reljumpoff;
             InstrLength = instrlen;
+            ChildOffsets = childOffsets;
         }
 
         public override PHPointer Init(PHook PH)
         {
-            throw new NotImplementedException();
+            return PH.RegisterRelativeAOB(AoB, Offset, InstrLength, ChildOffsets);
         }
 
     }

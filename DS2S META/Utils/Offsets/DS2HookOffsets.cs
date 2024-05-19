@@ -42,10 +42,6 @@ namespace DS2S_META.Utils.Offsets
         public Core? Core { get; init; }
         public Func? Func { get; set; }
 
-
-        public Covenant3 Covenants2 { get; init; }
-
-        
         // Towards better version-specific functionality:
         public int[]? DisableAI;
         public int[]? LoadedEnemiesTable;

@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.ViewModels.Commands;
 using PropertyHook;
 using System;
@@ -21,6 +22,8 @@ namespace DS2S_META.ViewModels
         private ObservableCollection<DS2SInfusion> _infusionList;
         public ICollectionView? InfusionCollectionView { get; set; }
 
+        private ScalingBonusHGO? ScalingBonusHGO => Hook?.DS2P?.ScalingBonusHGO;
+
         // Constructor
         public DmgCalcViewModel()
         {
@@ -33,6 +36,7 @@ namespace DS2S_META.ViewModels
             InfusionCollectionView = CollectionViewSource.GetDefaultView(_infusionList);
 
             WeaponCollectionView.Filter += FilterWeapons;
+            SetWeapon = new SetWeaponCommand(this);
         }
         
         public WeaponRow? WepSel { get; set; }
@@ -90,8 +94,8 @@ namespace DS2S_META.ViewModels
                 return;
 
             // Update the ones we care about:
-            lMod = WepSel?.WTypeRow?.LMod ?? 0;
-            rMod = WepSel?.WTypeRow?.RMod ?? 0;
+            LMod = WepSel?.WTypeRow?.LMod ?? 0;
+            RMod = WepSel?.WTypeRow?.RMod ?? 0;
 
             // Calc scaling:
             pScale = (int)Math.Floor( CalcScaling() );
@@ -104,10 +108,10 @@ namespace DS2S_META.ViewModels
         public float CalcScaling()
         {
             // Always do str/dex:
-            var strbonus = Hook?.GetBonus(DS2SHook.BNSTYPE.STR);
+            var strbonus = ScalingBonusHGO?.GetBonus(BNSTYPE.STR);
             var strsf = WepSel?.ReinforceRow?.WeaponStatsAffectRow?.ReadScalingValue(WeaponStatsAffectRow.SCTYPE.STR, UpgradeVal); // scale factor
 
-            var dexbonus = Hook?.GetBonus(DS2SHook.BNSTYPE.DEX);
+            var dexbonus = ScalingBonusHGO?.GetBonus(BNSTYPE.DEX);
             var dexsf = WepSel?.ReinforceRow?.WeaponStatsAffectRow?.ReadScalingValue(WeaponStatsAffectRow.SCTYPE.DEX, UpgradeVal);
 
             var scaling = strsf * strbonus + dexsf * dexbonus;
@@ -115,19 +119,12 @@ namespace DS2S_META.ViewModels
             return (float)scaling;
         }
 
-        public DS2SHook? Hook { get; set; }
-        public void InitViewModel(DS2SHook hook)
-        {
-            Hook = hook;
-            SetWeapon = new SetWeaponCommand(this);
-        }
-
         // Commands:
         public ICommand? SetWeapon { get; private set; }
 
         // Properties:
         private float _lMod = 0;
-        public float lMod
+        public float LMod
         {
             get => _lMod;
             set
@@ -137,7 +134,7 @@ namespace DS2S_META.ViewModels
             }
         }
         private float _rMod = 0;
-        public float rMod
+        public float RMod
         {
             get => _rMod;
             set
@@ -171,8 +168,8 @@ namespace DS2S_META.ViewModels
             get
             {
                 if (LeftHandSelected)
-                    return lMod;
-                return rMod;
+                    return LMod;
+                return RMod;
             } 
         }
 

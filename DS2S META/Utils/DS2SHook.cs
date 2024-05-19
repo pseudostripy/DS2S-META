@@ -19,6 +19,9 @@ using DS2S_META.Randomizer;
 using Octokit;
 using System.CodeDom;
 using System.Security.Cryptography;
+using DS2S_META.Utils.Offsets.CodeLocators;
+using DS2S_META.Utils.Offsets.HookGroupObjects;
+using DS2S_META.Utils.Offsets.OffsetClasses;
 
 namespace DS2S_META
 {
@@ -35,18 +38,14 @@ namespace DS2S_META
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
         public static readonly string ExeDir = Environment.CurrentDirectory;
-        public List<Param> Params = new();
         private bool DmgModInstalled => DmgModInj1 != null;
         private IntPtr DmgModCodeAddr = IntPtr.Zero;
         private Inject? DmgModInj1 = null;
         private Inject? DmgModInj2 = null;
 
-        public int LOADEDINGAME = 0x1e;
-        public int MAINMENU = 0xa;
-
-
         public MainWindow MW { get; set; }
 
+        // Event Handling:
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
@@ -61,7 +60,6 @@ namespace DS2S_META
         //public IntPtr ModuleAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
         public string ID => Process?.Id.ToString() ?? "Not Hooked";
 
-        private readonly GIVEOPTIONS GIVESILENT = GIVEOPTIONS.GIVESILENTLY;
         private string _version = "";
         public string Version
         {
@@ -75,6 +73,13 @@ namespace DS2S_META
         public DS2VER DS2Ver;
         public BBJTYPE BBJType;
         internal DS2HookOffsets Offsets;
+
+        // -----------------------------------------   WIP   ---------------------------------------
+        public DS2Ptrs DS2P;
+        public void SetupPointers2()
+        {
+            DS2P = new(this, DS2Ver);
+        }
 
         // Utility Info
         public static bool Reading { get; set; }
@@ -91,17 +96,14 @@ namespace DS2S_META
                 RaiseGameStateChange(oldstate, value);
             }
         }
-        public bool InGame => GameState == LOADEDINGAME;
-        public bool InMenu => GameState == MAINMENU;
+        public bool InGame => GameState == (int)GAMESTATE.LOADEDINGAME;
+        public bool InMainMenu => GameState == (int)GAMESTATE.MAINMENU;
 
         //public bool 
         public bool Focused => Hooked && User32.GetForegroundProcessID() == Process.Id;
         public bool IsInitialized = false;
 
         // Pointer Setups
-        public Dictionary<string, CodeLocator> CodeLocators;
-        public List<PHPointer> PHPointers = new();
-        
         private PHPointer GiveSoulsFunc;
         private PHPointer RemoveSoulsFunc;
         private PHPointer ItemGiveFunc;
@@ -225,7 +227,9 @@ namespace DS2S_META
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
             SetupChildPointers();
-
+            
+            // Refactoring:
+            SetupPointers2();
 
             // Slowly migrate to param handling class:
             ParamMan.Initialise(this);
@@ -731,73 +735,48 @@ namespace DS2S_META
 
 
         // Covenants
-        public Dictionary<COV, Covenant> GameCovenantData { get; set; } = new
-            (
-                DS2Resource.Covenants.Where(cv => cv.ID != COV.NONE)
-                .ToDictionary(cv => cv.ID, cv => new Covenant(cv.ID))
-            );
-        private Covenant3.CovOff CovOff(COV id) => Offsets.Covenants2.Offsets[id];
-        public void SetCovenantDiscov(COV id, bool discov) => PlayerParam.WriteBoolean(CovOff(id).Discov, discov);
-        public void SetCovenantRank(COV id, int rank) => PlayerParam.WriteByte(CovOff(id).Rank, (byte)rank);
-        public void SetCovenantProgress(COV id, int prog) => PlayerParam.WriteInt16(CovOff(id).Progress, (short)prog);
-        public Covenant GetCovenantData(COV id)
-        {
-            var disc = PlayerParam.ReadBoolean(Offsets.Covenants2.Offsets[id].Discov);
-            var rank = PlayerParam.ReadByte(Offsets.Covenants2.Offsets[id].Rank);
-            var progress = PlayerParam.ReadInt16(Offsets.Covenants2.Offsets[id].Progress);
-            return new Covenant(id,disc,rank,progress);
-        }
-        public void UpdateCovenants()
-        {
-            foreach (var kvp in GameCovenantData)
-            {
-                COV id = kvp.Key;
-                var cov = kvp.Value;
-                if (!Offsets.Covenants2.Offsets.ContainsKey(id))
-                    continue;
+        //public Dictionary<COV, Covenant> GameCovenantData { get; set; } = new
+        //    (
+        //        DS2Resource.Covenants.Where(cv => cv.ID != COV.NONE)
+        //        .ToDictionary(cv => cv.ID, cv => new Covenant(cv.ID))
+        //    );
+        //private Covenant3.CovOff CovOff(COV id) => Offsets.Covenants2.Offsets[id];
+        //public void SetCovenantDiscov(COV id, bool discov) => PlayerParam.WriteBoolean(CovOff(id).Discov, discov);
+        //public void SetCovenantRank(COV id, int rank) => PlayerParam.WriteByte(CovOff(id).Rank, (byte)rank);
+        //public void SetCovenantProgress(COV id, int prog) => PlayerParam.WriteInt16(CovOff(id).Progress, (short)prog);
+        //public Covenant GetCovenantData(COV id)
+        //{
+        //    var disc = PlayerParam.ReadBoolean(Offsets.Covenants2.Offsets[id].Discov);
+        //    var rank = PlayerParam.ReadByte(Offsets.Covenants2.Offsets[id].Rank);
+        //    var progress = PlayerParam.ReadInt16(Offsets.Covenants2.Offsets[id].Progress);
+        //    return new Covenant(id,disc,rank,progress);
+        //}
+        //public void UpdateCovenants()
+        //{
+        //    foreach (var kvp in GameCovenantData)
+        //    {
+        //        COV id = kvp.Key;
+        //        var cov = kvp.Value;
+        //        if (!Offsets.Covenants2.Offsets.ContainsKey(id))
+        //            continue;
 
-                Covenant newcov = GetCovenantData(id);
-                cov.Discovered = newcov.Discovered;
-                cov.Rank = newcov.Rank;
-                cov.Progress = newcov.Progress;
-            }
-            OnPropertyChanged(nameof(GameCovenantData));
-        }
+        //        Covenant newcov = GetCovenantData(id);
+        //        cov.Discovered = newcov.Discovered;
+        //        cov.Rank = newcov.Rank;
+        //        cov.Progress = newcov.Progress;
+        //    }
+        //    OnPropertyChanged(nameof(GameCovenantData));
+        //}
+
+        
 
         public void UpdateCovenantProperties()
         {
-            UpdateCovenants();
+            DS2P.CovenantHGO.UpdateProperties();
+             //UpdateCovenants();
             //OnPropertyChanged(nameof(Covenant))
 
             OnPropertyChanged(nameof(CurrentCovenant));
-            //OnPropertyChanged(nameof(CurrentCovenantName));
-            OnPropertyChanged(nameof(HeirsOfTheSunDiscovered));
-            OnPropertyChanged(nameof(HeirsOfTheSunRank));
-            OnPropertyChanged(nameof(HeirsOfTheSunProgress));
-            OnPropertyChanged(nameof(BlueSentinelsDiscovered));
-            OnPropertyChanged(nameof(BlueSentinelsRank));
-            OnPropertyChanged(nameof(BlueSentinelsProgress));
-            OnPropertyChanged(nameof(BrotherhoodOfBloodDiscovered));
-            OnPropertyChanged(nameof(BrotherhoodOfBloodRank));
-            OnPropertyChanged(nameof(BrotherhoodOfBloodProgress));
-            OnPropertyChanged(nameof(WayOfTheBlueDiscovered));
-            OnPropertyChanged(nameof(WayOfTheBlueRank));
-            OnPropertyChanged(nameof(WayOfTheBlueProgress));
-            OnPropertyChanged(nameof(RatKingDiscovered));
-            OnPropertyChanged(nameof(RatKingRank));
-            OnPropertyChanged(nameof(RatKingProgress));
-            OnPropertyChanged(nameof(BellKeepersDiscovered));
-            OnPropertyChanged(nameof(BellKeepersRank));
-            OnPropertyChanged(nameof(BellKeepersProgress));
-            OnPropertyChanged(nameof(DragonRemnantsDiscovered));
-            OnPropertyChanged(nameof(DragonRemnantsRank));
-            OnPropertyChanged(nameof(DragonRemnantsProgress));
-            OnPropertyChanged(nameof(CompanyOfChampionsDiscovered));
-            OnPropertyChanged(nameof(CompanyOfChampionsRank));
-            OnPropertyChanged(nameof(CompanyOfChampionsProgress));
-            OnPropertyChanged(nameof(PilgrimsOfDarknessDiscovered));
-            OnPropertyChanged(nameof(PilgrimsOfDarknessRank));
-            OnPropertyChanged(nameof(PilgrimsOfDarknessProgress));
         }
         public void UpdateInternalProperties()
         {
@@ -1724,6 +1703,9 @@ namespace DS2S_META
         }
         public void NewTestCharacter()
         {
+            // shorthand
+            GIVEOPTIONS GIVESILENT = GIVEOPTIONS.GIVESILENTLY;
+
             // Define character multi-items
             var lifegemid = 60010000;
             var oldradid = 60030000;
@@ -2186,24 +2168,7 @@ namespace DS2S_META
         {
             return 0;
         }
-        private const int tbo = 0x7A8; // table bonus offset
-        public enum BNSTYPE
-        {
-            STR = 0,
-            DEX = 1,
-            MAGIC = 2,
-            FIRE = 3,
-            LIGHTNING = 4,
-            DARK = 5,
-            POISON = 6,
-            BLEED = 7,
-        }
-        public int GetBonus(BNSTYPE bnstype)
-        {
-            if (!Hooked) return 0;
-            if (SomePlayerStats == null) return 0;
-            return SomePlayerStats.ReadInt32(tbo + 36 * (int)bnstype);
-        }
+        
         
         // TODO ARCHAIC
         internal bool GetIsDroppable(ItemRow item)

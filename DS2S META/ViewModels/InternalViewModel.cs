@@ -20,6 +20,7 @@ using static DS2S_META.State;
 using DS2S_META.Utils.Offsets;
 using System.Diagnostics.Metrics;
 using Xceed.Wpf.Toolkit;
+using DS2S_META.Utils.Offsets.HookGroupObjects;
 
 namespace DS2S_META.ViewModels
 {
@@ -49,7 +50,8 @@ namespace DS2S_META.ViewModels
         }
 
         // Utility:
-        private COV SelCovId => (COV) CovSelected.ID;
+        private CovenantHGO? CovHook => Hook?.DS2P?.CovenantHGO;
+        private COV SelCovId => CovSelected.ID;
         private bool ShowExtraRows => SelCovId != COV.NONE;
         public int CovExtraRowMinHeight => ShowExtraRows ? EXTRAROWMINHEIGHT : 0;
         public int RowMaxH => EXTRAROWMAXHEIGHT;
@@ -72,7 +74,7 @@ namespace DS2S_META.ViewModels
         private Covenant? GetCovData()
         {
             // convert to enum
-            if (Hook?.GameCovenantData?.TryGetValue(SelCovId, out var covenant) == true)
+            if (CovHook?.GameCovenantData.TryGetValue(SelCovId, out var covenant) == true)
                 return covenant;
             return null;
         }
@@ -98,7 +100,7 @@ namespace DS2S_META.ViewModels
             set
             {
                 if (SelCovData == null) return;
-                Hook?.SetCovenantDiscov(SelCovId, value);
+                CovHook?.SetCovenantDiscov(SelCovId, value);
                 if (value == false && Hook != null && (COV)Hook.CurrentCovenant == SelCovId)
                     SetCurrentCovenant(COV.NONE);
 
@@ -112,7 +114,7 @@ namespace DS2S_META.ViewModels
             {
                 if (SelCovData == null) return;
                 FixProgressOnRankChange(value);
-                Hook?.SetCovenantRank(SelCovId, value);
+                CovHook?.SetCovenantRank(SelCovId, value);
                 OnPropertyChanged();
             }
         }
@@ -123,7 +125,7 @@ namespace DS2S_META.ViewModels
             {
                 if (SelCovData == null) return;
                 FixRankOnProgressChange(value);
-                Hook?.SetCovenantProgress(SelCovId, value);
+                CovHook?.SetCovenantProgress(SelCovId, value);
                 OnPropertyChanged();
             }
         }
@@ -137,7 +139,7 @@ namespace DS2S_META.ViewModels
                 newrank = 3;
             else
                 newrank = newrankSearch - 1;
-            Hook?.SetCovenantRank(SelCovId, newrank);
+            CovHook?.SetCovenantRank(SelCovId, newrank);
         }
         private void FixProgressOnRankChange(int newrank)
         {

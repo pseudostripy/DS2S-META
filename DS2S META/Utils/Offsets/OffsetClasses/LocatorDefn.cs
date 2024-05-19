@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DS2S_META;
+using DS2S_META.Utils.Offsets.CodeLocators;
 
 namespace DS2S_META.Utils.Offsets.OffsetClasses
 {
@@ -13,10 +14,6 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         public CodeLocator CodeLocator;
        
         // Constructors
-        public LocatorDefn() 
-        {
-            ValidVersions = new List<DS2VER>();
-        }
         public LocatorDefn(List<DS2VER> validVersions, CodeLocator codeloc)
         {
             CodeLocator = codeloc;

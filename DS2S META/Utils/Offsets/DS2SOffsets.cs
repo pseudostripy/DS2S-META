@@ -69,16 +69,16 @@ namespace DS2S_META.Utils.Offsets
 
 
 
-            Covenants2 = new();
-            Covenants2.AddOffsets(COV.HEIRSOFTHESUN, 0x1af, 0x1b9, 0x1c4);
-            Covenants2.AddOffsets(COV.BLUESENTINELS, 0x1b0, 0x1ba, 0x1c6);
-            Covenants2.AddOffsets(COV.BROTHERHOODOFBLOOD, 0x1b1, 0x1bb, 0x1cb);
-            Covenants2.AddOffsets(COV.WAYOFTHEBLUE, 0x1b2, 0x1bc, 0x1ca);
-            Covenants2.AddOffsets(COV.RATKING, 0x1b3, 0x1bd, 0x1cc);
-            Covenants2.AddOffsets(COV.BELLKEEPERS, 0x1b4, 0x1be, 0x1ce);
-            Covenants2.AddOffsets(COV.DRAGONREMNANTS, 0x1b5, 0x1bf, 0x1d0);
-            Covenants2.AddOffsets(COV.COVENANTOFCHAMPIONS, 0x1b6, 0x1c0, 0x1d2);
-            Covenants2.AddOffsets(COV.PILGRIMSOFDARKNESS, 0x1b7, 0x1c1, 0x1d4);
+            //Covenants2 = new();
+            //Covenants2.AddOffsets(COV.HEIRSOFTHESUN, 0x1af, 0x1b9, 0x1c4);
+            //Covenants2.AddOffsets(COV.BLUESENTINELS, 0x1b0, 0x1ba, 0x1c6);
+            //Covenants2.AddOffsets(COV.BROTHERHOODOFBLOOD, 0x1b1, 0x1bb, 0x1cb);
+            //Covenants2.AddOffsets(COV.WAYOFTHEBLUE, 0x1b2, 0x1bc, 0x1ca);
+            //Covenants2.AddOffsets(COV.RATKING, 0x1b3, 0x1bd, 0x1cc);
+            //Covenants2.AddOffsets(COV.BELLKEEPERS, 0x1b4, 0x1be, 0x1ce);
+            //Covenants2.AddOffsets(COV.DRAGONREMNANTS, 0x1b5, 0x1bf, 0x1d0);
+            //Covenants2.AddOffsets(COV.COVENANTOFCHAMPIONS, 0x1b6, 0x1c0, 0x1d2);
+            //Covenants2.AddOffsets(COV.PILGRIMSOFDARKNESS, 0x1b7, 0x1c1, 0x1d4);
 
 
             Gravity = new(0x134);

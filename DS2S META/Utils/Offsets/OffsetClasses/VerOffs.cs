@@ -11,19 +11,12 @@ namespace DS2S_META.Utils.Offsets
     public class VerOffs
     {
         public List<DS2VER> ValidVersions;
-        public int[] Offsets;
+        public int Offset;
 
-        public VerOffs(List<DS2VER> validVers, params int[] offsets)
+        public VerOffs(List<DS2VER> validVers, int offset)
         {
             ValidVersions = validVers;
-            Offsets = offsets;
-        }
-
-
-
-        public override PHPointer Register()
-        {
-            return null;
+            Offset = offset;
         }
     }
 }

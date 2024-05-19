@@ -5,24 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Utils.Offsets.OffsetClasses
+namespace DS2S_META.Utils.Offsets.CodeLocators
 {
     /// <summary>
     /// Provides an AoB and gets the ptr of where this is
     /// found (first found instance only)
     /// </summary>
-    internal class AbsoluteAOBCL : CodeLocator
+    internal class AbsoluteAOBCL : AobCodeLocator
     {
-        internal string AoB;
-        
-        public AbsoluteAOBCL(string aob)
+        public AbsoluteAOBCL(string aob) : base(aob)
         {
-            AoB = aob;
+            Offset = 0;
         }
 
         public override PHPointer Init(PHook PH)
         {
-            throw new NotImplementedException();
+            return PH.RegisterAbsoluteAOB(AoB);
         }
 
     }

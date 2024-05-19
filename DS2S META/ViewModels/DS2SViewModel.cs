@@ -232,9 +232,9 @@ namespace DS2S_META.ViewModels
 
         private void OnGameStateChange(object? sender, GameStateEventArgs e)
         {
-            if (e.GameState == Hook.MAINMENU)
+            if (e.GameState == (int)GAMESTATE.MAINMENU)
                 AllTabsOnMainMenu();
-            if (e.GameState == Hook.LOADEDINGAME) // add more here
+            if (e.GameState == (int)GAMESTATE.LOADEDINGAME) // add more here
                 AllTabsOnInGame();
         }
         

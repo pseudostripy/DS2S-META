@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using DS2S_META.Utils;
 using DS2S_META.Utils.Offsets.OffsetClasses;
+using DS2S_META.Utils.Offsets.CodeLocators;
 
 namespace DS2S_META.Utils.Offsets
 {
@@ -23,11 +24,13 @@ namespace DS2S_META.Utils.Offsets
         private readonly static List<DS2VER> V111OR112 = new() { DS2VER.VANILLA_V111, DS2VER.VANILLA_V111 };
         private readonly static string STRBASEA = "BaseA";
 
-        public LocatorDefn OFLD(List<DS2VER> validVersions, string parentId, params int[] offsets)
+        public static LocatorDefn OFLD(List<DS2VER> validVersions, string parentId, params int[] offsets)
         {
-            return new LocatorDefn(validVersions, new OffsetLocator(parentId, offsets));
-            //CodeLocator = new OffsetLocator(parentId, offsets);
-            //ValidVersions = validVersions;
+            return new LocatorDefn(validVersions, new LeafCL(parentId, offsets.ToList()));
+        }
+        public static LocatorDefn CPLD(List<DS2VER> validVersions, string parentId, params int[] offsets)
+        {
+            return new LocatorDefn(validVersions, new ChildPointerCL(parentId, offsets.ToList()));
         }
 
 
@@ -35,12 +38,12 @@ namespace DS2S_META.Utils.Offsets
         {
             new(STRBASEA, new List<LocatorDefn>()
             {
-                new(ANYSOTFS, new RelInstructionAOBCL("48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6",3,7)),
-                new(ANYVANILLA, new RelModuleAOBCL("8B F1 8B 0D ? ? ? ? 8B 01 8B 50 28 FF D2 84 C0 74 0C",3))
+                new(ANYSOTFS, new RelInstructionAOBCL("48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6",3,7,0)),
+                new(ANYVANILLA, new RelModuleAOBCL("8B F1 8B 0D ? ? ? ? 8B 01 8B 50 28 FF D2 84 C0 74 0C",4))
             }),
             new("BaseB", new List<LocatorDefn>()
             {
-                new(ANYSOTFS, new RelInstructionAOBCL("48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8",3,7)),
+                new(ANYSOTFS, new RelInstructionAOBCL("48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8",3,7,0)),
                 new(ANYVANILLA, new RelModuleAOBCL("89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0",3))
             }),
 
@@ -80,7 +83,6 @@ namespace DS2S_META.Utils.Offsets
                 new(S102, new AbsoluteAOBCL("48 8B 89 D8 00 00 00 48 85 C9 0F 85 40 5E 00 00")),
                 new(S103, new AbsoluteAOBCL("48 8B 89 D8 00 00 00 48 85 C9 0F 85 20 5E 00 00")),
                 new(ANYVANILLA, new RelInstructionAOBCL("83 c4 10 8d 95 6c fe ff ff 52 8b ce e8 ? ? ? ?", 13, 17))
-                //new(ANYVANILLA, new AbsoluteAOBCL("83 c4 10 8d 95 6c fe ff ff 52 8b ce e8 ? ? ? ?"))
             }),
             new("ApplySpEffectAoB", new List<LocatorDefn>()
             {
@@ -114,69 +116,76 @@ namespace DS2S_META.Utils.Offsets
             }),
         
             // BaseA ChildPointers:    
-            new("PlayerTypeOffset", new OFLD(ANYSOTFS, STRBASEA, 0xb0),
-                                    new OFLD(ANYVANILLA, STRBASEA, 0x90)),
-            new("AvailableItemBag", new OFLD(ANYSOTFS, STRBASEA, 0xa8, 0x10, 0x10),
-                                    new OFLD(ANYVANILLA, STRBASEA, 0x60, 0x8, 0x8)),
-            new("ItemGiveWindowPointer",    new OFLD(ANYSOTFS, STRBASEA, 0x22e0),
-                                            new OFLD(ANYVANILLA, STRBASEA, 0xcc4)),
-            new("PlayerCtrl",   new OFLD(ANYSOTFS, STRBASEA, 0xd0),
-                                new OFLD(ANYVANILLA, STRBASEA, 0x74)),
-            new("NetSvrBloodstainManager", new OFLD(ANYVER, STRBASEA, 0x90, 0x28, 0x88)),
-            new("PlayerParam",  new OFLD(ANYSOTFS, "PlayerCtrl", 0x490),
-                                new OFLD(ANYVANILLA, "PlayerCtrl", 0x378)),
-            new("PlayerPosition",   new OFLD(ANYSOTFS, "PlayerCtrl", 0xf8, 0xf0),
-                                    new OFLD(ANYVANILLA, "PlayerCtrl", 0xb4, 0xa8)),
-            new("PlayerDataMapPtr", new OFLD(ANYSOTFS, "PlayerCtrl", 0x100, 0x320, 0x20),
-                                    new OFLD(ANYVANILLA, "PlayerCtrl", 0xB8, 0x8, 0x14, 0x1B0, 0x10)),
-            new("SpEffectCtrl", new OFLD(ANYSOTFS, "PlayerCtrl", 0x3e0),
-                                new OFLD(ANYVANILLA, "PlayerCtrl", 0x308)),
-            new("EventManager", new OFLD(ANYSOTFS, STRBASEA, 0x70),
-                                new OFLD(ANYVANILLA, STRBASEA, 0x44)),
-            new("WarpManager",  new OFLD(ANYSOTFS, "EventManager", 0x70),
-                                new OFLD(ANYVANILLA, "EventManager", 0x2c)),
-            new("BonfireLevelsPtr", new OFLD(ANYSOTFS, "EventManager", 0x58, 0x20),
-                                    new OFLD(ANYVANILLA, "EventManager", 0x2c, 0x10)),
-            new("Camera2", new OFLD(ANYVER, STRBASEA, 0x0, 0x20)),
-            new("PlayerBaseMisc",   new OFLD(ANYSOTFS, STRBASEA, 0xa8, 0xc0),
-                                    new OFLD(ANYVANILLA, STRBASEA, 0x60)),
-            new("LoadedEnemiesTable", new OFLD(S103, STRBASEA, 0x18)),
-            new LeafHeadPointerDefn("ScalingBonusTablePtr", 
-                                            new OFLD(S102, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718, 0x7a8),
-                                            new OFLD(S103, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x7a8))
+            new("PlayerTypeOffset", CPLD(ANYSOTFS, STRBASEA, 0xb0),
+                                    CPLD(ANYVANILLA, STRBASEA, 0x90)),
+            new("AvailableItemBag", CPLD(ANYSOTFS, STRBASEA, 0xa8, 0x10, 0x10),
+                                    CPLD(ANYVANILLA, STRBASEA, 0x60, 0x8, 0x8)),
+            new("ItemGiveWindowPointer",    CPLD(ANYSOTFS, STRBASEA, 0x22e0),
+                                            CPLD(ANYVANILLA, STRBASEA, 0xcc4)),
+            new("PlayerCtrl",   CPLD(ANYSOTFS, STRBASEA, 0xd0),
+                                CPLD(ANYVANILLA, STRBASEA, 0x74)),
+            new("NetSvrBloodstainManager", CPLD(ANYVER, STRBASEA, 0x90, 0x28, 0x88)),
+            new("PlayerParam",  CPLD(ANYSOTFS, "PlayerCtrl", 0x490),
+                                CPLD(ANYVANILLA, "PlayerCtrl", 0x378)),
+            new("PlayerPosition",   CPLD(ANYSOTFS, "PlayerCtrl", 0xf8, 0xf0),
+                                    CPLD(ANYVANILLA, "PlayerCtrl", 0xb4, 0xa8)),
+            new("PlayerDataMapPtr", CPLD(ANYSOTFS, "PlayerCtrl", 0x100, 0x320, 0x20),
+                                    CPLD(ANYVANILLA, "PlayerCtrl", 0xB8, 0x8, 0x14, 0x1B0, 0x10)),
+            new("SpEffectCtrl", CPLD(ANYSOTFS, "PlayerCtrl", 0x3e0),
+                                CPLD(ANYVANILLA, "PlayerCtrl", 0x308)),
+            new("EventManager", CPLD(ANYSOTFS, STRBASEA, 0x70),
+                                CPLD(ANYVANILLA, STRBASEA, 0x44)),
+            new("WarpManager",  CPLD(ANYSOTFS, "EventManager", 0x70),
+                                CPLD(ANYVANILLA, "EventManager", 0x2c)),
+            new("BonfireLevelsPtr", CPLD(ANYSOTFS, "EventManager", 0x58, 0x20),
+                                    CPLD(ANYVANILLA, "EventManager", 0x2c, 0x10)),
+            new("Camera2", CPLD(ANYVER, STRBASEA, 0x0, 0x20)),
+            new("PlayerBaseMisc",   CPLD(ANYSOTFS, STRBASEA, 0xa8, 0xc0),
+                                    CPLD(ANYVANILLA, STRBASEA, 0x60)),
+            new("LoadedEnemiesTable", CPLD(S103, STRBASEA, 0x18)),
+            new("ScalingBonusTableCtrl",    CPLD(S102, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718),
+                                            CPLD(S103, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170)),
         };
 
 
         public static readonly List<LeafDefn> LeafDefns = new()
         {
-            new("PlayerName",   new OFLD(ANYSOTFS, STRBASEA, 0xa8, 0x114),
-                                new OFLD(ANYVANILLA, STRBASEA, 0x60, 0xa4)),
-            new("Gravity",  new OFLD(ANYSOTFS, STRBASEA, 0xd0, 0x100, 0x134),
-                            new OFLD(ANYVANILLA, STRBASEA, 0x74, 0xb4, 0x8, 0xfc)),
-            new("GameState",    new OFLD(ANYSOTFS, STRBASEA, 0x24ac),
-                                new OFLD(ANYVANILLA, STRBASEA, 0xdec)),
-            new("LoadingState", new OFLD(ANYSOTFS, STRBASEA, 0x80, 0x8, 0xbb4),
-                                new OFLD(V102, STRBASEA, 0x24, 0x19c, 0xa94, 0x14, 0x4, 0x4c, 0x730),
-                                new OFLD(V111, STRBASEA, 0x24, 0x14, 0x2fc, 0x54, 0x870),
-                                new OFLD(V112, STRBASEA, 0xB0, 0x7C, 0x44, 0xac8, 0x0, 0x4c, 0x730)),
-            new("ForceQuit",    new OFLD(ANYSOTFS, STRBASEA, 0x24b1),
-                                new OFLD(ANYVANILLA, STRBASEA, 0xdf1)),
-            new("DisableAI",    new OFLD(S103, STRBASEA, 0x28, 0x18)),
-            new("BIKP1Skip_Val1", new OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xe34)),
-            new("BIKP1Skip_Val2", new OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52)),
-            new("ConnectionType", new OFLD(ANYSOTFS, "BaseB", 0x38, 0x8))
+            new("PlayerName",   OFLD(ANYSOTFS, STRBASEA, 0xa8, 0x114),
+                                OFLD(ANYVANILLA, STRBASEA, 0x60, 0xa4)),
+            new("Gravity",  OFLD(ANYSOTFS, STRBASEA, 0xd0, 0x100, 0x134),
+                            OFLD(ANYVANILLA, STRBASEA, 0x74, 0xb4, 0x8, 0xfc)),
+            new("GameState",    OFLD(ANYSOTFS, STRBASEA, 0x24ac),
+                                OFLD(ANYVANILLA, STRBASEA, 0xdec)),
+            new("LoadingState", OFLD(ANYSOTFS, STRBASEA, 0x80, 0x8, 0xbb4),
+                                OFLD(V102, STRBASEA, 0x24, 0x19c, 0xa94, 0x14, 0x4, 0x4c, 0x730),
+                                OFLD(V111, STRBASEA, 0x24, 0x14, 0x2fc, 0x54, 0x870),
+                                OFLD(V112, STRBASEA, 0xb0, 0x7c, 0x44, 0xac8, 0x0, 0x4c, 0x730)),
+            new("ForceQuit",    OFLD(ANYSOTFS, STRBASEA, 0x24b1),
+                                OFLD(ANYVANILLA, STRBASEA, 0xdf1)),
+            new("DisableAI",    OFLD(S103, STRBASEA, 0x28, 0x18)),
+            new("BIKP1Skip_Val1", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xe34)),
+            new("BIKP1Skip_Val2", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52)),
+            new("ConnectionType", OFLD(ANYSOTFS, "BaseB", 0x38, 0x8))
         };
 
         public static readonly List<LeafLocatorGroup> LeafGroupDefns = new()
         {
-            // CameraGroup
-            new("Camera2",  
+            new("CameraGroup", "Camera2",
                 new DetachedLeaf("CamX", (ANYVER, 0x1a0)),
                 new DetachedLeaf("CamZ", (ANYVER, 0x1a4)),
                 new DetachedLeaf("CamY", (ANYVER, 0x1a8))),
+
+            new("BonusScalingTableGroup", "ScalingBonusTableCtrl",
+                new DetachedLeaf("STR", (ANYSOTFS, 0x7a8)),
+                new DetachedLeaf("DEX", (ANYSOTFS, 0x7cc)),
+                new DetachedLeaf("MAGIC", (ANYSOTFS, 0x7f0)),
+                new DetachedLeaf("FIRE", (ANYSOTFS, 0x814)),
+                new DetachedLeaf("LIGHTNING", (ANYSOTFS, 0x838)),
+                new DetachedLeaf("DARK", (ANYSOTFS, 0x85c)),
+                new DetachedLeaf("POISON", (ANYSOTFS, 0x880)),
+                new DetachedLeaf("BLEED", (ANYSOTFS, 0x8a4))),
             
-            // BonfireLevelsGroup
-            new("BonfireLevelsPtr",
+        new ("BonfireLevelsGroup", "BonfireLevelsPtr",
                 new DetachedLeaf("TheFarFire", (ANYSOTFS, 0x1a), (ANYVANILLA, 0x12)),
                 new DetachedLeaf("FireKeepersDwelling", (ANYSOTFS, 0x2), (ANYVANILLA, 0x2)),
                 new DetachedLeaf("CrestfallensRetreat", (ANYSOTFS, 0x62), (ANYVANILLA, 0x42)),
@@ -255,13 +264,11 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("ExpulsionChamber", (ANYSOTFS, 0x70a), (ANYVANILLA, 0x4b2)),
                 new DetachedLeaf("GrandCathedral", (ANYSOTFS, 0x6f2), (ANYVANILLA, 0x4a2))),
 
-            // LastBonfireGroup
-            new("EventManager",
+            new("LastBonfireGroup", "EventManager",
                 new DetachedLeaf("LastSetBonfireAreaID", (ANYSOTFS, 0x164), (ANYVANILLA, 0xb4)),
                 new DetachedLeaf("LastSetBonfire", (ANYSOTFS, 0x16c), (ANYVANILLA, 0xbc))),
 
-            // WarpGroup
-            new("PlayerDataMapPtr",
+            new("WarpGroup", "PlayerDataMapPtr",
                 new DetachedLeaf("WarpY1", (ANYSOTFS, 0x1a0), (ANYVANILLA, 0x120)),
                 new DetachedLeaf("WarpZ1", (ANYSOTFS, 0x1a4), (ANYVANILLA, 0x124)),
                 new DetachedLeaf("WarpX1", (ANYSOTFS, 0x1a8), (ANYVANILLA, 0x128)),
@@ -272,8 +279,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("WarpZ3", (ANYSOTFS, 0x1c4), (ANYVANILLA, 0x144)),
                 new DetachedLeaf("WarpX3", (ANYSOTFS, 0x1c8), (ANYVANILLA, 0x148))),
 
-            // AttributeGroup
-            new("PlayerCtrl",
+            new("AttributeGroup", "PlayerCtrl",
                 new DetachedLeaf("SoulLevel", (ANYSOTFS, 0xd0), (ANYVANILLA, 0xcc)),
                 new DetachedLeaf("VGR", (ANYSOTFS, 0x8), (ANYVANILLA, 0x4)),
                 new DetachedLeaf("END", (ANYSOTFS, 0xa), (ANYVANILLA, 0x6)),
@@ -285,8 +291,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("INT", (ANYSOTFS, 0x14), (ANYVANILLA, 0x10)),
                 new DetachedLeaf("FTH", (ANYSOTFS, 0x16), (ANYVANILLA, 0x12))),
 
-            // PlayerParamGroup
-            new("PlayerParam",
+            new("PlayerParamGroup", "PlayerParam",
                 new DetachedLeaf("SoulMemory", (ANYSOTFS, 0xf4), (ANYVANILLA, 0xf0)),
                 new DetachedLeaf("SoulMemory2", (ANYSOTFS, 0xfc), (ANYVANILLA, 0xf8)),
                 new DetachedLeaf("MaxEquipLoad", (ANYSOTFS, 0x3c), (ANYVANILLA, 0x38)),
@@ -296,8 +301,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("SinnerLevel", (ANYSOTFS, 0x1d6), (ANYVANILLA, 0x1d2)),
                 new DetachedLeaf("SinnerPoints", (ANYSOTFS, 0x1d7), (ANYVANILLA, 0x1d3))),
 
-            // PlayerEquipmentGroup
-            new("PlayerCtrl",
+            new("PlayerEquipmentGroup", "PlayerCtrl",
                 new DetachedLeaf("Legs", (ANYSOTFS, 0x920), (ANYVANILLA, 0x1f8)),
                 new DetachedLeaf("Arms", (ANYSOTFS, 0x90c), (ANYVANILLA, 0x1dc)),
                 new DetachedLeaf("Chest", (ANYSOTFS, 0x8f8), (ANYVANILLA, 0x1c0)),
@@ -309,14 +313,12 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("LeftHand2", (ANYSOTFS, 0x894), (ANYVANILLA, 0x70)),
                 new DetachedLeaf("LeftHand3", (ANYSOTFS, 0x8bc), (ANYVANILLA, 0x9c))),
 
-            // PlayerBaseMiscGroup
-            new("PlayerBaseMisc",
+            new("PlayerBaseMiscGroup", "PlayerBaseMisc",
                 new DetachedLeaf("Class", (ANYSOTFS, 0x64), (ANYVANILLA, 0xe4)),
                 new DetachedLeaf("NewGame", (ANYSOTFS, 0x68), (ANYVANILLA, 0xe8)),
                 new DetachedLeaf("SaveSlot", (ANYSOTFS, 0x18a8))),
 
-            // PlayerGroup
-            new("PlayerCtrl",
+            new("PlayerGroup", "PlayerCtrl",
                 new DetachedLeaf("HP", (ANYSOTFS, 0x168), (ANYVANILLA, 0xfc)),
                 new DetachedLeaf("HPMin", (ANYSOTFS, 0x16c), (ANYVANILLA, 0x100)),
                 new DetachedLeaf("HPMax", (ANYSOTFS, 0x170), (ANYVANILLA, 0x104)),
@@ -326,8 +328,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("SpeedModifier", (ANYSOTFS, 0x2a8), (ANYVANILLA, 0x208)),
                 new DetachedLeaf("CurrPoise", (ANYSOTFS, 0x218), (ANYVANILLA, 0x1ac))),
 
-            // CovenantsGroup
-            new("PlayerParam",
+            new("CovenantsGroup", "PlayerParam",
                 new DetachedLeaf("HeirsOfTheSunDiscovered", (ANYSOTFS, 0x1af), (ANYVANILLA, 0x1ab)),
                 new DetachedLeaf("HeirsOfTheSunRank", (ANYSOTFS, 0x1b9), (ANYVANILLA, 0x1b5)),
                 new DetachedLeaf("HeirsOfTheSunProgress", (ANYSOTFS, 0x1c4), (ANYVANILLA, 0x1c0)),

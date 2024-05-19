@@ -148,5 +148,22 @@ namespace DS2S_META
         RESTOREHUMANITY = 100000010,
         BONFIREREST = 110000010,
         AREALOAD_POSSIBLY = 130000010,
-    } 
+    }
+    public enum BNSTYPE
+    {
+        STR = 0,
+        DEX = 1,
+        MAGIC = 2,
+        FIRE = 3,
+        LIGHTNING = 4,
+        DARK = 5,
+        POISON = 6,
+        BLEED = 7,
+    }
+    public enum GAMESTATE
+    {
+        LOADEDINGAME = 0x1e,
+        MAINMENU = 0xa,
+    }
+
 }

@@ -718,15 +718,15 @@ namespace DS2S_META.ViewModels
         }
 
         // Event based updates
-        internal void OnHooked()
+        public override void OnHooked()
         {
             EnableElements();
         }
-        internal void OnUnHooked()
+        public override void OnUnHooked()
         {
             EnableElements();
         }
-        internal void OnInGame()
+        public void OnInGame()
         {
             // called upon transition from load-screen or main-menu to in-game
             if (Hook == null) return;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DS2S_META.Utils.Offsets.CodeLocators;
 
 namespace DS2S_META.Utils.Offsets.OffsetClasses
 {

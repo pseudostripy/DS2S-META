@@ -5,23 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DS2S_META.Utils.Offsets
+namespace DS2S_META.Utils.Offsets.CodeLocators
 {
-    public class OffsetLocator : CodeLocator
+    public abstract class OffsetCodeLocator : CodeLocator
     {
         public string ParentPtrId;
         public List<int> Offsets;
 
-        public OffsetLocator(string parentPtrId, List<int> offsets)
+        public OffsetCodeLocator(string parentPtrId, List<int> offsets)
         {
             ParentPtrId = parentPtrId;
             Offsets = offsets;
         }
-
-        public override PHPointer Init(PHook PH) 
-        {
-            throw new NotImplementedException();
-        }
-        
     }
 }
