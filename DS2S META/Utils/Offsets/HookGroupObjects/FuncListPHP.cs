@@ -1,4 +1,5 @@
-﻿using PropertyHook;
+﻿using DS2S_META.Utils.DS2Hook;
+using PropertyHook;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,28 +18,22 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? SetWarpTargetFuncAoB;
         public PHPointer? WarpFuncAoB;
         public PHPointer? DisplayItemWindow;
-        public PHPointer? ApplySpEffectAoB;
+        public PHPointer? ApplySpEffect;
         public PHPointer? ItemGiveWindow;
 
         public FuncListPHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
             Hook = hook;
 
-            ItemGive = ValOrNull(PHPDict, "ItemGiveFuncAoB");
-            ItemStruct2dDisplay = ValOrNull(PHPDict, "ItemStruct2dDisplayAoB");
-            GiveSouls = ValOrNull(PHPDict, "GiveSoulsFuncAoB");
-            RemoveSouls = ValOrNull(PHPDict, "RemoveSoulsFuncAoB");
-            SetWarpTargetFuncAoB = ValOrNull(PHPDict, "SetWarpTargetFuncAoB");
-            WarpFuncAoB = ValOrNull(PHPDict, "WarpFuncAoB");
-            DisplayItemWindow = ValOrNull(PHPDict, "DisplayItemFuncAoB");
-            ApplySpEffectAoB = ValOrNull(PHPDict, "ApplySpEffectAoB");
-            ItemGiveWindow = ValOrNull(PHPDict, "ItemGiveWindowPointer");
-        }
-
-        private static PHPointer? ValOrNull(Dictionary<string, PHPointer> PHPDict, string key)
-        {
-            PHPDict.TryGetValue(key, out var value);
-            return value;
+            ItemGive = HGO.ValOrNull(PHPDict, "ItemGiveFuncAoB");
+            ItemStruct2dDisplay = HGO.ValOrNull(PHPDict, "ItemStruct2dDisplayAoB");
+            GiveSouls = HGO.ValOrNull(PHPDict, "GiveSoulsFuncAoB");
+            RemoveSouls = HGO.ValOrNull(PHPDict, "RemoveSoulsFuncAoB");
+            SetWarpTargetFuncAoB = HGO.ValOrNull(PHPDict, "SetWarpTargetFuncAoB");
+            WarpFuncAoB = HGO.ValOrNull(PHPDict, "WarpFuncAoB");
+            DisplayItemWindow = HGO.ValOrNull(PHPDict, "DisplayItemFuncAoB");
+            ApplySpEffect = HGO.ValOrNull(PHPDict, "ApplySpEffectAoB");
+            ItemGiveWindow = HGO.ValOrNull(PHPDict, "ItemGiveWindowPointer");
         }
     }
 }

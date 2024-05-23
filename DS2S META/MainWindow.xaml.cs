@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using DS2S_META.Utils;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META
 {

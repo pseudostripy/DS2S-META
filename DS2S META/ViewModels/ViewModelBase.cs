@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using DS2S_META.Properties;
 using PropertyHook;
 using System.Windows.Media;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META.ViewModels
 {

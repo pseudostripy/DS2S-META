@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DS2S_META.Utils.DS2Hook;
+using PropertyHook;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -41,6 +43,13 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new(name));
+        }
+
+        // Utility
+        public static PHPointer? ValOrNull(Dictionary<string, PHPointer> PHPDict, string key)
+        {
+            PHPDict.TryGetValue(key, out var value);
+            return value;
         }
     }
 }

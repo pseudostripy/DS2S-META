@@ -7,6 +7,7 @@ using System.Windows;
 using DS2S_META.Utils;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 using DS2S_META.Utils.Offsets.CodeLocators;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META.Utils.Offsets
 {
@@ -93,7 +94,7 @@ namespace DS2S_META.Utils.Offsets
                 new(V112, new AbsoluteAOBCL("89 6c 24 fc 8d 64 24 fc 54 5d 8b 45 08 83 ec 10 89 74 24 fc 8d 64")),
             }),
 
-            // ToDeprecate?
+            // Deprecated. Kept as reference.
             new("SpeedFactorAccelOffset", new List<LocatorDefn>()
             {
                 new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 9F A8 02 00 00 F3 0F 10 16")),

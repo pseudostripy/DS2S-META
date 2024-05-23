@@ -10,6 +10,7 @@ using SoulsFormats;
 using DS2S_META.Randomizer;
 using DS2S_META.Utils.ParamRows;
 using System.Drawing;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META.Utils
 {

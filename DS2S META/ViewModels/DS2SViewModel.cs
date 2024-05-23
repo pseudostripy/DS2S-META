@@ -1,5 +1,6 @@
 ﻿using DS2S_META.Properties;
 using DS2S_META.Utils;
+using DS2S_META.Utils.DS2Hook;
 using Octokit;
 using PropertyHook;
 using System;

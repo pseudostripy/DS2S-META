@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Utils.Offsets.HookGroupObjects
 {
-    public class MiscPtrs
+    public class CorePHP
     {
         private DS2SHook Hook;
-        public PHPointer? AvailableItemBag;
-        public PHPointer? SpEffectCtrl;
+        public PHPointer? BaseA;
+        public PHPointer? BaseB;
         
 
-        public MiscPtrs(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
+        public CorePHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
             Hook = hook;
 
-            AvailableItemBag = HGO.ValOrNull(PHPDict, "AvailableItemBag");
-            SpEffectCtrl = HGO.ValOrNull(PHPDict, "SpEffectCtrl");
+            BaseA = HGO.ValOrNull(PHPDict, "BaseA");
+            BaseB = HGO.ValOrNull(PHPDict, "BaseB");
         }
 
         

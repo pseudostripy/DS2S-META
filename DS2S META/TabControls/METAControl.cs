@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META
 {

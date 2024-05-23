@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.Offsets.OffsetClasses;
+﻿using DS2S_META.Utils.DS2Hook;
+using DS2S_META.Utils.Offsets.OffsetClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;

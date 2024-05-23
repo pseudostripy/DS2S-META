@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.Offsets.CodeLocators;
+﻿using DS2S_META.Utils.DS2Hook;
+using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 using PropertyHook;
 using System;

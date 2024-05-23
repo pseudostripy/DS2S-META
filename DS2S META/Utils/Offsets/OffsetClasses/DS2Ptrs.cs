@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.Offsets.CodeLocators;
+﻿using DS2S_META.Utils.DS2Hook;
+using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using PropertyHook;
 using System;
@@ -59,6 +60,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         public ScalingBonusHGO ScalingBonusHGO;
         public FuncListPHP Func;
         public MiscPtrs MiscPtrs;
+        public CorePHP Core;
 
         // Use factory below to make object
         public DS2Ptrs(DS2SHook hook, DS2VER ver) 

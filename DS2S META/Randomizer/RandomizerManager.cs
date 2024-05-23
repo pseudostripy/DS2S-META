@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using DS2S_META.Randomizer.Placement;
 using DS2S_META.Utils.ParamRows;
 using System.Text.RegularExpressions;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META.Randomizer
 {

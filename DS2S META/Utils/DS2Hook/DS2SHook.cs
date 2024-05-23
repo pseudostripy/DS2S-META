@@ -23,7 +23,7 @@ using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 
-namespace DS2S_META
+namespace DS2S_META.Utils.DS2Hook
 {
     public enum DS2VER
     {
@@ -76,9 +76,11 @@ namespace DS2S_META
 
         // -----------------------------------------   WIP   ---------------------------------------
         public DS2Ptrs DS2P;
+        private AssemblyScripts ASM;
         public void SetupPointers2()
         {
             DS2P = new(this, DS2Ver);
+            ASM = new AssemblyScripts(this, DS2P);
         }
 
         // Utility Info
@@ -89,7 +91,8 @@ namespace DS2S_META
         public int GameState
         {
             get => _gamestate;
-            set {
+            set
+            {
                 if (value == _gamestate) return;
                 var oldstate = _gamestate;
                 _gamestate = value; // needs to be read during event
@@ -169,10 +172,10 @@ namespace DS2S_META
                 throw new Exception("Func structure null");
 
             BaseBSetup = RegisterAbsoluteAOB(Offsets.Func.BaseBAoB);
-            SpeedFactorAccel = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAccelOffset);
-            SpeedFactorAnim = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAnimOffset);
-            SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
-            SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
+            //SpeedFactorAccel = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAccelOffset);
+            //SpeedFactorAnim = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAnimOffset);
+            //SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
+            //SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
             //GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
             //RemoveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.RemoveSoulsFuncAoB);
             //ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
@@ -181,10 +184,10 @@ namespace DS2S_META
             WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
 
             // Version Specific AOBs:
-            ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
+            //ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
             //phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
         }
-        
+
         // DS2 & BBJ Process Info Data
         private enum BYTECODES
         {
@@ -227,7 +230,7 @@ namespace DS2S_META
             RegisterAOBs(); // Absolute AoBs
             RescanAOB();
             SetupChildPointers();
-            
+
             // Refactoring:
             SetupPointers2();
 
@@ -499,7 +502,7 @@ namespace DS2S_META
             PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
             AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
-            
+
             PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
@@ -589,7 +592,7 @@ namespace DS2S_META
                 var pchr = new List<int>();
                 pchr.AddRange(Offsets.LoadedEnemiesTable);
                 pchr.Add(i * psize);
-                
+
                 var chrclass = CreateChildPointer(BaseA, pchr.ToArray());
                 int chrId = chrclass.ReadInt32(0x28); // to check generality
                 if (chrId == queryChrId)
@@ -734,48 +737,9 @@ namespace DS2S_META
         }
 
 
-        // Covenants
-        //public Dictionary<COV, Covenant> GameCovenantData { get; set; } = new
-        //    (
-        //        DS2Resource.Covenants.Where(cv => cv.ID != COV.NONE)
-        //        .ToDictionary(cv => cv.ID, cv => new Covenant(cv.ID))
-        //    );
-        //private Covenant3.CovOff CovOff(COV id) => Offsets.Covenants2.Offsets[id];
-        //public void SetCovenantDiscov(COV id, bool discov) => PlayerParam.WriteBoolean(CovOff(id).Discov, discov);
-        //public void SetCovenantRank(COV id, int rank) => PlayerParam.WriteByte(CovOff(id).Rank, (byte)rank);
-        //public void SetCovenantProgress(COV id, int prog) => PlayerParam.WriteInt16(CovOff(id).Progress, (short)prog);
-        //public Covenant GetCovenantData(COV id)
-        //{
-        //    var disc = PlayerParam.ReadBoolean(Offsets.Covenants2.Offsets[id].Discov);
-        //    var rank = PlayerParam.ReadByte(Offsets.Covenants2.Offsets[id].Rank);
-        //    var progress = PlayerParam.ReadInt16(Offsets.Covenants2.Offsets[id].Progress);
-        //    return new Covenant(id,disc,rank,progress);
-        //}
-        //public void UpdateCovenants()
-        //{
-        //    foreach (var kvp in GameCovenantData)
-        //    {
-        //        COV id = kvp.Key;
-        //        var cov = kvp.Value;
-        //        if (!Offsets.Covenants2.Offsets.ContainsKey(id))
-        //            continue;
-
-        //        Covenant newcov = GetCovenantData(id);
-        //        cov.Discovered = newcov.Discovered;
-        //        cov.Rank = newcov.Rank;
-        //        cov.Progress = newcov.Progress;
-        //    }
-        //    OnPropertyChanged(nameof(GameCovenantData));
-        //}
-
-        
-
         public void UpdateCovenantProperties()
         {
             DS2P.CovenantHGO.UpdateProperties();
-             //UpdateCovenants();
-            //OnPropertyChanged(nameof(Covenant))
-
             OnPropertyChanged(nameof(CurrentCovenant));
         }
         public void UpdateInternalProperties()
@@ -818,7 +782,7 @@ namespace DS2S_META
             // TO TIDY with bonfire objects
 
             // Handle betwixt start warps:
-            bool PrevBonfireSet = (LastBonfireAreaID != 0 && LastBonfireID != 0);
+            bool PrevBonfireSet = LastBonfireAreaID != 0 && LastBonfireID != 0;
             if (PrevBonfireSet)
                 return Warp(LastBonfireID);
 
@@ -956,58 +920,20 @@ namespace DS2S_META
             byte[] DISABLEMOD = new byte[2] { 0x0, 0x0 };
             byte[] ENABLEMOD_VAL1 = new byte[2] { 0x80, 0x9c };
             byte[] ENABLEMOD_VAL2 = new byte[2] { 0x0e, 0x3c };
-            var val1_bytes = enable? ENABLEMOD_VAL1: DISABLEMOD;
-            var val2_bytes = enable? ENABLEMOD_VAL2: DISABLEMOD;
+            var val1_bytes = enable ? ENABLEMOD_VAL1 : DISABLEMOD;
+            var val2_bytes = enable ? ENABLEMOD_VAL2 : DISABLEMOD;
 
             // enable/disable phase1
             if (Offsets.BIKP1Skip_Val1 == null || Offsets.BIKP1Skip_Val2 == null)
                 throw new Exception("Shouldn't get here. Handle via feature enable logic.");
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
             phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
-            if (doLoad) 
+            if (doLoad)
                 WarpLast(); // force a reload to fix some memes; only on first click
             return enable; // turned on or off now
         }
 
 
-        // WIP
-        //        private Engine Engine;
-        //        private void AsmExecute(string asm)
-        //        {
-        //            //Assemble once to get the size
-        //            EncodedData? bytes = Engine.Assemble(asm, (ulong)Process?.MainModule?.BaseAddress);
-
-        //            KeystoneError error = Engine.GetLastKeystoneError();
-        //            if (error != KeystoneError.KS_ERR_OK)
-        //                throw new("Something went wrong during assembly. Code could not be assembled.");
-
-        //            IntPtr insertPtr = GetPrefferedIntPtr(bytes.Buffer.Length, flProtect: Kernel32.PAGE_EXECUTE_READWRITE);
-
-        //            //Reassemble with the location of the isertPtr to support relative instructions
-        //            bytes = Engine.Assemble(asm, (ulong)insertPtr);
-        //            error = Engine.GetLastKeystoneError();
-
-        //            Kernel32.WriteBytes(Handle, insertPtr, bytes.Buffer);
-        //#if DEBUG
-        //            DebugPrintArray(bytes.Buffer);
-        //#endif
-
-        //            Execute(insertPtr);
-        //            Free(insertPtr);
-        //        }
-
-        //#if DEBUG
-        //        private static void DebugPrintArray(byte[] bytes)
-        //        {
-        //            Debug.WriteLine("");
-        //            foreach (byte b in bytes)
-        //            {
-        //                Debug.Write($"{b:X2} ");
-        //            }
-        //            Debug.WriteLine("");
-        //        }
-        //#endif
-        
 
         internal void RestoreHumanity()
         {
@@ -1022,7 +948,7 @@ namespace DS2S_META
             bool finishedload = await NextLoadComplete();
             if (!finishedload)
                 return; // timeout issue
-            
+
             // Apply bonfire rest in non-loadscreen
             BonfireRest();
         }
@@ -1031,7 +957,7 @@ namespace DS2S_META
             Stopwatch sw = Stopwatch.StartNew();
             int loadingTimeout_ms = 15000;
             int dlay = 10;
-            
+
             // wait for start of load
             while (!IsLoading)
             {
@@ -1065,6 +991,12 @@ namespace DS2S_META
         }
         internal void ApplySpecialEffect64(int spEffect)
         {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect64.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect64.SpEffectCtrl");
+
             // Get assembly template
             var asm = (byte[])DS2SAssembly.ApplySpecialEffect64.Clone();
 
@@ -1081,8 +1013,8 @@ namespace DS2S_META
             Array.Copy(float_m1, 0x0, asm, 0x1A, float_m1.Length);
 
             var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt64());
-            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt64());
-            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt64());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt64());
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt64());
 
             // Update assembly with variables:
             Array.Copy(ptrEffectStruct, 0x0, asm, 0x6, ptrEffectStruct.Length);
@@ -1094,44 +1026,22 @@ namespace DS2S_META
             Free(effectStruct);
             Free(unk);
         }
-        //internal void ApplySpecialEffect32_asm(int spEffectID)
-        //{
-        //    // Assembly template
-        //    var asmTemplate = (string)DS2SAssembly.ApplySpecialEffect32.Clone();
 
-        //    //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
-        //    var spEfId = BitConverter.GetBytes(spEffectID);
-        //    var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
-        //    var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
-
-        //    var unk = Allocate(sizeof(float));
-        //    Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
-        //    var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
-
-        //    string asm = string.Format(asmTemplate, spEfId, addr_float_m1, 
-        //                                            SpEfCtrl, ptrApplySpEf);
-
-
-        //    //// Update assembly with variables:
-        //    //Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
-        //    //Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
-        //    //Array.Copy(SpEfCtrl, 0x0, asm, 0x33, SpEfCtrl.Length);
-        //    //Array.Copy(ptrApplySpEf, 0x0, asm, 0x38, ptrApplySpEf.Length);
-
-        //    // Run and tidy-up
-        //    //File.WriteAllBytes("./TESTBYTES64.txt", asm); // debugging
-        //    AsmExecute(asm);
-        //    Free(unk);
-        //}
         internal void ApplySpecialEffect32(int spEffectID)
         {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect32CP.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect32CP.SpEffectCtrl");
+
             // Assembly template
             var asm = (byte[])DS2SAssembly.ApplySpecialEffect32.Clone();
 
             //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
             var spEfId = BitConverter.GetBytes(spEffectID);
-            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
-            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt32());
 
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
@@ -1145,39 +1055,39 @@ namespace DS2S_META
             Array.Copy(ptrApplySpEf, 0x0, asm, 0x38, ptrApplySpEf.Length);
 
             // Run and tidy-up
-            //File.WriteAllBytes("./TESTBYTES64.txt", asm); // debugging
             Execute(asm);
             Free(unk);
         }
 
         internal void ApplySpecialEffect32OP(int spEffectID)
         {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.SpEffectCtrl");
+            if (DS2P.Core.BaseA == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.BaseA");
+
             // Assembly template
             var asm = (byte[])DS2SAssembly.ApplySpecialEffect32OP.Clone();
 
             //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
             var spEfId = BitConverter.GetBytes(spEffectID);
-            var ptrApplySpEf = BitConverter.GetBytes(ApplySpEffect.Resolve().ToInt32());
-            var SpEfCtrl = BitConverter.GetBytes(SpEffectCtrl.Resolve().ToInt32());
-            var pbasea = BitConverter.GetBytes(BaseA.Resolve().ToInt32());
-            
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt32());
+            var pbasea = BitConverter.GetBytes(DS2P.Core.BaseA.Resolve().ToInt32());
+
 
             var unk = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(-1f));
             var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
 
-
-            //var p22 = Allocate(sizeof(int)); // I guess technically byte
-            //Kernel32.WriteBytes(Handle, unk, BitConverter.GetBytes(0x16)); //22
-            //var addr22 = BitConverter.GetBytes(p22.ToInt32());
-            //var twowordtest = BitConverter.GetBytes(0x3E000116);
-
             // Update assembly with variables:
-
             // Adjust esp offsets?
             int z = 0x8;
             byte[] Z = new byte[1] { (byte)z };
-            byte[] Z4 = new byte[1] { (byte) (z + 4) };
+            byte[] Z4 = new byte[1] { (byte)(z + 4) };
             byte[] Z8 = new byte[1] { (byte)(z + 8) };
             byte[] ZC = new byte[1] { (byte)(z + 0xC) };
             Array.Copy(Z, 0x0, asm, 0x8, Z.Length);
@@ -1203,7 +1113,7 @@ namespace DS2S_META
                 UpdateSoulCount64(numsouls);
             else
                 UpdateSoulCount32(numsouls);
-                
+
         }
         public void UpdateSoulCount64(int souls)
         {
@@ -1212,10 +1122,10 @@ namespace DS2S_META
                 throw new MetaFeatureException("GiveSouls64");
             if (DS2P.Func.RemoveSouls == null)
                 throw new MetaFeatureException("RemoveSouls64");
-            
+
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
-            
+
             // Setup dynamic vars:
             var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
             GetAddRemSoulFunc(souls, out byte[] numSouls, out byte[] funcChangeSouls);
@@ -1236,7 +1146,7 @@ namespace DS2S_META
 
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
-            
+
             // Setup dynamic vars:
             var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt32());
             GetAddRemSoulFunc(souls_input, out byte[] numSouls, out byte[] funcChangeSouls);
@@ -1255,7 +1165,7 @@ namespace DS2S_META
                 outSouls = BitConverter.GetBytes(inSouls); // AddSouls
                 if (Is64Bit)
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt64());
-                else    
+                else
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt32());
             }
             else
@@ -1264,7 +1174,7 @@ namespace DS2S_META
                 outSouls = BitConverter.GetBytes(new_souls); // SubractSouls
                 if (Is64Bit)
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt64());
-                else    
+                else
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt32());
             }
         }
@@ -1381,9 +1291,9 @@ namespace DS2S_META
 
             if (DmgModInstalled)
                 UninstallDmgMod(); // start from a fresh inject incase settings change
-            
+
             // Setup addresses for my new code:
-            var memalloc = Allocate(0x1000, flProtect:Kernel32.PAGE_EXECUTE_READWRITE); // host the assembly in memory
+            var memalloc = Allocate(0x1000, flProtect: Kernel32.PAGE_EXECUTE_READWRITE); // host the assembly in memory
             var p_code2st = IntPtr.Add(memalloc, 0x0);        // first thing
             var p_code1st = p_code2st + 0x7e;                       // see assembly script
             var module_addr = Process?.MainModule?.BaseAddress;
@@ -1392,7 +1302,7 @@ namespace DS2S_META
                 MetaExceptionStaticHandler.Raise("Cannot find DS2 Module address for hooks/inject calculations");
                 return false;
             }
-            
+
             // First inject (amBeingHit)
             var inj1_offset = 0x17aa65; // inject for figuring out if being hit [todo load from SOTFS_v1.03 offsets]
             var p_inj1 = IntPtr.Add((IntPtr)module_addr, inj1_offset);
@@ -1427,7 +1337,7 @@ namespace DS2S_META
             Array.Copy(inj2_jbytes, 0x0, inj2_nb, 0xa, inj2_jbytes.Length);
             var inj2 = new Inject(p_inj2, inj2_ob, inj2_nb);
             if (!inj2.Valid) return false;
-            
+
             // Prep assembly substitutions
             var MEMSTORE_OFFSET = 0x100;
             var amDealingHit = IntPtr.Add(p_code2st, MEMSTORE_OFFSET);
@@ -1453,7 +1363,7 @@ namespace DS2S_META
             Array.Copy(inj1ret_bytes, 0, asm, 0x9f, inj1ret_bytes.Length);
             Array.Copy(dmgfacDealt_bytes, 0, asm, 0x35, dmgfacDealt_bytes.Length); // dealt dmgfactor if enabled
             Array.Copy(dmgfacRecvd_bytes, 0, asm, 0x58, dmgfacRecvd_bytes.Length); // recv dmgfactor if enabled
-                        
+
 
             // Write machine code into memory:
             InstallInject(inj1);
@@ -1494,8 +1404,8 @@ namespace DS2S_META
         }
 
         // QoL Wrappers:
-        public void GiveItem(int itemid, short amount = 1, 
-                             byte upgrade = 0, byte infusion = 0, 
+        public void GiveItem(int itemid, short amount = 1,
+                             byte upgrade = 0, byte infusion = 0,
                              GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
         {
             // Simple wrapper for programmer QoL
@@ -1523,7 +1433,7 @@ namespace DS2S_META
             // Call function
             GiveItems(itemids, amounts, upgrades, infusions, opt);
         }
-        
+
         // Main outward facing interface wrapper
         public void GiveItems(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
         {
@@ -1537,134 +1447,12 @@ namespace DS2S_META
 
             // call actual assembly function:
             if (Is64Bit)
-                GiveItems64(itemids, amounts, upgrades, infusions, showdialog);
+                ASM.GiveItems64(itemids, amounts, upgrades, infusions, showdialog);
             else
-                GiveItems32(itemids, amounts, upgrades, infusions, showdialog);
+                ASM.GiveItems32(itemids, amounts, upgrades, infusions, showdialog);
         }
+
         
-        // Actual implementations:
-        private void GiveItems64(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
-        {
-            // Last resort elegant crash checks (this func needs all the following hooks)
-            if (DS2P.Func.ItemGive == null)
-                throw new MetaFeatureException("ItemGive64.ItemGive");
-            if (DS2P.MiscPtrs.AvailableItemBag == null)
-                throw new MetaFeatureException("ItemGive64.AvailableItemBag");
-            if (DS2P.Func.ItemStruct2dDisplay == null)
-                throw new MetaFeatureException("ItemGive64.ItemStruct2dDisplay");
-            if (DS2P.Func.ItemGiveWindow == null)
-                throw new MetaFeatureException("ItemGive64.ItemGiveWindow");
-            if (DS2P.Func.DisplayItemWindow == null)
-                throw new MetaFeatureException("ItemGive64.DisplayItemWindow");
-
-
-            // Improved assembly to handle multigive and showdialog more neatly.
-            int numitems = itemids.Length;
-            if (numitems > 8)
-                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
-
-            // Create item structure to pass to DS2
-            var itemStruct = Allocate(0x8A); // should this be d128?
-            for (int i = 0; i < itemids.Length; i++)
-            {
-                var offi = i * 16; // length of one itemStruct
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
-            }
-
-            // Prepare values for assembly
-            var numItems_bytes = BitConverter.GetBytes(numitems);
-            var itemStructAddr_bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            var availBag_bytes = BitConverter.GetBytes(DS2P.MiscPtrs.AvailableItemBag.Resolve().ToInt64());
-            var itemGive_bytes = BitConverter.GetBytes(DS2P.Func.ItemGive.Resolve().ToInt64());
-            var itemStruct2Display_bytes = BitConverter.GetBytes(DS2P.Func.ItemStruct2dDisplay.Resolve().ToInt64());
-            var itemGiveWindow_bytes = BitConverter.GetBytes(DS2P.Func.ItemGiveWindow.Resolve().ToInt64());
-            var displayItem64_bytes = BitConverter.GetBytes(DS2P.Func.DisplayItemWindow.Resolve().ToInt64());
-            var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
-
-            // Get reference assembly and populate links
-            var asm = (byte[])DS2SAssembly.GiveItem64.Clone();
-            Array.Copy(numItems_bytes, 0, asm, 0x9, numItems_bytes.Length);
-            Array.Copy(itemStructAddr_bytes, 0, asm, 0xF, itemStructAddr_bytes.Length);
-            Array.Copy(availBag_bytes, 0, asm, 0x1C, availBag_bytes.Length);
-            Array.Copy(itemGive_bytes, 0, asm, 0x29, itemGive_bytes.Length);
-            Array.Copy(showWindow_bytes, 0, asm, 0x37, showWindow_bytes.Length);
-            Array.Copy(numItems_bytes, 0, asm, 0x42, numItems_bytes.Length);
-            Array.Copy(itemStructAddr_bytes, 0, asm, 0x48, itemStructAddr_bytes.Length);
-            Array.Copy(itemStruct2Display_bytes, 0, asm, 0x60, itemStruct2Display_bytes.Length);
-            Array.Copy(itemGiveWindow_bytes, 0, asm, 0x72, itemGiveWindow_bytes.Length);
-            Array.Copy(displayItem64_bytes, 0, asm, 0x7C, displayItem64_bytes.Length);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
-        private void GiveItems32(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
-        {
-            // Last resort elegant crash checks (this func needs all the following hooks)
-            if (DS2P.Func.ItemGive == null)
-                throw new MetaFeatureException("ItemGive32.ItemGive");
-            if (DS2P.MiscPtrs.AvailableItemBag == null)
-                throw new MetaFeatureException("ItemGive32.AvailableItemBag");
-            if (DS2P.Func.ItemStruct2dDisplay == null)
-                throw new MetaFeatureException("ItemGive32.ItemStruct2dDisplay");
-            if (DS2P.Func.ItemGiveWindow == null)
-                throw new MetaFeatureException("ItemGive32.ItemGiveWindow");
-            if (DS2P.Func.DisplayItemWindow == null)
-                throw new MetaFeatureException("ItemGive32.DisplayItemWindow");
-
-            // Improved assembly to handle multigive and showdialog more neatly.
-            int numitems = itemids.Length;
-            if (numitems > 8)
-                throw new Exception("Item Give function in DS2 can only handle 8 items at a time");
-
-            // Create item structure to pass to DS2
-            var itemStruct = Allocate(0x8A); // should this be d128?
-            for (int i = 0; i < itemids.Length; i++)
-            {
-                var offi = i * 16; // length of one itemStruct
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
-                Kernel32.WriteBytes(Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xE, upgrades[i]);
-                Kernel32.WriteByte(Handle, itemStruct + offi + 0xF, infusions[i]);
-            }
-
-            // Store const float for later reference            
-            var pfloat_store = Allocate(sizeof(float));
-            Kernel32.WriteBytes(Handle, pfloat_store, BitConverter.GetBytes(6.0f));
-
-            // Setup assembly fields for substitution
-            var numItems_bytes = BitConverter.GetBytes(numitems);
-            var pItemStruct_bytes = BitConverter.GetBytes(itemStruct.ToInt32());
-            var availItemBag_bytes = BitConverter.GetBytes(DS2P.MiscPtrs.AvailableItemBag.Resolve().ToInt32());
-            var itemGiveFunc_bytes = BitConverter.GetBytes(DS2P.Func.ItemGive.Resolve().ToInt32());
-            var itemStruct2Display_bytes = BitConverter.GetBytes(DS2P.Func.ItemStruct2dDisplay.Resolve().ToInt32());
-            var itemGiveWindow_bytes = BitConverter.GetBytes(DS2P.Func.ItemGiveWindow.Resolve().ToInt32());
-            var pfloat_bytes = BitConverter.GetBytes(pfloat_store.ToInt32());
-            var displayItem32_bytes = BitConverter.GetBytes(DS2P.Func.DisplayItemWindow.Resolve().ToInt32());
-            var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
-
-            // Load and fix assembly:
-            var asm = (byte[])DS2SAssembly.GiveItem32.Clone();
-            Array.Copy(numItems_bytes, 0, asm, 0x7, numItems_bytes.Length);
-            Array.Copy(pItemStruct_bytes, 0, asm, 0xC, pItemStruct_bytes.Length);
-            Array.Copy(availItemBag_bytes, 0, asm, 0x11, availItemBag_bytes.Length);
-            Array.Copy(itemGiveFunc_bytes, 0, asm, 0x1a, itemGiveFunc_bytes.Length);
-            Array.Copy(showWindow_bytes, 0, asm, 0x21, showWindow_bytes.Length);
-            Array.Copy(numItems_bytes, 0, asm, 0x2a, numItems_bytes.Length);
-            Array.Copy(pItemStruct_bytes, 0, asm, 0x32, pItemStruct_bytes.Length);
-            Array.Copy(pfloat_bytes, 0, asm, 0x38, pfloat_bytes.Length);
-            Array.Copy(itemStruct2Display_bytes, 0, asm, 0x3e, itemStruct2Display_bytes.Length);
-            Array.Copy(pfloat_bytes, 0, asm, 0x48, pfloat_bytes.Length);
-            Array.Copy(itemGiveWindow_bytes, 0, asm, 0x4e, itemGiveWindow_bytes.Length);
-            Array.Copy(displayItem32_bytes, 0, asm, 0x53, displayItem32_bytes.Length);
-
-            Execute(asm);
-            Free(itemStruct);
-        }
 
 
         public void Give17kReward()
@@ -1939,7 +1727,7 @@ namespace DS2S_META
         {
             if (SpeedhackDllPtr == IntPtr.Zero)
                 SpeedhackDllPtr = GetSpeedhackPtr();
-            
+
             // Exit gracefully on error:
             if (SpeedhackDllPtr == IntPtr.Zero)
                 return;
@@ -1947,7 +1735,7 @@ namespace DS2S_META
 
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
-            
+
             // Update speed:
             SetSpeed((double)Properties.Settings.Default.SpeedValue);
         }
@@ -1972,7 +1760,7 @@ namespace DS2S_META
                 return injloc;
             }
         }
-        
+
         private enum INJECTOR_ERRCODE
         {
             PROCESS_NOT_START = -5,
@@ -1991,16 +1779,16 @@ namespace DS2S_META
             string dllfilename = Path.GetFileNameWithoutExtension(dllfile);
             string newname = $"{dllfilename}{fid}.dll";
             newpath = $"{TempDir}\\{newname}";
-            
+
             if (!Directory.Exists(TempDir))
                 Directory.CreateDirectory(TempDir);
 
             File.Copy(dllfile, newpath, true);
-            
+
 
             err = INJECTOR_ERRCODE.NONE;
             string TRIPQUOT = "\"\"\"";
-            
+
             // Run the above batch file in new thread
             ProcessStartInfo PSI = new()
             {
@@ -2047,7 +1835,7 @@ namespace DS2S_META
                 DisableSpeedhack();
                 return; // unattach at game close in Vanilla
             }
-                
+
             // avoid sotfs Meta-reload crash:
             IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
@@ -2079,12 +1867,12 @@ namespace DS2S_META
                 SetSpeedPtr = (IntPtr)SpeedHack32_SpeedOffset;
                 DetachPtr = (IntPtr)SpeedHack32_DetachOffset;
             }
-            
+
         }
         #endregion
 
 
-        
+
 
         // Get info requests:
         internal int GetMaxUpgrade(ItemRow item)
@@ -2164,8 +1952,8 @@ namespace DS2S_META
         {
             return 0;
         }
-        
-        
+
+
         // TODO ARCHAIC
         internal bool GetIsDroppable(ItemRow item)
         {
@@ -2191,7 +1979,7 @@ namespace DS2S_META
         }
         internal byte DisableAI
         {
-            get => InGame && (Offsets.DisableAI != null) ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
+            get => InGame && Offsets.DisableAI != null ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
             set
             {
                 if (Reading || !InGame) return;
@@ -2208,7 +1996,7 @@ namespace DS2S_META
                 PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
             }
         }
-        
+
         public void SetNoGravity(bool noGravity)
         {
             if (MetaFeature.IsInactive(METAFEATURE.NOGRAVITY)) return;
@@ -2233,17 +2021,17 @@ namespace DS2S_META
         {
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_RAPIER)) return;
             SetWeaponOHKO(ITEMID.RAPIER, ohko);
-        } 
+        }
         public void SetFistOHKO(bool ohko)
         {
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_FIST)) return;
             SetWeaponOHKO(ITEMID.FISTS, ohko);
-        } 
+        }
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)
         {
             if (!Hooked) return;
             float DMGMOD = 50000;
-            
+
             // Write to memory
             var wpnrow = ParamMan.WeaponParam?.Rows.First(r => r.ID == (int)wpn) as WeaponRow ?? throw new NullReferenceException();
             wpnrow.DamageMultiplier = ohko ? DMGMOD : 1;
@@ -2307,7 +2095,7 @@ namespace DS2S_META
         }
         public float[] Pos
         {
-            get => new float[3] { PosX, PosY, PosZ};
+            get => new float[3] { PosX, PosY, PosZ };
             set
             {
                 PosX = value[0];
@@ -2577,86 +2365,87 @@ namespace DS2S_META
             [DS2Resource.GetBonfireByName("Grand Cathedral")] = nameof(GrandCathedral),
         };
 
-        public byte FireKeepersDwelling{ get => ReadBfLevel(Bfs.FireKeepersDwelling); set { WriteBfLevel(Bfs.FireKeepersDwelling, value); }}
-        public byte TheFarFire{ get => ReadBfLevel(Bfs.TheFarFire); set { WriteBfLevel(Bfs.TheFarFire, value); }}
-        public byte CrestfallensRetreat { get => ReadBfLevel(Bfs.CrestfallensRetreat); set { WriteBfLevel(Bfs.CrestfallensRetreat, value); }}
-        public byte CardinalTower { get => ReadBfLevel(Bfs.CardinalTower); set { WriteBfLevel(Bfs.CardinalTower, value); }}
-        public byte SoldiersRest { get => ReadBfLevel(Bfs.SoldiersRest); set { WriteBfLevel(Bfs.SoldiersRest, value); }}
-        public byte ThePlaceUnbeknownst { get => ReadBfLevel(Bfs.ThePlaceUnbeknownst); set { WriteBfLevel(Bfs.ThePlaceUnbeknownst, value); }}
-        public byte HeidesRuin { get => ReadBfLevel(Bfs.HeidesRuin); set { WriteBfLevel(Bfs.HeidesRuin, value); }}
-        public byte TowerOfFlame { get => ReadBfLevel(Bfs.TowerOfFlame); set { WriteBfLevel(Bfs.TowerOfFlame, value); }}
-        public byte TheBlueCathedral { get => ReadBfLevel(Bfs.TheBlueCathedral); set { WriteBfLevel(Bfs.TheBlueCathedral, value); }}
-        public byte UnseenPathtoHeide { get => ReadBfLevel(Bfs.UnseenPathtoHeide); set { WriteBfLevel(Bfs.UnseenPathtoHeide, value); }}
-        public byte ExileHoldingCells { get => ReadBfLevel(Bfs.ExileHoldingCells); set { WriteBfLevel(Bfs.ExileHoldingCells, value); }}
-        public byte McDuffsWorkshop { get => ReadBfLevel(Bfs.McDuffsWorkshop); set { WriteBfLevel(Bfs.McDuffsWorkshop, value); }}
-        public byte ServantsQuarters { get => ReadBfLevel(Bfs.ServantsQuarters); set { WriteBfLevel(Bfs.ServantsQuarters, value); }}
-        public byte StraidsCell { get => ReadBfLevel(Bfs.StraidsCell); set { WriteBfLevel(Bfs.StraidsCell, value); }}
-        public byte TheTowerApart { get => ReadBfLevel(Bfs.TheTowerApart); set { WriteBfLevel(Bfs.TheTowerApart, value); }}
-        public byte TheSaltfort { get => ReadBfLevel(Bfs.TheSaltfort); set { WriteBfLevel(Bfs.TheSaltfort, value); }}
-        public byte UpperRamparts { get => ReadBfLevel(Bfs.UpperRamparts); set { WriteBfLevel(Bfs.UpperRamparts, value); }}
-        public byte UndeadRefuge { get => ReadBfLevel(Bfs.UndeadRefuge); set { WriteBfLevel(Bfs.UndeadRefuge, value); }}
-        public byte BridgeApproach { get => ReadBfLevel(Bfs.BridgeApproach); set { WriteBfLevel(Bfs.BridgeApproach, value); }}
-        public byte UndeadLockaway { get => ReadBfLevel(Bfs.UndeadLockaway); set { WriteBfLevel(Bfs.UndeadLockaway, value); }}
-        public byte UndeadPurgatory { get => ReadBfLevel(Bfs.UndeadPurgatory); set { WriteBfLevel(Bfs.UndeadPurgatory, value); }}
-        public byte PoisonPool { get => ReadBfLevel(Bfs.PoisonPool); set { WriteBfLevel(Bfs.PoisonPool, value); }}
-        public byte TheMines { get => ReadBfLevel(Bfs.TheMines); set { WriteBfLevel(Bfs.TheMines, value); }}
-        public byte LowerEarthenPeak { get => ReadBfLevel(Bfs.LowerEarthenPeak); set { WriteBfLevel(Bfs.LowerEarthenPeak, value); }}
-        public byte CentralEarthenPeak { get => ReadBfLevel(Bfs.CentralEarthenPeak); set { WriteBfLevel(Bfs.CentralEarthenPeak, value); }}
-        public byte UpperEarthenPeak { get => ReadBfLevel(Bfs.UpperEarthenPeak); set { WriteBfLevel(Bfs.UpperEarthenPeak, value); }}
-        public byte ThresholdBridge { get => ReadBfLevel(Bfs.ThresholdBridge); set { WriteBfLevel(Bfs.ThresholdBridge, value); }}
-        public byte IronhearthHall { get => ReadBfLevel(Bfs.IronhearthHall); set { WriteBfLevel(Bfs.IronhearthHall, value); }}
-        public byte EygilsIdol { get => ReadBfLevel(Bfs.EygilsIdol); set { WriteBfLevel(Bfs.EygilsIdol, value); }}
-        public byte BelfrySolApproach { get => ReadBfLevel(Bfs.BelfrySolApproach); set { WriteBfLevel(Bfs.BelfrySolApproach, value); }}
-        public byte OldAkelarre { get => ReadBfLevel(Bfs.OldAkelarre); set { WriteBfLevel(Bfs.OldAkelarre, value); }}
-        public byte RuinedForkRoad { get => ReadBfLevel(Bfs.RuinedForkRoad); set { WriteBfLevel(Bfs.RuinedForkRoad, value); }}
-        public byte ShadedRuins { get => ReadBfLevel(Bfs.ShadedRuins); set { WriteBfLevel(Bfs.ShadedRuins, value); }}
-        public byte GyrmsRespite { get => ReadBfLevel(Bfs.GyrmsRespite); set { WriteBfLevel(Bfs.GyrmsRespite, value); }}
-        public byte OrdealsEnd { get => ReadBfLevel(Bfs.OrdealsEnd); set { WriteBfLevel(Bfs.OrdealsEnd, value); }}
-        public byte RoyalArmyCampsite { get => ReadBfLevel(Bfs.RoyalArmyCampsite); set { WriteBfLevel(Bfs.RoyalArmyCampsite, value); }}
-        public byte ChapelThreshold { get => ReadBfLevel(Bfs.ChapelThreshold); set { WriteBfLevel(Bfs.ChapelThreshold, value); }}
-        public byte LowerBrightstoneCove { get => ReadBfLevel(Bfs.LowerBrightstoneCove); set { WriteBfLevel(Bfs.LowerBrightstoneCove, value); }}
-        public byte HarvalsRestingPlace { get => ReadBfLevel(Bfs.HarvalsRestingPlace); set { WriteBfLevel(Bfs.HarvalsRestingPlace, value); }}
-        public byte GraveEntrance { get => ReadBfLevel(Bfs.GraveEntrance); set { WriteBfLevel(Bfs.GraveEntrance, value); }}
-        public byte UpperGutter { get => ReadBfLevel(Bfs.UpperGutter); set { WriteBfLevel(Bfs.UpperGutter, value); }}
-        public byte CentralGutter { get => ReadBfLevel(Bfs.CentralGutter); set { WriteBfLevel(Bfs.CentralGutter, value); }}
-        public byte HiddenChamber { get => ReadBfLevel(Bfs.HiddenChamber); set { WriteBfLevel(Bfs.HiddenChamber, value); }}
-        public byte BlackGulchMouth { get => ReadBfLevel(Bfs.BlackGulchMouth); set { WriteBfLevel(Bfs.BlackGulchMouth, value); }}
-        public byte KingsGate { get => ReadBfLevel(Bfs.KingsGate); set { WriteBfLevel(Bfs.KingsGate, value); }}
-        public byte UnderCastleDrangleic { get => ReadBfLevel(Bfs.UnderCastleDrangleic); set { WriteBfLevel(Bfs.UnderCastleDrangleic, value); }}
-        public byte ForgottenChamber { get => ReadBfLevel(Bfs.ForgottenChamber); set { WriteBfLevel(Bfs.ForgottenChamber, value); }}
-        public byte CentralCastleDrangleic { get => ReadBfLevel(Bfs.CentralCastleDrangleic); set { WriteBfLevel(Bfs.CentralCastleDrangleic, value); }}
-        public byte TowerOfPrayerAmana { get => ReadBfLevel(Bfs.TowerOfPrayerAmana); set { WriteBfLevel(Bfs.TowerOfPrayerAmana, value); }}
-        public byte CrumbledRuins { get => ReadBfLevel(Bfs.CrumbledRuins); set { WriteBfLevel(Bfs.CrumbledRuins, value); }}
-        public byte RhoysRestingPlace { get => ReadBfLevel(Bfs.RhoysRestingPlace); set { WriteBfLevel(Bfs.RhoysRestingPlace, value); }}
-        public byte RiseOfTheDead { get => ReadBfLevel(Bfs.RiseOfTheDead); set { WriteBfLevel(Bfs.RiseOfTheDead, value); }}
-        public byte UndeadCryptEntrance { get => ReadBfLevel(Bfs.UndeadCryptEntrance); set { WriteBfLevel(Bfs.UndeadCryptEntrance, value); }}
-        public byte UndeadDitch { get => ReadBfLevel(Bfs.UndeadDitch); set { WriteBfLevel(Bfs.UndeadDitch, value); }}
-        public byte Foregarden { get => ReadBfLevel(Bfs.Foregarden); set { WriteBfLevel(Bfs.Foregarden, value); }}
-        public byte RitualSite { get => ReadBfLevel(Bfs.RitualSite); set { WriteBfLevel(Bfs.RitualSite, value); }}
-        public byte DragonAerie { get => ReadBfLevel(Bfs.DragonAerie); set { WriteBfLevel(Bfs.DragonAerie, value); }}
-        public byte ShrineEntrance { get => ReadBfLevel(Bfs.ShrineEntrance); set { WriteBfLevel(Bfs.ShrineEntrance, value); }}
-        public byte SanctumWalk { get => ReadBfLevel(Bfs.SanctumWalk); set { WriteBfLevel(Bfs.SanctumWalk, value); }}
-        public byte PriestessChamber { get => ReadBfLevel(Bfs.PriestessChamber); set { WriteBfLevel(Bfs.PriestessChamber, value); }}
-        public byte HiddenSanctumChamber { get => ReadBfLevel(Bfs.HiddenSanctumChamber); set { WriteBfLevel(Bfs.HiddenSanctumChamber, value); }}
-        public byte LairOfTheImperfect { get => ReadBfLevel(Bfs.LairOfTheImperfect); set { WriteBfLevel(Bfs.LairOfTheImperfect, value); }}
-        public byte SanctumInterior { get => ReadBfLevel(Bfs.SanctumInterior); set { WriteBfLevel(Bfs.SanctumInterior, value); }}
-        public byte TowerOfPrayerShulva { get => ReadBfLevel(Bfs.TowerOfPrayerShulva); set { WriteBfLevel(Bfs.TowerOfPrayerShulva, value); }}
-        public byte SanctumNadir { get => ReadBfLevel(Bfs.SanctumNadir); set { WriteBfLevel(Bfs.SanctumNadir, value); }}
-        public byte ThroneFloor { get => ReadBfLevel(Bfs.ThroneFloor); set { WriteBfLevel(Bfs.ThroneFloor, value); }}
-        public byte UpperFloor { get => ReadBfLevel(Bfs.UpperFloor); set { WriteBfLevel(Bfs.UpperFloor, value); }}
-        public byte Foyer { get => ReadBfLevel(Bfs.Foyer); set { WriteBfLevel(Bfs.Foyer, value); }}
-        public byte LowermostFloor { get => ReadBfLevel(Bfs.LowermostFloor); set { WriteBfLevel(Bfs.LowermostFloor, value); }}
-        public byte TheSmelterThrone { get => ReadBfLevel(Bfs.TheSmelterThrone); set { WriteBfLevel(Bfs.TheSmelterThrone, value); }}
-        public byte IronHallwayEntrance { get => ReadBfLevel(Bfs.IronHallwayEntrance); set { WriteBfLevel(Bfs.IronHallwayEntrance, value); }}
-        public byte OuterWall { get => ReadBfLevel(Bfs.OuterWall); set { WriteBfLevel(Bfs.OuterWall, value); }}
-        public byte AbandonedDwelling { get => ReadBfLevel(Bfs.AbandonedDwelling); set { WriteBfLevel(Bfs.AbandonedDwelling, value); }}
-        public byte ExpulsionChamber { get => ReadBfLevel(Bfs.ExpulsionChamber); set { WriteBfLevel(Bfs.ExpulsionChamber, value); }}
-        public byte InnerWall { get => ReadBfLevel(Bfs.InnerWall); set { WriteBfLevel(Bfs.InnerWall, value); }}
-        public byte LowerGarrison { get => ReadBfLevel(Bfs.LowerGarrison); set { WriteBfLevel(Bfs.LowerGarrison, value); }}
-        public byte GrandCathedral { get => ReadBfLevel(Bfs.GrandCathedral); set { WriteBfLevel(Bfs.GrandCathedral, value); }}
+        public byte FireKeepersDwelling { get => ReadBfLevel(Bfs.FireKeepersDwelling); set { WriteBfLevel(Bfs.FireKeepersDwelling, value); } }
+        public byte TheFarFire { get => ReadBfLevel(Bfs.TheFarFire); set { WriteBfLevel(Bfs.TheFarFire, value); } }
+        public byte CrestfallensRetreat { get => ReadBfLevel(Bfs.CrestfallensRetreat); set { WriteBfLevel(Bfs.CrestfallensRetreat, value); } }
+        public byte CardinalTower { get => ReadBfLevel(Bfs.CardinalTower); set { WriteBfLevel(Bfs.CardinalTower, value); } }
+        public byte SoldiersRest { get => ReadBfLevel(Bfs.SoldiersRest); set { WriteBfLevel(Bfs.SoldiersRest, value); } }
+        public byte ThePlaceUnbeknownst { get => ReadBfLevel(Bfs.ThePlaceUnbeknownst); set { WriteBfLevel(Bfs.ThePlaceUnbeknownst, value); } }
+        public byte HeidesRuin { get => ReadBfLevel(Bfs.HeidesRuin); set { WriteBfLevel(Bfs.HeidesRuin, value); } }
+        public byte TowerOfFlame { get => ReadBfLevel(Bfs.TowerOfFlame); set { WriteBfLevel(Bfs.TowerOfFlame, value); } }
+        public byte TheBlueCathedral { get => ReadBfLevel(Bfs.TheBlueCathedral); set { WriteBfLevel(Bfs.TheBlueCathedral, value); } }
+        public byte UnseenPathtoHeide { get => ReadBfLevel(Bfs.UnseenPathtoHeide); set { WriteBfLevel(Bfs.UnseenPathtoHeide, value); } }
+        public byte ExileHoldingCells { get => ReadBfLevel(Bfs.ExileHoldingCells); set { WriteBfLevel(Bfs.ExileHoldingCells, value); } }
+        public byte McDuffsWorkshop { get => ReadBfLevel(Bfs.McDuffsWorkshop); set { WriteBfLevel(Bfs.McDuffsWorkshop, value); } }
+        public byte ServantsQuarters { get => ReadBfLevel(Bfs.ServantsQuarters); set { WriteBfLevel(Bfs.ServantsQuarters, value); } }
+        public byte StraidsCell { get => ReadBfLevel(Bfs.StraidsCell); set { WriteBfLevel(Bfs.StraidsCell, value); } }
+        public byte TheTowerApart { get => ReadBfLevel(Bfs.TheTowerApart); set { WriteBfLevel(Bfs.TheTowerApart, value); } }
+        public byte TheSaltfort { get => ReadBfLevel(Bfs.TheSaltfort); set { WriteBfLevel(Bfs.TheSaltfort, value); } }
+        public byte UpperRamparts { get => ReadBfLevel(Bfs.UpperRamparts); set { WriteBfLevel(Bfs.UpperRamparts, value); } }
+        public byte UndeadRefuge { get => ReadBfLevel(Bfs.UndeadRefuge); set { WriteBfLevel(Bfs.UndeadRefuge, value); } }
+        public byte BridgeApproach { get => ReadBfLevel(Bfs.BridgeApproach); set { WriteBfLevel(Bfs.BridgeApproach, value); } }
+        public byte UndeadLockaway { get => ReadBfLevel(Bfs.UndeadLockaway); set { WriteBfLevel(Bfs.UndeadLockaway, value); } }
+        public byte UndeadPurgatory { get => ReadBfLevel(Bfs.UndeadPurgatory); set { WriteBfLevel(Bfs.UndeadPurgatory, value); } }
+        public byte PoisonPool { get => ReadBfLevel(Bfs.PoisonPool); set { WriteBfLevel(Bfs.PoisonPool, value); } }
+        public byte TheMines { get => ReadBfLevel(Bfs.TheMines); set { WriteBfLevel(Bfs.TheMines, value); } }
+        public byte LowerEarthenPeak { get => ReadBfLevel(Bfs.LowerEarthenPeak); set { WriteBfLevel(Bfs.LowerEarthenPeak, value); } }
+        public byte CentralEarthenPeak { get => ReadBfLevel(Bfs.CentralEarthenPeak); set { WriteBfLevel(Bfs.CentralEarthenPeak, value); } }
+        public byte UpperEarthenPeak { get => ReadBfLevel(Bfs.UpperEarthenPeak); set { WriteBfLevel(Bfs.UpperEarthenPeak, value); } }
+        public byte ThresholdBridge { get => ReadBfLevel(Bfs.ThresholdBridge); set { WriteBfLevel(Bfs.ThresholdBridge, value); } }
+        public byte IronhearthHall { get => ReadBfLevel(Bfs.IronhearthHall); set { WriteBfLevel(Bfs.IronhearthHall, value); } }
+        public byte EygilsIdol { get => ReadBfLevel(Bfs.EygilsIdol); set { WriteBfLevel(Bfs.EygilsIdol, value); } }
+        public byte BelfrySolApproach { get => ReadBfLevel(Bfs.BelfrySolApproach); set { WriteBfLevel(Bfs.BelfrySolApproach, value); } }
+        public byte OldAkelarre { get => ReadBfLevel(Bfs.OldAkelarre); set { WriteBfLevel(Bfs.OldAkelarre, value); } }
+        public byte RuinedForkRoad { get => ReadBfLevel(Bfs.RuinedForkRoad); set { WriteBfLevel(Bfs.RuinedForkRoad, value); } }
+        public byte ShadedRuins { get => ReadBfLevel(Bfs.ShadedRuins); set { WriteBfLevel(Bfs.ShadedRuins, value); } }
+        public byte GyrmsRespite { get => ReadBfLevel(Bfs.GyrmsRespite); set { WriteBfLevel(Bfs.GyrmsRespite, value); } }
+        public byte OrdealsEnd { get => ReadBfLevel(Bfs.OrdealsEnd); set { WriteBfLevel(Bfs.OrdealsEnd, value); } }
+        public byte RoyalArmyCampsite { get => ReadBfLevel(Bfs.RoyalArmyCampsite); set { WriteBfLevel(Bfs.RoyalArmyCampsite, value); } }
+        public byte ChapelThreshold { get => ReadBfLevel(Bfs.ChapelThreshold); set { WriteBfLevel(Bfs.ChapelThreshold, value); } }
+        public byte LowerBrightstoneCove { get => ReadBfLevel(Bfs.LowerBrightstoneCove); set { WriteBfLevel(Bfs.LowerBrightstoneCove, value); } }
+        public byte HarvalsRestingPlace { get => ReadBfLevel(Bfs.HarvalsRestingPlace); set { WriteBfLevel(Bfs.HarvalsRestingPlace, value); } }
+        public byte GraveEntrance { get => ReadBfLevel(Bfs.GraveEntrance); set { WriteBfLevel(Bfs.GraveEntrance, value); } }
+        public byte UpperGutter { get => ReadBfLevel(Bfs.UpperGutter); set { WriteBfLevel(Bfs.UpperGutter, value); } }
+        public byte CentralGutter { get => ReadBfLevel(Bfs.CentralGutter); set { WriteBfLevel(Bfs.CentralGutter, value); } }
+        public byte HiddenChamber { get => ReadBfLevel(Bfs.HiddenChamber); set { WriteBfLevel(Bfs.HiddenChamber, value); } }
+        public byte BlackGulchMouth { get => ReadBfLevel(Bfs.BlackGulchMouth); set { WriteBfLevel(Bfs.BlackGulchMouth, value); } }
+        public byte KingsGate { get => ReadBfLevel(Bfs.KingsGate); set { WriteBfLevel(Bfs.KingsGate, value); } }
+        public byte UnderCastleDrangleic { get => ReadBfLevel(Bfs.UnderCastleDrangleic); set { WriteBfLevel(Bfs.UnderCastleDrangleic, value); } }
+        public byte ForgottenChamber { get => ReadBfLevel(Bfs.ForgottenChamber); set { WriteBfLevel(Bfs.ForgottenChamber, value); } }
+        public byte CentralCastleDrangleic { get => ReadBfLevel(Bfs.CentralCastleDrangleic); set { WriteBfLevel(Bfs.CentralCastleDrangleic, value); } }
+        public byte TowerOfPrayerAmana { get => ReadBfLevel(Bfs.TowerOfPrayerAmana); set { WriteBfLevel(Bfs.TowerOfPrayerAmana, value); } }
+        public byte CrumbledRuins { get => ReadBfLevel(Bfs.CrumbledRuins); set { WriteBfLevel(Bfs.CrumbledRuins, value); } }
+        public byte RhoysRestingPlace { get => ReadBfLevel(Bfs.RhoysRestingPlace); set { WriteBfLevel(Bfs.RhoysRestingPlace, value); } }
+        public byte RiseOfTheDead { get => ReadBfLevel(Bfs.RiseOfTheDead); set { WriteBfLevel(Bfs.RiseOfTheDead, value); } }
+        public byte UndeadCryptEntrance { get => ReadBfLevel(Bfs.UndeadCryptEntrance); set { WriteBfLevel(Bfs.UndeadCryptEntrance, value); } }
+        public byte UndeadDitch { get => ReadBfLevel(Bfs.UndeadDitch); set { WriteBfLevel(Bfs.UndeadDitch, value); } }
+        public byte Foregarden { get => ReadBfLevel(Bfs.Foregarden); set { WriteBfLevel(Bfs.Foregarden, value); } }
+        public byte RitualSite { get => ReadBfLevel(Bfs.RitualSite); set { WriteBfLevel(Bfs.RitualSite, value); } }
+        public byte DragonAerie { get => ReadBfLevel(Bfs.DragonAerie); set { WriteBfLevel(Bfs.DragonAerie, value); } }
+        public byte ShrineEntrance { get => ReadBfLevel(Bfs.ShrineEntrance); set { WriteBfLevel(Bfs.ShrineEntrance, value); } }
+        public byte SanctumWalk { get => ReadBfLevel(Bfs.SanctumWalk); set { WriteBfLevel(Bfs.SanctumWalk, value); } }
+        public byte PriestessChamber { get => ReadBfLevel(Bfs.PriestessChamber); set { WriteBfLevel(Bfs.PriestessChamber, value); } }
+        public byte HiddenSanctumChamber { get => ReadBfLevel(Bfs.HiddenSanctumChamber); set { WriteBfLevel(Bfs.HiddenSanctumChamber, value); } }
+        public byte LairOfTheImperfect { get => ReadBfLevel(Bfs.LairOfTheImperfect); set { WriteBfLevel(Bfs.LairOfTheImperfect, value); } }
+        public byte SanctumInterior { get => ReadBfLevel(Bfs.SanctumInterior); set { WriteBfLevel(Bfs.SanctumInterior, value); } }
+        public byte TowerOfPrayerShulva { get => ReadBfLevel(Bfs.TowerOfPrayerShulva); set { WriteBfLevel(Bfs.TowerOfPrayerShulva, value); } }
+        public byte SanctumNadir { get => ReadBfLevel(Bfs.SanctumNadir); set { WriteBfLevel(Bfs.SanctumNadir, value); } }
+        public byte ThroneFloor { get => ReadBfLevel(Bfs.ThroneFloor); set { WriteBfLevel(Bfs.ThroneFloor, value); } }
+        public byte UpperFloor { get => ReadBfLevel(Bfs.UpperFloor); set { WriteBfLevel(Bfs.UpperFloor, value); } }
+        public byte Foyer { get => ReadBfLevel(Bfs.Foyer); set { WriteBfLevel(Bfs.Foyer, value); } }
+        public byte LowermostFloor { get => ReadBfLevel(Bfs.LowermostFloor); set { WriteBfLevel(Bfs.LowermostFloor, value); } }
+        public byte TheSmelterThrone { get => ReadBfLevel(Bfs.TheSmelterThrone); set { WriteBfLevel(Bfs.TheSmelterThrone, value); } }
+        public byte IronHallwayEntrance { get => ReadBfLevel(Bfs.IronHallwayEntrance); set { WriteBfLevel(Bfs.IronHallwayEntrance, value); } }
+        public byte OuterWall { get => ReadBfLevel(Bfs.OuterWall); set { WriteBfLevel(Bfs.OuterWall, value); } }
+        public byte AbandonedDwelling { get => ReadBfLevel(Bfs.AbandonedDwelling); set { WriteBfLevel(Bfs.AbandonedDwelling, value); } }
+        public byte ExpulsionChamber { get => ReadBfLevel(Bfs.ExpulsionChamber); set { WriteBfLevel(Bfs.ExpulsionChamber, value); } }
+        public byte InnerWall { get => ReadBfLevel(Bfs.InnerWall); set { WriteBfLevel(Bfs.InnerWall, value); } }
+        public byte LowerGarrison { get => ReadBfLevel(Bfs.LowerGarrison); set { WriteBfLevel(Bfs.LowerGarrison, value); } }
+        public byte GrandCathedral { get => ReadBfLevel(Bfs.GrandCathedral); set { WriteBfLevel(Bfs.GrandCathedral, value); } }
 
         // Equipped items:
-        private string PlayerCtrlToName(int? offset) {
+        private string PlayerCtrlToName(int? offset)
+        {
             if (offset == null || !InGame)
                 return string.Empty;
             return PlayerCtrl.ReadInt32((int)offset).AsMetaName();
@@ -2673,7 +2462,7 @@ namespace DS2S_META
         public string LeftHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand2);
         public string LeftHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand3);
 
-        
+
         public byte CurrentCovenant
         {
             get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
@@ -2683,7 +2472,7 @@ namespace DS2S_META
                 PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
             }
         }
-        
+
         public string CharacterName
         {
             get => InGame ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
