@@ -14,7 +14,7 @@ namespace DS2S_META.Utils
         {
             if (data.Length > inj_sz)
             {
-                MetaException.Raise($"NopExtend input bytes cannot fit in {inj_sz} size inject");
+                MetaExceptionStaticHandler.Raise($"NopExtend input bytes cannot fit in {inj_sz} size inject");
                 return null;
             }
                 

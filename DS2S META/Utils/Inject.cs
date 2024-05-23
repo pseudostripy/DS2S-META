@@ -19,7 +19,7 @@ namespace DS2S_META.Utils
         {
             if (origbytes.Length != newbytes.Length)
             {
-                MetaException.Raise("Inject lengths unequal");
+                MetaExceptionStaticHandler.Raise("Inject lengths unequal");
                 return;
             }
             InjAddr = injaddr;

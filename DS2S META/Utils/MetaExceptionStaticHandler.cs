@@ -14,7 +14,7 @@ namespace DS2S_META
     ///  Extension methods for Exception class.
     ///  Taken from https://www.neolisk.blog/posts/2015-08-13-csharp-capture-full-stacktrace/ 
     /// </summary>
-    static class MetaException
+    static class MetaExceptionStaticHandler
     {
         /// <summary>
         ///  Provides full stack trace for the exception that occurred.
@@ -78,6 +78,11 @@ namespace DS2S_META
             var meWindow = new MetaExceptionWindow(logmsg); // notify user on screen
             meWindow.ShowDialog();
         }
+        private static void ShowMetaExceptionWindowWithTitle(string title, string logmsg)
+        {
+            var meWindow = new MetaExceptionWindow(title, logmsg); // notify user on screen
+            meWindow.ShowDialog();
+        }
         private static void ShowMetaWarningWindow(string warnmsg)
         {
             var meWindow = new MetaWarningWindow(warnmsg); // notify user on screen
@@ -96,7 +101,12 @@ namespace DS2S_META
 
             // Invoke on Dispatcher thread to avoid STA errors
             var logmsg = e.ToLogString(Environment.StackTrace); // get clean stack trace
-            Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindow(logmsg));
+
+            // Add more granularity or tidy as appropriate
+            if (e is MetaFeatureException)
+                Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindowWithTitle("META Feature Exception", logmsg));
+            else
+                Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindow(logmsg));
         }
         public static void Raise(string message)
         {

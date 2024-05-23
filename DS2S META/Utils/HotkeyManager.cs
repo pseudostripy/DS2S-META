@@ -78,7 +78,7 @@ namespace DS2S_META
             if (action != null)
                 return action;
 
-            MetaException.Raise("Unexpected hotkey action request. Please check HotkeyManager.cs");
+            MetaExceptionStaticHandler.Raise("Unexpected hotkey action request. Please check HotkeyManager.cs");
             return () => { }; // warn and do nothing
         }
         

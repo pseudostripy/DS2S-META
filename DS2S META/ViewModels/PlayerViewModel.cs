@@ -696,7 +696,7 @@ namespace DS2S_META.ViewModels
             // no idea if multiplayer hook even implemented properly
             if (Hook?.Multiplayer == true)
             {
-                MetaException.RaiseUserWarning("Cannot warp while engaging in Multiplayer");
+                MetaExceptionStaticHandler.RaiseUserWarning("Cannot warp while engaging in Multiplayer");
                 return;
             }
 

@@ -858,7 +858,7 @@ namespace DS2S_META
 
             if (!Enum.IsDefined(typeof(WARPOPTIONS), wopt))
             {
-                MetaException.Raise($"Unexpected enum type for WARPOPTIONS. Value received: {wopt}");
+                MetaExceptionStaticHandler.Raise($"Unexpected enum type for WARPOPTIONS. Value received: {wopt}");
                 return false;
             }
 
@@ -1208,6 +1208,9 @@ namespace DS2S_META
         }
         public void UpdateSoulCount64(int souls)
         {
+            if (DS2P.Func.GiveSouls == null)
+                throw new MetaFeatureException("GiveSouls64");
+            
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
             
@@ -1243,7 +1246,7 @@ namespace DS2S_META
             {
                 outSouls = BitConverter.GetBytes(inSouls); // AddSouls
                 if (Is64Bit)
-                    funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt64());
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt64());
                 else    
                     funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt32());
             }
@@ -1351,7 +1354,7 @@ namespace DS2S_META
             // catch awkward logical bugs
             if (dealFullDmg && dealNoDmg)
             {
-                MetaException.Raise("Cannot do zero and full damage together. Should be handled in ViewModel.");
+                MetaExceptionStaticHandler.Raise("Cannot do zero and full damage together. Should be handled in ViewModel.");
                 return false;
             }
 
@@ -1378,7 +1381,7 @@ namespace DS2S_META
             var module_addr = Process?.MainModule?.BaseAddress;
             if (module_addr == null)
             {
-                MetaException.Raise("Cannot find DS2 Module address for hooks/inject calculations");
+                MetaExceptionStaticHandler.Raise("Cannot find DS2 Module address for hooks/inject calculations");
                 return false;
             }
             
@@ -1471,7 +1474,7 @@ namespace DS2S_META
             // Check for any desync or unexpected memory issues
             if (DmgModInj1 == null || DmgModInj2 == null)
             {
-                MetaException.Raise("Possible memory or state leak with Dmg Mod inject");
+                MetaExceptionStaticHandler.Raise("Possible memory or state leak with Dmg Mod inject");
                 return false;
             }
 
@@ -2030,7 +2033,7 @@ namespace DS2S_META
             catch
             {
                 // Log error.
-                MetaException.Raise("Probably cannot find .exe");
+                MetaExceptionStaticHandler.Raise("Probably cannot find .exe");
                 return (int)INJECTOR_ERRCODE.FILENOTFOUND;
             }
         }

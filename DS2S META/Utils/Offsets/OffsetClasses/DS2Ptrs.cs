@@ -57,6 +57,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         // Main HGO
         public CovenantHGO CovenantHGO;
         public ScalingBonusHGO ScalingBonusHGO;
+        public FuncListPHP Func;
 
         // Use factory below to make object
         public DS2Ptrs(DS2SHook hook, DS2VER ver) 
@@ -67,7 +68,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             // Assign to properties:
             CovenantHGO = new(hook, REDU.LeafGroups["CovenantsGroup"]);
             ScalingBonusHGO = new(hook, REDU.LeafGroups["BonusScalingTableGroup"]);
-
+            Func = new(hook, REDU.PHPDict);
         }
 
         // Reflection Utility:

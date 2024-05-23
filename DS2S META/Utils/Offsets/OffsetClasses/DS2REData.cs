@@ -47,7 +47,7 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYVANILLA, new RelModuleAOBCL("89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0",3))
             }),
 
-            new("ItemGiveFunc", new List<LocatorDefn>()
+            new("ItemGiveFuncAoB", new List<LocatorDefn>()
             {
                 new(ANYSOTFS, new AbsoluteAOBCL("48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41")),
                 new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9"))

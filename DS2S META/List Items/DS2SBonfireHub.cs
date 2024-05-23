@@ -35,7 +35,7 @@ namespace DS2S_META
                 var bf = allbonfires.Where(xbf => xbf.Name == str).FirstOrDefault();
                 if (bf == null)
                 {
-                    MetaException.Raise("Bonfire Hub cannot be linked to bonfire. Check resources for typos");
+                    MetaExceptionStaticHandler.Raise("Bonfire Hub cannot be linked to bonfire. Check resources for typos");
                     break;
                 }
                 bfs.Add(bf);

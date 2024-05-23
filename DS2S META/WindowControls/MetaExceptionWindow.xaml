@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label Content="META Exception" HorizontalAlignment="Center" FontSize="25" FontWeight="Black" Padding="0,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Foreground="#FFDA1111"/>
+        <Label x:Name="lblTitle" Content="META Exception" HorizontalAlignment="Center" FontSize="25" FontWeight="Black" Padding="0,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Foreground="#FFDA1111"/>
         <TextBlock x:Name="tbError" TextWrapping="WrapWithOverflow" Grid.Row="1" Padding="0,10,0,0" FontWeight="Bold" Margin="20,0,20,0"/>
         <Button x:Name="btnOkay" Content="Okay" IsCancel="True" Grid.Row="3" Click="btnOkay_Click" Padding="1,1,1,1" MaxWidth="80" MaxHeight="25" Margin="0,15,0,15"/>
     </Grid>

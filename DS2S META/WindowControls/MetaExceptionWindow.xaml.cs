@@ -27,8 +27,15 @@ namespace DS2S_META
             ExceptionStr = $"{exceptionStr}{Environment.NewLine}{Environment.NewLine}Dumped to <METADIR>\\log.txt";
             tbError.Text = ExceptionStr;
         }
+        public MetaExceptionWindow(string strTitle, string exceptionStr)
+        {
+            InitializeComponent();
+            ExceptionStr = $"{exceptionStr}{Environment.NewLine}{Environment.NewLine}Dumped to <METADIR>\\log.txt";
+            tbError.Text = ExceptionStr;
+            lblTitle.Content = strTitle;
+        }
 
-        
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
         }

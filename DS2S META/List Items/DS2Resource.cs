@@ -82,7 +82,7 @@ namespace DS2S_META
                 return bf;
 
             // Issue
-            MetaException.Raise($"Cannot establish link between bonfire name {name} and Hook property.");
+            MetaExceptionStaticHandler.Raise($"Cannot establish link between bonfire name {name} and Hook property.");
             return DS2SBonfire.EmptyBonfire;
         }
         public static DS2SCovenant GetCovById(COV? id) => Covenants.First(cv => cv.ID == id);

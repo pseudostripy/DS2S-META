@@ -47,7 +47,7 @@ namespace DS2S_META
             catch (Exception e)
             {
                 DllLoadable = false; // only try once
-                MetaException.Handle(e);
+                MetaExceptionStaticHandler.Handle(e);
             }
         }
         private static void ClearText()
@@ -60,7 +60,7 @@ namespace DS2S_META
             catch (Exception e)
             {
                 DllLoadable = false; // only try once
-                MetaException.Handle(e);
+                MetaExceptionStaticHandler.Handle(e);
             }
         }
         public static void Refresh()
