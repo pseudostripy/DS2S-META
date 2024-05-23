@@ -74,7 +74,7 @@
 
                     <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}" Grid.ColumnSpan="3" Margin="0,0,155,26" Grid.RowSpan="2"/>
                     <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="3" Margin="5,0,0,26" Visibility="{Binding NewVerVis}" Grid.RowSpan="2">
-                        <Hyperlink x:Name="linkNewVersionAvail" Click="link_NewUpdate_Click" >
+                        <Hyperlink x:Name="linkNewVersionAvail" Click="Link_NewUpdate_Click" >
                             New version available!
                         </Hyperlink>
                     </Label>

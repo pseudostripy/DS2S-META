@@ -70,9 +70,6 @@ namespace DS2S_META
         //ObservableCollection<ViewModelBase> ViewModels = new();
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Hook.EnableSpeedFactors)
-                Hook.EnableSpeedFactors = false;
-
             Hook.ClearSpeedhackInject();
             ViewModel.CleanupAll();
             RivaHook.OnUnhooked();
@@ -211,7 +208,7 @@ namespace DS2S_META
             Close();
         }
 
-        private void link_NewUpdate_Click(object sender, RoutedEventArgs e)
+        private void Link_NewUpdate_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.ShowMetaUpdateWindow();
         }
