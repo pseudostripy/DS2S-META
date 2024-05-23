@@ -115,17 +115,16 @@ namespace DS2S_META
         {
             Dispatcher.Invoke(new Action( () =>
             {
+                // Fix race condition if this was queued just before closing
+                if (!UpdateTimer.Enabled)
+                    return;
+
                 UpdateMainProperties();
                 if (!Hook.Hooked || !ParamMan.IsLoaded)
                     return;
 
-
                 // Hook will be initialized by now
-                UpdateProperties();
-                //EnableTabs(Hook.InGame);
-
-                //if (Hook.InGame)
-                //    UpdateAllTabs();                
+                UpdateProperties();     
             }));
             
         }
@@ -133,7 +132,6 @@ namespace DS2S_META
         {
             Hook.UpdateMainProperties();
             ViewModel.UpdateMainProperties();
-            //HKM.UpdateHotkeyRegistration(Hook.Focused);
             HKM.CheckFocusEvent(Hook.Focused);
         }
 
@@ -209,6 +207,7 @@ namespace DS2S_META
         }
         private void MainWindowClose_Click(object sender, RoutedEventArgs e)
         {
+            UpdateTimer.Stop();
             Close();
         }
 

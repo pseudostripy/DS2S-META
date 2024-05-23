@@ -173,16 +173,16 @@ namespace DS2S_META
             SpeedFactorAnim = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAnimOffset);
             SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
             SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
-            GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
-            RemoveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.RemoveSoulsFuncAoB);
-            ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
-            ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
+            //GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
+            //RemoveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.RemoveSoulsFuncAoB);
+            //ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
+            //ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
             WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
 
             // Version Specific AOBs:
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
-            phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
+            //phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
         }
         
         // DS2 & BBJ Process Info Data
@@ -1208,8 +1208,11 @@ namespace DS2S_META
         }
         public void UpdateSoulCount64(int souls)
         {
+            // Check both as they all come through here
             if (DS2P.Func.GiveSouls == null)
                 throw new MetaFeatureException("GiveSouls64");
+            if (DS2P.Func.RemoveSouls == null)
+                throw new MetaFeatureException("RemoveSouls64");
             
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
@@ -1226,6 +1229,12 @@ namespace DS2S_META
         }
         public void UpdateSoulCount32(int souls_input)
         {
+            // Check both as they all come through here
+            if (DS2P.Func.GiveSouls == null)
+                throw new MetaFeatureException("GiveSouls32");
+            if (DS2P.Func.RemoveSouls == null)
+                throw new MetaFeatureException("RemoveSouls32");
+
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
             
@@ -1248,16 +1257,16 @@ namespace DS2S_META
                 if (Is64Bit)
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt64());
                 else    
-                    funcChangeSouls = BitConverter.GetBytes(GiveSoulsFunc.Resolve().ToInt32());
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt32());
             }
             else
             {
                 int new_souls = -inSouls; // needs to "subtract a positive number"
                 outSouls = BitConverter.GetBytes(new_souls); // SubractSouls
                 if (Is64Bit)
-                    funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt64());
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt64());
                 else    
-                    funcChangeSouls = BitConverter.GetBytes(RemoveSoulsFunc.Resolve().ToInt32());
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt32());
             }
         }
 
@@ -1537,6 +1546,19 @@ namespace DS2S_META
         // Actual implementations:
         private void GiveItems64(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
         {
+            // Last resort elegant crash checks (this func needs all the following hooks)
+            if (DS2P.Func.ItemGive == null)
+                throw new MetaFeatureException("ItemGive64.ItemGive");
+            if (DS2P.MiscPtrs.AvailableItemBag == null)
+                throw new MetaFeatureException("ItemGive64.AvailableItemBag");
+            if (DS2P.Func.ItemStruct2dDisplay == null)
+                throw new MetaFeatureException("ItemGive64.ItemStruct2dDisplay");
+            if (DS2P.Func.ItemGiveWindow == null)
+                throw new MetaFeatureException("ItemGive64.ItemGiveWindow");
+            if (DS2P.Func.DisplayItemWindow == null)
+                throw new MetaFeatureException("ItemGive64.DisplayItemWindow");
+
+
             // Improved assembly to handle multigive and showdialog more neatly.
             int numitems = itemids.Length;
             if (numitems > 8)
@@ -1557,11 +1579,11 @@ namespace DS2S_META
             // Prepare values for assembly
             var numItems_bytes = BitConverter.GetBytes(numitems);
             var itemStructAddr_bytes = BitConverter.GetBytes(itemStruct.ToInt64());
-            var availBag_bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt64());
-            var itemGive_bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt64());
-            var itemStruct2Display_bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt64());
-            var itemGiveWindow_bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt64());
-            var displayItem64_bytes = BitConverter.GetBytes(phpDisplayItem.Resolve().ToInt64());
+            var availBag_bytes = BitConverter.GetBytes(DS2P.MiscPtrs.AvailableItemBag.Resolve().ToInt64());
+            var itemGive_bytes = BitConverter.GetBytes(DS2P.Func.ItemGive.Resolve().ToInt64());
+            var itemStruct2Display_bytes = BitConverter.GetBytes(DS2P.Func.ItemStruct2dDisplay.Resolve().ToInt64());
+            var itemGiveWindow_bytes = BitConverter.GetBytes(DS2P.Func.ItemGiveWindow.Resolve().ToInt64());
+            var displayItem64_bytes = BitConverter.GetBytes(DS2P.Func.DisplayItemWindow.Resolve().ToInt64());
             var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
 
             // Get reference assembly and populate links
@@ -1582,6 +1604,18 @@ namespace DS2S_META
         }
         private void GiveItems32(int[] itemids, short[] amounts, byte[] upgrades, byte[] infusions, bool showdialog = true)
         {
+            // Last resort elegant crash checks (this func needs all the following hooks)
+            if (DS2P.Func.ItemGive == null)
+                throw new MetaFeatureException("ItemGive32.ItemGive");
+            if (DS2P.MiscPtrs.AvailableItemBag == null)
+                throw new MetaFeatureException("ItemGive32.AvailableItemBag");
+            if (DS2P.Func.ItemStruct2dDisplay == null)
+                throw new MetaFeatureException("ItemGive32.ItemStruct2dDisplay");
+            if (DS2P.Func.ItemGiveWindow == null)
+                throw new MetaFeatureException("ItemGive32.ItemGiveWindow");
+            if (DS2P.Func.DisplayItemWindow == null)
+                throw new MetaFeatureException("ItemGive32.DisplayItemWindow");
+
             // Improved assembly to handle multigive and showdialog more neatly.
             int numitems = itemids.Length;
             if (numitems > 8)
@@ -1603,25 +1637,15 @@ namespace DS2S_META
             var pfloat_store = Allocate(sizeof(float));
             Kernel32.WriteBytes(Handle, pfloat_store, BitConverter.GetBytes(6.0f));
 
-            // Figure out the more complicated displayItem pointer (can't remember
-            // whether I made a function for this :/)
-            //if (Offsets?.Func == null) throw new Exception("Null reference");
-            
-            //string bytestring = Offsets.Func.DisplayItem;
-            //var aob_sz = bytestring.Trim().Split(" ").Length;
-            //var addr_jump_rel = phpDisplayItem.ReadInt32(aob_sz - 4);
-            //DisplayItem32 = phpDisplayItem.Resolve().ToInt32() + addr_jump_rel + aob_sz; // deal with rel jmp
-            
             // Setup assembly fields for substitution
             var numItems_bytes = BitConverter.GetBytes(numitems);
             var pItemStruct_bytes = BitConverter.GetBytes(itemStruct.ToInt32());
-            var availItemBag_bytes = BitConverter.GetBytes(AvailableItemBag.Resolve().ToInt32());
-            var itemGiveFunc_bytes = BitConverter.GetBytes(ItemGiveFunc.Resolve().ToInt32());
-            var itemStruct2Display_bytes = BitConverter.GetBytes(ItemStruct2dDisplay.Resolve().ToInt32());
-            var itemGiveWindow_bytes = BitConverter.GetBytes(ItemGiveWindow.Resolve().ToInt32());
+            var availItemBag_bytes = BitConverter.GetBytes(DS2P.MiscPtrs.AvailableItemBag.Resolve().ToInt32());
+            var itemGiveFunc_bytes = BitConverter.GetBytes(DS2P.Func.ItemGive.Resolve().ToInt32());
+            var itemStruct2Display_bytes = BitConverter.GetBytes(DS2P.Func.ItemStruct2dDisplay.Resolve().ToInt32());
+            var itemGiveWindow_bytes = BitConverter.GetBytes(DS2P.Func.ItemGiveWindow.Resolve().ToInt32());
             var pfloat_bytes = BitConverter.GetBytes(pfloat_store.ToInt32());
-            var displayItem32_bytes = BitConverter.GetBytes(phpDisplayItem.Resolve().ToInt32());
-            //var displayItem_bytes = BitConverter.GetBytes(DisplayItem32);
+            var displayItem32_bytes = BitConverter.GetBytes(DS2P.Func.DisplayItemWindow.Resolve().ToInt32());
             var showWindow_bytes = BitConverter.GetBytes(Convert.ToInt32(showdialog));
 
             // Load and fix assembly:
@@ -1638,36 +1662,6 @@ namespace DS2S_META
             Array.Copy(pfloat_bytes, 0, asm, 0x48, pfloat_bytes.Length);
             Array.Copy(itemGiveWindow_bytes, 0, asm, 0x4e, itemGiveWindow_bytes.Length);
             Array.Copy(displayItem32_bytes, 0, asm, 0x53, displayItem32_bytes.Length);
-
-
-            //// inject ret instr at mid_ret index and escape early
-            //int mid_ret = 0x20; // return early instruction index
-            //byte[] ret = new byte[] { 0xc3 };    // "ret" instruction
-            //if (!showdialog)
-            //{
-            //    var asm_first = asm.Take(mid_ret).ToArray();
-            //    var asm_end = new byte[] { 0x81, 0xc4 } // sub esp
-            //                    .Concat(stackAlloc)
-            //                    .Concat(ret);
-            //    asm = asm_first.Concat(asm_end).ToArray();
-            //}
-
-            // Fix assembly
-            //Array.Copy(stackAlloc, 0, asm, 0x2, stackAlloc.Length);
-
-
-
-
-            //if (showdialog)
-            //{
-            //    Array.Copy(pItemStruct, 0, asm, 0x29, pItemStruct.Length);
-            //    Array.Copy(pfloat_bytes, 0, asm, 0x2f, pfloat_bytes.Length);
-            //    Array.Copy(itemStruct2Display_bytes, 0, asm, 0x35, itemStruct2Display_bytes.Length);
-            //    Array.Copy(pfloat_bytes, 0, asm, 0x3f, pfloat_bytes.Length);
-            //    Array.Copy(itemGiveWindow_bytes, 0, asm, 0x45, itemGiveWindow_bytes.Length);
-            //    Array.Copy(displayItem_bytes, 0, asm, 0x4a, displayItem_bytes.Length);
-            //    Array.Copy(stackAlloc, 0, asm, 0x52, stackAlloc.Length);
-            //}
 
             Execute(asm);
             Free(itemStruct);

@@ -52,7 +52,7 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYSOTFS, new AbsoluteAOBCL("48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41")),
                 new(ANYVANILLA, new AbsoluteAOBCL("55 8B EC 83 EC 10 53 8B 5D 0C 56 8B 75 08 57 53 56 8B F9"))
             }),
-            new("ItemStruct2dDisplay", new List<LocatorDefn>()
+            new("ItemStruct2dDisplayAoB", new List<LocatorDefn>()
             {
                 new(ANYSOTFS, new AbsoluteAOBCL("40 53 48 83 EC 20 45 33 D2 45 8B D8 48 8B D9 44 89 11")),
                 new(V102, new AbsoluteAOBCL("55 8b ec 8b 45 08 8b 4d 14 53 8b 5d 10 56 33 f6")),

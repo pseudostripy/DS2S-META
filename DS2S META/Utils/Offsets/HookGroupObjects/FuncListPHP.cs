@@ -10,29 +10,29 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
     public class FuncListPHP
     {
         private DS2SHook Hook;
-        public PHPointer? ItemGiveFunc;
+        public PHPointer? ItemGive;
         public PHPointer? ItemStruct2dDisplay;
         public PHPointer? GiveSouls;
-        public PHPointer? RemoveSoulsFuncAoB;
+        public PHPointer? RemoveSouls;
         public PHPointer? SetWarpTargetFuncAoB;
         public PHPointer? WarpFuncAoB;
-        public PHPointer? DisplayItemFuncAoB;
+        public PHPointer? DisplayItemWindow;
         public PHPointer? ApplySpEffectAoB;
-        public PHPointer? ItemGiveWindowPointer;
+        public PHPointer? ItemGiveWindow;
 
         public FuncListPHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
             Hook = hook;
 
-            ItemGiveFunc = ValOrNull(PHPDict, "ItemGiveFuncAoB");
-            ItemStruct2dDisplay = ValOrNull(PHPDict, "ItemStruct2dDisplay");
+            ItemGive = ValOrNull(PHPDict, "ItemGiveFuncAoB");
+            ItemStruct2dDisplay = ValOrNull(PHPDict, "ItemStruct2dDisplayAoB");
             GiveSouls = ValOrNull(PHPDict, "GiveSoulsFuncAoB");
-            RemoveSoulsFuncAoB = ValOrNull(PHPDict, "RemoveSoulsFuncAoB");
+            RemoveSouls = ValOrNull(PHPDict, "RemoveSoulsFuncAoB");
             SetWarpTargetFuncAoB = ValOrNull(PHPDict, "SetWarpTargetFuncAoB");
             WarpFuncAoB = ValOrNull(PHPDict, "WarpFuncAoB");
-            DisplayItemFuncAoB = ValOrNull(PHPDict, "DisplayItemFuncAoB");
+            DisplayItemWindow = ValOrNull(PHPDict, "DisplayItemFuncAoB");
             ApplySpEffectAoB = ValOrNull(PHPDict, "ApplySpEffectAoB");
-            ItemGiveWindowPointer = ValOrNull(PHPDict, "ItemGiveWindowPointer");
+            ItemGiveWindow = ValOrNull(PHPDict, "ItemGiveWindowPointer");
         }
 
         private static PHPointer? ValOrNull(Dictionary<string, PHPointer> PHPDict, string key)
