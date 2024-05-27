@@ -7,18 +7,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
-using DS2S_META.Randomizer;
-using System.Diagnostics;
 using System.Windows.Controls;
 using DS2S_META.Commands;
 using static DS2S_META.State;
-using DS2S_META.Utils.Offsets;
-using System.Diagnostics.Metrics;
 using Xceed.Wpf.Toolkit;
 
 namespace DS2S_META.ViewModels
@@ -186,15 +180,19 @@ namespace DS2S_META.ViewModels
         }
 
         // Status Properties [not entirely sure why these must have setters to work]
+        public int? CurrentTypedHealth { get; set; }
+        private int _healthCurr;
         public int HealthCurr
         {
             get => Hook?.Health ?? 0;
             set
             {
-                if (Hook?.Health != null)
-                    Hook.Health = value;
+                _healthCurr = value;
+                if (Hook?.Health == null || IsHealthTyping == true)
+                    return;
+
+                Hook.Health = value;
                 OnPropertyChanged();
-                HealthLock = false;
             }
         }
         public int HealthCap
@@ -446,7 +444,6 @@ namespace DS2S_META.ViewModels
             }
         }
         
-
         // Integer updown binding stuff:
         private static readonly float[] ZEROVECFLOAT = new float[3] { 0.0f, 0.0f, 0.0f };
         private float[] _ang = ZEROVECFLOAT;
@@ -517,7 +514,7 @@ namespace DS2S_META.ViewModels
                 Source = Hook,
                 Path = new PropertyPath(hookPropName)
             };
-            bonfireControl.nudValue.SetBinding(Xceed.Wpf.Toolkit.IntegerUpDown.ValueProperty, binding);
+            bonfireControl.nudValue.SetBinding(IntegerUpDown.ValueProperty, binding);
             bonfireControl.nudValue.Minimum = 0;
             bonfireControl.nudValue.Maximum = 99;
             bonfireControl.Label = bf.Name;
@@ -536,10 +533,10 @@ namespace DS2S_META.ViewModels
             BtnMoneybagsCommand = new RelayCommand(BtnMoneybagsExecute, BtnMoneybagsCanExec);
             BtnRestoreHumanityCommand = new RelayCommand(BtnRestoreHumanityExecute, BtnRestoreHumanityCanExec);
             BtnNewTestCharCommand = new RelayCommand(BtnNewTestCharExecute, BtnNewTestCharCanExec);
-            HealthCurrGotFocusCommand = new RelayCommand(HealthCurrGotFocusExecute, AlwaysCanExec);
+            HealthCurrLostFocusCommand = new RelayCommand(HealthCurrLostFocusExecute, AlwaysCanExec);
             StaminaCurrGotFocusCommand = new RelayCommand(StaminaCurrGotFocusExecute, AlwaysCanExec);
-            StaminaKeyDownCommand = new RelayCommand(StaminaKeyDownExecute, AlwaysCanExec);
-            HealthKeyDownCommand = new RelayCommand(HealthKeyDownExecute, AlwaysCanExec);
+            StaminaPreviewKeyDownCommand = new RelayCommand(StaminaPreviewKeyDownExecute, AlwaysCanExec);
+            HealthPreviewKeyDownCommand = new RelayCommand(HealthPreviewKeyDownExecute, AlwaysCanExec);
             StorePositionCommand = new RelayCommand(StorePositionExecute, StorePositionCanExec);
             BfSearchTextChangedCommand = new RelayCommand(BfSearchTextChangedCommandExecute, AlwaysCanExec);
         }
@@ -552,10 +549,10 @@ namespace DS2S_META.ViewModels
         public ICommand BtnMoneybagsCommand { get; set; }
         public ICommand BtnRestoreHumanityCommand { get; set; }
         public ICommand BtnNewTestCharCommand { get; set; }
-        public ICommand HealthCurrGotFocusCommand { get; set; }
+        public ICommand HealthCurrLostFocusCommand { get; set; }
         public ICommand StaminaCurrGotFocusCommand { get; set; }
-        public ICommand StaminaKeyDownCommand { get; set; }
-        public ICommand HealthKeyDownCommand { get; set; }
+        public ICommand StaminaPreviewKeyDownCommand { get; set; }
+        public ICommand HealthPreviewKeyDownCommand { get; set; }
         public ICommand BfSearchTextChangedCommand { get; set; }
         //
         private bool BtnWarpCanExec(object? parameter) => MetaFeature.FtWarp; 
@@ -601,28 +598,71 @@ namespace DS2S_META.ViewModels
         private void BtnMoneybagsExecute(object? parameter) => Hook?.AddSouls(9999999);
         private void BtnRestoreHumanityExecute(object? parameter) => Hook?.RestoreHumanity();
         private void BtnNewTestCharExecute(object? parameter) => Hook?.NewTestCharacter();
-        private void HealthCurrGotFocusExecute(object? parameter) => HealthLock = true;
+        private void HealthCurrLostFocusExecute(object? parameter)
+        {
+            IsHealthTyping = false;
+            HealthCurr = _healthCurr;
+        }
         private void StaminaCurrGotFocusExecute(object? parameter) => StaminaLock = true;
-
+        
         // KeyDown Events:
-        private void StaminaKeyDownExecute(object? parameter)
+        private void ResetStaminaCurr()
         {
-            var keyargs = (KeyEventArgs?)parameter;
-            if (keyargs?.Key != Key.Enter)
-                return;
-
-            if (keyargs.OriginalSource is not WatermarkTextBox textbox) return;
-            StaminaCurr = int.Parse(textbox.Text);
+            // reset to whatever the game thinks stamina is
+            var hookstam = StaminaCurr;
+            StaminaCurr = hookstam;
+            Keyboard.ClearFocus();
+            StaminaLock = false;
         }
-        private void HealthKeyDownExecute(object? parameter)
+        private void StaminaPreviewKeyDownExecute(object? evargs)
         {
-            var keyargs = (KeyEventArgs?)parameter;
-            if (keyargs?.Key != Key.Enter)
+            var keyargs = (KeyEventArgs?)evargs;
+            if (keyargs?.Key == Key.Escape)
+            {
+                ResetStaminaCurr();
                 return;
+            }
 
+            // Handle userIsTyping
+            if (keyargs?.Key != Key.Enter)
+            {
+                StaminaLock = true;
+                return; 
+            }
+
+            // Bad event origin
             if (keyargs.OriginalSource is not WatermarkTextBox textbox) return;
-            HealthCurr = int.Parse(textbox.Text);
+
+            // Handle Enter press
+            if (textbox.Text != string.Empty)
+                StaminaCurr = int.Parse(textbox.Text);
+
+            // Done
+            ResetStaminaCurr();
         }
+        private void HealthPreviewKeyDownExecute(object? evargs)
+        {
+            var keyargs = (KeyEventArgs?)evargs;
+            if (keyargs?.Key == Key.Escape)
+            {
+                var hookhealth = HealthCurr;
+                HealthCurr = hookhealth; // reset to hook value
+                Keyboard.ClearFocus(); // this triggers a value update (blocked by below line)
+                IsHealthTyping = false; // allow updates as usual again
+                return;
+            }
+            
+            if (keyargs?.Key != Key.Enter)
+            {
+                IsHealthTyping = true;
+                return;
+            }
+
+            IsHealthTyping = false;
+            HealthCurr = _healthCurr;
+            Keyboard.ClearFocus();
+        }
+
         private void BfSearchTextChangedCommandExecute(object? parameter)
         {
             var txtchangedevargs = (TextChangedEventArgs?)parameter;
@@ -673,7 +713,7 @@ namespace DS2S_META.ViewModels
         }
 
         // used to allow user to type without updating things
-        public bool HealthLock { get; set; } = false;
+        public bool IsHealthTyping { get; set; } = false;
         public bool StaminaLock { get; set; } = false;
 
         // Misc.
@@ -774,7 +814,7 @@ namespace DS2S_META.ViewModels
         public override void UpdateViewModel()
         {
             // Update (called on mainwindow update interval)
-            if (!HealthLock)
+            if (!IsHealthTyping)
                 OnPropertyChanged(nameof(HealthCurr));
             OnPropertyChanged(nameof(HealthMax));
             OnPropertyChanged(nameof(HealthCap));

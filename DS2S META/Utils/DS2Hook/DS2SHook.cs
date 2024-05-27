@@ -25,16 +25,6 @@ using DS2S_META.Utils.Offsets.OffsetClasses;
 
 namespace DS2S_META.Utils.DS2Hook
 {
-    public enum DS2VER
-    {
-        VANILLA_V112,
-        VANILLA_V111,
-        VANILLA_V102,
-        SOTFS_V102,
-        SOTFS_V103,
-        UNSUPPORTED
-    }
-
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
         public static readonly string ExeDir = Environment.CurrentDirectory;
@@ -72,6 +62,7 @@ namespace DS2S_META.Utils.DS2Hook
         }
         public DS2VER DS2Ver;
         public BBJTYPE BBJType;
+
         internal DS2HookOffsets Offsets;
 
         // -----------------------------------------   WIP   ---------------------------------------

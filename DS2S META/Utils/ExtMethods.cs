@@ -29,5 +29,10 @@ namespace DS2S_META.Utils
             if (val > max) val = max;
             return val;
         }
+        public static void SetProperty(this object obj, string propName, object? value)
+        {
+            var pinfo = obj.GetType().GetProperty(propName) ?? throw new Exception($"Property {propName} cannot be found in class {obj.GetType()}");
+            pinfo.SetValue(obj, value);
+        }
     }
 }

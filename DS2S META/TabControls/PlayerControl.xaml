@@ -38,13 +38,13 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Content="Health" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,5,15,5"/>
-                <wpfTool:IntegerUpDown x:Name="NudHealth" Value="{Binding HealthCurr, UpdateSourceTrigger=LostFocus}" Maximum="{Binding HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" Grid.Row="1">
+                <wpfTool:IntegerUpDown x:Name="NudHealth" Value="{Binding HealthCurr}" Maximum="{Binding HealthCap}" TextAlignment="Center" ClipValueToMinMax="True" Grid.Row="1">
                     <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="GotFocus">
-                            <i:InvokeCommandAction Command="{Binding HealthCurrGotFocusCommand}" />
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:InvokeCommandAction Command="{Binding HealthPreviewKeyDownCommand}" PassEventArgsToCommand="True" />
                         </i:EventTrigger>
-                        <i:EventTrigger EventName="KeyDown">
-                            <i:InvokeCommandAction Command="{Binding HealthKeyDownCommand}" PassEventArgsToCommand="True" />
+                        <i:EventTrigger EventName="LostFocus">
+                            <i:InvokeCommandAction Command="{Binding HealthCurrLostFocusCommand}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </wpfTool:IntegerUpDown>
@@ -58,8 +58,8 @@
                         <i:EventTrigger EventName="GotFocus">
                             <i:InvokeCommandAction Command="{Binding StaminaCurrGotFocusCommand}" />
                         </i:EventTrigger>
-                        <i:EventTrigger EventName="KeyDown">
-                            <i:InvokeCommandAction Command="{Binding StaminaKeyDownCommand}" PassEventArgsToCommand="True" />
+                        <i:EventTrigger EventName="PreviewKeyDown">
+                            <i:InvokeCommandAction Command="{Binding StaminaPreviewKeyDownCommand}" PassEventArgsToCommand="True" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </wpfTool:IntegerUpDown>
@@ -143,7 +143,7 @@
                     </Grid.ColumnDefinitions>
                     <CheckBox x:Name="CbxLockChoice" Content="Lock Choice" IsEnabled="{Binding EnLockChoice}" IsChecked="{Binding ChkLockChoice}" VerticalAlignment="Center" Margin="0,5,0,0" VerticalContentAlignment="Stretch" />
                     <CheckBox x:Name="cbxWarpRest" Content="Rest On Warp" IsEnabled="{Binding EnWarpRest}"  IsChecked="{Binding ChkWarpRest}" Margin="0,5,0,0" VerticalAlignment="Center" Grid.Row="1" VerticalContentAlignment="Stretch"/>
-                    <TextBox x:Name="TxtSearch" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1" Padding="5,2,0,0">
+                    <TextBox  x:Name="TxtSearch" Grid.ColumnSpan="2" Height="NaN" Grid.Row="2" Grid.Column="1" Padding="5,2,0,0">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TextChanged">
                                 <i:InvokeCommandAction Command="{Binding BfSearchTextChangedCommand}" PassEventArgsToCommand="True" />

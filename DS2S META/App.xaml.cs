@@ -44,10 +44,11 @@ namespace DS2S_META
         {
             try
             {
-                if (e.Exception is MetaFeatureException)
-                    MetaExceptionStaticHandler.Handle(e.Exception); // cleanly handle these
-                else
-                    LogGlobalException(e.Exception); // not one I intended
+                MetaExceptionStaticHandler.Handle(e.Exception); // cleanly handle these
+                //if (e.Exception is MetaFeatureException)
+                    
+                //else
+                //    LogGlobalException(e.Exception); // not one I intended
             }
             //This catch hides an exception, but can't really help it at this point.
             catch{ }
