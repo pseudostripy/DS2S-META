@@ -148,7 +148,7 @@ namespace DS2S_META.ViewModels
             set
             {
                 _chkSpeedhack = value;
-                Hook?.Speedhack(value);
+                Hook?.EnableSpeedhack(value);
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(EnSpeedhackFactor));
             }
@@ -498,7 +498,7 @@ namespace DS2S_META.ViewModels
         public void ToggleCollision() => ChkCollision = !ChkCollision;
         public void ToggleAI() => ChkDisableAi = !ChkDisableAi;
         public void ToggleSpeedhack() => ChkSpeedhack = !ChkSpeedhack;
-        private void SetGameSpeed() => Hook?.SetSpeed((double)_speedHackFactor);
+        private void SetGameSpeed() => Hook?.SetSpeedhackSpeed((double)_speedHackFactor);
         public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
         public void ToggleOHKO() => ChkOHKO = !ChkOHKO;
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;

@@ -71,7 +71,6 @@ namespace DS2S_META
         //ObservableCollection<ViewModelBase> ViewModels = new();
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Hook.ClearSpeedhackInject();
             ViewModel.CleanupAll();
             RivaHook.OnUnhooked();
 
@@ -96,6 +95,7 @@ namespace DS2S_META
 
             }
 
+            Hook.Cleanup();
             HKM.ClearHooks();
             Settings.Save();
         }

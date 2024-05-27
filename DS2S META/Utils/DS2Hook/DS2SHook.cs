@@ -22,12 +22,13 @@ using System.Security.Cryptography;
 using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.Offsets.OffsetClasses;
+using System.Windows.Controls;
 
 namespace DS2S_META.Utils.DS2Hook
 {
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
-        public static readonly string ExeDir = Environment.CurrentDirectory;
+        //public static readonly string ExeDir = Environment.CurrentDirectory;
         private bool DmgModInstalled => DmgModInj1 != null;
         private IntPtr DmgModCodeAddr = IntPtr.Zero;
         private Inject? DmgModInj1 = null;
@@ -68,11 +69,17 @@ namespace DS2S_META.Utils.DS2Hook
         // -----------------------------------------   WIP   ---------------------------------------
         public DS2Ptrs DS2P;
         private AssemblyScripts ASM;
+        private SpeedhackManager SpeedhackMan;
         public void SetupPointers2()
         {
             DS2P = new(this, DS2Ver);
             ASM = new AssemblyScripts(this, DS2P);
+            SpeedhackMan = new SpeedhackManager(this);
         }
+
+        // Exposed interfaces
+        public void EnableSpeedhack(bool value) => SpeedhackMan.Speedhack(value);
+        public void SetSpeedhackSpeed(double value) => SpeedhackMan.SetSpeed(value);
 
         // Utility Info
         public static bool Reading { get; set; }
@@ -230,24 +237,17 @@ namespace DS2S_META.Utils.DS2Hook
             GetLevelRequirements();
 
             UpdateStatsProperties();
-            GetSpeedhackOffsets();
             Version = GetStringVersion();
-            IsInitialized = true;
+            SpeedhackMan.Setup();
 
-            //asm execution update:
-            //if (Is64Bit)
-            //    Engine = new(Keystone.Architecture.X86, Mode.X64);
-            //else
-            //    Engine = new(Keystone.Architecture.X86, Mode.X32);
-            //var test = Keystone.Architecture.X86;
-            //var debyg = -1;
-            ClearupDuplicateSpeedhacks();
+            IsInitialized = true;
             OnPropertyChanged(nameof(Hooked));
         }
-        private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e)
+        private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e) => Cleanup();
+        public void Cleanup()
         {
             Version = "Not Hooked";
-            ClearSpeedhackInject();
+            SpeedhackMan.ClearSpeedhackInject();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
             OnPropertyChanged(nameof(Hooked));
@@ -1650,219 +1650,6 @@ namespace DS2S_META.Utils.DS2Hook
         }
 
         #endregion
-
-        #region Speedhack
-        static string SpeedhackDllPathX64 = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/x64/Speedhack.dll";
-        static string SpeedhackDllPathX86 = $"{GetTxtResourceClass.ExeDir}/Resources/DLLs/x86/Speedhack.dll";
-        public IntPtr SpeedhackDllPtr;
-        IntPtr SetupPtr;
-        IntPtr SetSpeedPtr;
-        IntPtr DetachPtr;
-        public bool SpeedhackInitialised = false;
-
-        internal void Speedhack(bool enable)
-        {
-            if (enable)
-                EnableSpeedhack();
-            else
-                DisableSpeedhack();
-        }
-        internal void ClearSpeedhackInject()
-        {
-            if (!SpeedhackInitialised)
-                return;
-
-            DetachSpeedhack(); // this is still very slow!
-            SpeedhackDllPtr = IntPtr.Zero;
-            SpeedhackInitialised = false;
-        }
-        public void DisableSpeedhack()
-        {
-            if (!SpeedhackInitialised)
-                return;
-            if (!Hooked)
-                return; // game already closed
-            SetSpeed(1.0d);
-        }
-        private static readonly string TempDir = $"{ExeDir}\\Resources\\temp";
-        public static void ClearupDuplicateSpeedhacks()
-        {
-            // Try running on startup before injects where possible
-            if (!Directory.Exists(TempDir))
-                return;
-
-            var files = Directory.GetFiles(TempDir);
-            foreach (var file in files)
-            {
-                var fname = Path.GetFileNameWithoutExtension(file);
-                bool endswithdigit = char.IsDigit(fname[^1]);
-                if (endswithdigit)
-                {
-                    try
-                    {
-                        var fpath = $"{TempDir}/{fname}.dll";
-                        File.Delete(fpath);
-                    }
-                    catch (IOException)
-                    {
-                        continue; // in use probably
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        continue; // probably ok too?
-                    }
-                }
-            }
-        }
-        private void EnableSpeedhack()
-        {
-            if (SpeedhackDllPtr == IntPtr.Zero)
-                SpeedhackDllPtr = GetSpeedhackPtr();
-
-            // Exit gracefully on error:
-            if (SpeedhackDllPtr == IntPtr.Zero)
-                return;
-
-
-            if (!SpeedhackInitialised)
-                SetupSpeedhack();
-
-            // Update speed:
-            SetSpeed((double)Properties.Settings.Default.SpeedValue);
-        }
-        private void SetupSpeedhack()
-        {
-            // Initialise Speedhack (one-time)
-            IntPtr setup = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetupPtr.ToInt64());
-            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setup, IntPtr.Zero, 0, IntPtr.Zero);
-            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-
-            SpeedhackInitialised = true;
-        }
-        private IntPtr GetSpeedhackPtr()
-        {
-            if (Is64Bit)
-                return InjectDLL(SpeedhackDllPathX64);
-            else
-            {
-                var injloc = (IntPtr)Run32BitInjector(SpeedhackDllPathX86, out INJECTOR_ERRCODE errcode);
-                if (errcode != 0)
-                    return IntPtr.Zero;
-                return injloc;
-            }
-        }
-
-        private enum INJECTOR_ERRCODE
-        {
-            PROCESS_NOT_START = -5,
-            INCORRECT_NUMARGS = -2,
-            HOOK_FAILED = -1,
-            FILENOTFOUND = -6,
-            NONE = 0,
-        }
-        private static int Run32BitInjector(string dllfile, out INJECTOR_ERRCODE err)
-        {
-            string newpath;
-            int fid = Properties.Settings.Default.SH32FID; // get freefile()
-            Properties.Settings.Default.SH32FID++; // update it for next time
-
-            // copy dll to new file before injecting
-            string dllfilename = Path.GetFileNameWithoutExtension(dllfile);
-            string newname = $"{dllfilename}{fid}.dll";
-            newpath = $"{TempDir}\\{newname}";
-
-            if (!Directory.Exists(TempDir))
-                Directory.CreateDirectory(TempDir);
-
-            File.Copy(dllfile, newpath, true);
-
-
-            err = INJECTOR_ERRCODE.NONE;
-            string TRIPQUOT = "\"\"\"";
-
-            // Run the above batch file in new thread
-            ProcessStartInfo PSI = new()
-            {
-                FileName = $"{ExeDir}\\Resources\\Tools\\SpeedInjector32\\SpeedInjector.exe",
-                Arguments = $"{TRIPQUOT}{newpath}{TRIPQUOT}",
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-            };
-
-            try
-            {
-                // Start the process with the info we specified.
-                // Call WaitForExit and then the using statement will close.
-                using Process? exeProcess = Process.Start(PSI);
-                exeProcess?.WaitForExit();
-                if (exeProcess?.ExitCode == null)
-                {
-                    err = INJECTOR_ERRCODE.PROCESS_NOT_START;
-                    return 0;
-                }
-                return exeProcess.ExitCode; // -1 on null?
-            }
-            catch
-            {
-                // Log error.
-                MetaExceptionStaticHandler.Raise("Probably cannot find .exe");
-                return (int)INJECTOR_ERRCODE.FILENOTFOUND;
-            }
-        }
-
-        public void SetSpeed(double value)
-        {
-            IntPtr setSpeed = (IntPtr)(SpeedhackDllPtr.ToInt64() + SetSpeedPtr.ToInt64());
-            IntPtr valueAddress = GetPrefferedIntPtr(sizeof(double), SpeedhackDllPtr);
-            Kernel32.WriteBytes(Handle, valueAddress, BitConverter.GetBytes(value));
-            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, setSpeed, valueAddress, 0, IntPtr.Zero);
-            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-            Free(valueAddress);
-        }
-        private void DetachSpeedhack()
-        {
-            if (!Is64Bit)
-            {
-                DisableSpeedhack();
-                return; // unattach at game close in Vanilla
-            }
-
-            // avoid sotfs Meta-reload crash:
-            IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
-            IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
-            _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-            Free(SpeedhackDllPtr);
-        }
-
-        // Currently hardcoded to avoid hassle. Shouldn't change often :/
-        private const int SpeedHack32_SetupOffset = 0x1180;
-        private const int SpeedHack32_SpeedOffset = 0x1280;
-        private const int SpeedHack32_DetachOffset = 0x1230;
-
-        private void GetSpeedhackOffsets()
-        {
-            if (Is64Bit)
-            {
-                var lib = Kernel32.LoadLibrary(SpeedhackDllPathX64);
-                var setupOffset = Kernel32.GetProcAddress(lib, "Setup").ToInt64() - lib.ToInt64();
-                var setSpeedOffset = Kernel32.GetProcAddress(lib, "SetSpeed").ToInt64() - lib.ToInt64();
-                var detachOffset = Kernel32.GetProcAddress(lib, "Detach").ToInt64() - lib.ToInt64();
-                SetupPtr = (IntPtr)setupOffset; // 0x1180
-                SetSpeedPtr = (IntPtr)setSpeedOffset; // 0x1280
-                DetachPtr = (IntPtr)detachOffset; // 0x1230
-                Free(lib);
-            }
-            else
-            {
-                SetupPtr = (IntPtr)SpeedHack32_SetupOffset;
-                SetSpeedPtr = (IntPtr)SpeedHack32_SpeedOffset;
-                DetachPtr = (IntPtr)SpeedHack32_DetachOffset;
-            }
-
-        }
-        #endregion
-
-
 
 
         // Get info requests:
