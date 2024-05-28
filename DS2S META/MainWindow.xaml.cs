@@ -105,11 +105,8 @@ namespace DS2S_META
         {
             // Increment counter
             ElapsedCtr++;
-            if (ElapsedCtr % 16 != 0) return;
-
-            // 16*16ms ~ 4Hz
-            RivaHook.Refresh();
-            ViewModel.DoSlowUpdates();
+            if (ElapsedCtr % 16 != 0) return; // 16*16ms ~ 4Hz
+            Dispatcher.Invoke(new Action(() => { Update4Hz(); }));
         }
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
@@ -135,6 +132,13 @@ namespace DS2S_META
             ViewModel.UpdateMainProperties();
             //HKM.UpdateHotkeyRegistration(Hook.Focused);
             HKM.CheckFocusEvent(Hook.Focused);
+        }
+        private void Update4Hz()
+        {
+            if (!Hook.Hooked || !ParamMan.IsLoaded) 
+                return;
+            RivaHook.Refresh();
+            ViewModel.DoSlowUpdates();
         }
 
         private void InitAllTabs()
