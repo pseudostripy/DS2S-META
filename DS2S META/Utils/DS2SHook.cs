@@ -1921,6 +1921,7 @@ namespace DS2S_META
                 }
             }
         }
+        public bool SpeedhackEverEnabled = false;
         private void EnableSpeedhack()
         {
             if (SpeedhackDllPtr == IntPtr.Zero)
@@ -1930,7 +1931,7 @@ namespace DS2S_META
             if (SpeedhackDllPtr == IntPtr.Zero)
                 return;
 
-
+            SpeedhackEverEnabled = true;
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
             
@@ -2036,6 +2037,7 @@ namespace DS2S_META
                 
             // avoid sotfs Meta-reload crash:
             IntPtr detach = (IntPtr)(SpeedhackDllPtr.ToInt64() + DetachPtr.ToInt64());
+            Thread.Sleep(500);
             IntPtr thread = Kernel32.CreateRemoteThread(Handle, IntPtr.Zero, 0, detach, IntPtr.Zero, 0, IntPtr.Zero);
             _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
             Free(SpeedhackDllPtr);

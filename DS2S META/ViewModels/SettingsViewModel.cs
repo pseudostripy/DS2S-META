@@ -39,7 +39,7 @@ namespace DS2S_META.ViewModels
                 bool isInt = int.TryParse(s, out int xpx);
                 if (!isInt) return; // do nothing
                 Properties.Settings.Default.RivaXPixels = xpx;
-                //RefreshRivaOverlay(); // deprecated
+                RefreshRivaOverlay();
             }
         }
         public string RivaYPixel
@@ -51,7 +51,7 @@ namespace DS2S_META.ViewModels
                 bool isInt = int.TryParse(s, out int ypx);
                 if (!isInt) return; // do nothing
                 Properties.Settings.Default.RivaYPixels = ypx;
-                //RefreshRivaOverlay(); // deprecated
+                RefreshRivaOverlay();
             }
         }
         public string RivaTextSize
@@ -63,7 +63,7 @@ namespace DS2S_META.ViewModels
                 bool isInt = int.TryParse(s, out int sz);
                 if (!isInt) return; // do nothing
                 Properties.Settings.Default.RivaTextSize = sz;
-                //RefreshRivaOverlay(); // deprecated
+                RefreshRivaOverlay();
             }
         }
 

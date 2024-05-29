@@ -7,7 +7,7 @@
              xmlns:p="clr-namespace:DS2S_META.Properties"
              xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+             d:DesignHeight="650" d:DesignWidth="425" Background="LightGray"
              d:DataContext="{d:DesignInstance viewmodels:SettingsViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <StackPanel Margin="25">
@@ -60,6 +60,8 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -79,6 +81,9 @@
                           IsChecked="{Binding ChkAlwaysRestOnWarp}" Grid.Row="5" VerticalContentAlignment="Center"/>
                 <CheckBox Margin="10,5,0,5" Content="Maintain No Gravity / No Collision through loads" 
                           IsChecked="{Binding NoGravThroughLoads, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" VerticalContentAlignment="Center"/>
+                <CheckBox Margin="10,5,0,5" Content="Restart RIVA on close (after using speedhack)" 
+                          IsChecked="{Binding RestartRivaOnClose, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" VerticalContentAlignment="Center"/>
+                <TextBox Text="{Binding RivaExePath, Mode=TwoWay, Source={x:Static p:Settings.Default}, UpdateSourceTrigger=PropertyChanged}" Grid.Row="8" VerticalContentAlignment="Center" Padding="5,0,0,0"/>
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -91,11 +96,11 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Content="Riva X position" />
-                <TextBox Grid.Row="1" Text="{Binding RivaXPixel}" IsEnabled="False"/>
+                <TextBox Grid.Row="1" Text="{Binding RivaXPixel}"/>
                 <Label Content="Riva Y position" Grid.Column="1" />
-                <TextBox Grid.Row="1" Text="{Binding RivaYPixel}" IsEnabled="False" Grid.Column="1"/>
+                <TextBox Grid.Row="1" Text="{Binding RivaYPixel}" Grid.Column="1"/>
                 <Label Content="Riva text size" Grid.Column="2" />
-                <TextBox Grid.Row="1" Text="{Binding RivaTextSize}" IsEnabled="False" Grid.Column="2"/>
+                <TextBox Grid.Row="1" Text="{Binding RivaTextSize}" Grid.Column="2"/>
             </Grid>
         </StackPanel>
     </Grid>

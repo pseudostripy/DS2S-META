@@ -20,10 +20,10 @@ namespace DS2S_META
     /// </summary>
     public partial class MetaInfoWindow : Window
     {
-        public MetaInfoWindow(string warnstr)
+        public MetaInfoWindow(string infostr)
         {
             InitializeComponent();
-            tbError.Text = warnstr;
+            tbError.Text = infostr;
         }
         
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -32,6 +32,16 @@ namespace DS2S_META
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
             Window.Close();
+        }
+
+        public static void ShowMetaInfo(string infostr)
+        {
+            Application.Current.Dispatcher.Invoke(() => ShowMetaInfoWindow(infostr));
+        }
+        private static void ShowMetaInfoWindow(string infostr)
+        {
+            var miWindow = new MetaInfoWindow(infostr);
+            miWindow.ShowDialog();
         }
     }
 }
