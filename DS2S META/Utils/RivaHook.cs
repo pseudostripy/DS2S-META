@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace DS2S_META
 {
@@ -70,12 +71,13 @@ namespace DS2S_META
             ClearText();
             DisplayText();
         }
-
+        
         // On events
         public static void OnHooked()
         {
-            DisplayText();
-            OnHookComplete = true;
+            // Deprecated
+            //DisplayText();
+            //OnHookComplete = true;
         } 
 
         public static void OnUnhooked() => ClearText();

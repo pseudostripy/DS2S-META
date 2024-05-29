@@ -70,12 +70,12 @@ namespace DS2S_META
         //ObservableCollection<ViewModelBase> ViewModels = new();
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Hook.EnableSpeedFactors)
+            //RivaHook.OnUnhooked(); // deprecated
+            if (Hook.EnableSpeedFactors)//gz
                 Hook.EnableSpeedFactors = false;
 
             Hook.ClearSpeedhackInject();
             ViewModel.CleanupAll();
-            RivaHook.OnUnhooked();
 
             UpdateTimer.Stop();
             SaveAllTabs();
@@ -103,6 +103,10 @@ namespace DS2S_META
         }
         private void UpdateTimeElapsed_4HzUpdates(object? sender, EventArgs e)
         {
+            // Fix race condition if this was queued just before closing
+            if (!UpdateTimer.Enabled)
+                return;
+
             // Increment counter
             ElapsedCtr++;
             if (ElapsedCtr % 16 != 0) return; // 16*16ms ~ 4Hz
@@ -112,6 +116,10 @@ namespace DS2S_META
         {
             Dispatcher.Invoke(new Action( () =>
             {
+                // Fix race condition if this was queued just before closing
+                if (!UpdateTimer.Enabled)
+                    return;
+
                 UpdateMainProperties();
                 if (!Hook.Hooked || !ParamMan.IsLoaded)
                     return;
@@ -137,7 +145,7 @@ namespace DS2S_META
         {
             if (!Hook.Hooked || !ParamMan.IsLoaded) 
                 return;
-            RivaHook.Refresh();
+            //RivaHook.Refresh(); // deprecated. wait for whenever I do JD render insert
             ViewModel.DoSlowUpdates();
         }
 

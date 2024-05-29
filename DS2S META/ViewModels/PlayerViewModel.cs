@@ -175,7 +175,7 @@ namespace DS2S_META.ViewModels
         public bool ChkTogManageBfs 
         { 
             get => _chkTogManageBfs;
-            set { 
+            set {
                 _chkTogManageBfs = value;
                 if (value)
                     SetManagedBonfireList();

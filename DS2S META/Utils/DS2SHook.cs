@@ -19,6 +19,7 @@ using DS2S_META.Randomizer;
 using Octokit;
 using System.CodeDom;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace DS2S_META
 {
