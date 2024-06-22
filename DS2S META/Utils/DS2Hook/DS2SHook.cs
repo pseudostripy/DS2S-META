@@ -23,6 +23,7 @@ using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace DS2S_META.Utils.DS2Hook
 {
@@ -69,7 +70,7 @@ namespace DS2S_META.Utils.DS2Hook
         // -----------------------------------------   WIP   ---------------------------------------
         public DS2Ptrs DS2P;
         private AssemblyScripts ASM;
-        private SpeedhackManager SpeedhackMan;
+        private SpeedhackManager? SpeedhackMan;
         public void SetupPointers2()
         {
             DS2P = new(this, DS2Ver);
@@ -78,8 +79,8 @@ namespace DS2S_META.Utils.DS2Hook
         }
 
         // Exposed interfaces
-        public void EnableSpeedhack(bool value) => SpeedhackMan.Speedhack(value);
-        public void SetSpeedhackSpeed(double value) => SpeedhackMan.SetSpeed(value);
+        public void EnableSpeedhack(bool value) => SpeedhackMan?.Speedhack(value);
+        public void SetSpeedhackSpeed(double value) => SpeedhackMan?.SetSpeed(value);
 
         // Utility Info
         public static bool Reading { get; set; }
@@ -214,6 +215,7 @@ namespace DS2S_META.Utils.DS2Hook
         public bool IsVanilla => new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 }.Contains(DS2Ver);
         public bool IsValidVer;
 
+        // Hook setup / cleanup
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             DS2Ver = GetDS2Ver();
@@ -238,7 +240,7 @@ namespace DS2S_META.Utils.DS2Hook
 
             UpdateStatsProperties();
             Version = GetStringVersion();
-            SpeedhackMan.Setup();
+            SpeedhackMan?.Setup();
 
             IsInitialized = true;
             OnPropertyChanged(nameof(Hooked));
@@ -247,11 +249,102 @@ namespace DS2S_META.Utils.DS2Hook
         public void Cleanup()
         {
             Version = "Not Hooked";
-            SpeedhackMan.ClearSpeedhackInject();
+            HandleRivaAndSpeedhackUnhooking();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
             OnPropertyChanged(nameof(Hooked));
             IsInitialized = false;
+        }
+        private enum UNHOOKINGSTYLE
+        {
+            VANILLA,
+            SOTFS_NOSH,
+            SOTFS_SH_NORIVA_RESTART,
+            SOTFS_SH_RIVA_RESTART
+        }
+        private void HandleRivaAndSpeedhackUnhooking()
+        {
+            var unhookStyle = GetUnhookStyle();
+            switch (unhookStyle)
+            {
+                case UNHOOKINGSTYLE.VANILLA:
+                    UnhookVanilla();
+                    return;
+
+                case UNHOOKINGSTYLE.SOTFS_NOSH:
+                    RivaHook.OnUnhooked();
+                    return;
+
+                case UNHOOKINGSTYLE.SOTFS_SH_NORIVA_RESTART:
+                    RivaUnhookSlow();
+                    return;
+
+                case UNHOOKINGSTYLE.SOTFS_SH_RIVA_RESTART:
+                    UnhookWithRivaRestart();
+                    return;
+
+                default:
+                    throw new Exception("Unexpected UNHOOKINGSTYLE enum");
+            }
+        }
+        private UNHOOKINGSTYLE GetUnhookStyle()
+        {
+            // Logic for deciding which Riva/Speedhack unhooking process to use
+            if (IsVanilla) return UNHOOKINGSTYLE.VANILLA;
+            if (SpeedhackMan?.SpeedhackEverEnabled != true) return UNHOOKINGSTYLE.SOTFS_NOSH;
+            if (!Properties.Settings.Default.RestartRivaOnClose) return UNHOOKINGSTYLE.SOTFS_SH_NORIVA_RESTART;
+            return UNHOOKINGSTYLE.SOTFS_SH_RIVA_RESTART;
+        }
+        private void UnhookVanilla()
+        {
+            RivaHook.OnUnhooked();
+            SpeedhackMan?.ClearSpeedhackInject();
+        }
+        private void RivaUnhookSlow()
+        {
+            // Unload and wait for RIVA to refresh itself ~2mins
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => { RivaHook.RefreshEnd(); }));
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                SpeedhackMan?.ClearSpeedhackInject();
+                RivaHook.OnUnhooked();
+            }));
+        }
+        private void UnhookWithRivaRestart()
+        {
+            // Try reopen RIVA programatically
+            string rivaExePath = Properties.Settings.Default.RivaExePath;
+            bool canFindRiva = File.Exists(rivaExePath);
+
+
+            List<string> rtssProcNames = new() { "RTSS", "RTSSHooksLoader64" };
+            var RTSSprocs = Process.GetProcesses().Where(proc => rtssProcNames.Contains(proc.ProcessName)).ToList();
+
+            if (RTSSprocs.Count == 0)
+            {
+                // RTSS not open (nothing to do)
+                SpeedhackMan?.ClearSpeedhackInject();
+                return;
+            }
+            if (!canFindRiva)
+            {
+                // Riva not found
+                string msg = @$"Cannot find RIVA at expected location:
+{rivaExePath}
+If you want to enable this feature, please paste the full RIVA.exe path
+in to the Settings tab textbox next time you open Meta.
+                                
+Reverting to unhooking RIVA the slow way";
+                MetaInfoWindow.ShowMetaInfo(msg);
+                RivaUnhookSlow();
+                return;
+            }
+
+            // Kill RTSS and request to reopen it
+            SpeedhackMan?.ClearSpeedhackInject();
+            foreach (var proc in RTSSprocs)
+                proc.Kill();
+            Util.ExecuteAsAdmin(rivaExePath);
         }
 
         // Major setup functions:

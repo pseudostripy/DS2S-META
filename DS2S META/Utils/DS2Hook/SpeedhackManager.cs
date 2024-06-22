@@ -32,6 +32,7 @@ namespace DS2S_META.Utils.DS2Hook
         
         // Interface
         public bool SpeedhackInitialised = false;
+        public bool SpeedhackEverEnabled = false;
 
         // Directory
         public static readonly string ExeDir = Environment.CurrentDirectory;
@@ -116,7 +117,7 @@ namespace DS2S_META.Utils.DS2Hook
             if (SpeedhackDllPtr == IntPtr.Zero)
                 return;
 
-
+            SpeedhackEverEnabled = true;
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
 

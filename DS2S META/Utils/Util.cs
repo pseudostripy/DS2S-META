@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -125,6 +126,16 @@ namespace DS2S_META.Utils
             for (var i = 0; i < count; i++)
                 results.Add(f());
             return results;
+        }
+
+        // Technically doesn't belong here, but w/e
+        public static void ExecuteAsAdmin(string fileName)
+        {
+            Process proc = new();
+            proc.StartInfo.FileName = fileName;
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            proc.Start();
         }
     }
 }

@@ -45,16 +45,10 @@ namespace DS2S_META
             try
             {
                 MetaExceptionStaticHandler.Handle(e.Exception); // cleanly handle these
-                //if (e.Exception is MetaFeatureException)
-                    
-                //else
-                //    LogGlobalException(e.Exception); // not one I intended
             }
             //This catch hides an exception, but can't really help it at this point.
             catch{ }
-            
-
-            e.Handled = true;//If we don't set this event as "handled", the application will crash.
+            e.Handled = true; //If we don't set this event as "handled", the application will crash.
         }
 
 
