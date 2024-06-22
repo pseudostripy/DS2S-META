@@ -17,7 +17,8 @@ using System.Text.RegularExpressions;
 using DS2S_META.Utils;
 using System.Text.Json;
 using System.Threading.Tasks;
-using DS2S_META.Utils.DS2Hook;
+using DS2S_META.ViewModels;
+using System.Linq;
 
 namespace DS2S_META
 {
@@ -71,8 +72,14 @@ namespace DS2S_META
         //ObservableCollection<ViewModelBase> ViewModels = new();
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            HandleRivaAndSpeedhackUnhooking();
+
+            //Dispatcher.Invoke(new Action(() => { RivaHook.RefreshEnd(); }));
+            if (Hook.EnableSpeedFactors)//gz
+                Hook.EnableSpeedFactors = false;
+
+            
             ViewModel.CleanupAll();
-            RivaHook.OnUnhooked();
 
             UpdateTimer.Stop();
             SaveAllTabs();
@@ -99,16 +106,93 @@ namespace DS2S_META
             HKM.ClearHooks();
             Settings.Save();
         }
+        private void HandleRivaAndSpeedhackUnhooking()
+        {
+            // Vanilla:
+            if (!Hook.Is64Bit)
+            {
+                RivaHook.OnUnhooked();
+                Hook.ClearSpeedhackInject();
+                return;
+            }
+
+            // More complicated for SOTFS:
+            if (!Hook.SpeedhackEverEnabled)
+            {
+                RivaHook.OnUnhooked();
+                return;
+            }
+
+            if (!Properties.Settings.Default.RestartRivaOnClose)
+            {
+                RivaUnhookSlow();
+                return;
+            }
+
+            // Try reopen RIVA programatically
+            string rivaExePath = Properties.Settings.Default.RivaExePath;
+            bool canFindRiva = File.Exists(rivaExePath);
+
+            
+            List<string> rtssProcNames = new() { "RTSS", "RTSSHooksLoader64" };
+            var RTSSprocs = Process.GetProcesses().Where(proc => rtssProcNames.Contains(proc.ProcessName)).ToList();
+                
+            if (RTSSprocs.Count == 0)
+            {
+                // RTSS not open (nothing to do)
+                Hook.ClearSpeedhackInject();
+                return;
+            }
+            if (!canFindRiva)
+            {
+                // Riva not found
+                string msg = @$"Cannot find RIVA at expected location:
+{rivaExePath}
+If you want to enable this feature, please paste the full RIVA.exe path
+in to the Settings tab textbox next time you open Meta.
+                                
+Reverting to unhooking RIVA the slow way";
+                MetaInfoWindow.ShowMetaInfo(msg);
+                RivaUnhookSlow();
+                return;
+            }
+
+            // Kill RTSS and request to reopen it
+            Hook.ClearSpeedhackInject();
+            foreach (var proc in RTSSprocs)
+                proc.Kill();
+            ExecuteAsAdmin(rivaExePath);
+        }
+        private void RivaUnhookSlow()
+        {
+            // Unload and wait for RIVA to refresh itself ~2mins
+            Dispatcher.Invoke(new Action(() => { RivaHook.RefreshEnd(); }));
+            Dispatcher.Invoke(new Action(() =>
+            {
+                Hook.ClearSpeedhackInject();
+                RivaHook.OnUnhooked();
+            }));
+        }
         private void UpdateTimeElapsed_4HzUpdates(object? sender, EventArgs e)
         {
+            // Fix race condition if this was queued just before closing
+            if (!UpdateTimer.Enabled)
+                return;
+
             // Increment counter
             ElapsedCtr++;
-            if (ElapsedCtr % 16 != 0) return;
-
-            // 16*16ms ~ 4Hz
-            RivaHook.Refresh();
-            ViewModel.DoSlowUpdates();
+            if (ElapsedCtr % 16 != 0) return; // 16*16ms ~ 4Hz
+            Dispatcher.Invoke(new Action(() => { Update4Hz(); }));
         }
+        public void ExecuteAsAdmin(string fileName)
+        {
+            Process proc = new();
+            proc.StartInfo.FileName = fileName;
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Verb = "runas";
+            proc.Start();
+        }
+
         private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Dispatcher.Invoke(new Action( () =>
@@ -131,6 +215,13 @@ namespace DS2S_META
             Hook.UpdateMainProperties();
             ViewModel.UpdateMainProperties();
             HKM.CheckFocusEvent(Hook.Focused);
+        }
+        private void Update4Hz()
+        {
+            if (!Hook.Hooked || !ParamMan.IsLoaded) 
+                return;
+            RivaHook.Refresh();
+            ViewModel.DoSlowUpdates();
         }
 
         private void InitAllTabs()

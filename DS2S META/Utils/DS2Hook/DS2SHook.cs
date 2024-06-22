@@ -1651,7 +1651,6 @@ namespace DS2S_META.Utils.DS2Hook
 
         #endregion
 
-
         // Get info requests:
         internal int GetMaxUpgrade(ItemRow item)
         {

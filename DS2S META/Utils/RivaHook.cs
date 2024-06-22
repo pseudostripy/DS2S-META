@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace DS2S_META
 {
@@ -30,7 +31,8 @@ namespace DS2S_META
         // C# Wrappers
         static readonly string MetaIDStr = "meta";
         private static bool OnHookComplete = false;
-        private static void DisplayText()
+        private static void DisplayText() => DisplayTextWrapper(DS2SViewModel.WindowName);
+        public static void DisplayTextWrapper(string msg)
         {
             if (!DllLoadable) return; // error already displayed don't retry
 
@@ -41,7 +43,7 @@ namespace DS2S_META
 
             try
             {
-                var displayStr = DS2SViewModel.WindowName;
+                var displayStr = msg;
                 _ = displayText(MetaIDStr, displayStr, xpx, ypx, txtsz);
             }
             catch (Exception e)
@@ -50,6 +52,7 @@ namespace DS2S_META
                 MetaExceptionStaticHandler.Handle(e);
             }
         }
+
         private static void ClearText()
         {
             if (!DllLoadable) return; // error already displayed don't retry
@@ -69,6 +72,13 @@ namespace DS2S_META
             if (!OnHookComplete) return; 
             ClearText();
             DisplayText();
+        }
+        public static void RefreshEnd()
+        {
+            // ensure the hook code goes through first in race
+            if (!OnHookComplete) return;
+            ClearText();
+            DisplayTextWrapper("Closing Meta: RIVA will eventually autofix itself (could be up to 5 mins). Please wait or restart RIVA.");
         }
 
         // On events

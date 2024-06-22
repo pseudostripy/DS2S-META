@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using DS2S_META.Commands;
 using static DS2S_META.State;
 using Xceed.Wpf.Toolkit;
+using System.Threading;
 
 namespace DS2S_META.ViewModels
 {
@@ -169,7 +170,7 @@ namespace DS2S_META.ViewModels
         public bool ChkTogManageBfs 
         { 
             get => _chkTogManageBfs;
-            set { 
+            set {
                 _chkTogManageBfs = value;
                 if (value)
                     SetManagedBonfireList();

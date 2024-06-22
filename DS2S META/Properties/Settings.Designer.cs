@@ -550,5 +550,29 @@ namespace DS2S_META.Properties {
                 this["LockBfChoice"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RestartRivaOnClose {
+            get {
+                return ((bool)(this["RestartRivaOnClose"]));
+            }
+            set {
+                this["RestartRivaOnClose"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\RivaTuner Statistics Server\\RTSS.exe")]
+        public string RivaExePath {
+            get {
+                return ((string)(this["RivaExePath"]));
+            }
+            set {
+                this["RivaExePath"] = value;
+            }
+        }
     }
 }
