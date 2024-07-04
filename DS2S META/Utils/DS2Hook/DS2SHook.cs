@@ -1820,7 +1820,7 @@ Reverting to unhooking RIVA the slow way";
         }
         private int GetHeldInInventoryUnstackable(int id)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
 
