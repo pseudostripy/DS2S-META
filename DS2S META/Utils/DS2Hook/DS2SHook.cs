@@ -44,7 +44,7 @@ namespace DS2S_META.Utils.DS2Hook
             PropertyChanged?.Invoke(this, new(name));
         }
         public event EventHandler<GameStateEventArgs> OnGameStateHandler;
-        private void RaiseGameStateChange(int oldstate, int newstate)
+        public void RaiseGameStateChange(int oldstate, int newstate)
         {
             OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
         }
@@ -84,22 +84,24 @@ namespace DS2S_META.Utils.DS2Hook
 
         // Utility Info
         public static bool Reading { get; set; }
-        public bool IsLoading => LoadingState != null && Offsets.LoadingState != null && LoadingState.ReadBoolean(Offsets.LoadingState[^1]);
+        
+        
+        public bool IsLoading => DS2P.CGS.IsLoading;
 
-        private int _gamestate;
-        public int GameState
-        {
-            get => _gamestate;
-            set
-            {
-                if (value == _gamestate) return;
-                var oldstate = _gamestate;
-                _gamestate = value; // needs to be read during event
-                RaiseGameStateChange(oldstate, value);
-            }
-        }
-        public bool InGame => GameState == (int)GAMESTATE.LOADEDINGAME;
-        public bool InMainMenu => GameState == (int)GAMESTATE.MAINMENU;
+        //private int _gamestate;
+        //public int GameState
+        //{
+        //    get => _gamestate;
+        //    set
+        //    {
+        //        if (value == _gamestate) return;
+        //        var oldstate = _gamestate;
+        //        _gamestate = value; // needs to be read during event
+        //        RaiseGameStateChange(oldstate, value);
+        //    }
+        //}
+        //public bool InGame => GameState == (int)GAMESTATE.LOADEDINGAME;
+        //public bool InMainMenu => GameState == (int)GAMESTATE.MAINMENU;
 
         //public bool 
         public bool Focused => Hooked && User32.GetForegroundProcessID() == Process.Id;
@@ -119,14 +121,14 @@ namespace DS2S_META.Utils.DS2Hook
         public PHPointer BaseA;
 
         private PHPointer PlayerName;
-        private PHPointer AvailableItemBag;
+        //private PHPointer AvailableItemBag;
         private PHPointer ItemGiveWindow;
         private PHPointer PlayerBaseMisc;
         private PHPointer PlayerCtrl;
         private PHPointer PlayerPosition;
-        private PHPointer PlayerGravity;
+        //private PHPointer PlayerGravity;
         private PHPointer PlayerParam;
-        private PHPointer PlayerType;
+        //private PHPointer PlayerType;
         private PHPointer SpEffectCtrl;
         private PHPointer ApplySpEffect;
         private PHPointer PlayerMapData;
@@ -146,10 +148,10 @@ namespace DS2S_META.Utils.DS2Hook
         private PHPointer Camera4;
         private PHPointer Camera5;
 
-        private PHPointer SpeedFactorAccel;
-        private PHPointer SpeedFactorAnim;
-        private PHPointer SpeedFactorJump;
-        private PHPointer SpeedFactorBuildup;
+        //private PHPointer SpeedFactorAccel;
+        //private PHPointer SpeedFactorAnim;
+        //private PHPointer SpeedFactorJump;
+        //private PHPointer SpeedFactorBuildup;
 
         public PHPointer LoadingState;
         public PHPointer phDisableAI; // pointer head (missing final offset)
@@ -584,15 +586,15 @@ Reverting to unhooking RIVA the slow way";
             if (OC == null) return;
 
             PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
-            AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
+            //AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
 
             PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
-            PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
+            //PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
             PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
-            PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
+            //PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
             SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
             PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
             EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
@@ -689,10 +691,10 @@ Reverting to unhooking RIVA the slow way";
 
 
         // Player tab stuff:
-        public void UpdateGameState()
-        {
-            GameState = Hooked ? BaseA.ReadInt32(Offsets.GameState) : -1;
-        }
+        //public void UpdateGameState()
+        //{
+        //    GameState = Hooked ? BaseA.ReadInt32(Offsets.GameState) : -1;
+        //}
         public void UpdateMainProperties()
         {
             OnPropertyChanged(nameof(CharacterName));
@@ -1795,10 +1797,11 @@ Reverting to unhooking RIVA the slow way";
             var heldOffset = 0x8;
             var nextOffset = 0x10;
 
-            var endPointer = AvailableItemBag.ReadIntPtr(0x10).ToInt64();
-            var bagSize = endPointer - AvailableItemBag.Resolve().ToInt64();
+            if (DS2P.MiscPtrs.AvailableItemBag == null) return 0;
+            var endPointer = DS2P.MiscPtrs.AvailableItemBag.ReadIntPtr(0x10).ToInt64();
+            var bagSize = endPointer - DS2P.MiscPtrs.AvailableItemBag.Resolve().ToInt64();
 
-            var inventory = AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
+            var inventory = DS2P.MiscPtrs.AvailableItemBag.ReadBytes(0x0, (uint)bagSize);
 
             while (inventorySlot < bagSize)
             {
@@ -1843,20 +1846,20 @@ Reverting to unhooking RIVA the slow way";
         }
 
         #region Internal
-        public byte FastQuit
-        {
-            set => BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
-        }
-        internal byte DisableAI
-        {
-            get => InGame && Offsets.DisableAI != null ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                if (Offsets.DisableAI == null) return;
-                phDisableAI.WriteByte(Offsets.DisableAI[^1], value);
-            }
-        }
+        //public byte FastQuit
+        //{
+        //    set => BaseA.WriteByte(Offsets.ForceQuit.Quit, value);
+        //}
+        //internal byte DisableAI
+        //{
+        //    get => InGame && Offsets.DisableAI != null ? phDisableAI.ReadByte(Offsets.DisableAI[^1]) : (byte)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        if (Offsets.DisableAI == null) return;
+        //        phDisableAI.WriteByte(Offsets.DisableAI[^1], value);
+        //    }
+        //}
         public int Health
         {
             get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
@@ -1870,17 +1873,17 @@ Reverting to unhooking RIVA the slow way";
         public void SetNoGravity(bool noGravity)
         {
             if (MetaFeature.IsInactive(METAFEATURE.NOGRAVITY)) return;
-            Gravity = !noGravity;
+            DS2P.CGS.Gravity = !noGravity;
         }
         public void SetNoCollision(bool noCollision)
         {
             if (MetaFeature.IsInactive(METAFEATURE.NOCOLLISION)) return;
-            Collision = !noCollision;
+            DS2P.CGS.Collision = !noCollision;
         }
         public void SetDisableAI(bool disableAI)
         {
             if (MetaFeature.IsInactive(METAFEATURE.DISABLEAI)) return;
-            DisableAI = (byte)(disableAI ? 1 : 0);
+            DS2P.CGS.DisableAI = disableAI;
         }
         public void SetNoDeath(bool noDeath)
         {
@@ -1948,21 +1951,21 @@ Reverting to unhooking RIVA the slow way";
             get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.CurrPoise) : 0;
             set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.CurrPoise, value);
         }
-        public byte NetworkPhantomID
-        {
-            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
-            set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
-        }
-        public byte TeamType
-        {
-            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
-            //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
-        }
-        public byte CharType
-        {
-            get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
-            //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
-        }
+        //public byte NetworkPhantomID
+        //{
+        //    get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
+        //    set => PlayerType.WriteByte(Offsets.PlayerType.ChrNetworkPhantomId, value);
+        //}
+        //public byte TeamType
+        //{
+        //    get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.TeamType) : (byte)0;
+        //    //set => PlayerType.WriteByte(Offsets.PlayerType.TeamType, value);
+        //}
+        //public byte CharType
+        //{
+        //    get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
+        //    //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
+        //}
         public float[] Pos
         {
             get => new float[3] { PosX, PosY, PosZ };
@@ -2092,31 +2095,31 @@ Reverting to unhooking RIVA the slow way";
             get => Camera2.ReadSingle(Offsets.Camera.CamZ);
             set => Camera2.WriteSingle(Offsets.Camera.CamZ, value);
         }
-        public float Speed
-        {
-            set
-            {
-                if (!InGame) return;
-                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value);
-            }
-        }
-        public bool Gravity
-        {
-            get => InGame ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
-            set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
-        }
-        public bool Collision
-        {
-            get => InGame ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
-            set
-            {
-                if (Reading || !InGame) return;
-                if (value)
-                    NetworkPhantomID = 0;
-                else
-                    NetworkPhantomID = 18;
-            }
-        }
+        //public float Speed
+        //{
+        //    set
+        //    {
+        //        if (!InGame) return;
+        //        PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SpeedModifier, value);
+        //    }
+        //}
+        //public bool Gravity
+        //{
+        //    get => InGame ? !PlayerGravity.ReadBoolean(Offsets.Gravity.GravityFlag) : true;
+        //    set => PlayerGravity.WriteBoolean(Offsets.Gravity.GravityFlag, !value);
+        //}
+        //public bool Collision
+        //{
+        //    get => InGame ? NetworkPhantomID != 18 && NetworkPhantomID != 19 : true;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        if (value)
+        //            NetworkPhantomID = 0;
+        //        else
+        //            NetworkPhantomID = 18;
+        //    }
+        //}
         public ushort LastBonfireID
         {
             get => InGame ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;

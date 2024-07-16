@@ -1,6 +1,7 @@
 ﻿using DS2S_META.Utils.Offsets.OffsetClasses;
 using PropertyHook;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -147,5 +148,90 @@ namespace DS2S_META.Utils.DS2Hook
             Hook.Free(itemStruct);
         }
 
+        internal bool Warp64(ushort id, bool areadefault = false)
+        {
+            // Last resort elegant crash checks (this func needs all the following hooks)
+            if (DS2P.Func.SetWarpTargetFunc == null)
+                throw new MetaFeatureException("Warp64.SetWarpTargetFunc");
+            if (DS2P.MiscPtrs.WarpManager == null)
+                throw new MetaFeatureException("Warp64.WarpManager");
+            if (DS2P.Func.WarpFunc == null)
+                throw new MetaFeatureException("Warp64.WarpFunc");
+
+            // area default means warp to the 0,0 part of the map (like a wrong warp)
+            // areadefault = false is a normal "warp to bonfire"
+            int WARPAREADEFAULT = 2;
+            int WARPBONFIRE = 3;
+
+            var value = Hook.Allocate(sizeof(short));
+            Kernel32.WriteBytes(Hook.Handle, value, BitConverter.GetBytes(id));
+
+            var asm = (byte[])DS2SAssembly.BonfireWarp64.Clone();
+            var bytes = BitConverter.GetBytes(value.ToInt64());
+            Array.Copy(bytes, 0x0, asm, 0x9, bytes.Length);
+            bytes = BitConverter.GetBytes(DS2P.Func.SetWarpTargetFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0x0, asm, 0x21, bytes.Length);
+            bytes = BitConverter.GetBytes(DS2P.MiscPtrs.WarpManager.Resolve().ToInt64());
+            Array.Copy(bytes, 0x0, asm, 0x2E, bytes.Length);
+            bytes = BitConverter.GetBytes(DS2P.Func.WarpFunc.Resolve().ToInt64());
+            Array.Copy(bytes, 0x0, asm, 0x3B, bytes.Length);
+
+            int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
+            bytes = BitConverter.GetBytes(flag);
+            Array.Copy(bytes, 0x0, asm, 0x45, bytes.Length);
+
+            var warped = false;
+            if (!Hook.Multiplayer)
+            {
+                Hook.Execute(asm);
+                warped = true;
+            }
+
+            Hook.Free(value);
+            return warped;
+        }
+        internal bool Warp32(ushort bfid, bool areadefault = false)
+        {
+            // Last resort elegant crash checks (this func needs all the following hooks)
+            if (DS2P.Func.SetWarpTargetFunc == null)
+                throw new MetaFeatureException("Warp64.SetWarpTargetFunc");
+            if (DS2P.Core.BaseA == null)
+                throw new MetaFeatureException("Warp64.BaseA");
+            if (DS2P.Func.WarpFunc == null)
+                throw new MetaFeatureException("Warp64.WarpFunc");
+
+            // area default means warp to the 0,0 part of the map (like a wrong warp)
+            // areadefault = false is a normal "warp to bonfire"
+            int WARPAREADEFAULT = 2;
+            int WARPBONFIRE = 3;
+            int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
+
+            // Get assembly template
+            var asm = (byte[])DS2SAssembly.BonfireWarp32.Clone();
+
+            // Get variables for byte changes
+            var bfiD_bytes = BitConverter.GetBytes(bfid);
+            var pWarpTargetFunc = BitConverter.GetBytes(DS2P.Func.SetWarpTargetFunc.Resolve().ToInt32()); // same as warpman?
+            var warptypeflag = BitConverter.GetBytes(flag);
+            var pBaseA = BitConverter.GetBytes(DS2P.Core.BaseA.Resolve().ToInt32());
+            var pWarpFun = BitConverter.GetBytes(DS2P.Func.WarpFunc.Resolve().ToInt32());
+
+            // Change bytes
+            Array.Copy(bfiD_bytes, 0x0, asm, 0xB, bfiD_bytes.Length);
+            Array.Copy(pWarpTargetFunc, 0x0, asm, 0x14, pWarpTargetFunc.Length);
+            Array.Copy(warptypeflag, 0x0, asm, 0x1F, warptypeflag.Length);
+            Array.Copy(pBaseA, 0x0, asm, 0x24, pBaseA.Length);
+            Array.Copy(pWarpFun, 0x0, asm, 0x36, pWarpFun.Length);
+
+            // Safety checks
+            var warped = false;
+            if (Hook.Multiplayer)
+                return warped; // No warping in multiplayer!
+
+            // Execute:
+            Hook.Execute(asm);
+            warped = true;
+            return warped;
+        }
     }
 }

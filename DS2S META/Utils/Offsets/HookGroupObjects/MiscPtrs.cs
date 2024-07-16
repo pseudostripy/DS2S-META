@@ -13,6 +13,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         private DS2SHook Hook;
         public PHPointer? AvailableItemBag;
         public PHPointer? SpEffectCtrl;
+        public PHPointer? WarpManager;
         
 
         public MiscPtrs(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
@@ -21,6 +22,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
 
             AvailableItemBag = HGO.ValOrNull(PHPDict, "AvailableItemBag");
             SpEffectCtrl = HGO.ValOrNull(PHPDict, "SpEffectCtrl");
+            WarpManager = HGO.ValOrNull(PHPDict, "WarpManager");
         }
 
         

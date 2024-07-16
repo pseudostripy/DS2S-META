@@ -15,8 +15,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? ItemStruct2dDisplay;
         public PHPointer? GiveSouls;
         public PHPointer? RemoveSouls;
-        public PHPointer? SetWarpTargetFuncAoB;
-        public PHPointer? WarpFuncAoB;
+        public PHPointer? SetWarpTargetFunc;
+        public PHPointer? WarpFunc;
         public PHPointer? DisplayItemWindow;
         public PHPointer? ApplySpEffect;
         public PHPointer? ItemGiveWindow;
@@ -29,8 +29,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             ItemStruct2dDisplay = HGO.ValOrNull(PHPDict, "ItemStruct2dDisplayAoB");
             GiveSouls = HGO.ValOrNull(PHPDict, "GiveSoulsFuncAoB");
             RemoveSouls = HGO.ValOrNull(PHPDict, "RemoveSoulsFuncAoB");
-            SetWarpTargetFuncAoB = HGO.ValOrNull(PHPDict, "SetWarpTargetFuncAoB");
-            WarpFuncAoB = HGO.ValOrNull(PHPDict, "WarpFuncAoB");
+            SetWarpTargetFunc = HGO.ValOrNull(PHPDict, "SetWarpTargetFuncAoB");
+            WarpFunc = HGO.ValOrNull(PHPDict, "WarpFuncAoB");
             DisplayItemWindow = HGO.ValOrNull(PHPDict, "DisplayItemFuncAoB");
             ApplySpEffect = HGO.ValOrNull(PHPDict, "ApplySpEffectAoB");
             ItemGiveWindow = HGO.ValOrNull(PHPDict, "ItemGiveWindowPointer");

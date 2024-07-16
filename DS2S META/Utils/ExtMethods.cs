@@ -1,4 +1,5 @@
-﻿using PropertyHook;
+﻿using Octokit;
+using PropertyHook;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,5 +35,7 @@ namespace DS2S_META.Utils
             var pinfo = obj.GetType().GetProperty(propName) ?? throw new Exception($"Property {propName} cannot be found in class {obj.GetType()}");
             pinfo.SetValue(obj, value);
         }
+        
+        public static byte AsByte(this bool val) => val ? (byte)1 : (byte)0;
     }
 }

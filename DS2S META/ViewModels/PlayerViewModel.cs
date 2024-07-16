@@ -730,7 +730,7 @@ namespace DS2S_META.ViewModels
         {
             if (Hook?.Hooked != true)
                 return;
-            Hook.FastQuit = 6;
+            Hook.DS2P.CGS.FastQuit();
         }
         public void Warp()
         {

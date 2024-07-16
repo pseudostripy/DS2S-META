@@ -17,6 +17,7 @@ namespace DS2S_META.Utils.Offsets
         private readonly static List<DS2VER> ANYVER = new() { DS2VER.SOTFS_V103, DS2VER.SOTFS_V102, DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
         private readonly static List<DS2VER> ANYSOTFS = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
         private readonly static List<DS2VER> ANYVANILLA = new() { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
+        private readonly static List<DS2VER> ALLBUTOLDPATCH = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112};
         private readonly static List<DS2VER> V102 = new() { DS2VER.VANILLA_V102 };
         private readonly static List<DS2VER> V111 = new() { DS2VER.VANILLA_V111 };
         private readonly static List<DS2VER> V112 = new() { DS2VER.VANILLA_V112 };
@@ -166,7 +167,9 @@ namespace DS2S_META.Utils.Offsets
             new("DisableAI",    OFLD(S103, STRBASEA, 0x28, 0x18)),
             new("BIKP1Skip_Val1", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xe34)),
             new("BIKP1Skip_Val2", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52)),
-            new("ConnectionType", OFLD(ANYSOTFS, "BaseB", 0x38, 0x8))
+            new("ConnectionType", OFLD(ANYSOTFS, "BaseB", 0x38, 0x8)),
+            new("NetworkPhantomID", OFLD(ALLBUTOLDPATCH, "PlayerTypeOffset", 0x3C),
+                                    OFLD(V102, "PlayerTypeOffset", 0x38))
         };
 
         public static readonly List<LeafLocatorGroup> LeafGroupDefns = new()

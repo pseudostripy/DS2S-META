@@ -61,6 +61,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         public FuncListPHP Func;
         public MiscPtrs MiscPtrs;
         public CorePHP Core;
+        public CoreGameState CGS;
 
         // Use factory below to make object
         public DS2Ptrs(DS2SHook hook, DS2VER ver) 
@@ -73,6 +74,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             ScalingBonusHGO = new(hook, REDU.LeafGroups["BonusScalingTableGroup"]);
             Func = new(hook, REDU.PHPDict);
             MiscPtrs = new(hook, REDU.PHPDict);
+            CGS = new(hook, REDU.Leaves);
         }
 
         // Reflection Utility:
