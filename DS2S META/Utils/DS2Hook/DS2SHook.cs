@@ -587,7 +587,7 @@ Reverting to unhooking RIVA the slow way";
 
             PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
             //AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
-            ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
+            //ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
 
             PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
@@ -595,7 +595,7 @@ Reverting to unhooking RIVA the slow way";
             //PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
             PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
             //PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
-            SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
+            //SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
             PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
             EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
             BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
@@ -957,41 +957,41 @@ Reverting to unhooking RIVA the slow way";
             Free(value);
             return warped;
         }
-        internal bool Warp32(ushort bfid, bool areadefault = false)
-        {
-            // area default means warp to the 0,0 part of the map (like a wrong warp)
-            // areadefault = false is a normal "warp to bonfire"
-            int WARPAREADEFAULT = 2;
-            int WARPBONFIRE = 3;
-            int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
+        //internal bool Warp32(ushort bfid, bool areadefault = false)
+        //{
+        //    // area default means warp to the 0,0 part of the map (like a wrong warp)
+        //    // areadefault = false is a normal "warp to bonfire"
+        //    int WARPAREADEFAULT = 2;
+        //    int WARPBONFIRE = 3;
+        //    int flag = areadefault ? WARPAREADEFAULT : WARPBONFIRE;
 
-            // Get assembly template
-            var asm = (byte[])DS2SAssembly.BonfireWarp32.Clone();
+        //    // Get assembly template
+        //    var asm = (byte[])DS2SAssembly.BonfireWarp32.Clone();
 
-            // Get variables for byte changes
-            var bfiD_bytes = BitConverter.GetBytes(bfid);
-            var pWarpTargetFunc = BitConverter.GetBytes(SetWarpTargetFunc.Resolve().ToInt32()); // same as warpman?
-            var warptypeflag = BitConverter.GetBytes(flag);
-            var pBaseA = BitConverter.GetBytes(BaseA.Resolve().ToInt32());
-            var pWarpFun = BitConverter.GetBytes(WarpFunc.Resolve().ToInt32());
+        //    // Get variables for byte changes
+        //    var bfiD_bytes = BitConverter.GetBytes(bfid);
+        //    var pWarpTargetFunc = BitConverter.GetBytes(SetWarpTargetFunc.Resolve().ToInt32()); // same as warpman?
+        //    var warptypeflag = BitConverter.GetBytes(flag);
+        //    var pBaseA = BitConverter.GetBytes(BaseA.Resolve().ToInt32());
+        //    var pWarpFun = BitConverter.GetBytes(WarpFunc.Resolve().ToInt32());
 
-            // Change bytes
-            Array.Copy(bfiD_bytes, 0x0, asm, 0xB, bfiD_bytes.Length);
-            Array.Copy(pWarpTargetFunc, 0x0, asm, 0x14, pWarpTargetFunc.Length);
-            Array.Copy(warptypeflag, 0x0, asm, 0x1F, warptypeflag.Length);
-            Array.Copy(pBaseA, 0x0, asm, 0x24, pBaseA.Length);
-            Array.Copy(pWarpFun, 0x0, asm, 0x36, pWarpFun.Length);
+        //    // Change bytes
+        //    Array.Copy(bfiD_bytes, 0x0, asm, 0xB, bfiD_bytes.Length);
+        //    Array.Copy(pWarpTargetFunc, 0x0, asm, 0x14, pWarpTargetFunc.Length);
+        //    Array.Copy(warptypeflag, 0x0, asm, 0x1F, warptypeflag.Length);
+        //    Array.Copy(pBaseA, 0x0, asm, 0x24, pBaseA.Length);
+        //    Array.Copy(pWarpFun, 0x0, asm, 0x36, pWarpFun.Length);
 
-            // Safety checks
-            var warped = false;
-            if (Multiplayer)
-                return warped; // No warping in multiplayer!
+        //    // Safety checks
+        //    var warped = false;
+        //    if (Multiplayer)
+        //        return warped; // No warping in multiplayer!
 
-            // Execute:
-            Execute(asm);
-            warped = true;
-            return warped;
-        }
+        //    // Execute:
+        //    Execute(asm);
+        //    warped = true;
+        //    return warped;
+        //}
 
         public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
         internal bool BIKP1Skip(bool enable, bool doLoad)
