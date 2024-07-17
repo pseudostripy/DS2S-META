@@ -48,6 +48,11 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYSOTFS, new RelInstructionAOBCL("48 8B 0D ? ? ? ? 48 85 C9 74 ? 48 8B 49 18 E8",3,7,0)),
                 new(ANYVANILLA, new RelModuleAOBCL("89 45 98 A1 ? ? ? ? 89 7D 9C 89 BD ? ? ? ? 85 C0",3))
             }),
+            new("BaseAOldBBJMod", new List<LocatorDefn>()
+            {
+                new(S102, new RelInstructionAOBCL("49 BA ? ? ? ? ? ? ? ? 41 FF E2 90 74 2E",3,7,0)),
+                new(V111, new RelModuleAOBCL("8b 48 6c 53 8b 58 70 8b 40 68 89 45 0c a1 f4 93 54 01 56",4))
+            }),
 
             new("ItemGiveFuncAoB", new List<LocatorDefn>()
             {

@@ -33,5 +33,15 @@ namespace DS2S_META
         {
             Window.Close();
         }
+
+        public static void ShowMetaWarning(string warnstr)
+        {
+            Application.Current.Dispatcher.Invoke(() => ShowMetaWarnWindow(warnstr));
+        }
+        private static void ShowMetaWarnWindow(string warnstr)
+        {
+            var mwWindow = new MetaWarningWindow(warnstr);
+            mwWindow.ShowDialog();
+        }
     }
 }

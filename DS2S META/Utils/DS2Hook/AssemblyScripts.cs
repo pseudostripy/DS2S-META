@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.Offsets.OffsetClasses;
+﻿using DS2S_META.Utils.Offsets;
+using DS2S_META.Utils.Offsets.OffsetClasses;
 using PropertyHook;
 using System;
 using System.Buffers.Text;
@@ -181,7 +182,7 @@ namespace DS2S_META.Utils.DS2Hook
             Array.Copy(bytes, 0x0, asm, 0x45, bytes.Length);
 
             var warped = false;
-            if (!Hook.Multiplayer)
+            if (!Hook.DS2P.CGS.Multiplayer)
             {
                 Hook.Execute(asm);
                 warped = true;
@@ -225,7 +226,7 @@ namespace DS2S_META.Utils.DS2Hook
 
             // Safety checks
             var warped = false;
-            if (Hook.Multiplayer)
+            if (Hook.DS2P.CGS.Multiplayer)
                 return warped; // No warping in multiplayer!
 
             // Execute:
@@ -233,5 +234,189 @@ namespace DS2S_META.Utils.DS2Hook
             warped = true;
             return warped;
         }
+
+        public void UpdateSoulCount64(int souls)
+        {
+            // Check both as they all come through here
+            if (DS2P.Func.GiveSouls == null)
+                throw new MetaFeatureException("GiveSouls64");
+            if (DS2P.Func.RemoveSouls == null)
+                throw new MetaFeatureException("RemoveSouls64");
+
+            // Assembly template
+            var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
+
+            // Setup dynamic vars:
+            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
+            GetAddRemSoulFunc(souls, out byte[] numSouls, out byte[] funcChangeSouls);
+
+            // Update assembly & execute:
+            Array.Copy(playerParam, 0, asm, 0x6, playerParam.Length);
+            Array.Copy(numSouls, 0, asm, 0x11, numSouls.Length);
+            Array.Copy(funcChangeSouls, 0, asm, 0x17, funcChangeSouls.Length);
+            Hook.Execute(asm);
+        }
+        public void UpdateSoulCount32(int souls_input)
+        {
+            // Check both as they all come through here
+            if (DS2P.Func.GiveSouls == null)
+                throw new MetaFeatureException("GiveSouls32");
+            if (DS2P.Func.RemoveSouls == null)
+                throw new MetaFeatureException("RemoveSouls32");
+
+            // Assembly template
+            var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
+
+            // Setup dynamic vars:
+            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt32());
+            GetAddRemSoulFunc(souls_input, out byte[] numSouls, out byte[] funcChangeSouls);
+
+            // Update assembly & execute:
+            Array.Copy(playerParam, 0, asm, 0x4, playerParam.Length);
+            Array.Copy(numSouls, 0, asm, 0x9, numSouls.Length);
+            Array.Copy(funcChangeSouls, 0, asm, 0xF, funcChangeSouls.Length);
+            Hook.Execute(asm);
+        }
+        private void GetAddRemSoulFunc(int inSouls, out byte[] outSouls, out byte[] funcChangeSouls)
+        {
+            bool isAdd = inSouls >= 0;
+            if (isAdd)
+            {
+                outSouls = BitConverter.GetBytes(inSouls); // AddSouls
+                if (Is64Bit)
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt64());
+                else
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt32());
+            }
+            else
+            {
+                int new_souls = -inSouls; // needs to "subtract a positive number"
+                outSouls = BitConverter.GetBytes(new_souls); // SubractSouls
+                if (Is64Bit)
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt64());
+                else
+                    funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt32());
+            }
+        }
+
+
+        internal void ApplySpecialEffect64(int spEffect)
+        {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect64.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect64.SpEffectCtrl");
+
+            // Get assembly template
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect64.Clone();
+
+            // Prepare inputs:
+            var effectStruct = Hook.Allocate(0x16);
+            Kernel32.WriteBytes(Hook.Handle, effectStruct, BitConverter.GetBytes(spEffect));
+            Kernel32.WriteBytes(Hook.Handle, effectStruct + 0x4, BitConverter.GetBytes(0x1));
+            Kernel32.WriteBytes(Hook.Handle, effectStruct + 0xC, BitConverter.GetBytes(0x219));
+
+
+            var unk = Hook.Allocate(sizeof(float));
+            Kernel32.WriteBytes(Hook.Handle, unk, BitConverter.GetBytes(-1f));
+            var float_m1 = BitConverter.GetBytes(unk.ToInt64());
+            Array.Copy(float_m1, 0x0, asm, 0x1A, float_m1.Length);
+
+            var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt64());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt64());
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt64());
+
+            // Update assembly with variables:
+            Array.Copy(ptrEffectStruct, 0x0, asm, 0x6, ptrEffectStruct.Length);
+            Array.Copy(SpEfCtrl, 0x0, asm, 0x10, SpEfCtrl.Length);
+            Array.Copy(ptrApplySpEf, 0x0, asm, 0x2E, ptrApplySpEf.Length);
+
+            // Run and tidy-up
+            Hook.Execute(asm);
+            Hook.Free(effectStruct);
+            Hook.Free(unk);
+        }
+
+        internal void ApplySpecialEffect32(int spEffectID)
+        {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect32CP.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect32CP.SpEffectCtrl");
+
+            // Assembly template
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect32.Clone();
+
+            //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
+            var spEfId = BitConverter.GetBytes(spEffectID);
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt32());
+
+            var unk = Hook.Allocate(sizeof(float));
+            Kernel32.WriteBytes(Hook.Handle, unk, BitConverter.GetBytes(-1f));
+            var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
+
+
+            // Update assembly with variables:
+            Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
+            Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
+            Array.Copy(SpEfCtrl, 0x0, asm, 0x33, SpEfCtrl.Length);
+            Array.Copy(ptrApplySpEf, 0x0, asm, 0x38, ptrApplySpEf.Length);
+
+            // Run and tidy-up
+            Hook.Execute(asm);
+            Hook.Free(unk);
+        }
+
+        internal void ApplySpecialEffect32OP(int spEffectID)
+        {
+            // Last resort graceful failure
+            if (DS2P.Func.ApplySpEffect == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.ApplySpEffect");
+            if (DS2P.MiscPtrs.SpEffectCtrl == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.SpEffectCtrl");
+            if (DS2P.Core.BaseA == null)
+                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.BaseA");
+
+            // Assembly template
+            var asm = (byte[])DS2SAssembly.ApplySpecialEffect32OP.Clone();
+
+            //var ptrEffectStruct = BitConverter.GetBytes(effectStruct.ToInt32());
+            var spEfId = BitConverter.GetBytes(spEffectID);
+            var ptrApplySpEf = BitConverter.GetBytes(DS2P.Func.ApplySpEffect.Resolve().ToInt32());
+            var SpEfCtrl = BitConverter.GetBytes(DS2P.MiscPtrs.SpEffectCtrl.Resolve().ToInt32());
+            var pbasea = BitConverter.GetBytes(DS2P.Core.BaseA.Resolve().ToInt32());
+
+
+            var unk = Hook.Allocate(sizeof(float));
+            Kernel32.WriteBytes(Hook.Handle, unk, BitConverter.GetBytes(-1f));
+            var addr_float_m1 = BitConverter.GetBytes(unk.ToInt32());
+
+            // Update assembly with variables:
+            // Adjust esp offsets?
+            int z = 0x8;
+            byte[] Z = new byte[1] { (byte)z };
+            byte[] Z4 = new byte[1] { (byte)(z + 4) };
+            byte[] Z8 = new byte[1] { (byte)(z + 8) };
+            byte[] ZC = new byte[1] { (byte)(z + 0xC) };
+            Array.Copy(Z, 0x0, asm, 0x8, Z.Length);
+            Array.Copy(Z4, 0x0, asm, 0x10, Z4.Length);
+            Array.Copy(Z8, 0x0, asm, 0x23, Z8.Length);
+            Array.Copy(ZC, 0x0, asm, 0x27, ZC.Length);
+            Array.Copy(Z, 0x0, asm, 0x2F, Z.Length); // &struct
+
+
+            Array.Copy(spEfId, 0x0, asm, 0x9, spEfId.Length);
+            Array.Copy(addr_float_m1, 0x0, asm, 0x16, addr_float_m1.Length);
+            Array.Copy(SpEfCtrl, 0x0, asm, 0x34, SpEfCtrl.Length);
+            Array.Copy(ptrApplySpEf, 0x0, asm, 0x39, ptrApplySpEf.Length);
+
+            // Run and tidy-up
+            Hook.Execute(asm);
+            Hook.Free(unk);
+        }
+
     }
 }

@@ -62,6 +62,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         public MiscPtrs MiscPtrs;
         public CorePHP Core;
         public CoreGameState CGS;
+        public BonfiresHGO BonfiresHGO;
 
         // Use factory below to make object
         public DS2Ptrs(DS2SHook hook, DS2VER ver) 
@@ -75,6 +76,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             Func = new(hook, REDU.PHPDict);
             MiscPtrs = new(hook, REDU.PHPDict);
             CGS = new(hook, REDU.Leaves);
+            BonfiresHGO = new(hook, REDU.LeafGroups["BonfireLevelsGroup"]);
         }
 
         // Reflection Utility:

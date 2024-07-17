@@ -66,6 +66,18 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
                 Hook.RaiseGameStateChange(oldstate, value);
             }
         }
+        public string Online
+        {
+            get
+            {
+                if (!Hook.Hooked) return "Unhooked";
+                if (!InGame) return "";
+                if (PHConnectionType == null) return "unknown";
+                return ConnectionType > 0 ? "YES" : "NO";
+            }
+        }
+        public int ConnectionType => PHConnectionType?.ReadInt32() ?? 0;
+
 
         // utility shorthand wrappers
         public bool InGame => GameState == (int)GAMESTATE.LOADEDINGAME;
@@ -73,6 +85,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public bool IsLoading => LoadingState;
         private const byte FORCEQUIT = 6;
         public void FastQuit() => PHForceQuit?.WriteByte(FORCEQUIT);
+        public bool Multiplayer => !InGame || ConnectionType > 1;
 
         // REDataDefinitionInterfaces
         private PHLeaf? PHGameState;
@@ -81,6 +94,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         private PHLeaf? PHForceQuit;
         private PHLeaf? PHDisableAI;
         private PHLeaf? PHNetworkPhantomID;
+        private PHLeaf? PHConnectionType;
 
         public CoreGameState(DS2SHook hook, Dictionary<string, PHLeaf?> leafdict) : base(hook)
         {
@@ -91,6 +105,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             PHDisableAI = leafdict["DisableAI"];
             PHNoGravity = leafdict["Gravity"];
             PHNetworkPhantomID = leafdict["NetworkPhantomID"];
+            PHConnectionType = leafdict["ConnectionType"];
         }
 
         public override void UpdateProperties()
@@ -101,6 +116,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             OnPropertyChanged(nameof(InMainMenu));
             OnPropertyChanged(nameof(Gravity));
             OnPropertyChanged(nameof(Collision));
+            OnPropertyChanged(nameof(Online));
         }
         private void RefreshGameState()
         {
