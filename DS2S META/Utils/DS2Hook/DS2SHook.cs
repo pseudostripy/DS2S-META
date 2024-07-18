@@ -123,7 +123,7 @@ namespace DS2S_META.Utils.DS2Hook
 
         private PHPointer PlayerName;
         //private PHPointer AvailableItemBag;
-        private PHPointer ItemGiveWindow;
+        //private PHPointer ItemGiveWindow;
         private PHPointer PlayerBaseMisc;
         private PHPointer PlayerCtrl;
         private PHPointer PlayerPosition;
@@ -589,19 +589,19 @@ namespace DS2S_META.Utils.DS2Hook
             Core? OC = Offsets.Core; // shorthand
             if (OC == null) return;
 
-            PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
+            //PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
             //AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             //ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
 
-            PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
+            //PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
             PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
             PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
             //PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
-            PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
+            //PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
             //PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
             //SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
             PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
-            EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
+            //EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
             //BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
             //WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);
             //NetSvrBloodstainManager = CreateChildPointer(BaseA, OC.NetSvrBloodstainManagerOffset1, OC.NetSvrBloodstainManagerOffset2, OC.NetSvrBloodstainManagerOffset3);
@@ -830,20 +830,20 @@ namespace DS2S_META.Utils.DS2Hook
         public void UpdateCovenantProperties()
         {
             DS2P.CovenantHGO.UpdateProperties();
-            OnPropertyChanged(nameof(CurrentCovenant));
+            //OnPropertyChanged(nameof(CurrentCovenant));
         }
         public void UpdateInternalProperties()
         {
-            OnPropertyChanged(nameof(Head));
-            OnPropertyChanged(nameof(Chest));
-            OnPropertyChanged(nameof(Arms));
-            OnPropertyChanged(nameof(Legs));
-            OnPropertyChanged(nameof(RightHand1));
-            OnPropertyChanged(nameof(RightHand2));
-            OnPropertyChanged(nameof(RightHand3));
-            OnPropertyChanged(nameof(LeftHand1));
-            OnPropertyChanged(nameof(LeftHand2));
-            OnPropertyChanged(nameof(LeftHand3));
+            //OnPropertyChanged(nameof(Head));
+            //OnPropertyChanged(nameof(Chest));
+            //OnPropertyChanged(nameof(Arms));
+            //OnPropertyChanged(nameof(Legs));
+            //OnPropertyChanged(nameof(RightHand1));
+            //OnPropertyChanged(nameof(RightHand2));
+            //OnPropertyChanged(nameof(RightHand3));
+            //OnPropertyChanged(nameof(LeftHand1));
+            //OnPropertyChanged(nameof(LeftHand2));
+            //OnPropertyChanged(nameof(LeftHand3));
         }
 
 
@@ -875,14 +875,14 @@ namespace DS2S_META.Utils.DS2Hook
             // TO TIDY with bonfire objects
 
             // Handle betwixt start warps:
-            bool PrevBonfireSet = LastBonfireAreaID != 0 && LastBonfireID != 0;
+            bool PrevBonfireSet = DS2P.BonfiresHGO.LastBonfireAreaID != 0 && DS2P.BonfiresHGO.LastBonfireID != 0;
             if (PrevBonfireSet)
-                return Warp(LastBonfireID);
+                return Warp((ushort)DS2P.BonfiresHGO.LastBonfireID);
 
             // Handle first area warp:
             int BETWIXTAREA = 167903232;
             ushort BETWIXTBFID = 2650;
-            LastBonfireAreaID = BETWIXTAREA;
+            DS2P.BonfiresHGO.LastBonfireAreaID = BETWIXTAREA;
             return Warp(BETWIXTBFID, true);
         }
 
@@ -890,7 +890,7 @@ namespace DS2S_META.Utils.DS2Hook
         internal bool WarpBonfire(DS2SBonfire toBonfire, bool bWrongWarp, bool restAfterWarp) // Events one day surely
         {
             if (toBonfire == null) return false;
-            LastBonfireAreaID = toBonfire.AreaID;
+            DS2P.BonfiresHGO.LastBonfireAreaID = toBonfire.AreaID;
             var wopt = restAfterWarp ? WARPOPTIONS.WARPREST : WARPOPTIONS.WARPONLY;
             var bfid = toBonfire.ID != 0 ? toBonfire.ID : DS2Resource.GetBonfireByName("Fire Keepers' Dwelling").ID; // fix _Game Start
             return Warp(bfid, bWrongWarp, wopt);
@@ -1643,8 +1643,8 @@ namespace DS2S_META.Utils.DS2Hook
 
             // to tidy:
             DS2SBonfire majula = new(168034304, 4650, "The Far Fire");
-            LastBonfireID = majula.ID;
-            LastBonfireAreaID = majula.AreaID;
+            DS2P.BonfiresHGO.LastBonfireID = majula.ID;
+            DS2P.BonfiresHGO.LastBonfireAreaID = majula.AreaID;
             Warp(majula.ID, false, WARPOPTIONS.WARPREST);
         }
 
@@ -1762,15 +1762,15 @@ namespace DS2S_META.Utils.DS2Hook
         //        phDisableAI.WriteByte(Offsets.DisableAI[^1], value);
         //    }
         //}
-        public int Health
-        {
-            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
-            }
-        }
+        //public int Health
+        //{
+        //    get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HP) : 0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HP, value);
+        //    }
+        //}
 
         // Feature Wrappers
         public void SetNoGravity(bool noGravity)
@@ -1815,45 +1815,45 @@ namespace DS2S_META.Utils.DS2Hook
         }
 
 
-        public int HealthMax
-        {
-            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
-            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
-        }
-        public int HealthCap
-        {
-            get
-            {
-                if (!InGame) return 0;
-                var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
-                return cap < HealthMax ? cap : HealthMax;
-            }
-            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
-        }
-        public int HealthMin
-        {
-            get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMin) : 0;
-            set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, value);
-        }
-        public float Stamina
-        {
-            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
-            }
-        }
-        public float MaxStamina
-        {
-            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
-            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
-        }
-        public float CurrPoise
-        {
-            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.CurrPoise) : 0;
-            set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.CurrPoise, value);
-        }
+        //public int HealthMax
+        //{
+        //    get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMax) : 0;
+        //    set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMax, value);
+        //}
+        //public int HealthCap
+        //{
+        //    get
+        //    {
+        //        if (!InGame) return 0;
+        //        var cap = PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPCap);
+        //        return cap < HealthMax ? cap : HealthMax;
+        //    }
+        //    set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPCap, value);
+        //}
+        //public int HealthMin
+        //{
+        //    get => InGame ? PlayerCtrl.ReadInt32(Offsets.PlayerCtrl.HPMin) : 0;
+        //    set => PlayerCtrl.WriteInt32(Offsets.PlayerCtrl.HPMin, value);
+        //}
+        //public float Stamina
+        //{
+        //    get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SP) : 0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SP, value);
+        //    }
+        //}
+        //public float MaxStamina
+        //{
+        //    get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMax) : 0;
+        //    set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMax, value);
+        //}
+        //public float CurrPoise
+        //{
+        //    get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.CurrPoise) : 0;
+        //    set => PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.CurrPoise, value);
+        //}
         //public byte NetworkPhantomID
         //{
         //    get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.ChrNetworkPhantomId) : (byte)0;
@@ -1869,108 +1869,108 @@ namespace DS2S_META.Utils.DS2Hook
         //    get => InGame ? PlayerType.ReadByte(Offsets.PlayerType.CharType) : (byte)0;
         //    //set => PlayerType.WriteByte(Offsets.PlayerType.CharType, value);
         //}
-        public float[] Pos
-        {
-            get => new float[3] { PosX, PosY, PosZ };
-            set
-            {
-                PosX = value[0];
-                PosY = value[1];
-                PosZ = value[2];
-            }
-        }
-        public float PosX
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
-            }
-        }
-        public float PosY
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
-            }
-        }
-        public float PosZ
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
-            }
-        }
-        public float[] Ang
-        {
-            get => new float[3] { AngX, AngY, AngZ };
-            set
-            {
-                AngX = value[0];
-                AngY = value[1];
-                AngZ = value[2];
-            }
-        }
-        private float AngX
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
-        }
-        private float AngY
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
-        }
-        private float AngZ
-        {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
-        }
-        public float[] StablePos
-        {
-            get => new float[3] { StableX, StableY, StableZ };
-            set
-            {
-                StableX = value[0];
-                StableY = value[1];
-                StableZ = value[2];
-            }
-        }
-        private float StableX
-        {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
-            }
-        }
-        private float StableY
-        {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
-            }
-        }
-        private float StableZ
-        {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
-            set
-            {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
-            }
-        }
+        //public float[] Pos
+        //{
+        //    get => new float[3] { PosX, PosY, PosZ };
+        //    set
+        //    {
+        //        PosX = value[0];
+        //        PosY = value[1];
+        //        PosZ = value[2];
+        //    }
+        //}
+        //public float PosX
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
+        //    }
+        //}
+        //public float PosY
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
+        //    }
+        //}
+        //public float PosZ
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
+        //    }
+        //}
+        //public float[] Ang
+        //{
+        //    get => new float[3] { AngX, AngY, AngZ };
+        //    set
+        //    {
+        //        AngX = value[0];
+        //        AngY = value[1];
+        //        AngZ = value[2];
+        //    }
+        //}
+        //private float AngX
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
+        //    set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
+        //}
+        //private float AngY
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
+        //    set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
+        //}
+        //private float AngZ
+        //{
+        //    get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
+        //    set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
+        //}
+        //public float[] StablePos
+        //{
+        //    get => new float[3] { StableX, StableY, StableZ };
+        //    set
+        //    {
+        //        StableX = value[0];
+        //        StableY = value[1];
+        //        StableZ = value[2];
+        //    }
+        //}
+        //private float StableX
+        //{
+        //    get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
+        //    set
+        //    {
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
+        //    }
+        //}
+        //private float StableY
+        //{
+        //    get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
+        //    set
+        //    {
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
+        //    }
+        //}
+        //private float StableZ
+        //{
+        //    get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
+        //    set
+        //    {
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
+        //        PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
+        //    }
+        //}
         //public float BloodstainX
         //{
         //    get => NetSvrBloodstainManager.ReadSingle(Offsets.NetSvrBloodstainManager.BloodstainX);
@@ -2024,16 +2024,16 @@ namespace DS2S_META.Utils.DS2Hook
         //            NetworkPhantomID = 18;
         //    }
         //}
-        public ushort LastBonfireID
-        {
-            get => InGame ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
-            set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
-        }
-        public int LastBonfireAreaID
-        {
-            get => InGame ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
-            set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
-        }
+        //public ushort LastBonfireID
+        //{
+        //    get => InGame ? EventManager.ReadUInt16(Offsets.Bonfire.LastSetBonfire) : (ushort)0;
+        //    set => EventManager.WriteUInt16(Offsets.Bonfire.LastSetBonfire, value);
+        //}
+        //public int LastBonfireAreaID
+        //{
+        //    get => InGame ? EventManager.ReadInt32(Offsets.Bonfire.LastSetBonfireAreaID) : 0;
+        //    set => EventManager.WriteInt32(Offsets.Bonfire.LastSetBonfireAreaID, value);
+        //}
         //public bool Multiplayer => !InGame || ConnectionType > 1;
         //public string Online
         //{
@@ -2221,179 +2221,179 @@ namespace DS2S_META.Utils.DS2Hook
         //public byte GrandCathedral { get => ReadBfLevel(Bfs.GrandCathedral); set { WriteBfLevel(Bfs.GrandCathedral, value); } }
 
         // Equipped items:
-        private string PlayerCtrlToName(int? offset)
-        {
-            if (offset == null || !InGame)
-                return string.Empty;
-            return PlayerCtrl.ReadInt32((int)offset).AsMetaName();
-        }
-        //
-        public string Head => PlayerCtrlToName(Offsets?.PlayerEquipment.Head);
-        public string Chest => PlayerCtrlToName(Offsets?.PlayerEquipment.Chest);
-        public string Arms => PlayerCtrlToName(Offsets?.PlayerEquipment.Arms);
-        public string Legs => PlayerCtrlToName(Offsets?.PlayerEquipment.Legs);
-        public string RightHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand1);
-        public string RightHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand2);
-        public string RightHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand3);
-        public string LeftHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand1);
-        public string LeftHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand2);
-        public string LeftHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand3);
+        //private string PlayerCtrlToName(int? offset)
+        //{
+        //    if (offset == null || !InGame)
+        //        return string.Empty;
+        //    return PlayerCtrl.ReadInt32((int)offset).AsMetaName();
+        //}
+        ////
+        //public string Head => PlayerCtrlToName(Offsets?.PlayerEquipment.Head);
+        //public string Chest => PlayerCtrlToName(Offsets?.PlayerEquipment.Chest);
+        //public string Arms => PlayerCtrlToName(Offsets?.PlayerEquipment.Arms);
+        //public string Legs => PlayerCtrlToName(Offsets?.PlayerEquipment.Legs);
+        //public string RightHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand1);
+        //public string RightHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand2);
+        //public string RightHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.RightHand3);
+        //public string LeftHand1 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand1);
+        //public string LeftHand2 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand2);
+        //public string LeftHand3 => PlayerCtrlToName(Offsets?.PlayerEquipment.LeftHand3);
 
 
-        public byte CurrentCovenant
-        {
-            get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
-            }
-        }
+        //public byte CurrentCovenant
+        //{
+        //    get => InGame ? PlayerParam.ReadByte(Offsets.Covenants.CurrentCovenant) : (byte)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteByte(Offsets.Covenants.CurrentCovenant, value);
+        //    }
+        //}
 
-        public string CharacterName
-        {
-            get => InGame ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
-            set
-            {
-                if (Reading || !InGame) return;
-                if (CharacterName == value) return;
-                PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
-                OnPropertyChanged(nameof(CharacterName));
-            }
-        }
-        public byte Class
-        {
-            get => InGame ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
-            }
-        }
-        public int SoulLevel
-        {
-            get => InGame ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
-            set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
-        }
-        public int SoulMemory
-        {
-            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
-            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
-        }
-        public int SoulMemory2
-        {
-            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
-            set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
-        }
-        public byte SinnerLevel
-        {
-            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
-        }
-        public byte SinnerPoints
-        {
-            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
-        }
-        public byte HollowLevel
-        {
-            get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
-            set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
-        }
-        public int Souls
-        {
-            get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
-        }
-        public short Vigor
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Endurance
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.END, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Vitality
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Attunement
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Strength
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Dexterity
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Adaptability
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Intelligence
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
-                UpdateSoulLevel();
-            }
-        }
-        public short Faith
-        {
-            get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
-            set
-            {
-                if (Reading || !InGame) return;
-                PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
-                UpdateSoulLevel();
-            }
-        }
-        
+        //public string CharacterName
+        //{
+        //    get => InGame ? PlayerName.ReadString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22) : "";
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        if (CharacterName == value) return;
+        //        PlayerName.WriteString(Offsets.PlayerName.Name, Encoding.Unicode, 0x22, value);
+        //        OnPropertyChanged(nameof(CharacterName));
+        //    }
+        //}
+        //public byte Class
+        //{
+        //    get => InGame ? PlayerBaseMisc.ReadByte(Offsets.PlayerBaseMisc.Class) : (byte)255;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerBaseMisc.WriteByte(Offsets.PlayerBaseMisc.Class, value);
+        //    }
+        //}
+        //public int SoulLevel
+        //{
+        //    get => InGame ? PlayerParam.ReadInt32(Offsets.Attributes.SoulLevel) : 0;
+        //    set => PlayerParam.WriteInt32(Offsets.Attributes.SoulLevel, value);
+        //}
+        //public int SoulMemory
+        //{
+        //    get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory) : 0;
+        //    set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory, value);
+        //}
+        //public int SoulMemory2
+        //{
+        //    get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.SoulMemory2) : 0;
+        //    set => PlayerParam.WriteInt32(Offsets.PlayerParam.SoulMemory2, value);
+        //}
+        //public byte SinnerLevel
+        //{
+        //    get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerLevel) : (byte)0;
+        //    set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerLevel, value);
+        //}
+        //public byte SinnerPoints
+        //{
+        //    get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.SinnerPoints) : (byte)0;
+        //    set => PlayerParam.WriteByte(Offsets.PlayerParam.SinnerPoints, value);
+        //}
+        //public byte HollowLevel
+        //{
+        //    get => InGame ? PlayerParam.ReadByte(Offsets.PlayerParam.HollowLevel) : (byte)0;
+        //    set => PlayerParam.WriteByte(Offsets.PlayerParam.HollowLevel, value);
+        //}
+        //public int Souls
+        //{
+        //    get => InGame ? PlayerParam.ReadInt32(Offsets.PlayerParam.Souls) : 0;
+        //}
+        //public short Vigor
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VGR) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.VGR, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Endurance
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.END) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.END, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Vitality
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.VIT) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.VIT, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Attunement
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ATN) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.ATN, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Strength
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.STR) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.STR, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Dexterity
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.DEX) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.DEX, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Adaptability
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.ADP) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.ADP, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Intelligence
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.INT) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.INT, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+        //public short Faith
+        //{
+        //    get => InGame ? PlayerParam.ReadInt16(Offsets.Attributes.FTH) : (short)0;
+        //    set
+        //    {
+        //        if (Reading || !InGame) return;
+        //        PlayerParam.WriteInt16(Offsets.Attributes.FTH, value);
+        //        UpdateSoulLevel();
+        //    }
+        //}
+
     }
 }

@@ -226,4 +226,30 @@ namespace DS2S_META
         MAINMENU = 0xa,
     }
 
+    public enum ATTR
+    {
+        VGR,
+        END,
+        VIT,
+        ATN,
+        STR,
+        DEX,
+        ADP,
+        INT,
+        FTH,
+    }
+
+    public enum EQUIP
+    {
+        LEGS,
+        ARMS,
+        CHEST,
+        HEAD,
+        RIGHTHAND1,
+        RIGHTHAND2,
+        RIGHTHAND3,
+        LEFTHAND1,
+        LEFTHAND2,
+        LEFTHAND3,
+    }
 }

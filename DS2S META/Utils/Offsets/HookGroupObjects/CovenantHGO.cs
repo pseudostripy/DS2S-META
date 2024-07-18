@@ -29,22 +29,28 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public Dictionary<COV, PHLeaf?> DiscovDict = new();
         public Dictionary<COV, PHLeaf?> RankDict = new();
         public Dictionary<COV, PHLeaf?> ProgressDict = new();
+        public PHLeaf? PHCurrentCovenant;
 
-        public CovenantHGO(DS2SHook hook, Dictionary<string, PHLeaf?> ptrs) : base(hook)
+        public CovenantHGO(DS2SHook hook, Dictionary<string, PHLeaf?> covGroup, Dictionary<string, PHLeaf?> leafdict) : base(hook)
         {
             foreach (var kvp in REDataNames)
             {
-                ptrs.TryGetValue($"{kvp.Value}Discovered", out var phleaf);
+                covGroup.TryGetValue($"{kvp.Value}Discovered", out var phleaf);
                 DiscovDict.Add(kvp.Key, phleaf);
-                ptrs.TryGetValue($"{kvp.Value}Rank", out var phleafrank);
+                covGroup.TryGetValue($"{kvp.Value}Rank", out var phleafrank);
                 RankDict.Add(kvp.Key, phleafrank);
-                ptrs.TryGetValue($"{kvp.Value}Progress", out var phleafprog);
+                covGroup.TryGetValue($"{kvp.Value}Progress", out var phleafprog);
                 ProgressDict.Add(kvp.Key, phleafprog);
             }
+            PHCurrentCovenant = leafdict["CurrentCovenant"];
         }
 
-        
-        
+        public byte CurrentCovenant
+        {
+            get => PHCurrentCovenant?.ReadByte() ?? 0;
+            set => PHCurrentCovenant?.WriteByte(value);
+        }
+
         // Helpers:
         public bool GetCovenantDiscov(COV id) => DiscovDict[id]?.ReadBoolean() ?? false;
         public byte GetCovenantRank(COV id) => RankDict[id]?.ReadByte() ?? 0;
@@ -66,6 +72,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         {
             // update dictionary of data from game
             GameCovenantData = REDataNames.ToDictionary(kvp => kvp.Key, kvp => GetCovenantData(kvp.Key));
+            OnPropertyChanged(nameof(CurrentCovenant));
         }
     }
 }

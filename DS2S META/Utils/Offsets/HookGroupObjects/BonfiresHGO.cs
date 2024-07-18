@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace DS2S_META.Utils.Offsets.HookGroupObjects
@@ -13,13 +14,17 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
     {
         // Direct Hook properties
         private readonly Dictionary<string, PHLeaf?> PHBonfires;
+        private readonly PHLeaf? PHLastBonfireId;
+        private readonly PHLeaf? PHLastBonfireAreaId;
 
         // Interface dictionaries
         public Dictionary<string, int> BonfireLevels { get; set; } = new();
 
-        public BonfiresHGO(DS2SHook hook, Dictionary<string, PHLeaf?> ptrs) : base(hook)
+        public BonfiresHGO(DS2SHook hook, Dictionary<string, PHLeaf?> bfLvlsGroup, Dictionary<string, PHLeaf?> lastbfGroup) : base(hook)
         {
-            PHBonfires = ptrs;
+            PHBonfires = bfLvlsGroup;
+            PHLastBonfireId = lastbfGroup["LastSetBonfire"];
+            PHLastBonfireAreaId = lastbfGroup["LastSetBonfireAreaID"];
         }
         public Dictionary<int, string> BfNames = new()
         {
@@ -102,8 +107,17 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             { 37670, "GrandCathedral" },
         };
 
-        
-        
+        public int LastBonfireID
+        {
+            get => PHLastBonfireId?.ReadUInt16() ?? 0;
+            set => PHLastBonfireId?.WriteUInt16((ushort)value);
+        }
+        public int LastBonfireAreaID
+        {
+            get => PHLastBonfireAreaId?.ReadInt32() ?? 0;
+            set => PHLastBonfireId?.WriteInt32(value);
+        }
+
         // Helpers:
         public int GetBonfireLevel(string bfname)
         {
@@ -125,6 +139,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         {
             // update dictionary of data from game
             BonfireLevels = PHBonfires.ToDictionary(kvp => kvp.Key, kvp => GetBonfireLevel(kvp.Key));
+            OnPropertyChanged(nameof(LastBonfireID));
+            OnPropertyChanged(nameof(LastBonfireAreaID));
         }
     }
 }

@@ -174,7 +174,13 @@ namespace DS2S_META.Utils.Offsets
             new("BIKP1Skip_Val2", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52)),
             new("ConnectionType", OFLD(ANYSOTFS, "BaseB", 0x38, 0x8)),
             new("NetworkPhantomID", OFLD(ALLBUTOLDPATCH, "PlayerTypeOffset", 0x3C),
-                                    OFLD(V102, "PlayerTypeOffset", 0x38))
+                                    OFLD(V102, "PlayerTypeOffset", 0x38)),
+            new("CurrentCovenant", OFLD(ANYSOTFS, "PlayerParam", 0x1AD),
+                                   OFLD(ANYVANILLA, "PlayerParam", 0x1A9)),
+            new("SoulLevel", OFLD(ANYSOTFS, "PlayerCtrl", 0xd0),
+                            OFLD(ANYVANILLA, "PlayerCtrl", 0xcc)),
+            new("Class",    OFLD(ANYSOTFS, "PlayerBaseMisc", 0x64),
+                            OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)),
         };
 
         public static readonly List<LeafLocatorGroup> LeafGroupDefns = new()
@@ -289,7 +295,6 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("WarpX3", (ANYSOTFS, 0x1c8), (ANYVANILLA, 0x148))),
 
             new("AttributeGroup", "PlayerCtrl",
-                new DetachedLeaf("SoulLevel", (ANYSOTFS, 0xd0), (ANYVANILLA, 0xcc)),
                 new DetachedLeaf("VGR", (ANYSOTFS, 0x8), (ANYVANILLA, 0x4)),
                 new DetachedLeaf("END", (ANYSOTFS, 0xa), (ANYVANILLA, 0x6)),
                 new DetachedLeaf("VIT", (ANYSOTFS, 0xc), (ANYVANILLA, 0x8)),
@@ -323,7 +328,6 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("LeftHand3", (ANYSOTFS, 0x8bc), (ANYVANILLA, 0x9c))),
 
             new("PlayerBaseMiscGroup", "PlayerBaseMisc",
-                new DetachedLeaf("Class", (ANYSOTFS, 0x64), (ANYVANILLA, 0xe4)),
                 new DetachedLeaf("NewGame", (ANYSOTFS, 0x68), (ANYVANILLA, 0xe8)),
                 new DetachedLeaf("SaveSlot", (ANYSOTFS, 0x18a8))),
 
