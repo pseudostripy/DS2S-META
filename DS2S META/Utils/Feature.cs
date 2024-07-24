@@ -57,14 +57,14 @@ namespace DS2S_META.Utils
                 METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.INFINITESTAMINA => Hook.IsSOTFS_CP && Hook.InGame,
-                METAFEATURE.DISABLEAI => Hook.IsSOTFS_CP && Hook.InGame,
+                METAFEATURE.DISABLEAI => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
                 METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, // should be fine for all versions
                 METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.MADWARRIOR => Hook.IsSOTFS_CP, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
                 METAFEATURE.BIKP1SKIP => Hook.IsSOTFS_CP,
                 METAFEATURE.SPEEDHACK => Hook.IsValidVer,
-                METAFEATURE.STOREPOSITION => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.STOREPOSITION => (Hook.IsSOTFS_CP && Hook.InGame) || (Hook.IsOldPatch && Hook.InGame),
                 METAFEATURE.RESTOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,

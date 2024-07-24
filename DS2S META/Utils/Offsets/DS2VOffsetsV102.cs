@@ -11,6 +11,7 @@ namespace DS2S_META.Utils.Offsets
         public DS2VOffsetsV102() : base()
         {
             LoadingState = new int[] { 0x24, 0x19c, 0xa94, 0x14, 0x4, 0x4c, 0x730 };
+            DisableAI = new int[] { 0x20, 0x18 };
 
             if (Func == null || Core == null)
                 return;
