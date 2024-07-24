@@ -29,6 +29,8 @@ namespace DS2S_META.ViewModels
     {
         // Binding Variables:
         public bool EnNoDeath => MetaFeature.FtNoDeath;
+
+        public bool EnInfiniteStamina => MetaFeature.FtInfiniteStamina;
         public bool EnRapierOHKO => MetaFeature.FtRapierOHKO;
         public bool EnFistOHKO => MetaFeature.FtFistOHKO;
         public bool EnSpeedhack => MetaFeature.FtSpeedhack;
@@ -46,6 +48,7 @@ namespace DS2S_META.ViewModels
         public bool EnMoneyBags => MetaFeature.FtGiveSouls;
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
+
 
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
@@ -67,6 +70,20 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkNoDeath));
             }
         }
+
+        private bool _chkInfiniteStamina = false;
+         public bool ChkInfiniteStamina
+        {
+            get => _chkInfiniteStamina;
+            set
+            {
+
+               _chkInfiniteStamina = value;
+                Hook?.SetInfiniteStamina(value);
+                OnPropertyChanged(nameof(ChkInfiniteStamina));
+            }
+        }
+
         private bool _chkDisableAi = false;
         public bool ChkDisableAi { 
             get => _chkDisableAi;
@@ -504,6 +521,7 @@ namespace DS2S_META.ViewModels
         public void ToggleSpeedhack() => ChkSpeedhack = !ChkSpeedhack;
         private void SetGameSpeed() => Hook?.SetSpeed((double)_speedHackFactor);
         public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
+
         public void ToggleOHKO() => ChkOHKO = !ChkOHKO;
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;

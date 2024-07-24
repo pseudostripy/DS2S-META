@@ -22,7 +22,7 @@ namespace DS2S_META.Utils.Offsets
             PlayerName = new(0xA4);
             ForceQuit = new(0xDF1);
             PlayerCtrl = new(HP: 0xFC, HPMin: 0x100, HPMax: 0x104, HPCap: 0x108, 
-                             SP: 0x140, SPMax: 0x148, SpeedModifier: 0x208, CurrPoise:0x1ac);
+                             SP: 0x140, SPMax: 0x148, SpeedModifier: 0x208, CurrPoise:0x1ac, SPMin: 0x000); // Need to find the value for vanilla, testing for scholar for now
             PlayerBaseMisc = new(0xE4, 0xE8, UNSET);
             PlayerEquipment = new(0x1F8, 0x1DC, 0x1C0, 0x1A4,
                                   0xC8, 0xF4, 0x120,

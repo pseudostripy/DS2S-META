@@ -2237,6 +2237,13 @@ namespace DS2S_META
             if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
             HealthMin = noDeath ? 1 : -99999;
         }
+
+        public void SetInfiniteStamina(bool infStam)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESTAMINA)) return;
+            StaminaMin = infStam ? MaxStamina : -99999;
+        }
+
         public void SetRapierOHKO(bool ohko)
         {
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_RAPIER)) return;
@@ -2258,6 +2265,16 @@ namespace DS2S_META
             wpnrow.WriteRow();
         }
 
+
+        public float StaminaMin
+        {
+            get => InGame ? PlayerCtrl.ReadSingle(Offsets.PlayerCtrl.SPMin) : 0;
+            set
+            {
+                if (Reading || !InGame) return;
+                PlayerCtrl.WriteSingle(Offsets.PlayerCtrl.SPMin, value);
+            }
+        }
 
         public int HealthMax
         {
