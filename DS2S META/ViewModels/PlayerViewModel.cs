@@ -51,6 +51,8 @@ namespace DS2S_META.ViewModels
 
         public bool EnDisableSkirt = MetaFeature.FtDisableSkirt;
 
+        public bool EnInfiniteSpells = MetaFeature.FtInfiniteSpells;
+
 
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
@@ -96,6 +98,18 @@ namespace DS2S_META.ViewModels
                 _chkDisableSkirt = value;
                 Hook?.SetDisableSkirt(value);
                 OnPropertyChanged(nameof(ChkDisableSkirt));
+            }
+        }
+
+        private bool _chkInfiniteSpells = false;
+        public bool ChkInfiniteSpells
+        {
+            get => _chkInfiniteSpells;
+            set
+            {
+                _chkInfiniteSpells = value;
+                Hook?.SetInfiniteSpells(value);
+                OnPropertyChanged(nameof(ChkInfiniteSpells));
             }
         }
 
@@ -544,6 +558,8 @@ namespace DS2S_META.ViewModels
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
 
+        public void ToggleInfiniteSpells() => ChkInfiniteSpells = !ChkInfiniteSpells;
+
         // Programmatic ItemControl Management
         private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
         {
@@ -773,6 +789,7 @@ namespace DS2S_META.ViewModels
             Hook?.SetDisableAI(ChkDisableAi);
             Hook?.SetInfiniteStamina(ChkInfiniteStamina);
             Hook?.SetDisableSkirt(ChkDisableSkirt);
+            Hook?.SetInfiniteSpells(ChkInfiniteSpells);
          
             
             if (Properties.Settings.Default.NoGravThroughLoads)
@@ -812,6 +829,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
             OnPropertyChanged(nameof(EnDisableSkirt));
+            OnPropertyChanged(nameof(EnInfiniteSpells));
         }
         public override void UpdateViewModel()
         {
@@ -833,6 +851,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(GameLastBonfire));
             OnPropertyChanged(nameof(EnDmgMod));
             OnPropertyChanged(nameof(EnDisableSkirt));
+            OnPropertyChanged(nameof(EnInfiniteSpells));
 
         }
         public override void DoSlowUpdates()

@@ -204,5 +204,7 @@ namespace DS2S_META.Utils.Offsets
         public string ApplySpEffectAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
 
         public string DisableSkirtAOB { get; set; } = DS2HookOffsets.AOB_UNSET;
+
+        public string InfiniteSpells { get; set; } = DS2HookOffsets.AOB_UNSET;
     };
 }

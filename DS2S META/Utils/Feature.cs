@@ -31,7 +31,8 @@ namespace DS2S_META.Utils
         RESTOREHUMANITY,
         NEWTESTCHARACTER,
         INFINITESTAMINA,
-        DISABLESKIRT
+        DISABLESKIRT,
+        INFINITESPELLS
     }
     public static class MetaFeature
     {
@@ -73,6 +74,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
                 METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
                 METAFEATURE.DISABLESKIRT => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.INFINITESPELLS => Hook.IsOldPatch && Hook.InGame,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -102,5 +104,7 @@ namespace DS2S_META.Utils
         public static bool FtNewTestCharacter => IsActive(METAFEATURE.NEWTESTCHARACTER);
 
         public static bool FtDisableSkirt = IsActive(METAFEATURE.DISABLESKIRT);
+
+        public static bool FtInfiniteSpells = IsActive(METAFEATURE.INFINITESPELLS);
     }
 }

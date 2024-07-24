@@ -146,6 +146,8 @@ namespace DS2S_META
 
         public PHPointer DisableSkirt;
 
+        public PHPointer InfiniteSpells; //Old Patch Vanilla
+
 
         public DS2SHook(int refreshInterval, int minLifetime) :
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
@@ -178,6 +180,7 @@ namespace DS2S_META
             // Version Specific AOBs:
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
             phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
+            InfiniteSpells = RegisterAbsoluteAOB(Offsets.Func.InfiniteSpells);
         }
         
         // DS2 & BBJ Process Info Data
@@ -2269,6 +2272,20 @@ namespace DS2S_META
             } else
             {
                 DisableSkirt.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
+            }
+        }
+
+
+        //Needs proprer refractoring before merging with main branch
+        public void SetInfiniteSpells(bool infiniteSpells)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS)) return;
+            if (infiniteSpells == false)
+            {
+                InfiniteSpells.WriteBytes(0x0, new byte[] { 0x88, 0x43, 0x18 });
+            } else
+            {
+                InfiniteSpells.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90 });
             }
         }
 
