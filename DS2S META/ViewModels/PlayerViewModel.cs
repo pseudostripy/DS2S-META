@@ -49,6 +49,8 @@ namespace DS2S_META.ViewModels
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
+        public bool EnDisableSkirt = MetaFeature.FtDisableSkirt;
+
 
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
@@ -83,6 +85,22 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkInfiniteStamina));
             }
         }
+
+        private bool _chkDisableSkirt = false;
+
+        public bool ChkDisableSkirt
+        {
+            get => _chkDisableSkirt;
+            set
+            {
+                _chkDisableSkirt = value;
+                Hook?.SetDisableSkirt(value);
+                OnPropertyChanged(nameof(ChkDisableSkirt));
+            }
+        }
+
+
+       
 
         private bool _chkDisableAi = false;
         public bool ChkDisableAi { 
@@ -753,6 +771,9 @@ namespace DS2S_META.ViewModels
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
             Hook?.SetDisableAI(ChkDisableAi);
+            Hook?.SetInfiniteStamina(ChkInfiniteStamina);
+            Hook?.SetDisableSkirt(ChkDisableSkirt);
+         
             
             if (Properties.Settings.Default.NoGravThroughLoads)
             {
@@ -774,6 +795,7 @@ namespace DS2S_META.ViewModels
         private void EnableElements() 
         {
             OnPropertyChanged(nameof(EnNoDeath));
+            OnPropertyChanged(nameof(EnInfiniteStamina));
             OnPropertyChanged(nameof(EnRapierOHKO));
             OnPropertyChanged(nameof(EnFistOHKO));
             OnPropertyChanged(nameof(EnSpeedhack));
@@ -789,6 +811,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMoneyBags));
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
+            OnPropertyChanged(nameof(EnDisableSkirt));
         }
         public override void UpdateViewModel()
         {
@@ -809,6 +832,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ChkGravity));
             OnPropertyChanged(nameof(GameLastBonfire));
             OnPropertyChanged(nameof(EnDmgMod));
+            OnPropertyChanged(nameof(EnDisableSkirt));
+
         }
         public override void DoSlowUpdates()
         {

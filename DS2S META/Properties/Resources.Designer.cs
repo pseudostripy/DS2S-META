@@ -10,8 +10,9 @@
 
 namespace DS2S_META.Properties {
     using System;
-    
-    
+    using System.Drawing;
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -335,5 +336,7 @@ namespace DS2S_META.Properties {
                 return ResourceManager.GetString("SpeedFactorAccel", resourceCulture);
             }
         }
+
+       
     }
 }

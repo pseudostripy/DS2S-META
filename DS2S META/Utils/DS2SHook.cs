@@ -20,6 +20,7 @@ using Octokit;
 using System.CodeDom;
 using System.Security.Cryptography;
 using System.Threading;
+using System.Xml.Serialization;
 
 namespace DS2S_META
 {
@@ -138,9 +139,12 @@ namespace DS2S_META
         private PHPointer SpeedFactorJump;
         private PHPointer SpeedFactorBuildup;
 
+
         public PHPointer LoadingState;
         public PHPointer phDisableAI; // pointer head (missing final offset)
         public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
+
+        public PHPointer DisableSkirt;
 
 
         public DS2SHook(int refreshInterval, int minLifetime) :
@@ -168,6 +172,8 @@ namespace DS2S_META
             ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
             WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
+            DisableSkirt = RegisterAbsoluteAOB(Offsets.Func.DisableSkirtAOB);
+            
 
             // Version Specific AOBs:
             ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
@@ -933,6 +939,7 @@ namespace DS2S_META
         public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
         internal bool BIKP1Skip(bool enable, bool doLoad)
         {
+
             if (!MetaFeature.FtBIKP1Skip)
                 return false;
             if (!Hooked) return false;
@@ -1041,6 +1048,10 @@ namespace DS2S_META
         {
             ApplySpecialEffect((int)SPECIAL_EFFECT.BONFIREREST);
         }
+
+
+
+
         internal void ApplySpecialEffect(int spEffect)
         {
             if (Is64Bit)
@@ -1183,6 +1194,9 @@ namespace DS2S_META
             Execute(asm);
             Free(unk);
         }
+
+
+        
 
         internal void AddSouls(int numsouls)
         {
@@ -2222,6 +2236,8 @@ namespace DS2S_META
             if (MetaFeature.IsInactive(METAFEATURE.NOGRAVITY)) return;
             Gravity = !noGravity;
         }
+
+
         public void SetNoCollision(bool noCollision)
         {
             if (MetaFeature.IsInactive(METAFEATURE.NOCOLLISION)) return;
@@ -2243,6 +2259,20 @@ namespace DS2S_META
             if (MetaFeature.IsInactive(METAFEATURE.INFINITESTAMINA)) return;
             StaminaMin = infStam ? MaxStamina : -99999;
         }
+
+        public void SetDisableSkirt(bool disableSkirt)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRT)) return;
+            if (disableSkirt == false)
+            {
+                DisableSkirt.WriteBytes(0x0, new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 });
+            } else
+            {
+                DisableSkirt.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
+            }
+        }
+
+        
 
         public void SetRapierOHKO(bool ohko)
         {

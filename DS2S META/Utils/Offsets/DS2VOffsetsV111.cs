@@ -16,6 +16,7 @@ namespace DS2S_META.Utils.Offsets
                 return;
             
             Func.ApplySpEffectAoB = "E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?";
+          
         }
     }
 }

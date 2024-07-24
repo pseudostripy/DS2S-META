@@ -218,6 +218,10 @@ namespace DS2S_META.Utils.Offsets
                 SpeedFactorAnimOffset = "F3 0F 59 99 A8 02 00 00",
                 SpeedFactorJumpOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E0 00 00 00",
                 SpeedFactorBuildupOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00",
+                DisableSkirtAOB = "89 84 8B C4 01 00 00",
+                
+                
+
 
                 // sub-versioned
                 //DisplayItem = AOB_UNSET, 
