@@ -64,7 +64,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
                 METAFEATURE.BIKP1SKIP => Hook.IsSOTFS_CP,
                 METAFEATURE.SPEEDHACK => Hook.IsValidVer,
-                METAFEATURE.STOREPOSITION => (Hook.IsSOTFS_CP && Hook.InGame) || (Hook.IsOldPatch && Hook.InGame),
+                METAFEATURE.STOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.RESTOREPOSITION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
