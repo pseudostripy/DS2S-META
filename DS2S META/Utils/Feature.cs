@@ -56,7 +56,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.NOGRAVITY => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.INFINITESTAMINA => Hook.IsSOTFS_CP && Hook.InGame,
+                METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
                 METAFEATURE.DISABLEAI => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
                 METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, // should be fine for all versions
                 METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
