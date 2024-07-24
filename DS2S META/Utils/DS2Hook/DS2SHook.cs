@@ -124,7 +124,7 @@ namespace DS2S_META.Utils.DS2Hook
         private PHPointer PlayerName;
         //private PHPointer AvailableItemBag;
         //private PHPointer ItemGiveWindow;
-        private PHPointer PlayerBaseMisc;
+        //private PHPointer PlayerBaseMisc;
         private PHPointer PlayerCtrl;
         private PHPointer PlayerPosition;
         //private PHPointer PlayerGravity;
@@ -586,21 +586,21 @@ namespace DS2S_META.Utils.DS2Hook
         internal void SetupChildPointers()
         {
             // Further pointer setup... todo?
-            Core? OC = Offsets.Core; // shorthand
-            if (OC == null) return;
+            //Core? OC = Offsets.Core; // shorthand
+            //if (OC == null) return;
 
             //PlayerName = CreateChildPointer(BaseA, OC.PlayerNameOffset);
             //AvailableItemBag = CreateChildPointer(BaseA, OC.GameDataManagerOffset, OC.AvailableItemBagOffset, OC.AvailableItemBagOffset);
             //ItemGiveWindow = CreateChildPointer(BaseA, OC.ItemGiveWindowPointer);
 
             //PlayerBaseMisc = CreateChildPointer(BaseA, OC.PlayerBaseMiscOffset);
-            PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
-            PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
+            //PlayerCtrl = CreateChildPointer(BaseA, OC.PlayerCtrlOffset);
+            //PlayerPosition = CreateChildPointer(PlayerCtrl, OC.PlayerPositionOffset1, OC.PlayerPositionOffset2);
             //PlayerGravity = CreateChildPointer(BaseA, OC.NoGrav);
             //PlayerParam = CreateChildPointer(PlayerCtrl, OC.PlayerParamOffset);
             //PlayerType = CreateChildPointer(PlayerCtrl, OC.PlayerTypeOffset);
             //SpEffectCtrl = CreateChildPointer(PlayerCtrl, OC.SpEffectCtrlOffset);
-            PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
+            //PlayerMapData = CreateChildPointer(BaseA, OC.PlayerDataMapOffset);
             //EventManager = CreateChildPointer(BaseA, OC.EventManagerOffset);
             //BonfireLevels = CreateChildPointer(EventManager, OC.BonfireLevelsOffset1, OC.BonfireLevelsOffset2);
             //WarpManager = CreateChildPointer(EventManager, OC.WarpManagerOffset);
@@ -996,30 +996,40 @@ namespace DS2S_META.Utils.DS2Hook
         //}
 
         public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
+
         internal bool BIKP1Skip(bool enable, bool doLoad)
         {
-            if (!MetaFeature.FtBIKP1Skip)
-                return false;
             if (!Hooked) return false;
-
-            // Change some constants read by the BIK fight I guess.
-            // Carbon copy from https://www.nexusmods.com/darksouls2/mods/1043 .
-            // Haven't bothered to figure out how it works.
-            byte[] DISABLEMOD = new byte[2] { 0x0, 0x0 };
-            byte[] ENABLEMOD_VAL1 = new byte[2] { 0x80, 0x9c };
-            byte[] ENABLEMOD_VAL2 = new byte[2] { 0x0e, 0x3c };
-            var val1_bytes = enable ? ENABLEMOD_VAL1 : DISABLEMOD;
-            var val2_bytes = enable ? ENABLEMOD_VAL2 : DISABLEMOD;
-
-            // enable/disable phase1
-            if (Offsets.BIKP1Skip_Val1 == null || Offsets.BIKP1Skip_Val2 == null)
-                throw new Exception("Shouldn't get here. Handle via feature enable logic.");
-            phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
-            phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
+            ASM.ApplyBIKP1Skip(enable);
+            
             if (doLoad)
                 WarpLast(); // force a reload to fix some memes; only on first click
             return enable; // turned on or off now
         }
+        //internal bool BIKP1Skip(bool enable, bool doLoad)
+        //{
+        //    if (!MetaFeature.FtBIKP1Skip)
+        //        return false;
+        //    if (!Hooked) return false;
+
+        //    // Change some constants read by the BIK fight I guess.
+        //    // Carbon copy from https://www.nexusmods.com/darksouls2/mods/1043 .
+        //    // Haven't bothered to figure out how it works.
+        //    byte[] DISABLEMOD = new byte[2] { 0x0, 0x0 };
+        //    byte[] ENABLEMOD_VAL1 = new byte[2] { 0x80, 0x9c };
+        //    byte[] ENABLEMOD_VAL2 = new byte[2] { 0x0e, 0x3c };
+        //    var val1_bytes = enable ? ENABLEMOD_VAL1 : DISABLEMOD;
+        //    var val2_bytes = enable ? ENABLEMOD_VAL2 : DISABLEMOD;
+
+        //    // enable/disable phase1
+        //    if (Offsets.BIKP1Skip_Val1 == null || Offsets.BIKP1Skip_Val2 == null)
+        //        throw new Exception("Shouldn't get here. Handle via feature enable logic.");
+        //    phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val1[^1], val1_bytes);
+        //    phBIKP1SkipVals.WriteBytes(Offsets.BIKP1Skip_Val2[^1], val2_bytes);
+        //    if (doLoad)
+        //        WarpLast(); // force a reload to fix some memes; only on first click
+        //    return enable; // turned on or off now
+        //}
 
 
 

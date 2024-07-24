@@ -11,6 +11,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
 {
     public class PlayerStateHGO : HGO
     {
+        private bool InGame => Hook.DS2P.CGS.InGame; // shorthand
+
         // Direct Hook properties
         public PHLeaf? PHHP;
         public PHLeaf? PHHPMax;
@@ -29,6 +31,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHLeaf? PHStableX;
         public PHLeaf? PHStableY;
         public PHLeaf? PHStableZ;
+        public Dictionary<string, PHLeaf?> PHWarpGroup;
 
         public float[] Pos
         {
@@ -42,29 +45,29 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         }
         public float PosX
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosX) : 0;
+            get => InGame ? PHPosX?.ReadSingle() ?? 0 : 0;
             set
             {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosX, value);
+                if (!InGame) return;
+                PHPosX?.WriteSingle(value);
             }
         }
         public float PosY
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosY) : 0;
+            get => InGame ? PHPosY?.ReadSingle() ?? 0 : 0;
             set
             {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosY, value);
+                if (!InGame) return;
+                PHPosY?.WriteSingle(value);
             }
         }
         public float PosZ
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.PosZ) : 0;
+            get => InGame ? PHPosZ?.ReadSingle() ?? 0 : 0;
             set
             {
-                if (Reading || !InGame) return;
-                PlayerPosition.WriteSingle(Offsets.PlayerPosition.PosZ, value);
+                if (!InGame) return;
+                PHPosZ?.WriteSingle(value);
             }
         }
         public float[] Ang
@@ -79,18 +82,18 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         }
         private float AngX
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngX) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngX, value);
+            get => InGame ? PHAngX?.ReadSingle() ?? 0 : 0;
+            set => PHAngX?.WriteSingle(value);
         }
         private float AngY
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngY) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngY, value);
+            get => InGame ? PHAngY?.ReadSingle() ?? 0 : 0;
+            set => PHAngY?.WriteSingle(value);
         }
         private float AngZ
         {
-            get => InGame ? PlayerPosition.ReadSingle(Offsets.PlayerPosition.AngZ) : 0;
-            set => PlayerPosition.WriteSingle(Offsets.PlayerPosition.AngZ, value);
+            get => InGame ? PHAngZ?.ReadSingle() ?? 0 : 0;
+            set => PHAngZ?.WriteSingle(value);
         }
         public float[] StablePos
         {
@@ -104,37 +107,38 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         }
         private float StableX
         {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpX1) : 0;
+            get => InGame ? PHWarpGroup["WarpX1"]?.ReadSingle() ?? 0 : 0;
             set
             {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpX3, value);
+                PHWarpGroup["WarpX1"]?.WriteSingle(value);
+                PHWarpGroup["WarpX2"]?.WriteSingle(value);
+                PHWarpGroup["WarpX3"]?.WriteSingle(value);
             }
         }
         private float StableY
         {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpY1) : 0;
+            get => InGame ? PHWarpGroup["WarpY1"]?.ReadSingle() ?? 0 : 0;
             set
             {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpY3, value);
+                PHWarpGroup["WarpY1"]?.WriteSingle(value);
+                PHWarpGroup["WarpY2"]?.WriteSingle(value);
+                PHWarpGroup["WarpY3"]?.WriteSingle(value);
             }
         }
         private float StableZ
         {
-            get => InGame ? PlayerMapData.ReadSingle(Offsets.PlayerMapData.WarpZ1) : 0;
+            get => InGame ? PHWarpGroup["WarpZ1"]?.ReadSingle() ?? 0 : 0;
             set
             {
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ1, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ2, value);
-                PlayerMapData.WriteSingle(Offsets.PlayerMapData.WarpZ3, value);
+                PHWarpGroup["WarpZ1"]?.WriteSingle(value);
+                PHWarpGroup["WarpZ2"]?.WriteSingle(value);
+                PHWarpGroup["WarpZ3"]?.WriteSingle(value);
             }
         }
 
 
-        public PlayerStateHGO(DS2SHook hook, Dictionary<string, PHLeaf?> playerGrp) : base(hook)
+        public PlayerStateHGO(DS2SHook hook, Dictionary<string, PHLeaf?> playerGrp, 
+                                Dictionary<string,PHLeaf?> warpGrp) : base(hook)
         {
             PHHP = playerGrp["HP"];
             PHHPMax = playerGrp["HPMax"];
@@ -144,7 +148,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             PHSPMax = playerGrp["SPMax"];
             PHCurrPoise = playerGrp["CurrPoise"];
 
-
+            PHWarpGroup = warpGrp;
         }
 
         public int Health
