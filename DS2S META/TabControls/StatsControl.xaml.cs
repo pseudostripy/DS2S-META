@@ -23,117 +23,117 @@ namespace DS2S_META
     /// </summary>
     public partial class StatsControl : METAControl
     {
-        public List<IntegerUpDown> nudLevels => new() { nudVig, nudEnd, nudVit, nudAtt, nudStr, nudDex, nudAdp, nudInt, nudFth };
+        //public List<IntegerUpDown> nudLevels => new() { nudVig, nudEnd, nudVit, nudAtt, nudStr, nudDex, nudAdp, nudInt, nudFth };
         private StatsViewModel VM;
 
         public StatsControl()
         {
             InitializeComponent();
-            foreach (DS2SClass charClass in DS2Resource.Classes)
-                cmbClass.Items.Add(charClass);
-            cmbClass.SelectedIndex = -1;
+            //foreach (DS2SClass charClass in DS2Resource.Classes)
+            //    cmbClass.Items.Add(charClass);
+            //cmbClass.SelectedIndex = -1;
         }
-        public void ReloadTab()
-        {
-        }
-        public override void InitTab()
-        {
-            VM = (StatsViewModel)DataContext;
-            cmbClass.SelectedIndex = -1;
-        }
-
-        private void cbmClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (VM?.Hook?.InGame != true)
-                return;
-
-            if (cmbClass.SelectedItem is not DS2SClass charClass)
-                throw new NullReferenceException("Null character class");
-
-            VM.Hook.Class = charClass.ID;
-            nudVig.Minimum = charClass.Vigor;
-            nudEnd.Minimum = charClass.Endurance;
-            nudVit.Minimum = charClass.Vitality;
-            nudAtt.Minimum = charClass.Attunement;
-            nudStr.Minimum = charClass.Strength;
-            nudDex.Minimum = charClass.Dexterity;
-            nudAdp.Minimum = charClass.Adaptability;
-            nudInt.Minimum = charClass.Intelligence;
-            nudFth.Minimum = charClass.Faith;
-        }
-
-        internal override void UpdateCtrl()
-        {
-        }
-
-        internal override void ReloadCtrl()
-        {
-            cmbClass.SelectedItem = cmbClass.Items.Cast<DS2SClass>().FirstOrDefault(c => c.ID == Hook.Class);
-            txtName.Text = Hook.CharacterName;
-        }
-
-        //internal override void EnableCtrls(bool enable)
+        //public void ReloadTab()
         //{
-        //    cmbClass.IsEnabled = enable;
-        //    txtName.IsEnabled = enable;
-        //    btnGive.IsEnabled = enable;
-        //    btnResetSoulMemory.IsEnabled = enable;
-        //    nudGiveSouls.IsEnabled = enable;
-        //    nudVig.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudEnd.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudVit.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudAtt.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudStr.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudDex.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudAdp.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudInt.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudFth.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    nudHollowLevel.IsEnabled = enable;
-        //    btnReset.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    btnMax.IsEnabled = enable && Properties.Settings.Default.EditStats;
-        //    btnRestoreHumanity.IsEnabled = enable;
-
-        //    if (!enable)
-        //        cmbClass.SelectedIndex = -1;
         //}
-        private void GiveSouls_Click(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            if (nudGiveSouls.Value.HasValue)
-                VM.Hook.AddSouls(nudGiveSouls.Value.Value);
-        }
-        private void ResetSoulMemory_Click(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            VM.Hook.ResetSoulMemory();
-        }
-        private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            VM.Hook.CharacterName = txtName.Text;
-        }
-        private void Reset_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (IntegerUpDown nudLev in nudLevels)
-                nudLev.Value = nudLev.Minimum;
-        }
-        private void Max_Click(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            VM.Hook.SetMaxLevels();
-        }
-        private void RestoreHumanity_Click(object sender, RoutedEventArgs e)
-        {
-            // These both work apparently:
-            //var RestoreHumanityEffect = 60151000;   // Using Effigy effect
-            //var RestoreHumanityEffect = 60355000;   // Warp effect
-            if (VM?.Hook == null) return;
-            VM.Hook.RestoreHumanity();
-        }
-        private void NewTestCharacter_Click(object sender, RoutedEventArgs e)
-        {
-            if (VM?.Hook == null) return;
-            VM.Hook.NewTestCharacter();
-        }
+        //public override void InitTab()
+        //{
+        //    VM = (StatsViewModel)DataContext;
+        //    cmbClass.SelectedIndex = -1;
+        //}
+
+        //private void cbmClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (VM?.Hook?.InGame != true)
+        //        return;
+
+        //    if (cmbClass.SelectedItem is not DS2SClass charClass)
+        //        throw new NullReferenceException("Null character class");
+
+        //    VM.Hook.Class = charClass.ID;
+        //    nudVig.Minimum = charClass.Vigor;
+        //    nudEnd.Minimum = charClass.Endurance;
+        //    nudVit.Minimum = charClass.Vitality;
+        //    nudAtt.Minimum = charClass.Attunement;
+        //    nudStr.Minimum = charClass.Strength;
+        //    nudDex.Minimum = charClass.Dexterity;
+        //    nudAdp.Minimum = charClass.Adaptability;
+        //    nudInt.Minimum = charClass.Intelligence;
+        //    nudFth.Minimum = charClass.Faith;
+        //}
+
+        //internal override void UpdateCtrl()
+        //{
+        //}
+
+        //internal override void ReloadCtrl()
+        //{
+        //    cmbClass.SelectedItem = cmbClass.Items.Cast<DS2SClass>().FirstOrDefault(c => c.ID == Hook.Class);
+        //    txtName.Text = Hook.CharacterName;
+        //}
+
+        ////internal override void EnableCtrls(bool enable)
+        ////{
+        ////    cmbClass.IsEnabled = enable;
+        ////    txtName.IsEnabled = enable;
+        ////    btnGive.IsEnabled = enable;
+        ////    btnResetSoulMemory.IsEnabled = enable;
+        ////    nudGiveSouls.IsEnabled = enable;
+        ////    nudVig.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudEnd.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudVit.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudAtt.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudStr.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudDex.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudAdp.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudInt.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudFth.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    nudHollowLevel.IsEnabled = enable;
+        ////    btnReset.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    btnMax.IsEnabled = enable && Properties.Settings.Default.EditStats;
+        ////    btnRestoreHumanity.IsEnabled = enable;
+
+        ////    if (!enable)
+        ////        cmbClass.SelectedIndex = -1;
+        ////}
+        //private void GiveSouls_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (VM?.Hook == null) return;
+        //    if (nudGiveSouls.Value.HasValue)
+        //        VM.Hook.AddSouls(nudGiveSouls.Value.Value);
+        //}
+        //private void ResetSoulMemory_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (VM?.Hook == null) return;
+        //    VM.Hook.ResetSoulMemory();
+        //}
+        //private void Name_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        //{
+        //    if (VM?.Hook == null) return;
+        //    VM.Hook.CharacterName = txtName.Text;
+        //}
+        //private void Reset_Click(object sender, RoutedEventArgs e)
+        //{
+        //    foreach (IntegerUpDown nudLev in nudLevels)
+        //        nudLev.Value = nudLev.Minimum;
+        //}
+        //private void Max_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (VM?.Hook == null) return;
+        //    VM.Hook.SetMaxLevels();
+        //}
+        //private void RestoreHumanity_Click(object sender, RoutedEventArgs e)
+        //{
+        //    // These both work apparently:
+        //    //var RestoreHumanityEffect = 60151000;   // Using Effigy effect
+        //    //var RestoreHumanityEffect = 60355000;   // Warp effect
+        //    if (VM?.Hook == null) return;
+        //    VM.Hook.RestoreHumanity();
+        //}
+        //private void NewTestCharacter_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (VM?.Hook == null) return;
+        //    VM.Hook.NewTestCharacter();
+        //}
     }
 }

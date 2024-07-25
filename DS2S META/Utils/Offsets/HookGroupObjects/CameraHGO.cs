@@ -45,9 +45,9 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         private PHLeaf? PHCamY;
         private PHLeaf? PHCamZ;
 
-        public CameraHGO(DS2SHook hook, Dictionary<string, PHLeaf?> ptrs) : base(hook)
+        public CameraHGO(DS2SHook hook, Dictionary<string, PHLeaf?> cameraGrp) : base(hook)
         {
-            foreach (var kvp in ptrs)
+            foreach (var kvp in cameraGrp)
             {
                 string propkey = TranslateRENameToPHLeafPropName(kvp.Key);
                 SetProperty(propkey, kvp.Value);

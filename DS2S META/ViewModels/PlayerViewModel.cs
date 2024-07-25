@@ -15,12 +15,19 @@ using DS2S_META.Commands;
 using static DS2S_META.State;
 using Xceed.Wpf.Toolkit;
 using System.Threading;
+using DS2S_META.Utils.Offsets.HookGroupObjects;
 
 namespace DS2S_META.ViewModels
 {
     // Note: CheatsControl has CheatsViewModel data context set in MainWindow.xaml
     public class PlayerViewModel : ViewModelBase
     {
+        // Shorthand to used structures
+        private BonfiresHGO? BF => Hook?.DS2P.BonfiresHGO;
+        private PlayerStateHGO? PS => Hook?.DS2P.PlayerState;
+        private CameraHGO? Camera => Hook?.DS2P.CameraHGO;
+        private CoreGameState? Game => Hook?.DS2P.CGS;
+
         // Binding Variables:
         public bool EnNoDeath => MetaFeature.FtNoDeath;
         public bool EnRapierOHKO => MetaFeature.FtRapierOHKO;
@@ -185,34 +192,34 @@ namespace DS2S_META.ViewModels
         private int _healthCurr;
         public int HealthCurr
         {
-            get => Hook?.Health ?? 0;
+            get => PS?.Health ?? 0;
             set
             {
                 _healthCurr = value;
-                if (Hook?.Health == null || IsHealthTyping == true)
+                if (PS?.Health == null || IsHealthTyping == true)
                     return;
 
-                Hook.Health = value;
+                PS.Health = value;
                 OnPropertyChanged();
             }
         }
         public int HealthCap
         {
-            get => Hook?.HealthCap ?? 0;
+            get => PS?.HealthCap ?? 0;
             set
             {
-                if (Hook?.HealthCap != null)
-                    Hook.HealthCap = value;
+                if (PS?.HealthCap != null)
+                    PS.HealthCap = value;
                 OnPropertyChanged();
             }
         }
         public int HealthMax
         {
-            get => Hook?.HealthMax ?? 0;
+            get => PS?.HealthMax ?? 0;
             set
             {
-                if (Hook?.HealthMax != null)
-                    Hook.HealthMax = value;
+                if (PS?.HealthMax != null)
+                    PS.HealthMax = value;
                 OnPropertyChanged();
             }
         }
@@ -229,21 +236,21 @@ namespace DS2S_META.ViewModels
         }
         public int StaminaMax
         {
-            get => (int)(Hook?.MaxStamina ?? 0);
+            get => (int)(PS?.MaxStamina ?? 0);
             set
             {
-                if (Hook?.MaxStamina != null)
-                    Hook.MaxStamina = value;
+                if (PS?.MaxStamina != null)
+                    PS.MaxStamina = value;
                 OnPropertyChanged();
             }
         }
         public float PoiseCurr
         {
-            get => Hook?.CurrPoise ?? 0;
+            get => PS?.CurrPoise ?? 0;
             set
             {
-                if (Hook?.CurrPoise != null)
-                    Hook.CurrPoise = value;
+                if (PS != null)
+                    PS.CurrPoise = value;
                 OnPropertyChanged();
             }
         }
@@ -274,8 +281,8 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                var lastBonfireAreaId = Hook?.LastBonfireAreaID;
-                var lastBonfireId = Hook?.LastBonfireID;
+                var lastBonfireAreaId = BF?.LastBonfireAreaID;
+                var lastBonfireId = BF?.LastBonfireID;
                 if (lastBonfireAreaId == null || lastBonfireId == null)
                     return null;
                 return DS2Resource.LookupBonfire((int)lastBonfireAreaId, (int)lastBonfireId);
@@ -450,12 +457,12 @@ namespace DS2S_META.ViewModels
         private float[] _ang = ZEROVECFLOAT;
         public float[] Ang
         {
-            get => Hook?.Ang ?? ZEROVECFLOAT;
+            get => PS?.Ang ?? ZEROVECFLOAT;
             set
             {
                 _ang = value;
-                if (Hook?.Ang != null)
-                    Hook.Ang = _ang;
+                if (PS?.Ang != null)
+                    PS.Ang = _ang;
                 OnPropertyChanged();
             }
         }
@@ -508,20 +515,23 @@ namespace DS2S_META.ViewModels
         // Programmatic ItemControl Management
         private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
         {
-            var bonfireControl = new LabelNudControl();
-            var hookPropName = Hook?.Bfs2Properties[bf] ?? string.Empty;
-            Binding binding = new("Value")
-            {
-                Source = Hook,
-                Path = new PropertyPath(hookPropName)
-            };
-            bonfireControl.nudValue.SetBinding(IntegerUpDown.ValueProperty, binding);
-            bonfireControl.nudValue.Minimum = 0;
-            bonfireControl.nudValue.Maximum = 99;
-            bonfireControl.Label = bf.Name;
-            bonfireControl.HorizontalAlignment = HorizontalAlignment.Center;
-            bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
-            return bonfireControl;
+            // Try doing a BonfireLabelControl and use an ItemControl with ItemTemplate to reach the level property
+            return null;
+
+            //var bonfireControl = new LabelNudControl();
+            //var hookPropName = BF Hook?.Bfs2Properties[bf] ?? string.Empty;
+            //Binding binding = new("Value")
+            //{
+            //    Source = BF. Hook,
+            //    Path = new PropertyPath(hookPropName)
+            //};
+            //bonfireControl.nudValue.SetBinding(IntegerUpDown.ValueProperty, binding);
+            //bonfireControl.nudValue.Minimum = 0;
+            //bonfireControl.nudValue.Maximum = 99;
+            //bonfireControl.Label = bf.Name;
+            //bonfireControl.HorizontalAlignment = HorizontalAlignment.Center;
+            //bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
+            //return bonfireControl;
         }
 
         // Constructor
@@ -569,9 +579,9 @@ namespace DS2S_META.ViewModels
         private void BtnUnlockBfsExecute(object? parameter) => Hook?.UnlockBonfires();
         private void StorePositionExecute(object? paramter)
         {
-            if (Hook == null)
+            if (Camera == null)
                 return;
-            var cam = new float[] {Hook.CamX, Hook.CamY, Hook.CamZ}; // unsure if implemented properly
+            var cam = new float[] {Camera.CamX, Camera.CamY, Camera.CamZ}; // unsure if implemented properly
             LastPlayerState = new PlayerState(HealthCurr, StaminaCurr, StablePos, Ang, cam);
             
             // update storedpos
@@ -579,7 +589,7 @@ namespace DS2S_META.ViewModels
         }
         private void RestorePositionExecute(object? paramter)
         {
-            if (Hook == null) return;
+            if (Camera == null) return;
             if (LastPlayerState?.StablePos != null)
                 StablePos = LastPlayerState.StablePos;
             if (LastPlayerState?.Ang != null)
@@ -591,9 +601,9 @@ namespace DS2S_META.ViewModels
 
             if (LastPlayerState?.Cam != null)
             {
-                Hook.CamX = LastPlayerState.Cam[0];
-                Hook.CamY = LastPlayerState.Cam[1];
-                Hook.CamZ = LastPlayerState.Cam[2];
+                Camera.CamX = LastPlayerState.Cam[0];
+                Camera.CamY = LastPlayerState.Cam[1];
+                Camera.CamZ = LastPlayerState.Cam[2];
             }
         }
         private void BtnMoneybagsExecute(object? parameter) => Hook?.AddSouls(9999999);
@@ -735,7 +745,7 @@ namespace DS2S_META.ViewModels
         public void Warp()
         {
             // no idea if multiplayer hook even implemented properly
-            if (Hook?.Multiplayer == true)
+            if (Game?.Multiplayer == true)
             {
                 MetaExceptionStaticHandler.RaiseUserWarning("Cannot warp while engaging in Multiplayer");
                 return;

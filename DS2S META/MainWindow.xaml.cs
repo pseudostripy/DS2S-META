@@ -159,11 +159,11 @@ namespace DS2S_META
         }
         private void UpdateProperties()
         {
-            Hook.UpdateGameState();
+            //Hook.UpdateGameState();
             Hook.UpdateStatsProperties();
             Hook.UpdatePlayerProperties();
             Hook.UpdateInternalProperties();
-            Hook.UpdateBonfireProperties();
+            //Hook.UpdateBonfireProperties();
             Hook.UpdateCovenantProperties();
         }
         //private void UpdateAllViewModels()

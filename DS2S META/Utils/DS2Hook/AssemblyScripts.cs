@@ -243,12 +243,14 @@ namespace DS2S_META.Utils.DS2Hook
                 throw new MetaFeatureException("GiveSouls64");
             if (DS2P.Func.RemoveSouls == null)
                 throw new MetaFeatureException("RemoveSouls64");
+            if (DS2P.MiscPtrs.PlayerParam == null)
+                throw new MetaFeatureException("PlayerParam");
 
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls64.Clone();
 
             // Setup dynamic vars:
-            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt64());
+            var playerParam = BitConverter.GetBytes(DS2P.MiscPtrs.PlayerParam.Resolve().ToInt64());
             GetAddRemSoulFunc(souls, out byte[] numSouls, out byte[] funcChangeSouls);
 
             // Update assembly & execute:
@@ -264,12 +266,14 @@ namespace DS2S_META.Utils.DS2Hook
                 throw new MetaFeatureException("GiveSouls32");
             if (DS2P.Func.RemoveSouls == null)
                 throw new MetaFeatureException("RemoveSouls32");
+            if (DS2P.MiscPtrs.PlayerParam == null)
+                throw new MetaFeatureException("PlayerParam");
 
             // Assembly template
             var asm = (byte[])DS2SAssembly.AddSouls32.Clone();
 
             // Setup dynamic vars:
-            var playerParam = BitConverter.GetBytes(PlayerParam.Resolve().ToInt32());
+            var playerParam = BitConverter.GetBytes(DS2P.MiscPtrs.PlayerParam.Resolve().ToInt32());
             GetAddRemSoulFunc(souls_input, out byte[] numSouls, out byte[] funcChangeSouls);
 
             // Update assembly & execute:

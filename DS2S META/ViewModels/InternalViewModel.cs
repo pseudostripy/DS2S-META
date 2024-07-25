@@ -46,7 +46,7 @@ namespace DS2S_META.ViewModels
         {
             if (Hook == null)
                 return;
-            Hook.CurrentCovenant = (byte)id;
+            Hook.DS2P.CovenantHGO.CurrentCovenant = (byte)id;
         }
 
         // Utility:
@@ -60,7 +60,7 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                var currCovId = Hook?.CurrentCovenant;
+                var currCovId = Hook?.DS2P.CovenantHGO.CurrentCovenant;
                 if (currCovId == null)
                     return string.Empty;
                 return DS2Resource.GetCovById((COV)currCovId).Name;
@@ -101,7 +101,7 @@ namespace DS2S_META.ViewModels
             {
                 if (SelCovData == null) return;
                 CovHook?.SetCovenantDiscov(SelCovId, value);
-                if (value == false && Hook != null && (COV)Hook.CurrentCovenant == SelCovId)
+                if (value == false && Hook != null && (COV)Hook.DS2P.CovenantHGO.CurrentCovenant == SelCovId)
                     SetCurrentCovenant(COV.NONE);
 
                 OnPropertyChanged();

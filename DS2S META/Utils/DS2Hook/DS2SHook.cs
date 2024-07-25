@@ -66,7 +66,8 @@ namespace DS2S_META.Utils.DS2Hook
         public DS2VER DS2Ver;
         public BBJTYPE BBJType;
 
-        internal DS2HookOffsets Offsets;
+        //internal DS2HookOffsets Offsets;
+        public bool InGame => DS2P.CGS.InGame; // wrapper (toremove?)
 
         // -----------------------------------------   WIP   ---------------------------------------
         public DS2Ptrs DS2P;
@@ -119,26 +120,25 @@ namespace DS2S_META.Utils.DS2Hook
         //private PHPointer WarpFunc;
         //private PHPointer? SomePlayerStats;
 
-        public PHPointer BaseA;
+        //public PHPointer BaseA;
 
-        private PHPointer PlayerName;
+        //private PHPointer PlayerName;
         //private PHPointer AvailableItemBag;
         //private PHPointer ItemGiveWindow;
         //private PHPointer PlayerBaseMisc;
-        private PHPointer PlayerCtrl;
-        private PHPointer PlayerPosition;
+        //private PHPointer PlayerCtrl;
+        //private PHPointer PlayerPosition;
         //private PHPointer PlayerGravity;
-        private PHPointer PlayerParam;
+        //private PHPointer PlayerParam;
         //private PHPointer PlayerType;
         //private PHPointer SpEffectCtrl;
         //private PHPointer ApplySpEffect;
-        private PHPointer PlayerMapData;
-        private PHPointer EventManager;
+        //private PHPointer PlayerMapData;
+        //private PHPointer EventManager;
         //private PHPointer BonfireLevels;
         //private PHPointer NetSvrBloodstainManager;
 
-
-        private PHPointer BaseASetup;
+        //private PHPointer BaseASetup;
         //private PHPointer BaseBSetup;
         //private PHPointer BaseB;
         //private PHPointer Connection;
@@ -156,14 +156,13 @@ namespace DS2S_META.Utils.DS2Hook
 
         //public PHPointer LoadingState;
         //public PHPointer phDisableAI; // pointer head (missing final offset)
-        public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
+        //public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
 
 
         public DS2SHook(int refreshInterval, int minLifetime) :
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
             Version = "Not Hooked";
-
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
         }
@@ -219,20 +218,22 @@ namespace DS2S_META.Utils.DS2Hook
             NEWBBJ_SOTFS,
             UNKN_VANILLA,
         }
+        private static readonly DS2VER[] ValidVanillaVers = new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
+        private static readonly DS2VER[] ValidSotfsVers = new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
         public bool IsOldPatch => DS2Ver == DS2VER.VANILLA_V102;
         public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
-        public bool IsSOTFS => new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 }.Contains(DS2Ver);
-        public bool IsVanilla => new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 }.Contains(DS2Ver);
-        public bool IsValidVer;
+        public bool IsSOTFS => ValidSotfsVers.Contains(DS2Ver);
+        public bool IsVanilla => ValidVanillaVers.Contains(DS2Ver);
+        public bool IsValidVer => IsSOTFS || IsVanilla;
 
         // Hook setup / cleanup
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
             DS2Ver = GetDS2Ver();
-            IsValidVer = CheckValidVer();
+            //IsValidVer = CheckValidVer();
 
             // Initial Setup & Version Checks:
-            Offsets = GetOffsets();
+            //Offsets = GetOffsets();
             //if (!BasePointerSetup(out bool isOldBbj)) // set BaseA (base pointer)
             //    return; // basepointer setup failure
 
@@ -364,18 +365,18 @@ namespace DS2S_META.Utils.DS2Hook
 
             return GetVanillaVer(moduleSz);
         }
-        internal bool CheckValidVer()
-        {
-            var validvers = new DS2VER[]
-            {
-                DS2VER.VANILLA_V102,
-                DS2VER.VANILLA_V111,
-                DS2VER.VANILLA_V112,
-                DS2VER.SOTFS_V102,
-                DS2VER.SOTFS_V103,
-            };
-            return validvers.Contains(DS2Ver);
-        }
+        //internal bool CheckValidVer()
+        //{
+        //    var validvers = new DS2VER[]
+        //    {
+        //        DS2VER.VANILLA_V102,
+        //        DS2VER.VANILLA_V111,
+        //        DS2VER.VANILLA_V112,
+        //        DS2VER.SOTFS_V102,
+        //        DS2VER.SOTFS_V103,
+        //    };
+        //    return validvers.Contains(DS2Ver);
+        //}
         private static DS2VER GetVanillaVer(int? modulesz)
         {
             return modulesz switch
@@ -532,18 +533,18 @@ namespace DS2S_META.Utils.DS2Hook
             return sb.ToString();
         }
 
-        internal DS2HookOffsets GetOffsets()
-        {
-            return DS2Ver switch
-            {
-                DS2VER.VANILLA_V102 => new DS2VOffsetsV102(),
-                DS2VER.VANILLA_V111 => new DS2VOffsetsV111(),
-                DS2VER.VANILLA_V112 => new DS2VOffsetsV112(),
-                DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
-                DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
-                _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
-            };
-        }
+        //internal DS2HookOffsets GetOffsets()
+        //{
+        //    return DS2Ver switch
+        //    {
+        //        DS2VER.VANILLA_V102 => new DS2VOffsetsV102(),
+        //        DS2VER.VANILLA_V111 => new DS2VOffsetsV111(),
+        //        DS2VER.VANILLA_V112 => new DS2VOffsetsV112(),
+        //        DS2VER.SOTFS_V102 => new DS2SOffsetsV102(),
+        //        DS2VER.SOTFS_V103 => new DS2SOffsetsV103(),
+        //        _ => throw new Exception("Unexpected Sotfs Module Size, likely not supported."),
+        //    };
+        //}
         //internal bool BasePointerSetup(out bool isOldBbj)
         //{
         //    //BaseASetup = RegisterAbsoluteAOB(Offsets.BaseAAob);
@@ -583,8 +584,8 @@ namespace DS2S_META.Utils.DS2Hook
         //}
 
 
-        internal void SetupChildPointers()
-        {
+        //internal void SetupChildPointers()
+        //{
             // Further pointer setup... todo?
             //Core? OC = Offsets.Core; // shorthand
             //if (OC == null) return;
@@ -623,9 +624,9 @@ namespace DS2S_META.Utils.DS2Hook
             //{
             //    phDisableAI = CreateChildPointer(BaseA, Offsets.DisableAI[0..^1]);
             //}
-            if (Offsets.BIKP1Skip_Val1 != null)
-                phBIKP1SkipVals = CreateChildPointer(BaseA, Offsets.BIKP1Skip_Val1[0..^1]); // parent for both
-        }
+            //if (Offsets.BIKP1Skip_Val1 != null)
+            //    phBIKP1SkipVals = CreateChildPointer(BaseA, Offsets.BIKP1Skip_Val1[0..^1]); // parent for both
+        //}
         //public IntPtr BasePointerFromSetupPointer(PHPointer aobpointer)
         //{
         //    if (Offsets.BasePtrOffset1 == null)
@@ -672,18 +673,14 @@ namespace DS2S_META.Utils.DS2Hook
         public bool CheckLoadedEnemies(CHRID chrid) => CheckLoadedEnemies((int)chrid);
         public bool CheckLoadedEnemies(int queryChrId)
         {
-            if (Offsets?.LoadedEnemiesTable == null)
+            if (DS2P.MiscPtrs.PHLoadedEnemiesTable == null)
                 throw new Exception("Version error, should be handled in front end");
 
             int nmax = 70; // I think this is the most?
             int psize = Is64Bit ? 8 : 4;
             for (int i = 0; i < nmax; i++)
             {
-                var pchr = new List<int>();
-                pchr.AddRange(Offsets.LoadedEnemiesTable);
-                pchr.Add(i * psize);
-
-                var chrclass = CreateChildPointer(BaseA, pchr.ToArray());
+                var chrclass = CreateChildPointer(DS2P.MiscPtrs.PHLoadedEnemiesTable, i*psize);
                 int chrId = chrclass.ReadInt32(0x28); // to check generality
                 if (chrId == queryChrId)
                     return true;
@@ -701,28 +698,29 @@ namespace DS2S_META.Utils.DS2Hook
         //}
         public void UpdateMainProperties()
         {
-            OnPropertyChanged(nameof(CharacterName));
-            OnPropertyChanged(nameof(ID));
+            DS2P.UpdateProperties();
+            //OnPropertyChanged(nameof(CharacterName));
+            //OnPropertyChanged(nameof(ID));
             //OnPropertyChanged(nameof(Online));
         }
         public void UpdateStatsProperties()
         {
-            OnPropertyChanged(nameof(SoulLevel));
-            OnPropertyChanged(nameof(Souls));
-            OnPropertyChanged(nameof(SoulMemory));
-            OnPropertyChanged(nameof(SoulMemory2));
-            OnPropertyChanged(nameof(HollowLevel));
-            OnPropertyChanged(nameof(SinnerLevel));
-            OnPropertyChanged(nameof(SinnerPoints));
-            OnPropertyChanged(nameof(Vigor));
-            OnPropertyChanged(nameof(Endurance));
-            OnPropertyChanged(nameof(Vitality));
-            OnPropertyChanged(nameof(Attunement));
-            OnPropertyChanged(nameof(Strength));
-            OnPropertyChanged(nameof(Dexterity));
-            OnPropertyChanged(nameof(Adaptability));
-            OnPropertyChanged(nameof(Intelligence));
-            OnPropertyChanged(nameof(Faith));
+            //OnPropertyChanged(nameof(SoulLevel));
+            //OnPropertyChanged(nameof(Souls));
+            //OnPropertyChanged(nameof(SoulMemory));
+            //OnPropertyChanged(nameof(SoulMemory2));
+            //OnPropertyChanged(nameof(HollowLevel));
+            //OnPropertyChanged(nameof(SinnerLevel));
+            //OnPropertyChanged(nameof(SinnerPoints));
+            //OnPropertyChanged(nameof(Vigor));
+            //OnPropertyChanged(nameof(Endurance));
+            //OnPropertyChanged(nameof(Vitality));
+            //OnPropertyChanged(nameof(Attunement));
+            //OnPropertyChanged(nameof(Strength));
+            //OnPropertyChanged(nameof(Dexterity));
+            //OnPropertyChanged(nameof(Adaptability));
+            //OnPropertyChanged(nameof(Intelligence));
+            //OnPropertyChanged(nameof(Faith));
         }
         public void UpdatePlayerProperties()
         {
@@ -741,9 +739,9 @@ namespace DS2S_META.Utils.DS2Hook
             //OnPropertyChanged(nameof(AngZ));
             //OnPropertyChanged(nameof(Collision));
             //OnPropertyChanged(nameof(Gravity));
-            OnPropertyChanged(nameof(StablePos));
-            OnPropertyChanged(nameof(LastBonfireAreaID));
-            OnPropertyChanged(nameof(Hooked));
+            //OnPropertyChanged(nameof(StablePos));
+            //OnPropertyChanged(nameof(LastBonfireAreaID));
+            //OnPropertyChanged(nameof(Hooked));
         }
         //public void UpdateBonfireProperties()
         //{
@@ -1277,44 +1275,44 @@ namespace DS2S_META.Utils.DS2Hook
         //    }
         //}
 
-        private void UpdateSoulLevel()
-        {
-            var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == Class);
-            if (charClass == null) return;
+        //private void UpdateSoulLevel()
+        //{
+        //    var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == Class);
+        //    if (charClass == null) return;
 
-            var soulLevel = GetSoulLevel(charClass);
-            SoulLevel = soulLevel;
-            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
-            if (reqSoulMemory > SoulMemory)
-            {
-                SoulMemory = reqSoulMemory;
-                SoulMemory2 = reqSoulMemory;
-            }
-        }
+        //    var soulLevel = GetSoulLevel(charClass);
+        //    SoulLevel = soulLevel;
+        //    var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
+        //    if (reqSoulMemory > SoulMemory)
+        //    {
+        //        SoulMemory = reqSoulMemory;
+        //        SoulMemory2 = reqSoulMemory;
+        //    }
+        //}
         private int GetSoulLevel(DS2SClass charClass)
         {
             int sl = charClass.SoulLevel;
-            sl += Vigor - charClass.Vigor;
-            sl += Attunement - charClass.Attunement;
-            sl += Vitality - charClass.Vitality;
-            sl += Endurance - charClass.Endurance;
-            sl += Strength - charClass.Strength;
-            sl += Dexterity - charClass.Dexterity;
-            sl += Adaptability - charClass.Adaptability;
-            sl += Intelligence - charClass.Intelligence;
-            sl += Faith - charClass.Faith;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.VGR) - charClass.Vigor;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.ATN) - charClass.Attunement;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.VIT) - charClass.Vitality;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.END) - charClass.Endurance;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.STR) - charClass.Strength;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.DEX) - charClass.Dexterity;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.ADP) - charClass.Adaptability;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.INT) - charClass.Intelligence;
+            sl += DS2P.PlayerData.GetAttributeLevel(ATTR.FTH) - charClass.Faith;
             return sl;
         }
         public void ResetSoulMemory()
         {
-            var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == Class);
+            var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == DS2P.PlayerData.Class);
             if (charClass == null) return;
 
             var soulLevel = GetSoulLevel(charClass);
             var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
 
-            SoulMemory = reqSoulMemory;
-            SoulMemory2 = reqSoulMemory;
+            DS2P.PlayerData.SoulMemory = reqSoulMemory;
+            DS2P.PlayerData.SoulMemory2 = reqSoulMemory;
         }
         private int GetRequiredSoulMemory(int SL, int baseSL)
         {
@@ -1578,15 +1576,15 @@ namespace DS2S_META.Utils.DS2Hook
         public void SetMaxLevels()
         {
             // Possibly to tidy
-            Vigor = 99;
-            Endurance = 99;
-            Vitality = 99;
-            Attunement = 99;
-            Strength = 99;
-            Dexterity = 99;
-            Adaptability = 99;
-            Intelligence = 99;
-            Faith = 99;
+            DS2P.PlayerData.SetAttributeLevel(ATTR.VGR,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.END,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.VIT,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.ATN,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.STR,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.DEX,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.ADP,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.INT,99);
+            DS2P.PlayerData.SetAttributeLevel(ATTR.FTH,99);
         }
         public void NewTestCharacter()
         {

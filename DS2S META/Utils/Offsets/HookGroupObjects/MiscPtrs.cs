@@ -15,10 +15,11 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? AvailableItemBag;
         public PHPointer? SpEffectCtrl;
         public PHPointer? WarpManager;
+        public PHPointer? PHLoadedEnemiesTable;
+        public PHPointer? PlayerParam;
         
         public PHLeaf? PHBIKP1Skip_Val1;
         public PHLeaf? PHBIKP1Skip_Val2;
-        
 
         public MiscPtrs(DS2SHook hook, Dictionary<string, PHPointer> PHPDict, Dictionary<string, PHLeaf?> leafdict)
         {
@@ -27,9 +28,11 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             AvailableItemBag = HGO.ValOrNull(PHPDict, "AvailableItemBag");
             SpEffectCtrl = HGO.ValOrNull(PHPDict, "SpEffectCtrl");
             WarpManager = HGO.ValOrNull(PHPDict, "WarpManager");
+            PlayerParam = HGO.ValOrNull(PHPDict, "PlayerParam");
 
             PHBIKP1Skip_Val1 = leafdict["BIKP1Skip_Val1"];
             PHBIKP1Skip_Val2 = leafdict["BIKP1Skip_Val2"];
+            PHLoadedEnemiesTable = HGO.ValOrNull(PHPDict,"LoadedEnemiesTable");
         }
 
         

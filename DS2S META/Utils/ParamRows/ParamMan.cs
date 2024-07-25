@@ -208,7 +208,7 @@ namespace DS2S_META.Utils
 
                 // Make param
                 int[] offsets = info[0].Split(';').Select(s => Hex2int(s)).ToArray();
-                PHPointer pointer = GetParamPointer(offsets);
+                PHPointer pointer = GetParamPointer(offsets) ?? throw new Exception("Not hooked, shouldn't get here");
                 PARAMDEF paramDef = XmlDeserialize(defPath);
                 Param param = new(pointer, offsets, paramDef, name, Hook.Is64Bit);
 
@@ -355,9 +355,9 @@ namespace DS2S_META.Utils
                     break;
             }
         }
-        private static PHPointer GetParamPointer(int[] offsets)
+        private static PHPointer? GetParamPointer(int[] offsets)
         {
-            return Hook.CreateChildPointer(Hook.BaseA, offsets);
+            return Hook?.CreateChildPointer(Hook.DS2P.Core.BaseA, offsets);
         }
         
         // Core Functionality:
