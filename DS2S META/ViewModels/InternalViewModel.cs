@@ -60,7 +60,7 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                var currCovId = Hook?.DS2P.CovenantHGO.CurrentCovenant;
+                var currCovId = Hook?.DS2P?.CovenantHGO.CurrentCovenant;
                 if (currCovId == null)
                     return string.Empty;
                 return DS2Resource.GetCovById((COV)currCovId).Name;

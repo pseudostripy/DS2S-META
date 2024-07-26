@@ -288,7 +288,7 @@ namespace DS2S_META.Utils.DS2Hook
             if (isAdd)
             {
                 outSouls = BitConverter.GetBytes(inSouls); // AddSouls
-                if (Is64Bit)
+                if (Hook.Is64Bit)
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt64());
                 else
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.GiveSouls!.Resolve().ToInt32());
@@ -297,7 +297,7 @@ namespace DS2S_META.Utils.DS2Hook
             {
                 int new_souls = -inSouls; // needs to "subtract a positive number"
                 outSouls = BitConverter.GetBytes(new_souls); // SubractSouls
-                if (Is64Bit)
+                if (Hook.Is64Bit)
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt64());
                 else
                     funcChangeSouls = BitConverter.GetBytes(DS2P.Func.RemoveSouls!.Resolve().ToInt32());

@@ -31,6 +31,7 @@ namespace DS2S_META.Utils.DS2Hook
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
         //public static readonly string ExeDir = Environment.CurrentDirectory;
+        private List<Inject> InstalledInjects = new();
         private bool DmgModInstalled => DmgModInj1 != null;
         private IntPtr DmgModCodeAddr = IntPtr.Zero;
         private Inject? DmgModInj1 = null;
@@ -67,7 +68,7 @@ namespace DS2S_META.Utils.DS2Hook
         public BBJTYPE BBJType;
 
         //internal DS2HookOffsets Offsets;
-        public bool InGame => DS2P.CGS.InGame; // wrapper (toremove?)
+        public bool InGame => DS2P?.CGS.InGame ?? false; // wrapper (toremove?)
 
         // -----------------------------------------   WIP   ---------------------------------------
         public DS2Ptrs DS2P;
@@ -85,7 +86,7 @@ namespace DS2S_META.Utils.DS2Hook
         public void SetSpeedhackSpeed(double value) => SpeedhackMan?.SetSpeed(value);
 
         // Utility Info
-        public static bool Reading { get; set; }
+        //public static bool Reading { get; set; }
         
         
         public bool IsLoading => DS2P.CGS.IsLoading;
@@ -698,7 +699,7 @@ namespace DS2S_META.Utils.DS2Hook
         //}
         public void UpdateMainProperties()
         {
-            DS2P.UpdateProperties();
+            DS2P?.UpdateProperties();
             //OnPropertyChanged(nameof(CharacterName));
             //OnPropertyChanged(nameof(ID));
             //OnPropertyChanged(nameof(Online));
@@ -847,7 +848,7 @@ namespace DS2S_META.Utils.DS2Hook
 
         public void UnlockBonfires()
         {
-            foreach (var bf in DS2Resource.Bonfires)
+            foreach (var bf in DS2Resource.Bonfires.Where(bf => bf.ID != DS2SBonfire._GameStartId))
                 DS2P.BonfiresHGO.SetBonfireLevelById(bf.ID, 1);
             
 
@@ -995,6 +996,7 @@ namespace DS2S_META.Utils.DS2Hook
 
         public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
 
+        //private bool BIKSkipInstalled
         internal bool BIKP1Skip(bool enable, bool doLoad)
         {
             if (!Hooked) return false;
@@ -1351,6 +1353,7 @@ namespace DS2S_META.Utils.DS2Hook
         {
             // Wrapper for slightly tidier handling of injects
             Kernel32.WriteBytes(Handle, inj.InjAddr, inj.NewBytes); // install
+            InstalledInjects.Add(inj);
         }
         private void UninstallInject(Inject inj)
         {
@@ -1799,7 +1802,7 @@ namespace DS2S_META.Utils.DS2Hook
         public void SetNoDeath(bool noDeath)
         {
             if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
-            HealthMin = noDeath ? 1 : -99999;
+            DS2P.PlayerState.HealthMin = noDeath ? 1 : -99999;
         }
         public void SetRapierOHKO(bool ohko)
         {

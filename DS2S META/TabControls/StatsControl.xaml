@@ -23,11 +23,11 @@
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <StackPanel Margin="15">
                     <Label Content="Name" />
-                    <TextBox x:Name="txtName" Text="{Binding Hook.CharacterName}" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox x:Name="txtName" Text="{Binding Hook.DS2P.PlayerData.CharacterName}" />
                     <!--<Label Content="Sex" />
                 <ComboBox Name="Sex"/>-->
                     <Label Content="Class" />
-                    <ComboBox Name="cmbClass" SelectionChanged="cbmClass_SelectionChanged"/>
+                    <ComboBox Name="cmbClass"/>
                     <!--<Label Content="Physique" />
                 <ComboBox Name="Physique"/>-->
                 </StackPanel>
@@ -50,17 +50,17 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Content="Souls" Grid.Row="0" Grid.Column="0"/>
-                        <TextBox Text="{Binding Hook.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                        <TextBox Text="{Binding Hook.DS2P.PlayerData.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" />
                         <Label Content="SoulMemory" Grid.Row="1" Grid.Column="0" />
-                        <TextBox Text="{Binding Hook.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
+                        <TextBox Text="{Binding Hook.DS2P.PlayerData.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100"  Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
                         <Label Content="SoulMemory2" Grid.Row="2" Grid.Column="0"/>
-                        <TextBox Text="{Binding Hook.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                        <TextBox Text="{Binding Hook.DS2P.PlayerData.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" />
                     </Grid>
-                    <Button Content="Reset Soul Memory" x:Name="btnResetSoulMemory" Width="150" IsEnabled="False" Click="ResetSoulMemory_Click"/>
+                    <Button Content="Reset Soul Memory" x:Name="btnResetSoulMemory" Width="150" IsEnabled="False" />
                     <Label Content="Give Souls" HorizontalAlignment="Center"/>
-                    <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" LostKeyboardFocus="Name_LostKeyboardFocus" Minimum="-9999999" Value="0" ClipValueToMinMax="True"/>
+                    <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" Minimum="-9999999" Value="0" ClipValueToMinMax="True"/>
                     <Separator Visibility="Hidden"/>
-                    <Button x:Name="btnGive" Content="Give" Width="100" Click="GiveSouls_Click" IsEnabled="{Binding EnGiveSouls}" />
+                    <Button x:Name="btnGive" Content="Give" Width="100" IsEnabled="{Binding EnGiveSouls}" />
                 </StackPanel>
 
             </Border>
@@ -69,8 +69,8 @@
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="10,10,10,0">
             <Label Content="Stats"/>
             <StackPanel Orientation="Horizontal" Width="110" Margin="5">
-                <Button Content="Reset" Width="50" Margin="0,0,10,0" Click="Reset_Click" x:Name="btnReset"/>
-                <Button Content="Max" Width="50" Click="Max_Click" x:Name="btnMax"/>
+                <Button Content="Reset" Width="50" Margin="0,0,10,0"  x:Name="btnReset"/>
+                <Button Content="Max" Width="50" x:Name="btnMax"/>
             </StackPanel>
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <Grid x:Name="gridStatLevels" Margin="5,5,5,5" >
@@ -130,9 +130,9 @@
                     <Label Content="Hollow Level" Grid.Row="0" Grid.Column="0"/>
                     <wpfTool:IntegerUpDown Value="{Binding Hook.HollowLevel}" x:Name="nudHollowLevel" Maximum="32" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" Width="85"/>
                     <Label Content="Sinner Level" Grid.Row="1" Grid.Column="0" />
-                    <TextBox Text="{Binding Hook.SinnerLevel}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox Text="{Binding Hook.SinnerLevel}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="68" />
                     <Label Content="Sinner Points" Grid.Row="2" Grid.Column="0"/>
-                    <TextBox Text="{Binding Hook.SinnerPoints}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="68" LostKeyboardFocus="Name_LostKeyboardFocus"/>
+                    <TextBox Text="{Binding Hook.SinnerPoints}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="68" />
                 </Grid>
 
             </Border>

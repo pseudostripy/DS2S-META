@@ -36,7 +36,7 @@ namespace DS2S_META.ViewModels
                 return "No";
             }
         }
-        public string ContentOnline => Hook.DS2P.CGS.Online;
+        public string ContentOnline => Hook.DS2P?.CGS.Online ?? "Unhooked";
         public Brush ForegroundID
         {
             get
@@ -62,7 +62,7 @@ namespace DS2S_META.ViewModels
                 if (!Hook.Hooked)
                     return Brushes.Black;
 
-                if (Hook.DS2P.CGS.Online == "YES")
+                if (Hook.DS2P?.CGS.Online == "YES")
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }

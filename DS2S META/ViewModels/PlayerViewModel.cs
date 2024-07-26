@@ -23,10 +23,10 @@ namespace DS2S_META.ViewModels
     public class PlayerViewModel : ViewModelBase
     {
         // Shorthand to used structures
-        private BonfiresHGO? BF => Hook?.DS2P.BonfiresHGO;
-        private PlayerStateHGO? PS => Hook?.DS2P.PlayerState;
-        private CameraHGO? Camera => Hook?.DS2P.CameraHGO;
-        private CoreGameState? Game => Hook?.DS2P.CGS;
+        private BonfiresHGO? BF => Hook?.DS2P?.BonfiresHGO;
+        private PlayerStateHGO? PS => Hook?.DS2P?.PlayerState;
+        private CameraHGO? Camera => Hook?.DS2P?.CameraHGO;
+        private CoreGameState? Game => Hook?.DS2P?.CGS;
 
         // Binding Variables:
         public bool EnNoDeath => MetaFeature.FtNoDeath;
@@ -225,11 +225,11 @@ namespace DS2S_META.ViewModels
         }
         public int StaminaCurr
         {
-            get => (int)(Hook?.Stamina ?? 0);
+            get => (int)(PS?.Stamina ?? 0);
             set
             {
-                if (Hook?.Stamina != null)
-                    Hook.Stamina = value;
+                if (PS?.Stamina != null)
+                    PS.Stamina = value;
                 OnPropertyChanged();
                 StaminaLock = false; // onLostFocus
             }
@@ -469,31 +469,31 @@ namespace DS2S_META.ViewModels
         public float[] _currentPos = ZEROVECFLOAT;
         public float[] CurrentPos
         {
-            get => Hook?.Pos ?? ZEROVECFLOAT;
+            get => PS?.Pos ?? ZEROVECFLOAT;
             set
             {
                 _currentPos = value;
-                if (Hook?.Pos != null)
-                    Hook.Pos = _currentPos;
+                if (PS?.Pos != null)
+                    PS.Pos = _currentPos;
                 OnPropertyChanged();
             }
         }
         public float[] _stablePos = ZEROVECFLOAT;
         public float[] StablePos
         {
-            get => Hook?.StablePos ?? ZEROVECFLOAT;
+            get => PS?.StablePos ?? ZEROVECFLOAT;
             set
             {
                 _stablePos = value;
-                if (Hook?.StablePos != null)
-                    Hook.StablePos = _stablePos;
+                if (PS?.StablePos != null)
+                    PS.StablePos = _stablePos;
                 OnPropertyChanged();
             }
         }
         private float[] _storedPos = ZEROVECFLOAT;
         public float[] StoredPos
         {
-            get => Hook?.StablePos ?? ZEROVECFLOAT;
+            get => PS?.StablePos ?? ZEROVECFLOAT;
             set
             {
                 _storedPos = value;
@@ -730,8 +730,8 @@ namespace DS2S_META.ViewModels
         // Misc.
         public void DeltaHeight(float delta)
         {
-            if (Hook == null) return;
-            Hook.PosZ += delta;
+            if (PS == null) return;
+            PS.PosZ += delta;
 
             // QOL: AutoTurn off gravity
             ChkGravity = false;

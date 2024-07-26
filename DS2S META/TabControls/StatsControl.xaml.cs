@@ -33,6 +33,11 @@ namespace DS2S_META
             //    cmbClass.Items.Add(charClass);
             //cmbClass.SelectedIndex = -1;
         }
+
+        //private void cbmClass_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+
+        //}
         //public void ReloadTab()
         //{
         //}

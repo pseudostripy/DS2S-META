@@ -17,11 +17,11 @@ namespace DS2S_META.ViewModels
         
         public DS2SHook? Hook { get; private set; }
         public bool GameLoaded { get; set; }
-        public bool Reading
-        {
-            get => DS2SHook.Reading;
-            set => DS2SHook.Reading = value;
-        }
+        //public bool Reading
+        //{
+        //    get => DS2SHook.Reading;
+        //    set => DS2SHook.Reading = value;
+        //}
         ObservableCollection<ViewModelBase> ViewModels = new();
         public DmgCalcViewModel DmgCalcViewModel { get; set; }
 

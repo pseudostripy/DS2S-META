@@ -15,7 +15,7 @@ namespace DS2S_META.Utils
         internal byte[]? NewBytes;
         internal int InjLen => OrigBytes?.Length ?? 0;
         public const byte NOP = 0x90; // No-Op instruction x64
-
+        
         public Inject(IntPtr injaddr, byte[] origbytes, byte[] newbytes) 
         {
             if (origbytes.Length != newbytes.Length)

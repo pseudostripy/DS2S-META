@@ -41,9 +41,9 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         }
 
         // REDataDefinitionInterfaces
-        private PHLeaf? PHCamX;
-        private PHLeaf? PHCamY;
-        private PHLeaf? PHCamZ;
+        public PHLeaf? PHCamX { get; set; } = null;
+        public PHLeaf? PHCamY { get; set; } = null;
+        public PHLeaf? PHCamZ { get; set; } = null;
 
         public CameraHGO(DS2SHook hook, Dictionary<string, PHLeaf?> cameraGrp) : base(hook)
         {

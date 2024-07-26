@@ -124,7 +124,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
 
             PHSoulLevel = otherLeaves["SoulLevel"];
             PHPlayerName = otherLeaves["PlayerName"];
-            PHClass = otherLeaves["class"];
+            PHClass = otherLeaves["Class"];
 
             PHSoulMemory = playerParamGrp["SoulMemory"];
             PHSoulMemory2 = playerParamGrp["SoulMemory2"];

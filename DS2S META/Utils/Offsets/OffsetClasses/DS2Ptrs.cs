@@ -74,6 +74,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             _reDataUnpacker = new REDataUnpacker(hook, ver);
 
             // Assign to properties:
+            Core = new(hook, REDU.PHPDict);
             CovenantHGO = new(hook, REDU.LeafGroups["CovenantsGroup"],REDU.Leaves);
             ScalingBonusHGO = new(hook, REDU.LeafGroups["BonusScalingTableGroup"]);
             Func = new(hook, REDU.PHPDict);
@@ -83,7 +84,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             PlayerState = new(hook, REDU.LeafGroups["PlayerGroup"], REDU.LeafGroups["WarpGroup"]);
             PlayerData = new(hook, REDU.LeafGroups["PlayerEquipmentGroup"],REDU.LeafGroups["AttributeGroup"],
                                     REDU.LeafGroups["PlayerParamGroup"],REDU.Leaves);
-            CameraHGO = new(hook, REDU.Leaves);
+            CameraHGO = new(hook, REDU.LeafGroups["CameraGroup"]);
         }
 
         public void UpdateProperties()
@@ -93,6 +94,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             CGS.UpdateProperties();
             BonfiresHGO.UpdateProperties();
             PlayerState.UpdateProperties();
+            PlayerData.UpdateProperties();
             CameraHGO.UpdateProperties();
         }
 
