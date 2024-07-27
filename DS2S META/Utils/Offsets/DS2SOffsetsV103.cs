@@ -18,12 +18,17 @@ namespace DS2S_META.Utils.Offsets
             BIKP1Skip_Val2 = new int[] { 0x70, 0x20, 0x18, 0xd52 };
 
 
+            DisablePartyWalkTimer = new int[] { 0x18, 0xD70, 0x10, 0x0};
+            //GrabParamID = new int[] { 0x18, 0xD70, 0x10, 0x8 };
+
 
             if (Func == null)
                 return;
 
             Func.DisplayItem = "48 8B 89 D8 00 00 00 48 85 C9 0F 85 20 5E 00 00";
             Func.ApplySpEffectAoB = "48 89 6C 24 f8 48 8d 64 24 f8 48 8D 2d 33 A7 0A 00";
+
+
           
         }
     }

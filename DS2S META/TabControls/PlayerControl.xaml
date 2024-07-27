@@ -201,6 +201,8 @@
                 <CheckBox  IsChecked="{Binding ChkInfiniteStamina}" Content="Infinite Stamina" x:Name="CbxInfiniteStamina" IsEnabled="{Binding EnInfiniteStamina}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="3" Height="20" Margin="0,5,0,5" />
                 <CheckBox  IsChecked="{Binding ChkDisableSkirt}" Content="Disable poison" x:Name="CbxDisableSkirtDamage" IsEnabled="{Binding EnDisableSkirt}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="4" Grid.Row="3" Height="20" Margin="0,5,0,5" />
                 <CheckBox  IsChecked="{Binding ChkInfiniteSpells}" Content="Infinite Spells" x:Name="CbxInfiniteSpells" IsEnabled="{Binding EnInfiniteSpells}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4" Height="20" Margin="0,5,0,5" />
+                <CheckBox  IsChecked="{Binding ChkDisablePartyWalkTimer}" Content="Partywalk timer" x:Name="CbxDisablePartyWalkTimer" IsEnabled="{Binding EnDisablePartyWalkTimer}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="4" Height="20" Margin="0,5,0,5" />
+
                 <Button Content="999999 Souls" IsEnabled="{Binding EnMoneyBags}" Command="{Binding BtnMoneybagsCommand}" Grid.Column="4" />
                 <Button Content="Restore Humanity" IsEnabled="{Binding EnRestoreHumanity}" Command="{Binding BtnRestoreHumanityCommand}" Grid.Row="1" Grid.Column="4"/>
                 <Button Content="New Test Character" IsEnabled="{Binding EnNewTestCharacter}" Command="{Binding BtnNewTestCharCommand}" Grid.Row="2" Grid.Column="4"/>

@@ -253,6 +253,7 @@ Reverting to unhooking RIVA the slow way";
             Hook.UpdateInternalProperties();
             Hook.UpdateBonfireProperties();
             Hook.UpdateCovenantProperties();
+
         }
         //private void UpdateAllViewModels()
         //{

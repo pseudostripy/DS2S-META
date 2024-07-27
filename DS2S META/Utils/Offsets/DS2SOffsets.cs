@@ -201,9 +201,11 @@ namespace DS2S_META.Utils.Offsets
                 PlayerNameOffset = 0xA8,
                 PlayerBaseMiscOffset = new int[2] { 0xA8, 0xC0 },
                 NoGrav = new int[2] { 0xD0, 0x100 },
+                
             };
 
             // Func AoBs:
+            DisablePartyWalkTimer = new int[] { 0x18, 0xD70, 0x10, 0x0 };
             Func = new()
             {
                 ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41",

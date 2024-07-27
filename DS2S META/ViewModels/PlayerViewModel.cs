@@ -49,9 +49,11 @@ namespace DS2S_META.ViewModels
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
-        public bool EnDisableSkirt = MetaFeature.FtDisableSkirt;
+        public bool EnDisableSkirt => MetaFeature.FtDisableSkirt;
 
-        public bool EnInfiniteSpells = MetaFeature.FtInfiniteSpells;
+        public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
+
+        public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
 
 
         // Other properties
@@ -127,6 +129,20 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkDisableAi));
             }
         }
+
+        private bool _chkDisablePartyWalkTimer = false;
+        public bool ChkDisablePartyWalkTimer
+        {
+            get => _chkDisablePartyWalkTimer;
+            set
+            {
+                _chkDisablePartyWalkTimer = value;
+                Hook?.SetDisablePartyWalkTimer(value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
+            }
+        }
+
         private bool ChkNoGravity => !ChkGravity;
         private bool _chkGravity = true;
         public bool ChkGravity
@@ -560,6 +576,8 @@ namespace DS2S_META.ViewModels
 
         public void ToggleInfiniteSpells() => ChkInfiniteSpells = !ChkInfiniteSpells;
 
+        //public void ToggleDisablePartyWalkTimer() => ChkDisablePartyWalkTimer = !ChkDisablePartyWalkTimer;
+
         // Programmatic ItemControl Management
         private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
         {
@@ -787,9 +805,11 @@ namespace DS2S_META.ViewModels
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
             Hook?.SetDisableAI(ChkDisableAi);
+   
             Hook?.SetInfiniteStamina(ChkInfiniteStamina);
             Hook?.SetDisableSkirt(ChkDisableSkirt);
             Hook?.SetInfiniteSpells(ChkInfiniteSpells);
+        
          
             
             if (Properties.Settings.Default.NoGravThroughLoads)
@@ -830,6 +850,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnNewTestCharacter));
             OnPropertyChanged(nameof(EnDisableSkirt));
             OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
         }
         public override void UpdateViewModel()
         {
@@ -852,14 +873,17 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnDmgMod));
             OnPropertyChanged(nameof(EnDisableSkirt));
             OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
 
         }
         public override void DoSlowUpdates()
+
         {
             // put things here if less concerned about fastest updates
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
             OnPropertyChanged(nameof(ManagedBfs));
+            Hook?.SetDisablePartyWalkTimer(ChkDisablePartyWalkTimer);
         }
         public override void CleanupVM()
         {

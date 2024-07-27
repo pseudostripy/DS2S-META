@@ -60,6 +60,7 @@ namespace DS2S_META.Utils.Offsets
         public int[]? LoadingState;
         public int[]? BIKP1Skip_Val1;
         public int[]? BIKP1Skip_Val2;
+        public int[]? DisablePartyWalkTimer;
         public int GameState;
     }
 }
