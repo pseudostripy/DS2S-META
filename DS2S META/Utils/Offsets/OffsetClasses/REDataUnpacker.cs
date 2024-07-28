@@ -47,6 +47,11 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             DoChildPtrs();
             DoLeaves();
             DoLeafGroups();
+
+
+
+            if (InfoErrors.Count > 0)
+                MetaExceptionStaticHandler.Raise("Some issue in pointer setup, please debug here"); // we're not on dispatcher!
         }
 
         // Core
@@ -145,13 +150,17 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         {
             // Handle nominal (parent exists and is resolved)
             var toAddPhP = childCL.InitFromParent(Hook, resolvedParentPtr);
-            if (toAddPhP.Resolve() == IntPtr.Zero)
-                return AddInfoError($"ChildPtr {childid} unresolvable: offsets cannot be followed from the well-defined parent"); // Parent is undefined
+            //if (toAddPhP.Resolve() == IntPtr.Zero)
+            //    return AddInfoError($"ChildPtr {childid} unresolvable: offsets cannot be followed from the well-defined parent"); // Parent is undefined
             RecursiveAddToDict(childid, toAddPhP);
             return 1;
         }
+
         private void RecursiveAddToDict(string toAddId, PHPointer toAdd)
         {
+            // We still need to add the children recursively. This is essentially fixing up the
+            // offset order, since it can be defined somewhat arbitrarily in DS2REData
+
             // add it
             PHPDict[toAddId] = toAdd;
 
@@ -163,11 +172,11 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
                 var limboChildId = kvp.Key;
                 var limboChildCL = kvp.Value;
                 var limboPHP = limboChildCL.InitFromParent(Hook, toAdd);
-                if (limboPHP.Resolve() == IntPtr.Zero)
-                {
-                    InfoErrors.Add($"ChildPtr {limboPHP} unresolvable: Limbo child offsets cannot be followed from the well-defined parent"); // Parent is undefined
-                    continue;
-                }
+                //if (limboPHP.Resolve() == IntPtr.Zero)
+                //{
+                //    InfoErrors.Add($"ChildPtr {limboPHP} unresolvable: Limbo child offsets cannot be followed from the well-defined parent"); // Parent is undefined
+                //    continue;
+                //}
                 LimboDictCL.Remove(limboChildId); // handled
                 RecursiveAddToDict(limboChildId, limboPHP);
             }

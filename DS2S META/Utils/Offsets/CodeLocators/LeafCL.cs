@@ -20,10 +20,12 @@ namespace DS2S_META.Utils.Offsets.CodeLocators
 
         public PHLeaf InitFromParent(PHook PH, PHPointer parent)
         {
-            // Sanity check
-            if (parent.Resolve() == IntPtr.Zero)
-                throw new Exception("You shouldn't get here. Fail in logic that checks parentPtr is resolved");
-
+            // There was an interesting bug here. Basically we don't need this child pointer
+            // resolved yet, as long as its resolvable at run-time. For example, the PlayerCtrl
+            // pointer isn't set up in the game until you load a game file. Upon setup it always
+            // seems to be in the same place as BaseA->0xd0. This means that we *definitely do*
+            // need the front end checks to ensure playerCtrl pointers and their children
+            // are not called before the pointer is valid.
             var php = PH.CreateChildPointer(parent, Offsets.ToArray());
             return new PHLeaf(php, LeafOffset);
         }

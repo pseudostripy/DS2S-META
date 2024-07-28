@@ -294,7 +294,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("WarpZ3", (ANYSOTFS, 0x1c4), (ANYVANILLA, 0x144)),
                 new DetachedLeaf("WarpX3", (ANYSOTFS, 0x1c8), (ANYVANILLA, 0x148))),
 
-            new("AttributeGroup", "PlayerCtrl",
+            new("AttributeGroup", "PlayerParam",
                 new DetachedLeaf("VGR", (ANYSOTFS, 0x8), (ANYVANILLA, 0x4)),
                 new DetachedLeaf("END", (ANYSOTFS, 0xa), (ANYVANILLA, 0x6)),
                 new DetachedLeaf("VIT", (ANYSOTFS, 0xc), (ANYVANILLA, 0x8)),

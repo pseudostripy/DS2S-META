@@ -32,11 +32,11 @@ namespace DS2S_META.Utils.DS2Hook
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
         //public static readonly string ExeDir = Environment.CurrentDirectory;
-        private List<Inject> InstalledInjects = new();
-        private bool DmgModInstalled => DmgModInj1 != null;
-        private IntPtr DmgModCodeAddr = IntPtr.Zero;
-        private Inject? DmgModInj1 = null;
-        private Inject? DmgModInj2 = null;
+        //private List<Inject> InstalledInjects = new();
+        //private bool DmgModInstalled => DmgModInj1 != null;
+        //private IntPtr DmgModCodeAddr = IntPtr.Zero;
+        //private Inject? DmgModInj1 = null;
+        //private Inject? DmgModInj2 = null;
 
         public MainWindow MW { get; set; }
 
@@ -1367,13 +1367,13 @@ namespace DS2S_META.Utils.DS2Hook
         //    Kernel32.WriteBytes(Handle, inj.InjAddr, inj.OrigBytes); // revert to original
         //    InstalledInjects.Remove(inj);
         //}
-        public bool OHKO(bool dealFullDmg, bool recvNoDmg)
-        {
-            if (dealFullDmg || recvNoDmg)
-                return InstallDmgMod(dealFullDmg, recvNoDmg, HIGHDMG, 0);
-            else
-                return UninstallDmgMod();
-        }
+        //public bool OHKO(bool dealFullDmg, bool recvNoDmg)
+        //{
+        //    if (dealFullDmg || recvNoDmg)
+        //        return InstallDmgMod(dealFullDmg, recvNoDmg, HIGHDMG, 0);
+        //    else
+        //        return UninstallDmgMod();
+        //}
         private void EnsureInstalledNoDmgMod()
         {
             if (NoDmgMod?.IsInstalled == true)
@@ -1394,9 +1394,9 @@ namespace DS2S_META.Utils.DS2Hook
             EnsureInstalledNoDmgMod();
             NoDmgMod?.SetDmgModSettings(affectDealtDmg, affectRcvdDmg, dmgfacDealt, dmgfacRcvd);
         }
-        private bool InstallDmgMod(bool affectDealtDmg, bool affectRecvDmg, int dmgFactorDealt, int dmgFactorRecvd)
-        {
-            throw new NotImplementedException("should be in its own file now");
+        //private bool InstallDmgMod(bool affectDealtDmg, bool affectRecvDmg, int dmgFactorDealt, int dmgFactorRecvd)
+        //{
+            //throw new NotImplementedException("should be in its own file now");
             //if (MetaFeature.IsInactive(METAFEATURE.DMGMOD))
             //    return false;
 
@@ -1493,21 +1493,9 @@ namespace DS2S_META.Utils.DS2Hook
             //DmgModInj2 = inj2;
             //DmgModCodeAddr = memalloc;
             //return true; // success
-        }
-        public bool UninstallDmgMod()
-        {
-            // Check we need to do anything
-            if (MetaFeature.IsInactive(METAFEATURE.DMGMOD) || !DmgModInstalled ||
-                DmgModCodeAddr == IntPtr.Zero)
-                return false;
-
-            // Uninstall
-            //UninstallInject(DmgModInj1);
-            //UninstallInject(DmgModInj2);
-            //Free(DmgModCodeAddr);
-            return true; // success
-        }
-
+        //}
+        public void UninstallDmgMod() => NoDmgMod?.Uninstall();
+        
         // QoL Wrappers:
         public void GiveItem(ITEMID itemid, short amount = 1, byte upgrade = 0, byte infusion = 0,
                              GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)

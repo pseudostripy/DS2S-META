@@ -46,6 +46,7 @@ namespace DS2S_META.Utils.DS2Hook.MemoryMods
         }
         public override void Uninstall() 
         {
+            if (!IsInstalled) return;
             Inj1?.Uninstall();
             Inj2?.Uninstall();
         }
