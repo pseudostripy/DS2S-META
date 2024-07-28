@@ -25,6 +25,7 @@ using DS2S_META.Utils.Offsets.OffsetClasses;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using DS2S_META.Dialog;
+using DS2S_META.Utils.DS2Hook.MemoryMods;
 
 namespace DS2S_META.Utils.DS2Hook
 {
@@ -87,8 +88,10 @@ namespace DS2S_META.Utils.DS2Hook
 
         // Utility Info
         //public static bool Reading { get; set; }
-        
-        
+        public NoDmgMod? NoDmgMod;
+
+
+
         public bool IsLoading => DS2P.CGS.IsLoading;
 
         //private int _gamestate;
@@ -994,13 +997,17 @@ namespace DS2S_META.Utils.DS2Hook
         //    return warped;
         //}
 
-        public void UninstallBIKP1Skip() => BIKP1Skip(false, false);
+        public void UninstallBIKP1Skip()
+        {
+            //if (InstalledInjects.Contains(InstallInject))
+            BIKP1Skip(false, false);
+        } 
 
         //private bool BIKSkipInstalled
         internal bool BIKP1Skip(bool enable, bool doLoad)
         {
             if (!Hooked) return false;
-            ASM.ApplyBIKP1Skip(enable);
+            //ASM.ApplyBIKP1Skip(enable);
             
             if (doLoad)
                 WarpLast(); // force a reload to fix some memes; only on first click
@@ -1349,16 +1356,17 @@ namespace DS2S_META.Utils.DS2Hook
 
         // No Damage injects:
         private const int HIGHDMG = 0x4b18967f; // float 9999999.0
-        private void InstallInject(Inject inj)
-        {
-            // Wrapper for slightly tidier handling of injects
-            Kernel32.WriteBytes(Handle, inj.InjAddr, inj.NewBytes); // install
-            InstalledInjects.Add(inj);
-        }
-        private void UninstallInject(Inject inj)
-        {
-            Kernel32.WriteBytes(Handle, inj.InjAddr, inj.OrigBytes); // revert to original
-        }
+        //private void InstallInject(Inject inj)
+        //{
+        //    // Wrapper for slightly tidier handling of injects
+        //    Kernel32.WriteBytes(Handle, inj.InjAddr, inj.NewBytes); // install
+        //    InstalledInjects.Add(inj);
+        //}
+        //private void UninstallInject(Inject inj)
+        //{
+        //    Kernel32.WriteBytes(Handle, inj.InjAddr, inj.OrigBytes); // revert to original
+        //    InstalledInjects.Remove(inj);
+        //}
         public bool OHKO(bool dealFullDmg, bool recvNoDmg)
         {
             if (dealFullDmg || recvNoDmg)
@@ -1366,120 +1374,125 @@ namespace DS2S_META.Utils.DS2Hook
             else
                 return UninstallDmgMod();
         }
-        public bool GeneralizedDmgMod(bool dealFullDmg, bool dealNoDmg, bool recvNoDmg)
+        private void EnsureInstalledNoDmgMod()
+        {
+            if (NoDmgMod?.IsInstalled == true)
+                return;
+            NoDmgMod ??= new NoDmgMod(this);
+            NoDmgMod.Install();
+        }
+        public void GeneralizedDmgMod(bool dealFullDmg, bool dealNoDmg, bool recvNoDmg)
         {
             // catch awkward logical bugs
-            if (dealFullDmg && dealNoDmg)
-            {
-                MetaExceptionStaticHandler.Raise("Cannot do zero and full damage together. Should be handled in ViewModel.");
-                return false;
-            }
+            if (dealFullDmg && dealNoDmg) throw new MetaLogicException("Cannot do zero and full damage together. Should be handled in ViewModel.");
 
             bool affectDealtDmg = dealFullDmg || dealNoDmg;
+            bool affectRcvdDmg = recvNoDmg;
             var dmgfacDealt = dealFullDmg ? HIGHDMG : 0; // irrelevant if affectDealtDmg == false
+            int dmgfacRcvd = recvNoDmg ? 0 : 1;
 
-            if (affectDealtDmg || recvNoDmg)
-                return InstallDmgMod(affectDealtDmg, recvNoDmg, dmgfacDealt, 0);
-            else
-                return UninstallDmgMod();
+            EnsureInstalledNoDmgMod();
+            NoDmgMod?.SetDmgModSettings(affectDealtDmg, affectRcvdDmg, dmgfacDealt, dmgfacRcvd);
         }
         private bool InstallDmgMod(bool affectDealtDmg, bool affectRecvDmg, int dmgFactorDealt, int dmgFactorRecvd)
         {
-            if (MetaFeature.IsInactive(METAFEATURE.DMGMOD))
-                return false;
+            throw new NotImplementedException("should be in its own file now");
+            //if (MetaFeature.IsInactive(METAFEATURE.DMGMOD))
+            //    return false;
 
-            if (DmgModInstalled)
-                UninstallDmgMod(); // start from a fresh inject incase settings change
+            //if (DmgModInstalled)
+            //    UninstallDmgMod(); // start from a fresh inject incase settings change
 
-            // Setup addresses for my new code:
-            var memalloc = Allocate(0x1000, flProtect: Kernel32.PAGE_EXECUTE_READWRITE); // host the assembly in memory
-            var p_code2st = IntPtr.Add(memalloc, 0x0);        // first thing
-            var p_code1st = p_code2st + 0x7e;                       // see assembly script
-            var module_addr = Process?.MainModule?.BaseAddress;
-            if (module_addr == null)
-            {
-                MetaExceptionStaticHandler.Raise("Cannot find DS2 Module address for hooks/inject calculations");
-                return false;
-            }
+            //// Setup addresses for my new code:
+            //var memalloc = Allocate(0x1000, flProtect: Kernel32.PAGE_EXECUTE_READWRITE); // host the assembly in memory
+            //var p_code2st = IntPtr.Add(memalloc, 0x0);        // first thing
+            //var p_code1st = p_code2st + 0x7e;                 // see assembly script
+            //var module_addr = Process?.MainModule?.BaseAddress;
+            //if (module_addr == null)
+            //{
+            //    MetaExceptionStaticHandler.Raise("Cannot find DS2 Module address for hooks/inject calculations");
+            //    return false;
+            //}
 
-            // First inject (amBeingHit)
-            var inj1_offset = 0x17aa65; // inject for figuring out if being hit [todo load from SOTFS_v1.03 offsets]
-            var p_inj1 = IntPtr.Add((IntPtr)module_addr, inj1_offset);
-            var inj1_ob = new byte[] { 0x48, 0x89, 0x44, 0x24, 0x28, 0x48, 0x8b, 0x44, 0x24, 0x60, 0x48, 0x89, 0x44, 0x24, 0x20 };
+            //// First inject (amBeingHit)
+            //var inj1_offset = 0x17aa65; // inject for figuring out if being hit [todo load from SOTFS_v1.03 offsets]
+            //var p_inj1 = IntPtr.Add((IntPtr)module_addr, inj1_offset);
+            //var inj1_ob = new byte[] { 0x48, 0x89, 0x44, 0x24, 0x28, 0x48, 0x8b, 0x44, 0x24, 0x60, 0x48, 0x89, 0x44, 0x24, 0x20 };
 
-            // mov r11 ADDR; jmp r11
-            var inj1len = 0xf;
-            var inj1_nb_st = new byte[] { 0x49, 0xbb, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x41, 0xff, 0xe3 };
-            var inj1_nb = inj1_nb_st.NopExtend(inj1len);
-            if (inj1_nb == null) return false;
+            
+            //byte[] inj1_nb_st = new byte[] { 0x49, 0xbb, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x41, 0xff, 0xe3 }; // mov r11 ADDR; jmp r11
+            //var inj1_nb = inj1_nb_st.NopExtend(inj1_ob.Length);
+            
 
-            // fix and install
-            var inj1code_bytes = BitConverter.GetBytes(p_code1st.ToInt64());    // FFFFFFFF 00000000
-            Array.Copy(inj1code_bytes, 0x0, inj1_nb, 0x2, inj1code_bytes.Length);
-            var inj1 = new Inject(p_inj1, inj1_ob, inj1_nb);
-            if (!inj1.Valid) return false;
+            //// fix and install
+            //var inj1code_bytes = BitConverter.GetBytes(p_code1st.ToInt64());    // overwrite FFFFFFFF 00000000
+            //Array.Copy(inj1code_bytes, 0x0, inj1_nb, 0x2, inj1code_bytes.Length);
+            //var inj1 = new Inject(p_inj1, inj1_ob, inj1_nb);
+            //if (!inj1.Valid) return false;
 
-            // Second inject (dmgCalculation)
-            var inj2_offset = 0x138F77; // todo as above
-            var p_inj2 = IntPtr.Add((IntPtr)module_addr, inj2_offset);
-            var inj2_ob = new byte[] { 0x49, 0x8b, 0x46, 0x08, 0xf3, 0x41, 0x0f, 0x5e, 0xf1, 0xf3, 0x0f, 0x59, 0x70, 0x1c };
+            //// Second inject (dmgCalculation)
+            //var inj2_offset = 0x138F77; // todo as above
+            //var p_inj2 = IntPtr.Add((IntPtr)module_addr, inj2_offset);
+            //var inj2_ob = new byte[] { 0x49, 0x8b, 0x46, 0x08, 0xf3, 0x41, 0x0f, 0x5e, 0xf1, 0xf3, 0x0f, 0x59, 0x70, 0x1c };
 
-            var inj2len = 0xe;
-            var inj2_nb = Enumerable.Repeat(Inject.NOP, inj2len).ToArray();            // prefill as nops
-            var hdrinj2bytes = new byte[2] { 0x48, 0xb8 };                      // movabs rax, x
-            var inj2code_bytes = BitConverter.GetBytes(p_code2st.ToInt64());    // FFFFFFFF 00000000
-            var inj2_jbytes = new byte[2] { 0xff, 0xe0 };                       // jmp rax
+            //var inj2len = 0xe;
+            //var inj2_nb = Enumerable.Repeat(Inject.NOP, inj2len).ToArray();            // prefill as nops
+            //var hdrinj2bytes = new byte[2] { 0x48, 0xb8 };                      // movabs rax, x
+            //var inj2code_bytes = BitConverter.GetBytes(p_code2st.ToInt64());    // FFFFFFFF 00000000
+            //var inj2_jbytes = new byte[2] { 0xff, 0xe0 };                       // jmp rax
 
-            // build & install inj2
-            Array.Copy(hdrinj2bytes, 0x0, inj2_nb, 0x0, hdrinj2bytes.Length);
-            Array.Copy(inj2code_bytes, 0x0, inj2_nb, 0x2, inj2code_bytes.Length);
-            Array.Copy(inj2_jbytes, 0x0, inj2_nb, 0xa, inj2_jbytes.Length);
-            var inj2 = new Inject(p_inj2, inj2_ob, inj2_nb);
-            if (!inj2.Valid) return false;
+            //// build & install inj2
+            //Array.Copy(hdrinj2bytes, 0x0, inj2_nb, 0x0, hdrinj2bytes.Length);
+            //Array.Copy(inj2code_bytes, 0x0, inj2_nb, 0x2, inj2code_bytes.Length);
+            //Array.Copy(inj2_jbytes, 0x0, inj2_nb, 0xa, inj2_jbytes.Length);
+            //var inj2 = new Inject(p_inj2, inj2_ob, inj2_nb);
+            //if (!inj2.Valid) return false;
 
-            // Prep assembly substitutions
-            var MEMSTORE_OFFSET = 0x100;
-            var amDealingHit = IntPtr.Add(p_code2st, MEMSTORE_OFFSET);
-            var enDealNoDmg = IntPtr.Add(p_code2st, MEMSTORE_OFFSET + 0x8);
-            var enTakeNoDmg = IntPtr.Add(p_code2st, MEMSTORE_OFFSET + 0x10);
-            var amDealingHit_bytes = BitConverter.GetBytes(amDealingHit.ToInt64());
-            var enDealNoDmg_bytes = BitConverter.GetBytes(enDealNoDmg.ToInt64());
-            var enTakeNoDmg_bytes = BitConverter.GetBytes(enTakeNoDmg.ToInt64());
-            var inj1ret_bytes = BitConverter.GetBytes(inj1.RetAddr.ToInt64());
-            var inj2ret_bytes = BitConverter.GetBytes(inj2.RetAddr.ToInt64());
-            var dmgfacDealt_bytes = BitConverter.GetBytes(dmgFactorDealt);
-            var dmgfacRecvd_bytes = BitConverter.GetBytes(dmgFactorRecvd);
-
-
-            // Clone reference assembly and populate links
-            var asm = (byte[])DS2SAssembly.NoDmgMod.Clone();
-            Array.Copy(amDealingHit_bytes, 0, asm, 0x10, amDealingHit_bytes.Length);
-            Array.Copy(enDealNoDmg_bytes, 0, asm, 0x23, enDealNoDmg_bytes.Length);
-            Array.Copy(enTakeNoDmg_bytes, 0, asm, 0x46, enTakeNoDmg_bytes.Length);
-            Array.Copy(amDealingHit_bytes, 0, asm, 0x64, amDealingHit_bytes.Length);
-            Array.Copy(inj2ret_bytes, 0, asm, 0x74, inj2ret_bytes.Length);
-            Array.Copy(amDealingHit_bytes, 0, asm, 0x8f, amDealingHit_bytes.Length);
-            Array.Copy(inj1ret_bytes, 0, asm, 0x9f, inj1ret_bytes.Length);
-            Array.Copy(dmgfacDealt_bytes, 0, asm, 0x35, dmgfacDealt_bytes.Length); // dealt dmgfactor if enabled
-            Array.Copy(dmgfacRecvd_bytes, 0, asm, 0x58, dmgfacRecvd_bytes.Length); // recv dmgfactor if enabled
+            //// Prep assembly substitutions
+            //var MEMSTORE_OFFSET = 0x100;
+            //var amDealingHit = IntPtr.Add(p_code2st, MEMSTORE_OFFSET);
+            //var enDealNoDmg = IntPtr.Add(p_code2st, MEMSTORE_OFFSET + 0x8);
+            //var enTakeNoDmg = IntPtr.Add(p_code2st, MEMSTORE_OFFSET + 0x10);
+            //var amDealingHit_bytes = BitConverter.GetBytes(amDealingHit.ToInt64());
+            //var enDealNoDmg_bytes = BitConverter.GetBytes(enDealNoDmg.ToInt64());
+            //var enTakeNoDmg_bytes = BitConverter.GetBytes(enTakeNoDmg.ToInt64());
+            //var inj1ret_bytes = BitConverter.GetBytes(inj1.RetAddr.ToInt64());
+            //var inj2ret_bytes = BitConverter.GetBytes(inj2.RetAddr.ToInt64());
+            //var dmgfacDealt_bytes = BitConverter.GetBytes(dmgFactorDealt);
+            //var dmgfacRecvd_bytes = BitConverter.GetBytes(dmgFactorRecvd);
 
 
-            // Write machine code into memory:
-            InstallInject(inj1);
-            InstallInject(inj2);
-            Kernel32.WriteBytes(Handle, p_code2st, asm); // install dmgmod code
+            //// Clone reference assembly and populate links
+            //var asm = (byte[])DS2SAssembly.NoDmgMod.Clone();
+            //Array.Copy(amDealingHit_bytes, 0, asm, 0x10, amDealingHit_bytes.Length);
+            //Array.Copy(enDealNoDmg_bytes, 0, asm, 0x23, enDealNoDmg_bytes.Length);
+            //Array.Copy(enTakeNoDmg_bytes, 0, asm, 0x46, enTakeNoDmg_bytes.Length);
+            //Array.Copy(amDealingHit_bytes, 0, asm, 0x64, amDealingHit_bytes.Length);
+            //Array.Copy(inj2ret_bytes, 0, asm, 0x74, inj2ret_bytes.Length);
+            //Array.Copy(amDealingHit_bytes, 0, asm, 0x8f, amDealingHit_bytes.Length);
+            //Array.Copy(inj1ret_bytes, 0, asm, 0x9f, inj1ret_bytes.Length);
+            //Array.Copy(dmgfacDealt_bytes, 0, asm, 0x35, dmgfacDealt_bytes.Length); // dealt dmgfactor if enabled
+            //Array.Copy(dmgfacRecvd_bytes, 0, asm, 0x58, dmgfacRecvd_bytes.Length); // recv dmgfactor if enabled
 
-            // Populate settings:
-            byte dealNoDmg_byte = affectDealtDmg ? (byte)1 : (byte)0;
-            byte takeNoDmg_byte = affectRecvDmg ? (byte)1 : (byte)0;
-            Kernel32.WriteByte(Handle, enDealNoDmg, dealNoDmg_byte);
-            Kernel32.WriteByte(Handle, enTakeNoDmg, takeNoDmg_byte);
 
-            // done
-            DmgModInj1 = inj1;
-            DmgModInj2 = inj2;
-            DmgModCodeAddr = memalloc;
-            return true; // success
+            //// Write machine code into memory:
+            //inj1.Install();
+            //inj2.Install();
+            ////InstallInject(inj1);
+            ////InstallInject(inj2);
+            //Kernel32.WriteBytes(Handle, p_code2st, asm); // install dmgmod code
+
+            //// Populate settings:
+            //byte dealNoDmg_byte = affectDealtDmg ? (byte)1 : (byte)0;
+            //byte takeNoDmg_byte = affectRecvDmg ? (byte)1 : (byte)0;
+            //Kernel32.WriteByte(Handle, enDealNoDmg, dealNoDmg_byte);
+            //Kernel32.WriteByte(Handle, enTakeNoDmg, takeNoDmg_byte);
+
+            //// done
+            //DmgModInj1 = inj1;
+            //DmgModInj2 = inj2;
+            //DmgModCodeAddr = memalloc;
+            //return true; // success
         }
         public bool UninstallDmgMod()
         {
@@ -1488,17 +1501,10 @@ namespace DS2S_META.Utils.DS2Hook
                 DmgModCodeAddr == IntPtr.Zero)
                 return false;
 
-            // Check for any desync or unexpected memory issues
-            if (DmgModInj1 == null || DmgModInj2 == null)
-            {
-                MetaExceptionStaticHandler.Raise("Possible memory or state leak with Dmg Mod inject");
-                return false;
-            }
-
             // Uninstall
-            UninstallInject(DmgModInj1);
-            UninstallInject(DmgModInj2);
-            Free(DmgModCodeAddr);
+            //UninstallInject(DmgModInj1);
+            //UninstallInject(DmgModInj2);
+            //Free(DmgModCodeAddr);
             return true; // success
         }
 

@@ -1,5 +1,4 @@
-﻿using DS2S_META.Utils;
-using DS2S_META.ViewModels.Commands;
+﻿using DS2S_META.ViewModels.Commands;
 using PropertyHook;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ using static DS2S_META.State;
 using Xceed.Wpf.Toolkit;
 using System.Threading;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
+using DS2S_META.Utils;
 
 namespace DS2S_META.ViewModels
 {
@@ -408,10 +408,6 @@ namespace DS2S_META.ViewModels
             get => _chkDealNoDmg;
             set
             {
-                var bworked = Hook?.GeneralizedDmgMod(false, value, _chkTakeNoDmg);
-                if (bworked != true)
-                    return; // likely bug or inject failure. exit gracefully
-
                 // Success, update properties and FE
                 _chkDealNoDmg = value;
                 _chkOHKO = false; // overruled
@@ -425,10 +421,6 @@ namespace DS2S_META.ViewModels
             get => _chkOHKO;
             set
             {
-                var bworked = Hook?.GeneralizedDmgMod(value, false, _chkTakeNoDmg);
-                if (bworked != true)
-                    return; // likely bug or inject failure. exit gracefully
-
                 // Success, update properties and FE
                 _chkOHKO = value;
                 _chkDealNoDmg = false; // overruled
@@ -442,11 +434,6 @@ namespace DS2S_META.ViewModels
             get => _chkTakeNoDmg;
             set
             {
-                var bworked = Hook?.GeneralizedDmgMod(_chkOHKO, _chkDealNoDmg, value);
-                if (bworked != true)
-                    return; // likely bug or inject failure. exit gracefully
-
-                // Done. Update FE
                 _chkTakeNoDmg = value;
                 OnPropertyChanged();
             }

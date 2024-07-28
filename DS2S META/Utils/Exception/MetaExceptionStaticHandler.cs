@@ -1,12 +1,10 @@
-﻿using DS2S_META;
-using DS2S_META.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 
-namespace DS2S_META
+namespace DS2S_META.Utils
 {
 
 
@@ -72,7 +70,6 @@ namespace DS2S_META
 
             return outputList;
         }
-
         private static void ShowMetaExceptionWindow(string logmsg)
         {
             var meWindow = new MetaExceptionWindow(logmsg); // notify user on screen
@@ -94,8 +91,8 @@ namespace DS2S_META
             var logmsg = e.ToLogString(Environment.StackTrace); // get clean stack trace
 
             // Add more granularity or tidy as appropriate
-            if (e is MetaFeatureException)
-                Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindowWithTitle("META Feature Exception", logmsg));
+            if (e is MetaException me)
+                Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindowWithTitle(me.Etype, logmsg));
             else
                 Application.Current.Dispatcher.Invoke(() => ShowMetaExceptionWindow(logmsg));
         }

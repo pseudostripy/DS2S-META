@@ -423,31 +423,7 @@ namespace DS2S_META.Utils.DS2Hook
             Hook.Free(unk);
         }
 
-        internal bool ApplyBIKP1Skip(bool enable)
-        {
-            // Last resort graceful failure
-            if (DS2P.Func.ApplySpEffect == null)
-                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.ApplySpEffect");
-            if (DS2P.MiscPtrs.SpEffectCtrl == null)
-                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.SpEffectCtrl");
-            if (DS2P.Core.BaseA == null)
-                throw new MetaFeatureException("ApplySpecialEffect32OldPatch.BaseA");
-
-            // Change some constants read by the BIK fight I guess.
-            // Carbon copy from https://www.nexusmods.com/darksouls2/mods/1043 .
-            // Haven't bothered to figure out how it works.
-            byte[] DISABLEMOD = new byte[2] { 0x0, 0x0 };
-            byte[] ENABLEMOD_VAL1 = new byte[2] { 0x80, 0x9c };
-            byte[] ENABLEMOD_VAL2 = new byte[2] { 0x0e, 0x3c };
-            var val1_bytes = enable ? ENABLEMOD_VAL1 : DISABLEMOD;
-            var val2_bytes = enable ? ENABLEMOD_VAL2 : DISABLEMOD;
-
-            // enable/disable phase1
-            DS2P.MiscPtrs.PHBIKP1Skip_Val1?.WriteBytes(val1_bytes);
-            DS2P.MiscPtrs.PHBIKP1Skip_Val2?.WriteBytes(val2_bytes);
-            
-            return enable; // turned on or off now
-        }
+        
 
     }
 }
