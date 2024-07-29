@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using DS2S_META.Utils;
 using DS2S_META.Utils.DS2Hook;
+using PropertyHook;
 
 namespace DS2S_META.Utils
 {
@@ -59,8 +61,12 @@ namespace DS2S_META.Utils
 
         public override void Install()
         {
-            throw new NotImplementedException();
+            // Wrapper for slightly tidier handling of injects
+            Kernel32.WriteBytes(Hook.Handle, InjAddr, NewBytes); // install
         }
-        public override void Uninstall() { throw new NotImplementedException(); }
+        public override void Uninstall()
+        {
+            Kernel32.WriteBytes(Hook.Handle, InjAddr, OrigBytes); // revert to original
+        }
     }
 }

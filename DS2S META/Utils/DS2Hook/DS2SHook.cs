@@ -1333,8 +1333,7 @@ namespace DS2S_META.Utils.DS2Hook
             }
             return soulMemory;
         }
-
-        public static List<int> Levels = new();
+        private static List<int> Levels = new();
         private void GetLevelRequirements()
         {
             if (ParamMan.PlayerLevelUpSoulsParam == null)
@@ -1354,26 +1353,6 @@ namespace DS2S_META.Utils.DS2Hook
             GIVESILENTLY,
         }
 
-        // No Damage injects:
-        private const int HIGHDMG = 0x4b18967f; // float 9999999.0
-        //private void InstallInject(Inject inj)
-        //{
-        //    // Wrapper for slightly tidier handling of injects
-        //    Kernel32.WriteBytes(Handle, inj.InjAddr, inj.NewBytes); // install
-        //    InstalledInjects.Add(inj);
-        //}
-        //private void UninstallInject(Inject inj)
-        //{
-        //    Kernel32.WriteBytes(Handle, inj.InjAddr, inj.OrigBytes); // revert to original
-        //    InstalledInjects.Remove(inj);
-        //}
-        //public bool OHKO(bool dealFullDmg, bool recvNoDmg)
-        //{
-        //    if (dealFullDmg || recvNoDmg)
-        //        return InstallDmgMod(dealFullDmg, recvNoDmg, HIGHDMG, 0);
-        //    else
-        //        return UninstallDmgMod();
-        //}
         private void EnsureInstalledNoDmgMod()
         {
             if (NoDmgMod?.IsInstalled == true)
@@ -1388,6 +1367,7 @@ namespace DS2S_META.Utils.DS2Hook
 
             bool affectDealtDmg = dealFullDmg || dealNoDmg;
             bool affectRcvdDmg = recvNoDmg;
+            int HIGHDMG = 0x4b18967f; // float 9999999.0
             var dmgfacDealt = dealFullDmg ? HIGHDMG : 0; // irrelevant if affectDealtDmg == false
             int dmgfacRcvd = recvNoDmg ? 0 : 1;
 

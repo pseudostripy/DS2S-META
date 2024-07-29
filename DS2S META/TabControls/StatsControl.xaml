@@ -115,7 +115,7 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
             <Label Content="Misc"/>
-            
+
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <Grid Margin="15,15,15,15">
                     <Grid.ColumnDefinitions>
@@ -124,6 +124,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
+                        <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>

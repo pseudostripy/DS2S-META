@@ -133,7 +133,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             PHBonfires[bfname]?.WriteByte(rawval);
         }
         public void SetBonfireLevelById(int bfid, int level) => SetBonfireLevel(BfNames[bfid], level);
-        public void GetBonfireLevelById(int bfid) => GetBonfireLevel(BfNames[bfid]);
+        public int GetBonfireLevelById(int bfid) => GetBonfireLevel(BfNames[bfid]);
 
         public override void UpdateProperties()
         {

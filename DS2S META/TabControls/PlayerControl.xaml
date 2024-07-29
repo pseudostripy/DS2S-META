@@ -132,6 +132,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                         <RowDefinition MinHeight="25"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -156,6 +157,20 @@
                     <Button x:Name="BtnWarp" Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,2,5,2" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
                     <ToggleButton x:Name="BtnManageBfs" Content="Manage" IsChecked="{Binding ChkTogManageBfs}" IsEnabled="{Binding EnManageBfs}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,0,5,0" VerticalContentAlignment="Center" Grid.Row="2"/>
                     <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5,0,5" Grid.Column="1"/>
+                    <ItemsControl Grid.Row="4" Grid.Column="1" ItemsSource="{Binding BonfireControlList}" Grid.ColumnSpan="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.8*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{Binding Name}" Grid.Column="0" Margin="20,0,0,0"/>
+                                    <wpfTool:IntegerUpDown Minimum="0" Maximum="99" HorizontalAlignment="Stretch" Value="{Binding BfLevel}" Grid.Column="2" Margin="0,5,20,0" HorizontalContentAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
                 <StackPanel Margin="0,0,0,0">
                     <ItemsControl Margin="0" ItemsSource="{Binding ManagedBfs}"/>

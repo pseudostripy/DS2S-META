@@ -76,6 +76,12 @@ namespace DS2S_META
         {
             return BonfireHashDict.TryGetValue(Bfidhash(areaid, id), out var bonfire) ? bonfire : null;
         }
+        public static DS2SBonfire GetBonfireByEnum(BF bfid)
+        {
+            var bf = Bonfires.Where(bf => bf.ID == (ushort)bfid).FirstOrDefault() ??
+                throw new MetaLogicException("Asked to find a bonfire with a mismatching ID to its enum.");
+            return bf;
+        }
         public static DS2SBonfire GetBonfireByName(string name)
         {
             var bf = Bonfires.Where(bf => bf.Name == name).FirstOrDefault();

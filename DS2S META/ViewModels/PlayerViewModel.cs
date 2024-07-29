@@ -16,6 +16,7 @@ using Xceed.Wpf.Toolkit;
 using System.Threading;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils;
+using DS2S_META.Utils.DS2Hook;
 
 namespace DS2S_META.ViewModels
 {
@@ -182,7 +183,7 @@ namespace DS2S_META.ViewModels
                 if (value)
                     SetManagedBonfireList();
                 else
-                    ManagedBfs.Clear();
+                    BonfireControlList = new(); // clear
                 OnPropertyChanged();
             } 
         }
@@ -365,8 +366,6 @@ namespace DS2S_META.ViewModels
                 // Update managed bonfires
                 if (ChkTogManageBfs && origval != _selectedBfHub)
                     SetManagedBonfireList();
-                    
-                OnPropertyChanged(nameof(ManagedBfs));
             }
         }
         private bool UserSelectedABonfireOrHub = false;
@@ -381,23 +380,11 @@ namespace DS2S_META.ViewModels
             }
         }
         public static List<DS2SBonfireHub> BonfireHubList => DS2Resource.BonfireHubs;
-        private ObservableCollection<LabelNudControl> _managedBfs = new();
-        public ObservableCollection<LabelNudControl> ManagedBfs
-        {
-            get => _managedBfs;
-            set 
-            {
-                _managedBfs = value;
-                OnPropertyChanged();
-            } 
-        }
         public void SetManagedBonfireList()
         {
-            if (SelectedBfHub == null)
-                return;
-            ManagedBfs.Clear();
-            foreach (var bf in SelectedBfHub.Bonfires)
-                ManagedBfs.Add(CreateLabelNudControl(bf));
+            if (SelectedBfHub == null) return;
+            if (Hook == null) return;
+            BonfireControlList = SelectedBfHub.Bonfires.Select(bf => new BonfireControlData(Hook, bf)).ToList();
         }
         private bool ActiveFilter = false;
 
@@ -421,9 +408,9 @@ namespace DS2S_META.ViewModels
             get => _chkOHKO;
             set
             {
-                // Success, update properties and FE
                 _chkOHKO = value;
-                _chkDealNoDmg = false; // overruled
+                _chkDealNoDmg = false; // overruled (OHKO and dealNoDmg are mutex)
+                Hook?.GeneralizedDmgMod(_chkOHKO, _chkDealNoDmg, _chkTakeNoDmg);
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ChkDealNoDmg));
             }
@@ -500,25 +487,34 @@ namespace DS2S_META.ViewModels
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
 
         // Programmatic ItemControl Management
-        private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
+        public class BonfireControlData : ViewModelBase
         {
-            // Try doing a BonfireLabelControl and use an ItemControl with ItemTemplate to reach the level property
-            return null;
-
-            //var bonfireControl = new LabelNudControl();
-            //var hookPropName = BF Hook?.Bfs2Properties[bf] ?? string.Empty;
-            //Binding binding = new("Value")
-            //{
-            //    Source = BF. Hook,
-            //    Path = new PropertyPath(hookPropName)
-            //};
-            //bonfireControl.nudValue.SetBinding(IntegerUpDown.ValueProperty, binding);
-            //bonfireControl.nudValue.Minimum = 0;
-            //bonfireControl.nudValue.Maximum = 99;
-            //bonfireControl.Label = bf.Name;
-            //bonfireControl.HorizontalAlignment = HorizontalAlignment.Center;
-            //bonfireControl.nudValue.Margin = new Thickness(0, 5, 0, 0);
-            //return bonfireControl;
+            public string Name => Bonfire.Name;
+            public readonly DS2SBonfire Bonfire;
+            public int BfLevel
+            {
+                get => Hook?.DS2P.BonfiresHGO.GetBonfireLevelById(Bonfire.ID) ?? 0;
+                set => Hook?.DS2P.BonfiresHGO.SetBonfireLevelById(Bonfire.ID, value);
+            }
+            public BonfireControlData(DS2SHook hook, DS2SBonfire bonfire)
+            {
+                Hook = hook;
+                Bonfire = bonfire;
+            }
+            public override void UpdateViewModel()
+            {
+                OnPropertyChanged(nameof(BfLevel));
+            }
+        }
+        private List<BonfireControlData> _bonfireControlList = new();
+        public List<BonfireControlData> BonfireControlList
+        {
+            get => _bonfireControlList;
+            set
+            {
+                _bonfireControlList = value;
+                OnPropertyChanged();
+            }
         }
 
         // Constructor
@@ -834,7 +830,14 @@ namespace DS2S_META.ViewModels
             // put things here if less concerned about fastest updates
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
-            OnPropertyChanged(nameof(ManagedBfs));
+            BonfireLevelSync();
+        }
+        
+        private void BonfireLevelSync()
+        {
+            // Refresh the whole list
+            foreach (var bfcl in BonfireControlList)
+                bfcl.UpdateViewModel();
         }
         public override void CleanupVM()
         {
