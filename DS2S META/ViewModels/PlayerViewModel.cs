@@ -196,6 +196,14 @@ namespace DS2S_META.ViewModels
             get => PS?.Health ?? 0;
             set
             {
+                // There's a nasty race condition here because of the ClipToMinMax = true condition
+                // in the View, which is bound to HealthCap, which will return 0 until initialized.
+                // That clip then causes a HealthCurr SET value to (what is currently the max of 0),
+                // killing the player :/. Not sure this is even a full fix tbh, it at least greatly
+                // reduces the race condition active time...
+                if (HealthCap == 0)
+                    return;
+
                 _healthCurr = value;
                 if (PS?.Health == null || IsHealthTyping == true)
                     return;
@@ -640,12 +648,12 @@ namespace DS2S_META.ViewModels
             if (keyargs?.Key == Key.Escape)
             {
                 var hookhealth = HealthCurr;
-                HealthCurr = hookhealth; // reset to hook value
+                HealthCurr = hookhealth; // reset to ds2 game value
                 Keyboard.ClearFocus(); // this triggers a value update (blocked by below line)
                 IsHealthTyping = false; // allow updates as usual again
                 return;
             }
-            
+
             if (keyargs?.Key != Key.Enter)
             {
                 IsHealthTyping = true;
@@ -807,7 +815,7 @@ namespace DS2S_META.ViewModels
         }
         public override void UpdateViewModel()
         {
-            // Update (called on mainwindow update interval)
+            //Update(called on mainwindow update interval)
             if (!IsHealthTyping)
                 OnPropertyChanged(nameof(HealthCurr));
             OnPropertyChanged(nameof(HealthMax));

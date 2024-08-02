@@ -23,7 +23,7 @@
             <Border BorderBrush="Gray" BorderThickness="1"  >
                 <StackPanel Margin="15">
                     <Label Content="Name" />
-                    <TextBox x:Name="txtName" Text="{Binding Hook.DS2P.PlayerData.CharacterName}" />
+                    <TextBox x:Name="txtName" Text="{Binding CharacterName}" />
                     <!--<Label Content="Sex" />
                 <ComboBox Name="Sex"/>-->
                     <Label Content="Class" />

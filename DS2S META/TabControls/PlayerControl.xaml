@@ -172,9 +172,6 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Grid>
-                <StackPanel Margin="0,0,0,0">
-                    <ItemsControl Margin="0" ItemsSource="{Binding ManagedBfs}"/>
-                </StackPanel>
             </StackPanel>
         </Expander>
         <Expander Grid.Row="3" HorizontalContentAlignment="Stretch" Margin="10,10,0,20" IsExpanded="True" >

@@ -28,7 +28,9 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             // Old BBJ mod installed:
             if (BaseA == null)
                 MetaWarningMessages.BasePtrNotFound(Hook.DS2Ver);
-            MetaInfoMessages.OldBbjNotImplemented();
+            
+            // TODO
+            //MetaInfoMessages.OldBbjNotImplemented();
             //if (BaseA == null && PHBaseA_OldBbj != null)
             //    BaseA = PHBaseA_OldBbj;
         }

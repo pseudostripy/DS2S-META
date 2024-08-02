@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using DS2S_META.Randomizer;
+using DS2S_META.Utils.Offsets.HookGroupObjects;
 
 namespace DS2S_META.ViewModels
 {
@@ -20,7 +21,21 @@ namespace DS2S_META.ViewModels
     public class StatsViewModel : ViewModelBase
     {
 
+        private PlayerDataHGO? PD => Hook?.DS2P?.PlayerData; // shorthand
         public bool EnGiveSouls => MetaFeature.FtGiveSouls;
+
+        public string CharacterName
+        {
+            get => "test";  //PD?.CharacterName ?? string.Empty;
+            set
+            {
+                return;
+                //if (PD?.CharacterName != null)
+                //    PD.CharacterName = value;
+                //OnPropertyChanged();
+            }
+        }
+
 
         // Constructor
         public StatsViewModel()
@@ -31,6 +46,7 @@ namespace DS2S_META.ViewModels
         public override void UpdateViewModel()
         {
             //EnableElements();
+
         }
 
         public override void OnHooked()
