@@ -75,7 +75,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
                 METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
                 METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS_CP && Hook.InGame,
-                METAFEATURE.INFINITESPELLS => Hook.IsOldPatch && Hook.InGame,
+                METAFEATURE.INFINITESPELLS => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
                 METAFEATURE.DISABLEPARTYWALKTIMER => Hook.InGame && Hook.IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };

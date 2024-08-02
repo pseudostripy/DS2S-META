@@ -1523,7 +1523,20 @@ namespace DS2S_META
         {
             if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS))
                 return false;
-            var inj1_code = new byte[] { 0x88, 0x43, 0x18 };
+            byte[] inj1_code;
+            //Depending on the version we need to inject different bytes, this probably requires a rewrite
+            if (IsSOTFS_CP)
+            {
+                inj1_code = new byte[] { 0x88, 0x4D, 0x20 };
+            } else if (IsVanilla)
+            {
+                inj1_code = new byte[] { 0x88, 0x43, 0x18 };
+            }
+            else
+            {
+                return false;
+            }
+           
             var inj1_disabled = new byte[] { 0x90, 0x90, 0x90 };
             var inj1 = new Inject(InfiniteSpells.Resolve(), inj1_code, inj1_disabled);
             InstallInject(inj1);
@@ -1539,6 +1552,7 @@ namespace DS2S_META
             return true;
 
         }
+
 
 
         // QoL Wrappers:

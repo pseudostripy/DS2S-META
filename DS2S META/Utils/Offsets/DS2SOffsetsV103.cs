@@ -27,7 +27,7 @@ namespace DS2S_META.Utils.Offsets
 
             Func.DisplayItem = "48 8B 89 D8 00 00 00 48 85 C9 0F 85 20 5E 00 00";
             Func.ApplySpEffectAoB = "48 89 6C 24 f8 48 8d 64 24 f8 48 8D 2d 33 A7 0A 00";
-
+            Func.InfiniteSpells = "88 4D 20 49 8B CE";
 
           
         }
