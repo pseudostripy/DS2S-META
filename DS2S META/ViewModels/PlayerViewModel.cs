@@ -812,7 +812,6 @@ namespace DS2S_META.ViewModels
             Hook?.SetDisableAI(ChkDisableAi);
    
             Hook?.SetInfiniteStamina(ChkInfiniteStamina);
-            Hook?.SetInfiniteSpells(ChkInfiniteSpells);
         
          
             

@@ -34,6 +34,7 @@ namespace DS2S_META
         private Inject? DmgModInj2 = null;
 
         private Inject? DisableSkirtDamageInj1 = null;
+        private Inject? InfiniteSpellsInj1 = null;
 
         public int LOADEDINGAME = 0x1e;
         public int MAINMENU = 0xa;
@@ -1518,6 +1519,27 @@ namespace DS2S_META
             return true;
         }
 
+        private bool InstallInfiniteSpells()
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS))
+                return false;
+            var inj1_code = new byte[] { 0x88, 0x43, 0x18 };
+            var inj1_disabled = new byte[] { 0x90, 0x90, 0x90 };
+            var inj1 = new Inject(InfiniteSpells.Resolve(), inj1_code, inj1_disabled);
+            InstallInject(inj1);
+            InfiniteSpellsInj1 = inj1;
+            return true;
+        }
+
+        private bool UninstallInfiniteSpells()
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS) || InfiniteSpellsInj1 == null)
+                return false;
+            UninstallInject(InfiniteSpellsInj1);
+            return true;
+
+        }
+
 
         // QoL Wrappers:
         public void GiveItem(int itemid, short amount = 1,
@@ -2320,13 +2342,13 @@ namespace DS2S_META
         public void SetInfiniteSpells(bool infiniteSpells)
         {
             if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS)) return;
-            if (infiniteSpells == false)
+            if (infiniteSpells)
             {
-                InfiniteSpells.WriteBytes(0x0, new byte[] { 0x88, 0x43, 0x18 });
+                InstallInfiniteSpells();
             }
             else
             {
-                InfiniteSpells.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90 });
+                UninstallInfiniteSpells();
             }
         }
 
