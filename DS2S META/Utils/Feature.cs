@@ -30,6 +30,10 @@ namespace DS2S_META.Utils
         GIVESOULS,
         RESTOREHUMANITY,
         NEWTESTCHARACTER,
+        INFINITESTAMINA,
+        DISABLESKIRTDAMAGE,
+        INFINITESPELLS,
+        DISABLEPARTYWALKTIMER,
     }
     public static class MetaFeature
     {
@@ -54,7 +58,8 @@ namespace DS2S_META.Utils
                 METAFEATURE.NOGRAVITY => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.DISABLEAI => Hook.IsSOTFS_CP && Hook.InGame,
+                METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
+                METAFEATURE.DISABLEAI => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
                 METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, // should be fine for all versions
                 METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.MADWARRIOR => Hook.IsSOTFS_CP, // sotfs 1.03 only
@@ -69,6 +74,9 @@ namespace DS2S_META.Utils
                 METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        // should work on all supported versions
                 METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
                 METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
+                METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS_CP && Hook.InGame,
+                METAFEATURE.INFINITESPELLS => Hook.InGame && (Hook.IsSOTFS_CP || Hook.IsOldPatch),
+                METAFEATURE.DISABLEPARTYWALKTIMER => Hook.InGame && Hook.IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -82,6 +90,7 @@ namespace DS2S_META.Utils
         public static bool FtBIKP1Skip => IsActive(METAFEATURE.BIKP1SKIP);
         public static bool FtDmgMod => IsActive(METAFEATURE.DMGMOD);
         public static bool FtNoDeath => IsActive(METAFEATURE.NODEATH);
+        public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
         public static bool FtRapierOHKO => IsActive(METAFEATURE.OHKO_RAPIER);
         public static bool FtFistOHKO => IsActive(METAFEATURE.OHKO_FIST);
         public static bool FtSpeedhack => IsActive(METAFEATURE.SPEEDHACK);
@@ -95,5 +104,11 @@ namespace DS2S_META.Utils
         public static bool FtGiveSouls => IsActive(METAFEATURE.GIVESOULS);
         public static bool FtRestoreHumanity => IsActive(METAFEATURE.RESTOREHUMANITY);
         public static bool FtNewTestCharacter => IsActive(METAFEATURE.NEWTESTCHARACTER);
+
+        public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
+        
+        public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
+
+        public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
     }
 }

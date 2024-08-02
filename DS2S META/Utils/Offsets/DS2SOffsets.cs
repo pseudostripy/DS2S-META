@@ -23,7 +23,7 @@ namespace DS2S_META.Utils.Offsets
             // Records:
             ForceQuit = new (0x24B1);
             PlayerName = new(0x114);
-            PlayerCtrl = new(0x168, 0x16C, 0x170, 0x174, 0x1AC, 0x1B4, 0x2A8, 0x218);
+            PlayerCtrl = new(0x168, 0x16C, 0x170, 0x174, 0x1AC, 0x1B4, 0x2A8, 0x218, 0x1B0);
             PlayerBaseMisc = new(0x64, 0x68, 0x18A8);
             PlayerEquipment = new(0x920, 0x90C, 0x8F8, 0x8E4,
                                   0x880, 0x8A8, 0x8D0,
@@ -201,9 +201,11 @@ namespace DS2S_META.Utils.Offsets
                 PlayerNameOffset = 0xA8,
                 PlayerBaseMiscOffset = new int[2] { 0xA8, 0xC0 },
                 NoGrav = new int[2] { 0xD0, 0x100 },
+                
             };
 
             // Func AoBs:
+            DisablePartyWalkTimer = new int[] { 0x18, 0xD70, 0x10, 0x0 };
             Func = new()
             {
                 ItemGiveFunc = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41",
@@ -218,6 +220,10 @@ namespace DS2S_META.Utils.Offsets
                 SpeedFactorAnimOffset = "F3 0F 59 99 A8 02 00 00",
                 SpeedFactorJumpOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E0 00 00 00",
                 SpeedFactorBuildupOffset = "F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00",
+                DisableSkirtDamageAOB = "89 84 8B C4 01 00 00",
+                
+                
+
 
                 // sub-versioned
                 //DisplayItem = AOB_UNSET, 

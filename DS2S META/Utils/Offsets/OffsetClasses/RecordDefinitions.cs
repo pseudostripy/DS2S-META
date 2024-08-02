@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Utils.Offsets
 {
-    public readonly record struct PlayerCtrlOffsets(int HP, int HPMin, int HPMax, int HPCap, int SP, int SPMax, int SpeedModifier, int CurrPoise);
+    public readonly record struct PlayerCtrlOffsets(int HP, int HPMin, int HPMax, int HPCap, int SP, int SPMax, int SpeedModifier, int CurrPoise, int SPMin);
     public readonly record struct PlayerName(int Name);
     public readonly record struct ForceQuit(int Quit);
     public record class PlayerType
@@ -202,5 +202,9 @@ namespace DS2S_META.Utils.Offsets
         public string SpeedFactorBuildupOffset { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string DisplayItem { get; set; } = DS2HookOffsets.AOB_UNSET;
         public string ApplySpEffectAoB { get; set; } = DS2HookOffsets.AOB_UNSET;
+
+        public string DisableSkirtDamageAOB { get; set; } = DS2HookOffsets.AOB_UNSET;
+
+        public string InfiniteSpells { get; set; } = DS2HookOffsets.AOB_UNSET;
     };
 }

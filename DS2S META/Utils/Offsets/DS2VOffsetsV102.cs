@@ -11,7 +11,8 @@ namespace DS2S_META.Utils.Offsets
         public DS2VOffsetsV102() : base()
         {
             LoadingState = new int[] { 0x24, 0x19c, 0xa94, 0x14, 0x4, 0x4c, 0x730 };
-
+            DisableAI = new int[] { 0x20, 0x18 };
+            LoadedEnemiesTable = new int[] { 0x18 };
             if (Func == null || Core == null)
                 return;
 
@@ -22,6 +23,9 @@ namespace DS2S_META.Utils.Offsets
             Func.ApplySpEffectAoB = "55 8b ec 8b 45 08 83 ec 10 56 8b f1";
             Func.ItemStruct2dDisplay = "55 8b ec 8b 45 08 8b 4d 14 53 8b 5d 10 56 33 f6";
             Func.GiveSoulsFuncAoB = "55 8b ec 8b 81 e8 00 00 00 8b 55 08 83 ec 08 56";
+            Func.InfiniteSpells = "88 43 18 E8 ? ? ? ? 8B 45";
+
+
 
         }
     }

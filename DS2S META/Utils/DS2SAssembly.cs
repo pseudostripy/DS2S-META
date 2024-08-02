@@ -43,6 +43,8 @@ namespace DS2S_META
         public static byte[] ApplySpecialEffect32OP = LoadDefuseOutput(Properties.Resources.ApplySpecialEffect32OP);
         public static byte[] NoDmgMod = LoadDefuseOutput(Properties.Resources.NoDmgMod);
 
+  
+
         // Debugging resource memes
         //public static byte[] AddSouls = new byte[1];
         //public static byte[] GetItem = new byte[1];

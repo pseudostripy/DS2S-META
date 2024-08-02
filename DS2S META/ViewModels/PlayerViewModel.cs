@@ -29,6 +29,8 @@ namespace DS2S_META.ViewModels
     {
         // Binding Variables:
         public bool EnNoDeath => MetaFeature.FtNoDeath;
+
+        public bool EnInfiniteStamina => MetaFeature.FtInfiniteStamina;
         public bool EnRapierOHKO => MetaFeature.FtRapierOHKO;
         public bool EnFistOHKO => MetaFeature.FtFistOHKO;
         public bool EnSpeedhack => MetaFeature.FtSpeedhack;
@@ -46,6 +48,13 @@ namespace DS2S_META.ViewModels
         public bool EnMoneyBags => MetaFeature.FtGiveSouls;
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
+
+        public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
+
+        public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
+
+        public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
+
 
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
@@ -67,6 +76,36 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkNoDeath));
             }
         }
+
+        private bool _chkInfiniteStamina = false;
+         public bool ChkInfiniteStamina
+        {
+            get => _chkInfiniteStamina;
+            set
+            {
+
+               _chkInfiniteStamina = value;
+                Hook?.SetInfiniteStamina(value);
+                OnPropertyChanged(nameof(ChkInfiniteStamina));
+            }
+        }
+
+        
+        private bool _chkInfiniteSpells = false;
+        public bool ChkInfiniteSpells
+        {
+            get => _chkInfiniteSpells;
+            set
+            {
+                _chkInfiniteSpells = value;
+                Hook?.SetInfiniteSpells(value);
+                OnPropertyChanged(nameof(ChkInfiniteSpells));
+            }
+        }
+
+
+       
+
         private bool _chkDisableAi = false;
         public bool ChkDisableAi { 
             get => _chkDisableAi;
@@ -78,6 +117,20 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkDisableAi));
             }
         }
+
+        private bool _chkDisablePartyWalkTimer = false;
+        public bool ChkDisablePartyWalkTimer
+        {
+            get => _chkDisablePartyWalkTimer;
+            set
+            {
+                _chkDisablePartyWalkTimer = value;
+                Hook?.SetDisablePartyWalkTimer(value);
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
+            }
+        }
+
         private bool ChkNoGravity => !ChkGravity;
         private bool _chkGravity = true;
         public bool ChkGravity
@@ -431,6 +484,23 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkDealNoDmg));
             }
         }
+
+        private bool _chkDisableSkirtDamage = false;
+
+        public bool ChkDisableSkirtDamage
+        {
+            get => _chkDisableSkirtDamage;
+            set
+            {
+                Hook?.SetDisableSkirtDamage(value);
+                _chkDisableSkirtDamage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
+            }
+        }
+
+
+
         private bool _chkTakeNoDmg = false;
         public bool ChkTakeNoDmg
         {
@@ -504,9 +574,14 @@ namespace DS2S_META.ViewModels
         public void ToggleSpeedhack() => ChkSpeedhack = !ChkSpeedhack;
         private void SetGameSpeed() => Hook?.SetSpeed((double)_speedHackFactor);
         public void ToggleNoDeath() => ChkNoDeath = !ChkNoDeath;
+
         public void ToggleOHKO() => ChkOHKO = !ChkOHKO;
         public void ToggleRapierOhko() => ChkRapierOHKO = !ChkRapierOHKO;
         public void ToggleFistOhko() => ChkFistOHKO = !ChkFistOHKO;
+
+        public void ToggleInfiniteSpells() => ChkInfiniteSpells = !ChkInfiniteSpells;
+
+        //public void ToggleDisablePartyWalkTimer() => ChkDisablePartyWalkTimer = !ChkDisablePartyWalkTimer;
 
         // Programmatic ItemControl Management
         private LabelNudControl CreateLabelNudControl(DS2SBonfire bf)
@@ -735,6 +810,10 @@ namespace DS2S_META.ViewModels
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
             Hook?.SetDisableAI(ChkDisableAi);
+   
+            Hook?.SetInfiniteStamina(ChkInfiniteStamina);
+        
+         
             
             if (Properties.Settings.Default.NoGravThroughLoads)
             {
@@ -756,6 +835,7 @@ namespace DS2S_META.ViewModels
         private void EnableElements() 
         {
             OnPropertyChanged(nameof(EnNoDeath));
+            OnPropertyChanged(nameof(EnInfiniteStamina));
             OnPropertyChanged(nameof(EnRapierOHKO));
             OnPropertyChanged(nameof(EnFistOHKO));
             OnPropertyChanged(nameof(EnSpeedhack));
@@ -771,6 +851,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMoneyBags));
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
+            OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
         }
         public override void UpdateViewModel()
         {
@@ -791,13 +873,19 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ChkGravity));
             OnPropertyChanged(nameof(GameLastBonfire));
             OnPropertyChanged(nameof(EnDmgMod));
+            OnPropertyChanged(nameof(EnDisableSkirtDamage));
+            OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
+
         }
         public override void DoSlowUpdates()
+
         {
             // put things here if less concerned about fastest updates
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
             OnPropertyChanged(nameof(ManagedBfs));
+            Hook?.SetDisablePartyWalkTimer(ChkDisablePartyWalkTimer);
         }
         public override void CleanupVM()
         {
