@@ -49,7 +49,7 @@ namespace DS2S_META.ViewModels
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
-        public bool EnDisableSkirt => MetaFeature.FtDisableSkirt;
+        public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
 
         public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
 
@@ -90,19 +90,7 @@ namespace DS2S_META.ViewModels
             }
         }
 
-        private bool _chkDisableSkirt = false;
-
-        public bool ChkDisableSkirt
-        {
-            get => _chkDisableSkirt;
-            set
-            {
-                _chkDisableSkirt = value;
-                Hook?.SetDisableSkirt(value);
-                OnPropertyChanged(nameof(ChkDisableSkirt));
-            }
-        }
-
+        
         private bool _chkInfiniteSpells = false;
         public bool ChkInfiniteSpells
         {
@@ -496,6 +484,23 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkDealNoDmg));
             }
         }
+
+        private bool _chkDisableSkirtDamage = false;
+
+        public bool ChkDisableSkirtDamage
+        {
+            get => _chkDisableSkirtDamage;
+            set
+            {
+                Hook?.SetDisableSkirtDamage(value);
+                _chkDisableSkirtDamage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
+            }
+        }
+
+
+
         private bool _chkTakeNoDmg = false;
         public bool ChkTakeNoDmg
         {
@@ -807,7 +812,6 @@ namespace DS2S_META.ViewModels
             Hook?.SetDisableAI(ChkDisableAi);
    
             Hook?.SetInfiniteStamina(ChkInfiniteStamina);
-            Hook?.SetDisableSkirt(ChkDisableSkirt);
             Hook?.SetInfiniteSpells(ChkInfiniteSpells);
         
          
@@ -848,7 +852,6 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMoneyBags));
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
-            OnPropertyChanged(nameof(EnDisableSkirt));
             OnPropertyChanged(nameof(EnInfiniteSpells));
             OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
         }
@@ -871,7 +874,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ChkGravity));
             OnPropertyChanged(nameof(GameLastBonfire));
             OnPropertyChanged(nameof(EnDmgMod));
-            OnPropertyChanged(nameof(EnDisableSkirt));
+            OnPropertyChanged(nameof(EnDisableSkirtDamage));
             OnPropertyChanged(nameof(EnInfiniteSpells));
             OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
 

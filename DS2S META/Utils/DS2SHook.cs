@@ -33,6 +33,8 @@ namespace DS2S_META
         private Inject? DmgModInj1 = null;
         private Inject? DmgModInj2 = null;
 
+        private Inject? DisableSkirtDamageInj1 = null;
+
         public int LOADEDINGAME = 0x1e;
         public int MAINMENU = 0xa;
 
@@ -146,7 +148,7 @@ namespace DS2S_META
         public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
         public PHPointer phDisablePartyWalkTimer;
 
-        public PHPointer DisableSkirt;
+        public PHPointer DisableSkirtDamage;
 
         public PHPointer InfiniteSpells; //Old Patch Vanilla
 
@@ -176,7 +178,7 @@ namespace DS2S_META
             ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
             SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
             WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
-            DisableSkirt = RegisterAbsoluteAOB(Offsets.Func.DisableSkirtAOB);
+            DisableSkirtDamage = RegisterAbsoluteAOB(Offsets.Func.DisableSkirtDamageAOB);
 
 
             // Version Specific AOBs:
@@ -1356,6 +1358,9 @@ namespace DS2S_META
             else
                 return UninstallDmgMod();
         }
+
+        
+
         public bool GeneralizedDmgMod(bool dealFullDmg, bool dealNoDmg, bool recvNoDmg)
         {
             // catch awkward logical bugs
@@ -1471,6 +1476,7 @@ namespace DS2S_META
             DmgModCodeAddr = memalloc;
             return true; // success
         }
+
         public bool UninstallDmgMod()
         {
             // Check we need to do anything
@@ -1491,6 +1497,27 @@ namespace DS2S_META
             Free(DmgModCodeAddr);
             return true; // success
         }
+
+        private bool InstallDisableSkirtDamage()
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE))
+                return false;
+            var inj1_code = new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 };
+            var inj1_disabled = new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
+            var inj1 = new Inject(DisableSkirtDamage.Resolve(), inj1_code, inj1_disabled);
+            InstallInject(inj1);
+            DisableSkirtDamageInj1 = inj1;
+            return true;
+        }
+
+        private bool UninstallDisableSkirtDamage()
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE) || DisableSkirtDamageInj1 == null)
+                return false;
+            UninstallInject(DisableSkirtDamageInj1);
+            return true;
+        }
+
 
         // QoL Wrappers:
         public void GiveItem(int itemid, short amount = 1,
@@ -2270,39 +2297,20 @@ namespace DS2S_META
             StaminaMin = infStam ? MaxStamina : -99999;
         }
 
-        public void SetDisableSkirt(bool disableSkirt)
-        {
-            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRT)) return;
-            if (disableSkirt == false)
-            {
-                DisableSkirt.WriteBytes(0x0, new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 });
-            }
-            else
-            {
-                DisableSkirt.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
-            }
-        }
+        
 
-
+        //Gets called every few frames 
         public void SetDisablePartyWalkTimer(bool disablePartyWalkTimer)
         {
             if (MetaFeature.IsInactive(METAFEATURE.DISABLEPARTYWALKTIMER)) return;
             var grabParamId = phDisablePartyWalkTimer.ReadInt32(0x8); //Making sure that we only write the value for the player grab
             if (disablePartyWalkTimer == true)
             {
-
-
                 if (grabParamId.Equals(30100) || grabParamId.Equals(30300) || grabParamId.Equals(30500))
                 {
                     phDisablePartyWalkTimer.WriteSingle(0xC, 1);
-                    //Find a way to call the function to do another check in a few seconds
+                    //Overwrite current timer that gets incremented every second to 1
                 }
-
-                
-            }
-            else
-            {
-               
             }
         }
 
@@ -2319,6 +2327,19 @@ namespace DS2S_META
             else
             {
                 InfiniteSpells.WriteBytes(0x0, new byte[] { 0x90, 0x90, 0x90 });
+            }
+        }
+
+        public void SetDisableSkirtDamage(bool disableSkirt)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE)) return;
+            if (disableSkirt)
+            {
+                InstallDisableSkirtDamage();
+            }
+            else
+            {
+                UninstallDisableSkirtDamage();
             }
         }
 
