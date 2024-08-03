@@ -93,5 +93,6 @@ namespace DS2S_META
             return DS2SBonfire.EmptyBonfire;
         }
         public static DS2SCovenant GetCovById(COV? id) => Covenants.First(cv => cv.ID == id);
+        public static DS2SClass GetClassById(PLAYERCLASS id) => Classes.First(cl => cl.ID == id);
     }
 }

@@ -24,12 +24,8 @@
                 <StackPanel Margin="15">
                     <Label Content="Name" />
                     <TextBox x:Name="txtName" Text="{Binding CharacterName}" />
-                    <!--<Label Content="Sex" />
-                <ComboBox Name="Sex"/>-->
                     <Label Content="Class" />
-                    <ComboBox Name="cmbClass"/>
-                    <!--<Label Content="Physique" />
-                <ComboBox Name="Physique"/>-->
+                    <ComboBox Name="cmbClass" ItemsSource="{Binding ClassList}" SelectedItem="{Binding SelectedClass}"/>
                 </StackPanel>
             </Border>
 
@@ -70,48 +66,19 @@
             <Label Content="Stats"/>
             <StackPanel Orientation="Horizontal" Width="110" Margin="5">
                 <Button Content="Reset" Width="50" Margin="0,0,10,0"  x:Name="btnReset"/>
-                <Button Content="Max" Width="50" x:Name="btnMax"/>
+                <Button Content="Max" Command="{Binding MaxLevelsCommand}" Width="50" x:Name="btnMax"/>
             </StackPanel>
-            <Border BorderBrush="Gray" BorderThickness="1"  >
-                <Grid x:Name="gridStatLevels" Margin="5,5,5,5" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Label Content="Soul Level" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="0" />
-                    <TextBox x:Name="nudSoulLevel" Text="{Binding Hook.SoulLevel, Mode=TwoWay, UpdateSourceTrigger=Explicit}" MaxWidth="150" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Margin="0,0,18,0" Grid.Column="1" Grid.Row="0" />
-                    <Label Content="Vigor" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="1" />
-                    <wpfTool:IntegerUpDown x:Name="nudVig"  Value="{Binding Hook.Vigor}" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Endurance" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="2" />
-                    <wpfTool:IntegerUpDown x:Name="nudEnd" Value="{Binding Hook.Endurance}" Grid.Column="1" Grid.Row="2" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Vitality" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="3" />
-                    <wpfTool:IntegerUpDown x:Name="nudVit" Value="{Binding Hook.Vitality}" Grid.Column="1" Grid.Row="3" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Attunement" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="4" />
-                    <wpfTool:IntegerUpDown x:Name="nudAtt" Value="{Binding Hook.Attunement}" Grid.Column="1" Grid.Row="4" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Strength" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="5" />
-                    <wpfTool:IntegerUpDown x:Name="nudStr" Value="{Binding Hook.Strength}" Grid.Column="1" Grid.Row="5" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Dexterity" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="6" />
-                    <wpfTool:IntegerUpDown x:Name="nudDex" Value="{Binding Hook.Dexterity}" Grid.Column="1" Grid.Row="6" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Adaptability" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="7" />
-                    <wpfTool:IntegerUpDown x:Name="nudAdp" Value="{Binding Hook.Adaptability}" Grid.Column="1" Grid.Row="7" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Intelligence" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="8" />
-                    <wpfTool:IntegerUpDown x:Name="nudInt" Value="{Binding Hook.Intelligence}" Grid.Column="1" Grid.Row="8" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                    <Label Content="Faith" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Grid.Column="0" Grid.Row="9" />
-                    <wpfTool:IntegerUpDown x:Name="nudFth" Value="{Binding Hook.Faith}" Grid.Column="1" Grid.Row="9" TextAlignment="Center" Maximum="99" ClipValueToMinMax="True"/>
-                </Grid>
-            </Border>
+
+            <ItemsControl Grid.Row="2" Grid.Column="0" ItemsSource="{Binding LvlAttrList}" Grid.ColumnSpan="2">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:LvlAttrControl Hook="{Binding Hook}" AttrName="{Binding AttrName}" AttrLvl="{Binding AttrLvl, Mode=TwoWay}" AttrClassMinLvl="{Binding AttrLvlMin}" Margin="0,5,0,0" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!--<Label Content="Soul Level" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="0" />
+            <TextBox x:Name="nudSoulLevel" Text="{Binding Hook.SoulLevel, Mode=TwoWay, UpdateSourceTrigger=Explicit}" MaxWidth="150" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Margin="0,0,18,0" Grid.Column="1" Grid.Row="0" />-->
+
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
             <Label Content="Misc"/>

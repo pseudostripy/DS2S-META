@@ -90,7 +90,7 @@ namespace DS2S_META.List_Items
             Match classEntry = ClassEntryRx.Match(line);
 
             cls.Name = classEntry.Groups["name"].Value;
-            cls.ID = Convert.ToByte(classEntry.Groups["id"].Value);
+            cls.ID = (PLAYERCLASS)Enum.Parse(enumType: typeof(PLAYERCLASS), classEntry.Groups["id"].Value);
             cls.SoulLevel = Convert.ToInt16(classEntry.Groups["sl"].Value);
             cls.Vigor = Convert.ToInt16(classEntry.Groups["vig"].Value);
             cls.Endurance = Convert.ToInt16(classEntry.Groups["end"].Value);
@@ -101,6 +101,7 @@ namespace DS2S_META.List_Items
             cls.Adaptability = Convert.ToInt16(classEntry.Groups["adp"].Value);
             cls.Intelligence = Convert.ToInt16(classEntry.Groups["int"].Value);
             cls.Faith = Convert.ToInt16(classEntry.Groups["fth"].Value);
+            cls.BuildMinLevelsDict();
             return cls;
         }
         public static DS2SCovenant ParseToCovenant(string config)

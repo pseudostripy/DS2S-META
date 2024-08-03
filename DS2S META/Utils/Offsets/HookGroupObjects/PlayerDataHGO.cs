@@ -39,10 +39,19 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
                 OnPropertyChanged(nameof(CharacterName));
             }
         }
-        public int Class
+        public PLAYERCLASS? Class
         {
-            get => PHClass?.ReadByte() ?? -1;
-            set => PHClass?.WriteByte((byte)value);
+            get
+            {
+                var hookVal = PHClass?.ReadByte();
+                if (hookVal == null || hookVal == 0) return null;
+                return (PLAYERCLASS)hookVal;
+            }
+            set
+            {
+                var toWrite = value == null ? (byte)0 : (byte)value;
+                PHClass?.WriteByte(toWrite);
+            }
         }
         public int SoulMemory
         {
@@ -98,8 +107,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             { "LeftHand2", EQUIP.LEFTHAND2 },
             { "LeftHand3", EQUIP.LEFTHAND3 },
         };
-        public Dictionary<EQUIP, PHLeaf?> PHEquipment { get; set; } = new();
-        public Dictionary<ATTR, PHLeaf?> PHAttributes { get; set; } = new();
+        private Dictionary<EQUIP, PHLeaf?> PHEquipment { get; set; } = new();
+        private Dictionary<ATTR, PHLeaf?> PHAttributes { get; set; } = new();
 
 
         public string GetEquipmentName(EQUIP eqpslot) => PHEquipment[eqpslot]?.ReadInt32().AsMetaName() ?? "";
