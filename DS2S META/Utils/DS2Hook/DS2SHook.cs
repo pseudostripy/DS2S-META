@@ -89,6 +89,7 @@ namespace DS2S_META.Utils.DS2Hook
         // Utility Info
         //public static bool Reading { get; set; }
         public NoDmgMod? NoDmgMod;
+        public DisableSkirtDamage? DisableSkirtDamage;
 
 
 
@@ -1318,7 +1319,11 @@ namespace DS2S_META.Utils.DS2Hook
         }
         
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
+        public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
         
+        
+
+
         // QoL Wrappers:
         public void GiveItem(ITEMID itemid, short amount = 1, byte upgrade = 0, byte infusion = 0,
                              GIVEOPTIONS opt = GIVEOPTIONS.DEFAULT)
@@ -1631,6 +1636,29 @@ namespace DS2S_META.Utils.DS2Hook
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_FIST)) return;
             SetWeaponOHKO(ITEMID.FISTS, ohko);
         }
+
+        private void EnsureInstalledDisableSkirtDamage()
+        {
+            if (DisableSkirtDamage?.IsInstalled == true)
+                return;
+            DisableSkirtDamage ??= new DisableSkirtDamage(this);
+            DisableSkirtDamage.Install();
+        }
+
+        public void SetDisableSkirtDamage(bool  disableSkirtDamage)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE)) return;
+            if (disableSkirtDamage)
+            {
+                EnsureInstalledDisableSkirtDamage();
+            }else
+            {
+                UninstallDisableSkirtDamage();
+            }
+        }
+
+        
+
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)
         {
             if (!Hooked) return;

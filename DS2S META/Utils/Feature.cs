@@ -35,6 +35,7 @@ namespace DS2S_META.Utils
         MAXLEVELS,
         RESETTOCLASSLEVELS,
         RESETSOULMEMORY,
+        DISABLESKIRTDAMAGE,
     }
     public static class MetaFeature
     {
@@ -78,6 +79,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.COVENANTINFO => Hook.IsSOTFS && Hook.InGame,
                 METAFEATURE.MAXLEVELS => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.RESETTOCLASSLEVELS => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS && Hook.InGame,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -108,5 +110,7 @@ namespace DS2S_META.Utils
         public static bool FtCovenantInfo => IsActive(METAFEATURE.COVENANTINFO);
         public static bool FtMaxLevels => IsActive(METAFEATURE.MAXLEVELS);
         public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
+
+        public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
     }
 }
