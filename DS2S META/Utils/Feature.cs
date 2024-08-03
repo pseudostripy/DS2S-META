@@ -32,6 +32,9 @@ namespace DS2S_META.Utils
         RESTOREHUMANITY,
         NEWTESTCHARACTER,
         COVENANTINFO,
+        MAXLEVELS,
+        RESETTOCLASSLEVELS,
+        RESETSOULMEMORY,
     }
     public static class MetaFeature
     {
@@ -57,7 +60,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DISABLEAI => Hook.IsSOTFS_CP && Hook.InGame,
-                METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, // should be fine for all versions
+                METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, 
                 METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.MADWARRIOR => Hook.IsSOTFS_CP, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
@@ -68,10 +71,13 @@ namespace DS2S_META.Utils
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
                 METAFEATURE.MANAGEBFS => Hook.InGame,
-                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        // should work on all supported versions
-                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  // should work on all supported versions
-                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, // should work on all supported versions
+                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        
+                METAFEATURE.RESETSOULMEMORY => Hook.IsValidVer && Hook.InGame,  
+                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  
+                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, 
                 METAFEATURE.COVENANTINFO => Hook.IsSOTFS && Hook.InGame,
+                METAFEATURE.MAXLEVELS => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.RESETTOCLASSLEVELS => Hook.IsValidVer && Hook.InGame,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -96,8 +102,11 @@ namespace DS2S_META.Utils
         public static bool FtWarp => IsActive(METAFEATURE.WARP);
         public static bool FtManageBfs => IsActive(METAFEATURE.MANAGEBFS);
         public static bool FtGiveSouls => IsActive(METAFEATURE.GIVESOULS);
+        public static bool FtResetSoulMemory => IsActive(METAFEATURE.RESETSOULMEMORY);
         public static bool FtRestoreHumanity => IsActive(METAFEATURE.RESTOREHUMANITY);
         public static bool FtNewTestCharacter => IsActive(METAFEATURE.NEWTESTCHARACTER);
         public static bool FtCovenantInfo => IsActive(METAFEATURE.COVENANTINFO);
+        public static bool FtMaxLevels => IsActive(METAFEATURE.MAXLEVELS);
+        public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
     }
 }

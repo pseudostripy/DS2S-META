@@ -11,11 +11,11 @@
 
     <Grid >
         <Grid.ColumnDefinitions >
-            <ColumnDefinition Width="125"/>
+            <ColumnDefinition />
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
         <Label Content="{Binding ElementName=LvlAttrCtrl, Path=AttrName}" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
-        <wpfTool:IntegerUpDown x:Name="nudValue" Minimum="{Binding ElementName=LvlAttrCtrl, Path=AttrClassMinLvl}" Maximum="99" Value="{Binding ElementName=LvlAttrCtrl, Path=AttrLvl}" Width="75" Grid.Column="1" TextAlignment="Right" Padding="0,0,20,0"/>
+        <wpfTool:IntegerUpDown x:Name="nudValue" Minimum="{Binding ElementName=LvlAttrCtrl, Path=AttrClassMinLvl}" Maximum="99" Value="{Binding ElementName=LvlAttrCtrl, Path=AttrLvl}" Grid.Column="1" TextAlignment="Center" Padding="20,0,0,0" />
     </Grid>
 </local:METAControl>

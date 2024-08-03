@@ -75,18 +75,30 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         }
         public int HollowLevel
         {
-            get => PHHollowLevel?.ReadInt32() ?? 0;
-            set => PHHollowLevel?.WriteInt32(value);
+            get => PHHollowLevel?.ReadByte() ?? 0;
+            set
+            {
+                byte b = Convert.ToByte(value); // crash here if bad input
+                PHHollowLevel?.WriteByte((byte)value);
+            }
         }
         public int SinnerLevel
         {
-            get => PHSinnerLevel?.ReadInt32() ?? 0;
-            set => PHSinnerLevel?.WriteInt32(value);
+            get => PHSinnerLevel?.ReadByte() ?? 0;
+            set
+            {
+                byte b = Convert.ToByte(value); // crash here if bad input
+                PHHollowLevel?.WriteByte((byte)value);
+            }
         }
         public int SinnerPoints
         {
-            get => PHSinnerPoints?.ReadInt32() ?? 0;
-            set => PHSinnerPoints?.WriteInt32(value);
+            get => PHSinnerPoints?.ReadByte() ?? 0;
+            set
+            {
+                byte b = Convert.ToByte(value); // crash here if bad input
+                PHHollowLevel?.WriteByte((byte)value);
+            }
         }
         public int Souls => PHSouls?.ReadInt32() ?? -1;
         
@@ -114,6 +126,72 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public string GetEquipmentName(EQUIP eqpslot) => PHEquipment[eqpslot]?.ReadInt32().AsMetaName() ?? "";
         public int GetAttributeLevel(ATTR attr) => PHAttributes[attr]?.ReadInt16() ?? 0;
         public void SetAttributeLevel(ATTR attr, int lvl) => PHAttributes[attr]?.WriteInt16((short)lvl);
+
+        // Soul helper functions
+        public void UpdateSoulLevel()
+        {
+            var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == Class);
+            if (charClass == null) return;
+
+            var soulLevel = GetSoulLevel(charClass);
+            SoulLevel = soulLevel;
+            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
+            if (reqSoulMemory > SoulMemory)
+            {
+                SoulMemory = reqSoulMemory;
+                SoulMemory2 = reqSoulMemory;
+            }
+        }
+        private int GetSoulLevel(DS2SClass charClass)
+        {
+            int sl = charClass.SoulLevel;
+            sl += GetAttributeLevel(ATTR.VGR) - charClass.Vigor;
+            sl += GetAttributeLevel(ATTR.ATN) - charClass.Attunement;
+            sl += GetAttributeLevel(ATTR.VIT) - charClass.Vitality;
+            sl += GetAttributeLevel(ATTR.END) - charClass.Endurance;
+            sl += GetAttributeLevel(ATTR.STR) - charClass.Strength;
+            sl += GetAttributeLevel(ATTR.DEX) - charClass.Dexterity;
+            sl += GetAttributeLevel(ATTR.ADP) - charClass.Adaptability;
+            sl += GetAttributeLevel(ATTR.INT) - charClass.Intelligence;
+            sl += GetAttributeLevel(ATTR.FTH) - charClass.Faith;
+            return sl;
+        }
+        public void ResetSoulMemory()
+        {
+            var charClass = DS2Resource.Classes.FirstOrDefault(c => c.ID == Class);
+            if (charClass == null) return;
+
+            var soulLevel = GetSoulLevel(charClass);
+            var reqSoulMemory = GetRequiredSoulMemory(soulLevel, charClass.SoulLevel);
+
+            SoulMemory = reqSoulMemory;
+            SoulMemory2 = reqSoulMemory;
+        }
+        private static int GetRequiredSoulMemory(int SL, int baseSL)
+        {
+            int soulMemory = 0;
+            var levelCosts = GetLevelRequirements();
+            for (int i = baseSL; i < SL; i++)
+            {
+                var index = i <= 850 ? i : 850;
+                soulMemory += levelCosts[index];
+            }
+            return soulMemory;
+        }
+        private static readonly List<int> Levels = new();
+        private static List<int> GetLevelRequirements()
+        {
+            if (Levels.Count > 0) return Levels;
+
+            // build Levels object
+            if (ParamMan.PlayerLevelUpSoulsParam == null)
+                throw new NullReferenceException("Level up cost param not found");
+
+            foreach (var row in ParamMan.PlayerLevelUpSoulsParam.Rows.Cast<PlayerLevelUpSoulsRow>())
+                Levels.Add(row.LevelCost);
+            return Levels;
+        }
+
 
         // Constructor
         public PlayerDataHGO(DS2SHook hook, Dictionary<string, PHLeaf?> equipGrp,

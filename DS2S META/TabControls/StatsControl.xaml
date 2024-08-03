@@ -12,100 +12,81 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="250"/>
+            <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0" Grid.Row="0" Margin="10">
-            <Label Content="Character"/>
-            <Border BorderBrush="Gray" BorderThickness="1"  >
-                <StackPanel Margin="15">
-                    <Label Content="Name" />
-                    <TextBox x:Name="txtName" Text="{Binding CharacterName}" />
-                    <Label Content="Class" />
-                    <ComboBox Name="cmbClass" ItemsSource="{Binding ClassList}" SelectedItem="{Binding SelectedClass}"/>
-                </StackPanel>
-            </Border>
-
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="0" Margin="10,10,10,0" >
-            <Label Content="Souls"/>
-            <Border BorderBrush="Gray" BorderThickness="1"  >
-                <StackPanel Margin="5">
-
-                    <Grid Margin="15">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Souls" Grid.Row="0" Grid.Column="0"/>
-                        <TextBox Text="{Binding Hook.DS2P.PlayerData.Souls, Mode=OneWay}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="1" Width="100" />
-                        <Label Content="SoulMemory" Grid.Row="1" Grid.Column="0" />
-                        <TextBox Text="{Binding Hook.DS2P.PlayerData.SoulMemory, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="100"  Height="26" Margin="0,0,0,26" Grid.RowSpan="2" VerticalAlignment="Bottom"/>
-                        <Label Content="SoulMemory2" Grid.Row="2" Grid.Column="0"/>
-                        <TextBox Text="{Binding Hook.DS2P.PlayerData.SoulMemory2, UpdateSourceTrigger=Explicit}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="100" />
-                    </Grid>
-                    <Button Content="Reset Soul Memory" x:Name="btnResetSoulMemory" Width="150" IsEnabled="False" />
-                    <Label Content="Give Souls" HorizontalAlignment="Center"/>
-                    <wpfTool:IntegerUpDown x:Name="nudGiveSouls" TextAlignment="Center" Width="100" Minimum="-9999999" Value="0" ClipValueToMinMax="True"/>
-                    <Separator Visibility="Hidden"/>
-                    <Button x:Name="btnGive" Content="Give" Width="100" IsEnabled="{Binding EnGiveSouls}" />
-                </StackPanel>
-
-            </Border>
-
-        </StackPanel>
-        <StackPanel Grid.Column="0" Grid.Row="1" Margin="10,10,10,0">
-            <Label Content="Stats"/>
-            <StackPanel Orientation="Horizontal" Width="110" Margin="5">
-                <Button Content="Reset" Width="50" Margin="0,0,10,0"  x:Name="btnReset"/>
-                <Button Content="Max" Command="{Binding MaxLevelsCommand}" Width="50" x:Name="btnMax"/>
-            </StackPanel>
-
-            <ItemsControl Grid.Row="2" Grid.Column="0" ItemsSource="{Binding LvlAttrList}" Grid.ColumnSpan="2">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:LvlAttrControl Hook="{Binding Hook}" AttrName="{Binding AttrName}" AttrLvl="{Binding AttrLvl, Mode=TwoWay}" AttrClassMinLvl="{Binding AttrLvlMin}" Margin="0,5,0,0" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--<Label Content="Soul Level" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,0,10,0" Grid.Column="0" Grid.Row="0" />
-            <TextBox x:Name="nudSoulLevel" Text="{Binding Hook.SoulLevel, Mode=TwoWay, UpdateSourceTrigger=Explicit}" MaxWidth="150" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Margin="0,0,18,0" Grid.Column="1" Grid.Row="0" />-->
-
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1" Margin="5">
-            <Label Content="Misc"/>
-
-            <Border BorderBrush="Gray" BorderThickness="1"  >
-                <Grid Margin="15,15,15,15">
+        <Expander Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Info"/></TextBlock>
+            </Expander.Header>
+            <Border Margin="0,0,10,0">
+                <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition />
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label Content="Hollow Level" Grid.Row="0" Grid.Column="0"/>
-                    <wpfTool:IntegerUpDown Value="{Binding Hook.HollowLevel}" x:Name="nudHollowLevel" Maximum="32" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="1" Width="85"/>
-                    <Label Content="Sinner Level" Grid.Row="1" Grid.Column="0" />
-                    <TextBox Text="{Binding Hook.SinnerLevel}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" IsEnabled="False" Width="68" />
-                    <Label Content="Sinner Points" Grid.Row="2" Grid.Column="0"/>
-                    <TextBox Text="{Binding Hook.SinnerPoints}" TextAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" IsEnabled="False" Width="68" />
+                    <Label Content="Character Name" Grid.ColumnSpan="2" VerticalContentAlignment="Center" HorizontalAlignment="Left" />
+                    <TextBox x:Name="txtName" Text="{Binding CharacterName}" Margin="0,0,0,5" MinHeight="25" Grid.Column="1" VerticalContentAlignment="Center"/>
+                    <Label Content="Character Class" Grid.ColumnSpan="2" VerticalContentAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" />
+                    <ComboBox Name="cmbClass" ItemsSource="{Binding ClassList}" SelectedItem="{Binding SelectedClass}" Grid.Row="1" MinHeight="25" VerticalContentAlignment="Center" Margin="0,0,0,5" Grid.Column="1"/>
+                    <Label Content="Hollow Level" Grid.Row="2" Grid.Column="0" VerticalContentAlignment="Center" Margin="0,5,0,0"/>
+                    <wpfTool:IntegerUpDown Value="{Binding HollowLevel}" x:Name="nudHollowLevel" Maximum="32" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0"/>
+                    <Label Content="Sinner Level" Grid.Row="3" Grid.Column="0" Margin="0,5,0,0" VerticalContentAlignment="Center" />
+                    <wpfTool:IntegerUpDown Value="{Binding SinnerLevel}" TextAlignment="Center" VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="1" IsEnabled="False" HorizontalContentAlignment="Stretch" Margin="0,5,0,0" />
+                    <Label Content="Sinner Points" Grid.Row="4" Grid.Column="0" Margin="0,5,0,0" VerticalContentAlignment="Center"/>
+                    <wpfTool:IntegerUpDown Value="{Binding SinnerPoints}" TextAlignment="Center" VerticalContentAlignment="Stretch" Grid.Row="4" Grid.Column="1" IsEnabled="False" HorizontalContentAlignment="Stretch" Margin="0,5,0,0" />
+                    <Label Content="Souls" Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Center" Margin="5,0,0,0"/>
+                    <TextBox Text="{Binding Souls, Mode=OneWay, StringFormat={}{0:d}}" IsEnabled="False" TextAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="3" MinHeight="25" Margin="0,5,0,5" />
+                    <wpfTool:IntegerUpDown Value="{Binding GiveSoulsVal}" TextAlignment="Center" Minimum="-9999999" ClipValueToMinMax="True" Grid.Row="2" Grid.Column="2" Margin="5,5,5,0"/>
+                    <Button x:Name="btnGive" Content="Give Souls" Command="{Binding GiveSoulsCommand}" IsEnabled="{Binding EnGiveSouls}" Grid.Row="2" Grid.Column="3" Margin="0,5,0,0" />
+                    <Label Content="Soul Memory" Grid.Row="3" Grid.Column="2" VerticalContentAlignment="Center" Margin="5,5,0,0" />
+                    <TextBox Text="{Binding SoulMemory, UpdateSourceTrigger=Explicit, StringFormat={}{0:d}}" TextAlignment="Center" VerticalContentAlignment="Center" Grid.Row="3" Grid.Column="3" IsEnabled="False" Margin="0,5,0,0"/>
+                    <Button Content="Reset Soul Memory" Command="{Binding ResetSoulMemoryCommand}" IsEnabled="{Binding EnResetSoulMemory}" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" HorizontalContentAlignment="Center" Margin="5,5,0,0" />
+
                 </Grid>
-
             </Border>
-        </StackPanel>
-        <DockPanel Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="100" LastChildFill="False" Margin="158,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100"/>
+        </Expander>
+        <Expander Grid.Row="1" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Levels"/></TextBlock>
+            </Expander.Header>
+            <Border Margin="50,0,50,0">
+                <Grid Grid.Row="1" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="8*"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Soul Level" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="0,5,10,0" Grid.Column="0" Grid.Row="0" MinHeight="25" />
+                    <TextBox Text="{Binding SoulLevel, StringFormat={}{0:d}}" TextAlignment="Center" VerticalContentAlignment="Center" IsEnabled="False" Grid.Column="1" Grid.Row="0" Margin="0,5,0,0" MinHeight="25" />
 
+                    <ItemsControl Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LvlAttrList}" Grid.ColumnSpan="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:LvlAttrControl Hook="{Binding Hook}" AttrName="{Binding AttrName}" AttrLvl="{Binding AttrLvl, Mode=TwoWay}" AttrClassMinLvl="{Binding AttrLvlMin}" Margin="0,5,0,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Content="Reset" Command="{Binding ResetLevelsCommand}" IsEnabled="{Binding EnClassLevelReset}" Grid.Row="2" Margin="0,5,0,0" MinHeight="25"/>
+                    <Button Content="Max" Command="{Binding MaxLevelsCommand}" IsEnabled="{Binding EnMaxLevels}" Grid.Row="2" Grid.Column="1" Margin="0,5,0,0" MinHeight="25"/>
+                </Grid>
+            </Border>
+        </Expander>
     </Grid>
 </local:METAControl>

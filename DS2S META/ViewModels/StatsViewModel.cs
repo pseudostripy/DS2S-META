@@ -16,6 +16,7 @@ using DS2S_META.Randomizer;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.DS2Hook;
 using DS2S_META.Commands;
+using System.Windows.Navigation;
 
 namespace DS2S_META.ViewModels
 {
@@ -26,11 +27,17 @@ namespace DS2S_META.ViewModels
         private PlayerDataHGO? PD => Hook?.DS2P?.PlayerData; // shorthand
         
         public bool EnGiveSouls => MetaFeature.FtGiveSouls;
-
+        public bool EnResetSoulMemory => MetaFeature.FtGiveSouls;
+        public bool EnMaxLevels => MetaFeature.FtMaxLevels;
+        public bool EnClassLevelReset => MetaFeature.FtResetToClassLevels;
+        
         public ICommand MaxLevelsCommand { get; set; }
+        public ICommand ResetLevelsCommand { get; set; }
+        public ICommand ResetSoulMemoryCommand { get; set; }
+        public ICommand GiveSoulsCommand { get; set; }
 
-
-
+        // Binding properties:
+        private string _characterName = string.Empty;
         public string CharacterName
         {
             get => PD?.CharacterName ?? string.Empty;
@@ -38,6 +45,7 @@ namespace DS2S_META.ViewModels
             {
                 if (PD?.CharacterName != null)
                     PD.CharacterName = value;
+                _characterName = value;
                 OnPropertyChanged();
             }
         }
@@ -57,19 +65,85 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        
-
-        
+        public int SoulLevel
+        {
+            get => PD?.SoulLevel ?? 0;
+            set { return; }
+        }
+        public int SinnerLevel
+        {
+            get => PD?.SinnerLevel ?? 0;
+            set 
+            {
+                if (PD?.SinnerLevel != null)
+                    PD.SinnerLevel = value;
+            }
+        }
+        public int SinnerPoints
+        {
+            get => PD?.SinnerPoints ?? 0;
+            set
+            {
+                if (PD?.SinnerPoints != null)
+                    PD.SinnerPoints = value;
+            }
+        }
+        public int HollowLevel
+        {
+            get => PD?.HollowLevel ?? 0;
+            set
+            {
+                if (PD?.HollowLevel != null)
+                    PD.HollowLevel = value;
+            }
+        }
+        private int _giveSoulsVal = 0;
+        public int GiveSoulsVal
+        {
+            get => _giveSoulsVal;
+            set
+            {
+                _giveSoulsVal |= value;
+                OnPropertyChanged();
+            }
+        }
+        public int Souls
+        {
+            get => PD?.Souls ?? 0;
+            set { return; }
+        }
+        public int SoulMemory
+        {
+            get => PD?.SoulMemory ?? 0;
+            set { return; }
+        }
 
         // Constructor
         public StatsViewModel()
         {
             MaxLevelsCommand = new RelayCommand(MaxLevelsExecute, MaxLevelsCanExec);
+            ResetLevelsCommand = new RelayCommand(ResetLevelsExecute, ResetLevelsCanExec);
+            ResetSoulMemoryCommand = new RelayCommand(ResetSoulMemoryExecute, ResetSoulMemoryCanExec);
+            GiveSoulsCommand = new RelayCommand(GiveSoulsExecute, GiveSoulsCanExec);
         }
         private void MaxLevelsExecute(object? parameter) => Hook?.SetMaxLevels();
-        private bool MaxLevelsCanExec(object? parameter) => Hook?.InGame == true && MetaFeature.FtNewTestCharacter;
+        private void ResetLevelsExecute(object? parameter) => ResetToClassLevels();
+        private void ResetSoulMemoryExecute(object? parameter) => ResetToClassLevels();
+        private void GiveSoulsExecute(object? parameter) => Hook?.AddSouls(GiveSoulsVal);
+        
+        private bool MaxLevelsCanExec(object? parameter) => MetaFeature.FtMaxLevels;
+        private bool ResetLevelsCanExec(object? parameter) => MetaFeature.FtResetToClassLevels;
+        private bool ResetSoulMemoryCanExec(object? parameter) => MetaFeature.FtResetSoulMemory;
+        private bool GiveSoulsCanExec(object? parameter) => MetaFeature.FtGiveSouls;
 
+        public void ResetToClassLevels()
+        {
+            var hookClass = SelectedClass;
+            if (hookClass == null) return;
+
+            foreach (ATTR attr in Enum.GetValues(typeof(ATTR)))
+                Hook?.DS2P.PlayerData.SetAttributeLevel(attr, hookClass.ClassMinLevels[attr]);
+        }
 
         public List<AttrLvlDataVM> LvlAttrList { get; set; } = SetupAttrControlList();
         private static List<AttrLvlDataVM> SetupAttrControlList()
@@ -83,15 +157,28 @@ namespace DS2S_META.ViewModels
         // Update (called on mainwindow update interval)
         public override void UpdateViewModel()
         {
-            OnPropertyChanged(nameof(CharacterName));
+            OnPropertyChanged(nameof(Souls));
+            OnPropertyChanged(nameof(SoulMemory));
+            OnPropertyChanged(nameof(HollowLevel));
+            OnPropertyChanged(nameof(SinnerLevel));
+            OnPropertyChanged(nameof(SinnerPoints));
+            CheckNameChange();
             OnPropertyChanged(nameof(SelectedClass));
             UpdateLevels();
+            OnPropertyChanged(nameof(SoulLevel));
         }
         private void UpdateLevels()
         {
             // Refresh the whole list
             foreach (var lvlctrl in LvlAttrList)
                 lvlctrl.UpdateViewModel();
+        }
+        private void CheckNameChange()
+        {
+            var charName = PD?.CharacterName;
+            if (charName == null) return; // hook not setup yet
+            if (charName == _characterName) return; // no change 
+            CharacterName = charName;
         }
         private void UpdateLevelMinimums()
         {
@@ -127,6 +214,7 @@ namespace DS2S_META.ViewModels
         private void EnableElements() 
         {
             OnPropertyChanged(nameof(EnGiveSouls));
+            OnPropertyChanged(nameof(EnResetSoulMemory));
         }
 
     }

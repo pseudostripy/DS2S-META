@@ -177,8 +177,8 @@ namespace DS2S_META.Utils.Offsets
                                     OFLD(V102, "PlayerTypeOffset", 0x38)),
             new("CurrentCovenant", OFLD(ANYSOTFS, "PlayerParam", 0x1AD),
                                    OFLD(ANYVANILLA, "PlayerParam", 0x1A9)),
-            new("SoulLevel", OFLD(ANYSOTFS, "PlayerCtrl", 0xd0),
-                            OFLD(ANYVANILLA, "PlayerCtrl", 0xcc)),
+            new("SoulLevel", OFLD(ANYSOTFS, "PlayerParam", 0xd0),
+                            OFLD(ANYVANILLA, "PlayerParam", 0xcc)),
             new("Class",    OFLD(ANYSOTFS, "PlayerBaseMisc", 0x64),
                             OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)),
         };
