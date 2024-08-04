@@ -20,6 +20,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? DisplayItemWindow;
         public PHPointer? ApplySpEffect;
         public PHPointer? ItemGiveWindow;
+        public PHPointer? DisableSkirtDamage;
 
         public FuncListPHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
@@ -34,6 +35,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             DisplayItemWindow = HGO.ValOrNull(PHPDict, "DisplayItemFuncAoB");
             ApplySpEffect = HGO.ValOrNull(PHPDict, "ApplySpEffectAoB");
             ItemGiveWindow = HGO.ValOrNull(PHPDict, "ItemGiveWindowPointer");
+            DisableSkirtDamage = HGO.ValOrNull(PHPDict, "DisableSkirtDamageAoB");
         }
     }
 }

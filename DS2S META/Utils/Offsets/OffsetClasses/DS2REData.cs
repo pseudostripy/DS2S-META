@@ -99,6 +99,10 @@ namespace DS2S_META.Utils.Offsets
                 new(V111, new AbsoluteAOBCL("E9 ? ? ? ? 8B 45 F4 83 C0 01 89 45 F4 E9 ? ? ? ?")),
                 new(V112, new AbsoluteAOBCL("89 6c 24 fc 8d 64 24 fc 54 5d 8b 45 08 83 ec 10 89 74 24 fc 8d 64")),
             }),
+            new("DisableSkirtDamageAoB", new List<LocatorDefn> ()
+            {
+                new(ANYSOTFS, new AbsoluteAOBCL("89 84 8B C4 01 00 00")),
+            }),
 
             // Deprecated. Kept as reference.
             new("SpeedFactorAccelOffset", new List<LocatorDefn>()

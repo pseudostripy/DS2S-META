@@ -49,6 +49,8 @@ namespace DS2S_META.ViewModels
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
 
+        public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
+
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
         public Visibility LblSearchVisibility
@@ -126,6 +128,20 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkFistOHKO));
             }
         }
+
+        private bool _chkDisableSkirtDamage = false;
+        public bool ChkDisableSkirtDamage
+        {
+            get => _chkDisableSkirtDamage;
+            set
+            {
+                _chkDisableSkirtDamage = value;
+                Hook?.SetDisableSkirtDamage(value);
+                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
+                OnPropertyChanged();
+            }
+        }
+
         private bool _chkWarpRest = Properties.Settings.Default.RestAfterWarp; // load from previous opening
         public bool ChkWarpRest
         {
@@ -812,6 +828,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMoneyBags));
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
+            OnPropertyChanged(nameof(EnDisableSkirtDamage));
         }
         public override void UpdateViewModel()
         {
