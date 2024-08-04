@@ -14,16 +14,16 @@ namespace DS2S_META.Utils.Offsets
     public static class DS2REData
     {
         // Version shorthands
-        private readonly static List<DS2VER> ANYVER = new() { DS2VER.SOTFS_V103, DS2VER.SOTFS_V102, DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
-        private readonly static List<DS2VER> ANYSOTFS = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
-        private readonly static List<DS2VER> ANYVANILLA = new() { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
-        private readonly static List<DS2VER> ALLBUTOLDPATCH = new() { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112};
-        private readonly static List<DS2VER> V102 = new() { DS2VER.VANILLA_V102 };
-        private readonly static List<DS2VER> V111 = new() { DS2VER.VANILLA_V111 };
-        private readonly static List<DS2VER> V112 = new() { DS2VER.VANILLA_V112 };
-        private readonly static List<DS2VER> S102 = new() { DS2VER.SOTFS_V102 };
-        private readonly static List<DS2VER> S103 = new() { DS2VER.SOTFS_V103 };
-        private readonly static List<DS2VER> V111OR112 = new() { DS2VER.VANILLA_V111, DS2VER.VANILLA_V111 };
+        private readonly static List<DS2VER> ANYVER = DS2Versions.ANYVER;
+        private readonly static List<DS2VER> ANYSOTFS = DS2Versions.ANYSOTFS;
+        private readonly static List<DS2VER> ANYVANILLA = DS2Versions.ANYVANILLA;
+        private readonly static List<DS2VER> ALLBUTOLDPATCH = DS2Versions.ALLBUTOLDPATCH;
+        private readonly static List<DS2VER> V102 = DS2Versions.V102;
+        private readonly static List<DS2VER> V111 = DS2Versions.V111;
+        private readonly static List<DS2VER> V112 = DS2Versions.V112;
+        private readonly static List<DS2VER> S102 = DS2Versions.S102;
+        private readonly static List<DS2VER> S103 = DS2Versions.S103;
+        private readonly static List<DS2VER> V111OR112 = DS2Versions.V111OR112;
         private readonly static string STRBASEA = "BaseA";
 
         public static LocatorDefn OFLD(List<DS2VER> validVersions, string parentId, params int[] offsets)
@@ -101,7 +101,7 @@ namespace DS2S_META.Utils.Offsets
             }),
             new("DisableSkirtDamageAoB", new List<LocatorDefn> ()
             {
-                new(ANYSOTFS, new AbsoluteAOBCL("89 84 8B C4 01 00 00")),
+                new(S103, new AbsoluteAOBCL("89 84 8B C4 01 00 00")),
             }),
 
             // Deprecated. Kept as reference.

@@ -137,7 +137,6 @@ namespace DS2S_META.ViewModels
             {
                 _chkDisableSkirtDamage = value;
                 Hook?.SetDisableSkirtDamage(value);
-                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
                 OnPropertyChanged();
             }
         }
