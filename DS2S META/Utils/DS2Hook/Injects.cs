@@ -14,51 +14,6 @@ namespace DS2S_META.Utils.DS2Hook
     /// </summary>
     public class Injects
     {
-        public enum NOPINJECTS
-        {
-            DISABLESKIRT,
-        }
-            
-        private class VerBytesArrayDef
-        {
-            public NOPINJECTS ID;
-            public VerBytes[] VerbyteArray;
-            public VerBytesArrayDef(NOPINJECTS id, params VerBytes[] vbs)
-            {
-                ID = id;
-                VerbyteArray = vbs;
-            }
-        }
-        private class VerBytes
-        {
-            public List<DS2VER> ValidVers;
-            public byte[] Bytes;
-            public VerBytes(List<DS2VER> validvers, byte[] bytes)
-            { 
-                ValidVers = validvers;
-                Bytes = bytes;
-            }
-        }
-
-        public static byte[] GetDefinedBytes(DS2VER ver, NOPINJECTS nm)
-        {
-            var varbytes = NopByteDefinitions.FirstOrDefault(vb => vb.ID == nm)
-                ?? throw new Exception($"Cannot find any bytes under the NOPINJECTS enum: {nm}");
-
-            var vbs = varbytes.VerbyteArray.Where(vb => vb.ValidVers.Contains(ver)).ToList();
-            if (vbs.Count == 0)
-                throw new Exception($"Cannot find defined bytes for {nm} for DS2 version {ver}");
-
-            if (vbs.Count > 1)
-                throw new Exception($"Multipe byte definitions for {nm} for DS2 version {ver}");
-
-            return vbs.First().Bytes;
-        }
-        private static readonly List<VerBytesArrayDef> NopByteDefinitions = new()
-        {
-            new VerBytesArrayDef(NOPINJECTS.DISABLESKIRT, new VerBytes(DS2Versions.S103, new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 }))
-        };
-
         //internal bool ApplyBIKP1Skip(bool enable)
         //{
         //    // Last resort graceful failure

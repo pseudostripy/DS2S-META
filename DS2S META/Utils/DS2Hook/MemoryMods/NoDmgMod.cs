@@ -60,7 +60,8 @@ namespace DS2S_META.Utils.DS2Hook.MemoryMods
             var p_inj1 = IntPtr.Add((IntPtr)ModuleAddr, inj1_offset);
             var inj1_ob = new byte[] { 0x48, 0x89, 0x44, 0x24, 0x28, 0x48, 0x8b, 0x44, 0x24, 0x60, 0x48, 0x89, 0x44, 0x24, 0x20 };
             var inj1_jmpLoc = IntPtr.Add(AllocMemAddr, 0x7e); // see assembly script
-            return new JumpInject(Hook, p_inj1, inj1_jmpLoc, inj1_ob, JumpInject.STDINJTYPE.R11ABSJUMP);
+            var inj1_nb = Inject.R11_AbsJumpBytes(inj1_ob, inj1_jmpLoc);
+            return new Inject(Hook, p_inj1, inj1_ob, inj1_nb);
         }
         private Inject SetupSecondInject()
         {
@@ -70,7 +71,8 @@ namespace DS2S_META.Utils.DS2Hook.MemoryMods
             var inj2_offset = 0x138F77; // todo as above
             var p_inj2 = IntPtr.Add((IntPtr)ModuleAddr, inj2_offset);
             var inj2_ob = new byte[] { 0x49, 0x8b, 0x46, 0x08, 0xf3, 0x41, 0x0f, 0x5e, 0xf1, 0xf3, 0x0f, 0x59, 0x70, 0x1c };
-            return new JumpInject(Hook, p_inj2, AllocMemAddr, inj2_ob, JumpInject.STDINJTYPE.RAXABSJUMP);
+            var inj2_nb = Inject.RAX_AbsJumpBytes(inj2_ob, AllocMemAddr);
+            return new Inject(Hook, p_inj2, inj2_ob, inj2_nb);
         }
         private byte[] CreateCoreModAsm()
         {
