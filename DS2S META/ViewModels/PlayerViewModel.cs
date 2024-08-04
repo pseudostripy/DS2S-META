@@ -51,7 +51,7 @@ namespace DS2S_META.ViewModels
 
         public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
 
-        public bool EnInfiniteStamina = MetaFeature.FtInfiniteStamina;
+        public bool EnInfiniteStamina => MetaFeature.FtInfiniteStamina;
 
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
