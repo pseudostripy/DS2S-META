@@ -342,6 +342,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("HPCap", (ANYSOTFS, 0x174), (ANYVANILLA, 0x108)),
                 new DetachedLeaf("SP", (ANYSOTFS, 0x1ac), (ANYVANILLA, 0x140)),
                 new DetachedLeaf("SPMax", (ANYSOTFS, 0x1b4), (ANYVANILLA, 0x148)),
+                new DetachedLeaf("SPMin", (ANYSOTFS, 0x1b0), (ANYVANILLA, 0x144)),
                 new DetachedLeaf("SpeedModifier", (ANYSOTFS, 0x2a8), (ANYVANILLA, 0x208)),
                 new DetachedLeaf("CurrPoise", (ANYSOTFS, 0x218), (ANYVANILLA, 0x1ac))),
 

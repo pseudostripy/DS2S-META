@@ -201,6 +201,7 @@
                 <CheckBox  IsChecked="{Binding ChkDealNoDmg}" Content="Deal No Dmg" x:Name="CbxDealNoDmg" IsEnabled="{Binding EnDmgMod}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="1" />
                 <CheckBox  IsChecked="{Binding ChkTakeNoDmg}" Content="Take No Dmg" x:Name="CbxTakeNoDmg" IsEnabled="{Binding EnDmgMod}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="2" Height="20" />
                 <CheckBox  IsChecked="{Binding ChkDisableSkirtDamage}" Content="Disable Poison" x:Name="CbxDisableSkirtDamage" IsEnabled="{Binding EnDisableSkirtDamage}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="3" Height="20" />
+                <CheckBox  IsChecked="{Binding ChkInfiniteStamina}" Content="Infinite Stamina" x:Name="CbxInfiniteStamina" IsEnabled="{Binding EnInfiniteStamina}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="3" Grid.Row="3" Height="20" />
                 <Button Content="999999 Souls" IsEnabled="{Binding EnMoneyBags}" Command="{Binding BtnMoneybagsCommand}" Grid.Column="3" />
                 <Button Content="Restore Humanity" IsEnabled="{Binding EnRestoreHumanity}" Command="{Binding BtnRestoreHumanityCommand}" Grid.Row="1" Grid.Column="3"/>
                 <Button Content="New Test Character" IsEnabled="{Binding EnNewTestCharacter}" Command="{Binding BtnNewTestCharCommand}" Grid.Row="2" Grid.Column="3"/>

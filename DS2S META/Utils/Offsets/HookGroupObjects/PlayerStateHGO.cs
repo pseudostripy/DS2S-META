@@ -20,6 +20,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHLeaf? PHHPCap;
         public PHLeaf? PHSP;
         public PHLeaf? PHSPMax;
+        public PHLeaf? PHSPMin;
         public PHLeaf? PHCurrPoise;
 
         public PHLeaf? PHPosX;
@@ -146,6 +147,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             PHHPCap = playerGrp["HPCap"];
             PHSP = playerGrp["SP"];
             PHSPMax = playerGrp["SPMax"];
+            PHSPMin = playerGrp["SPMin"];
             PHCurrPoise = playerGrp["CurrPoise"];
 
             PHWarpGroup = warpGrp;
@@ -186,6 +188,12 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             get => PHSPMax?.ReadSingle() ?? 0f;
             set => PHSPMax?.WriteSingle(value);
         }
+
+        public float MinStamina
+        {
+            get => PHSPMin?.ReadSingle() ?? 0f;
+            set => PHSPMin?.WriteSingle(value);
+        }
         public float CurrPoise
         {
             get => PHCurrPoise?.ReadSingle() ?? 0f;
@@ -200,6 +208,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             OnPropertyChanged(nameof(HealthCap));
             OnPropertyChanged(nameof(Stamina));
             OnPropertyChanged(nameof(MaxStamina));
+            OnPropertyChanged(nameof(MinStamina));
             OnPropertyChanged(nameof(CurrPoise));
         }
     }

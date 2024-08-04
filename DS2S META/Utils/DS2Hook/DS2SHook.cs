@@ -1626,6 +1626,13 @@ namespace DS2S_META.Utils.DS2Hook
             if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
             DS2P.PlayerState.HealthMin = noDeath ? 1 : -99999;
         }
+
+        public void SetInfiniteStamina(bool infiniteStamina)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESTAMINA)) return;
+            DS2P.PlayerState.MinStamina = infiniteStamina ? DS2P.PlayerState.MaxStamina : 0;
+        }
+
         public void SetRapierOHKO(bool ohko)
         {
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_RAPIER)) return;

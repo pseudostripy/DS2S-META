@@ -51,6 +51,8 @@ namespace DS2S_META.ViewModels
 
         public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
 
+        public bool EnInfiniteStamina = MetaFeature.FtInfiniteStamina;
+
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
         public Visibility LblSearchVisibility
@@ -71,6 +73,19 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkNoDeath));
             }
         }
+
+        private bool _chkInfiniteStamina = false;
+        public bool ChkInfiniteStamina
+        {
+            get => _chkInfiniteStamina;
+            set
+            {
+                _chkInfiniteStamina = value;
+                Hook?.SetInfiniteStamina(value);
+                OnPropertyChanged(nameof(ChkInfiniteStamina));
+            }
+        }
+
         private bool _chkDisableAi = false;
         public bool ChkDisableAi { 
             get => _chkDisableAi;
@@ -268,6 +283,8 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
+
+
         public float PoiseCurr
         {
             get => PS?.CurrPoise ?? 0;
@@ -791,6 +808,7 @@ namespace DS2S_META.ViewModels
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
             Hook?.SetDisableAI(ChkDisableAi);
+            Hook?.SetInfiniteStamina(ChkInfiniteStamina);
             
             if (Properties.Settings.Default.NoGravThroughLoads)
             {
@@ -828,6 +846,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
             OnPropertyChanged(nameof(EnDisableSkirtDamage));
+            OnPropertyChanged(nameof(EnInfiniteStamina));
         }
         public override void UpdateViewModel()
         {

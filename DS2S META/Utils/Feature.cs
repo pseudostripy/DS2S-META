@@ -36,6 +36,7 @@ namespace DS2S_META.Utils
         RESETTOCLASSLEVELS,
         RESETSOULMEMORY,
         DISABLESKIRTDAMAGE,
+        INFINITESTAMINA,
     }
     public static class MetaFeature
     {
@@ -80,6 +81,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.MAXLEVELS => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.RESETTOCLASSLEVELS => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS && Hook.InGame,
+                METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -112,5 +114,7 @@ namespace DS2S_META.Utils
         public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
 
         public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
+
+        public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
     }
 }
