@@ -1,4 +1,5 @@
-﻿using Octokit;
+﻿using DS2S_META.Utils.DS2Hook.MemoryMods;
+using Octokit;
 using PropertyHook;
 using System;
 using System.Collections.Generic;

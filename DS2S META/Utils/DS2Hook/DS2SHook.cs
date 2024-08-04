@@ -89,7 +89,7 @@ namespace DS2S_META.Utils.DS2Hook
         // Utility Info
         //public static bool Reading { get; set; }
         public NoDmgMod? NoDmgMod;
-        public DisableSkirtDamage? DisableSkirtDamage;
+        public NopableInject? DisableSkirtDamage;
 
 
 
@@ -1648,20 +1648,22 @@ namespace DS2S_META.Utils.DS2Hook
         {
             if (DisableSkirtDamage?.IsInstalled == true)
                 return;
-            DisableSkirtDamage ??= new DisableSkirtDamage(this);
+
+            // Create and install inject
+            var injptr = DS2P?.Func.DisableSkirtDamage?.Resolve()
+                ?? throw new MetaMemoryException("DisableSkirtDamage function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.DISABLESKIRT);
+            DisableSkirtDamage ??= new NopableInject(this, injptr, origbytes);
             DisableSkirtDamage.Install();
         }
 
-        public void SetDisableSkirtDamage(bool  disableSkirtDamage)
+        public void SetDisableSkirtDamage(bool disableSkirtDamage)
         {
             if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE)) return;
             if (disableSkirtDamage)
-            {
                 EnsureInstalledDisableSkirtDamage();
-            }else
-            {
+            else
                 UninstallDisableSkirtDamage();
-            }
         }
 
         
