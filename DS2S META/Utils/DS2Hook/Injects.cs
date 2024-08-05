@@ -17,6 +17,7 @@ namespace DS2S_META.Utils.DS2Hook
         public enum NOPINJECTS
         {
             DISABLESKIRT,
+            INFINITESPELLS,
         }
             
         private class VerBytesArrayDef
@@ -56,7 +57,9 @@ namespace DS2S_META.Utils.DS2Hook
         }
         private static readonly List<VerBytesArrayDef> NopByteDefinitions = new()
         {
-            new VerBytesArrayDef(NOPINJECTS.DISABLESKIRT, new VerBytes(DS2Versions.S103, new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 }))
+            new VerBytesArrayDef(NOPINJECTS.DISABLESKIRT, new VerBytes(DS2Versions.S103, new byte[] { 0x89, 0x84, 0x8B, 0xC4, 0x01, 0x00, 0x00 })),
+            new VerBytesArrayDef(NOPINJECTS.INFINITESPELLS, new VerBytes(DS2Versions.V102, new byte[] {0x88, 0x43, 0x18}),
+                                                            new VerBytes(DS2Versions.S103, new byte[] {0x88, 0x4D, 0x20})),
         };
 
         //internal bool ApplyBIKP1Skip(bool enable)

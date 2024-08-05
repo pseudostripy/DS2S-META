@@ -103,6 +103,11 @@ namespace DS2S_META.Utils.Offsets
             {
                 new(S103, new AbsoluteAOBCL("89 84 8B C4 01 00 00")),
             }),
+            new("InfiniteSpellsAoB", new List<LocatorDefn> ()
+            {
+                new(V102, new AbsoluteAOBCL("88 43 18 E8 ? ? ? ? 8B 45")),
+                new(S103, new AbsoluteAOBCL("88 4D 20 49 8B CE")),
+            }),
 
             // Deprecated. Kept as reference.
             new("SpeedFactorAccelOffset", new List<LocatorDefn>()

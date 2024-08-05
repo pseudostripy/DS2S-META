@@ -90,6 +90,7 @@ namespace DS2S_META.Utils.DS2Hook
         //public static bool Reading { get; set; }
         public NoDmgMod? NoDmgMod;
         public NopableInject? DisableSkirtDamage;
+        public NopableInject? InfiniteSpells;
 
 
 
@@ -1320,6 +1321,8 @@ namespace DS2S_META.Utils.DS2Hook
         
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
         public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
+
+        public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
         
         
 
@@ -1666,7 +1669,29 @@ namespace DS2S_META.Utils.DS2Hook
                 UninstallDisableSkirtDamage();
         }
 
-        
+        private void EnsureInstalledInfiniteSpells()
+        {
+            if (InfiniteSpells?.IsInstalled == true)
+                return;
+
+            var injptr = DS2P?.Func.InfiniteSpells?.Resolve()
+                ?? throw new MetaMemoryException("InfiniteSpells function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITESPELLS);
+            InfiniteSpells ??= new NopableInject(this, injptr, origbytes);
+            InfiniteSpells.Install();
+
+        }
+
+        public void SetInfiniteSpells(bool infiniteSpells)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS)) return;
+            if (infiniteSpells)
+                EnsureInstalledInfiniteSpells();
+            else
+                UninstallInfiniteSpells();
+        }
+
+
 
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)
         {

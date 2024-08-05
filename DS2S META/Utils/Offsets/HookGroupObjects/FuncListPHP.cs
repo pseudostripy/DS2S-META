@@ -21,6 +21,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? ApplySpEffect;
         public PHPointer? ItemGiveWindow;
         public PHPointer? DisableSkirtDamage;
+        public PHPointer? InfiniteSpells;
 
         public FuncListPHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
@@ -36,6 +37,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             ApplySpEffect = HGO.ValOrNull(PHPDict, "ApplySpEffectAoB");
             ItemGiveWindow = HGO.ValOrNull(PHPDict, "ItemGiveWindowPointer");
             DisableSkirtDamage = HGO.ValOrNull(PHPDict, "DisableSkirtDamageAoB");
+            InfiniteSpells = HGO.ValOrNull(PHPDict, "InfiniteSpellsAoB");
         }
     }
 }
