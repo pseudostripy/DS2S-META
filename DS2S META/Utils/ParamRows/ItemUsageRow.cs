@@ -20,7 +20,7 @@ namespace DS2S_META.Utils
             set
             {
                 _UsageBitfield = value;
-                WriteAtField(indUsageBitfield, BitConverter.GetBytes(value));
+                WriteAtField(indUsageBitfield, BitConverter.GetBytes((short)value));
             }
         }
 

@@ -1,23 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>DS2S_META</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\Ladder.ico</ApplicationIcon>
-	<AssemblyVersion>0.7.5.2</AssemblyVersion>
-	<Platforms>AnyCPU;x86</Platforms>
-	<Configurations>Debug;Release;DryUpdate</Configurations>	  
+    <AssemblyVersion>0.7.5.2</AssemblyVersion>
+    <Platforms>AnyCPU;x86</Platforms>
+    <Configurations>Debug;Release;DryUpdate</Configurations>
   </PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' == 'DRYUPDATE'">
-		<DefineConstants>DRYUPDATE</DefineConstants>	
-	</PropertyGroup>
-	
-	
-	<ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'DRYUPDATE'">
+    <DefineConstants>DRYUPDATE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
     <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>4</VersionMinor>
@@ -25,13 +21,11 @@
       <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
     </COMReference>
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="Resources\Images\Ladder.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="5.7.0">
       <PrivateAssets>all</PrivateAssets>
@@ -43,25 +37,21 @@
     <PackageReference Include="Octokit" Version="4.0.3" />
     <PackageReference Include="PortableSettingsProvider" Version="0.2.4" />
   </ItemGroup>
-
-    <ItemGroup>
-	    <Content Update="keystone.dll">
-		    <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-		    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	    </Content>
-    </ItemGroup>
-	
+  <ItemGroup>
+    <Content Update="keystone.dll">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PropertyHook\PropertyHook\PropertyHook.csproj" />
     <ProjectReference Include="..\SoulsFormats\SoulsFormats\SoulsFormats.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Resources\Images\regenerate_icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -74,7 +64,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -117,92 +106,76 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-	<ItemGroup>
-		<None Update="C:\Users\adaml\.nuget\packages\keystoneengine.csharp\0.9.1.1\build\x64\keystone.dll">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="C:\Users\adaml\.nuget\packages\keystoneengine.csharp\0.9.1.1\build\x86\keystone.dll">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
+  <ItemGroup>
+    <None Update="C:\Users\adaml\.nuget\packages\keystoneengine.csharp\0.9.1.1\build\x64\keystone.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="C:\Users\adaml\.nuget\packages\keystoneengine.csharp\0.9.1.1\build\x86\keystone.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <Page Update="WindowControls\METAUpdating.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Resources\ParamFiles\" />
     <Folder Include="Resources\Tools\SpeedInjector32\" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-		  <Output TaskParameter="Assemblies" ItemName="Targets" />
-	  </GetAssemblyIdentity>
-	  <ItemGroup>
-		  <VersionNumber Include="%(Targets.Version)">
-			  <Number>%(Targets.Version)</Number>
-		  </VersionNumber>
-		  <OutputDir Include="$(TargetDir)$(ProjectName) %(Targets.Version)" />
-	  </ItemGroup>
-	  <PropertyGroup>
-		  <OutputPath>@(OutputDir)\</OutputPath>
-	  </PropertyGroup>
-	  <Message Text="Executing Copy Files task" Importance="High" />
-	  <Copy SourceFiles="$(TargetDir)$(ProjectName).exe" DestinationFolder="@(OutputDir)" />
-	  <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" DestinationFolder="@(OutputDir)" />
-	  <Copy SourceFiles="$(TargetDir)$(ProjectName).runtimeconfig.json" DestinationFolder="@(OutputDir)" />
-	  <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
-	  <Copy Condition="'$(Configuration)' == 'DEBUG'" SourceFiles="$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(OutputPath)" />
-	  <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
-	  <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
-	  <Exec Condition="" Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
-
-	  <!-- copy speedinjector -->
-	  <Exec Command="if not exist &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot; md &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot;" />
-	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\PropertyHook.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;" />
-	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;" />
-	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.exe&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;" />
-	  <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.runtimeconfig.json&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;" />
-	  
-	  <!-- for debugging only-->
-	  <Exec Command="if not exist &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;&quot;&quot; md &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;" />
-	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\PropertyHook.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;&quot;&quot;" />
-	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;&quot;&quot;" />
-	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.exe&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;&quot;&quot;" />
-	  <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net6.0\SpeedInjector.runtimeconfig.json&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;&quot;&quot;" />
-
-	  <!--<Exec Condition="'$(Configuration)' == DEBUG" Command="if not exist &quot;@($TargetDir)TESTING&quot; md &quot;@($TargetDir)TESTING&quot;" />-->
-	  <!--<Exec Command="mkdir &quot;&quot;&quot;C:\Users\adaml\Documents\Coding\META\DS2S META\TESTING&quot;&quot;&quot;" />-->
-
-	  <Message Text="Copied files to build folder" Importance="High" />
-
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
-	  <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
-			
-	  <Exec Command="echo $(TargetDir)" />
-	  
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="Targets" />
+    </GetAssemblyIdentity>
+    <ItemGroup>
+      <VersionNumber Include="%(Targets.Version)">
+        <Number>%(Targets.Version)</Number>
+      </VersionNumber>
+      <OutputDir Include="$(TargetDir)$(ProjectName) %(Targets.Version)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <OutputPath>@(OutputDir)\</OutputPath>
+    </PropertyGroup>
+    <Message Text="Executing Copy Files task" Importance="High" />
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).exe" DestinationFolder="@(OutputDir)" />
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).dll" DestinationFolder="@(OutputDir)" />
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).runtimeconfig.json" DestinationFolder="@(OutputDir)" />
+    <Copy SourceFiles="$(SolutionDir)Readme.md" DestinationFiles="$(OutputPath)Readme.txt" />
+    <Copy Condition="'$(Configuration)' == 'DEBUG'" SourceFiles="$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(OutputPath)" />
+    <Exec Command="if not exist &quot;@(OutputDir)\Resources&quot; md &quot;@(OutputDir)\Resources&quot;" />
+    <Exec Command="xcopy /e /y &quot;$(TargetDir)\Resources&quot; &quot;@(OutputDir)\Resources&quot;" />
+    <Exec Condition="" Command="if exist &quot;$(TargetDir)\Resources\temp&quot; rmdir &quot;$(TargetDir)\Resources\temp&quot;" />
+    <!-- copy speedinjector -->
+    <Exec Command="if not exist &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot; md &quot;@(OutputDir)\Resources\Tools\SpeedInjector32&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\PropertyHook.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.dll&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.exe&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;" />
+    <Exec Command="copy /Y &quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.runtimeconfig.json&quot; &quot;@(OutputDir)\Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;" />
+    <!-- for debugging only-->
+    <Exec Command="if not exist &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;&quot;&quot; md &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32&quot;" />
+    <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\PropertyHook.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\PropertyHook.dll&quot;&quot;&quot;" />
+    <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.dll&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.dll&quot;&quot;&quot;" />
+    <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.exe&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.exe&quot;&quot;&quot;" />
+    <Exec Command="copy /Y &quot;&quot;&quot;$(SolutionDir)SpeedInjector\bin\x86\Release\net8.0\SpeedInjector.runtimeconfig.json&quot;&quot;&quot; &quot;&quot;&quot;$(TargetDir)Resources\Tools\SpeedInjector32\SpeedInjector.runtimeconfig.json&quot;&quot;&quot;" />
+    <!--<Exec Condition="'$(Configuration)' == DEBUG" Command="if not exist &quot;@($TargetDir)TESTING&quot; md &quot;@($TargetDir)TESTING&quot;" />-->
+    <!--<Exec Command="mkdir &quot;&quot;&quot;C:\Users\adaml\Documents\Coding\META\DS2S META\TESTING&quot;&quot;&quot;" />-->
+    <Message Text="Copied files to build folder" Importance="High" />
+    <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="$(TargetDir)" />
+    <Copy Condition="'$(Configuration)' == 'DRYUPDATE'" SourceFiles="$(ProjectDir)Utils/dryupdate.json" DestinationFolder="@(OutputDir)" />
+    <Exec Command="echo $(TargetDir)" />
   </Target>
-
   <ItemGroup>
     <NativeLibs Remove="Resources\DLLs\keystone.dll" />
   </ItemGroup>
-
   <ItemGroup>
     <NativeLibs Remove="Resources\RivaHook.dll" />
   </ItemGroup>
-
 </Project>
