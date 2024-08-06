@@ -38,6 +38,7 @@ namespace DS2S_META.Utils
         DISABLESKIRTDAMAGE,
         INFINITESTAMINA,
         INFINITESPELLS,
+        DISABLEPARTYWALKTIMER,
     }
     public static class MetaFeature
     {
@@ -84,6 +85,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS && Hook.InGame,
                 METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
                 METAFEATURE.INFINITESPELLS => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
+                METAFEATURE.DISABLEPARTYWALKTIMER => Hook.InGame && Hook.IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -120,6 +122,8 @@ namespace DS2S_META.Utils
         public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
 
         public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
+
+        public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
 
     }
 }

@@ -1669,6 +1669,25 @@ namespace DS2S_META.Utils.DS2Hook
                 UninstallDisableSkirtDamage();
         }
 
+        public void SetDisablePartyWalkTimer(bool disablePartyWalkTimer)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLEPARTYWALKTIMER)) return;
+            
+            if (disablePartyWalkTimer == true)
+            {
+                var grabParamId = DS2P?.MiscPtrs.DisablePartyWalkTimer?.ReadInt32(0x8); //Making sure that we only write the value for the player grab
+
+                if (grabParamId.Equals(30100) || grabParamId.Equals(30300) || grabParamId.Equals(30500))
+                {
+                    DS2P?.MiscPtrs.DisablePartyWalkTimer?.WriteSingle(0xC, 1);
+                    //Find a way to call the function to do another check in a few seconds
+                }
+
+
+            }
+            
+        }
+
         private void EnsureInstalledInfiniteSpells()
         {
             if (InfiniteSpells?.IsInstalled == true)

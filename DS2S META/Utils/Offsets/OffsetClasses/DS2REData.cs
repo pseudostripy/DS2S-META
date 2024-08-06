@@ -159,6 +159,7 @@ namespace DS2S_META.Utils.Offsets
             new("PlayerBaseMisc",   CPLD(ANYSOTFS, STRBASEA, 0xa8, 0xc0),
                                     CPLD(ANYVANILLA, STRBASEA, 0x60)),
             new("LoadedEnemiesTable", CPLD(S103, STRBASEA, 0x18)),
+            new("DisablePartyWalkTimer", CPLD(S103, STRBASEA, 0x18, 0xD70, 0x10)),
             new("ScalingBonusTableCtrl",    CPLD(S102, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718),
                                             CPLD(S103, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170)),
         };
@@ -190,7 +191,7 @@ namespace DS2S_META.Utils.Offsets
             new("SoulLevel", OFLD(ANYSOTFS, "PlayerParam", 0xd0),
                             OFLD(ANYVANILLA, "PlayerParam", 0xcc)),
             new("Class",    OFLD(ANYSOTFS, "PlayerBaseMisc", 0x64),
-                            OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)),
+                            OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)), 
         };
 
         public static readonly List<LeafLocatorGroup> LeafGroupDefns = new()

@@ -55,6 +55,8 @@ namespace DS2S_META.ViewModels
 
         public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
 
+        public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
+
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
         public Visibility LblSearchVisibility
@@ -158,7 +160,7 @@ namespace DS2S_META.ViewModels
             }
         }
 
-        public bool _chkInfiniteSpells = false;
+        private bool _chkInfiniteSpells = false;
         public bool ChkInfiniteSpells
         {
             get => _chkInfiniteSpells;
@@ -167,6 +169,19 @@ namespace DS2S_META.ViewModels
                 _chkInfiniteSpells = value;
                 Hook?.SetInfiniteSpells(value);
                 OnPropertyChanged(nameof(ChkInfiniteSpells));
+            }
+        }
+
+        private bool _chkDisablePartyWalkTimer = false;
+        public bool ChkDisablePartyWalkTimer
+        {
+
+           get => _chkDisablePartyWalkTimer;
+            set
+            {
+                _chkDisablePartyWalkTimer = value;
+                Hook?.SetDisablePartyWalkTimer(value);
+                OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
             }
         }
 
@@ -863,6 +878,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnDisableSkirtDamage));
             OnPropertyChanged(nameof(EnInfiniteStamina));
             OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
         }
         public override void UpdateViewModel()
         {
@@ -890,6 +906,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
             BonfireLevelSync();
+            Hook?.SetDisablePartyWalkTimer(ChkDisablePartyWalkTimer);
         }
         
         private void BonfireLevelSync()
