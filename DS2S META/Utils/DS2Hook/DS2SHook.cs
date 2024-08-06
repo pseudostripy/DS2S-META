@@ -91,6 +91,7 @@ namespace DS2S_META.Utils.DS2Hook
         public NoDmgMod? NoDmgMod;
         public NopableInject? DisableSkirtDamage;
         public NopableInject? InfiniteSpells;
+        public NopableInject? InfiniteGoods;
 
 
 
@@ -1323,9 +1324,10 @@ namespace DS2S_META.Utils.DS2Hook
         public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
 
         public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
-        
-        
 
+        public void UninstallInfiniteGoods() => InfiniteGoods?.Uninstall();
+        
+        
 
         // QoL Wrappers:
         public void GiveItem(ITEMID itemid, short amount = 1, byte upgrade = 0, byte infusion = 0,
@@ -1710,6 +1712,25 @@ namespace DS2S_META.Utils.DS2Hook
                 UninstallInfiniteSpells();
         }
 
+        private void EnsureInstalledInfiniteGoods()
+        {
+            if (InfiniteGoods?.IsInstalled == true)
+                return;
+            var injptr = DS2P?.Func.InfiniteGoods?.Resolve()
+                ?? throw new MetaMemoryException("InfiniteGoods function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITEGOODS);
+            InfiniteGoods ??= new NopableInject(this, injptr, origbytes);
+            InfiniteGoods.Install();
+        }
+
+        public void SetInfiniteGoods(bool infiniteGoods)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITEGOODS)) return;
+            if (infiniteGoods)
+                EnsureInstalledInfiniteGoods();
+            else
+                UninstallInfiniteGoods();
+        }
 
 
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)

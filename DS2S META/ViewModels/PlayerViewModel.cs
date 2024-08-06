@@ -57,6 +57,8 @@ namespace DS2S_META.ViewModels
 
         public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
 
+        public bool EnInfiniteGoods => MetaFeature.FtInfiniteGoods;
+
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
         public Visibility LblSearchVisibility
@@ -177,11 +179,23 @@ namespace DS2S_META.ViewModels
         {
 
            get => _chkDisablePartyWalkTimer;
-            set
-            {
+           set
+           {
                 _chkDisablePartyWalkTimer = value;
                 Hook?.SetDisablePartyWalkTimer(value);
                 OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
+           }
+        }
+
+        private bool _chkInfiniteGoods = false;
+        public bool ChkInfiniteGoods
+        {
+            get => _chkInfiniteGoods;
+            set
+            {
+                _chkInfiniteGoods = value;
+                Hook?.SetInfiniteGoods(value);
+                OnPropertyChanged(nameof(ChkInfiniteGoods));
             }
         }
 
@@ -839,6 +853,7 @@ namespace DS2S_META.ViewModels
             Hook?.SetDisableAI(ChkDisableAi);
             Hook?.SetInfiniteStamina(ChkInfiniteStamina);
             Hook?.SetInfiniteSpells(ChkInfiniteSpells);
+            Hook?.SetInfiniteGoods(ChkInfiniteGoods);
             
             if (Properties.Settings.Default.NoGravThroughLoads)
             {
@@ -879,6 +894,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnInfiniteStamina));
             OnPropertyChanged(nameof(EnInfiniteSpells));
             OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
+            OnPropertyChanged(nameof(EnInfiniteGoods));
         }
         public override void UpdateViewModel()
         {

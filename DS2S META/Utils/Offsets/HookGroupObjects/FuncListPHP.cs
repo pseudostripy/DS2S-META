@@ -22,6 +22,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? ItemGiveWindow;
         public PHPointer? DisableSkirtDamage;
         public PHPointer? InfiniteSpells;
+        public PHPointer? InfiniteGoods;
 
         public FuncListPHP(DS2SHook hook, Dictionary<string, PHPointer> PHPDict)
         {
@@ -38,6 +39,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             ItemGiveWindow = HGO.ValOrNull(PHPDict, "ItemGiveWindowPointer");
             DisableSkirtDamage = HGO.ValOrNull(PHPDict, "DisableSkirtDamageAoB");
             InfiniteSpells = HGO.ValOrNull(PHPDict, "InfiniteSpellsAoB");
+            InfiniteGoods = HGO.ValOrNull(PHPDict, "InfiniteGoodsAoB");
         }
     }
 }

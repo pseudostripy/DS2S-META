@@ -109,6 +109,11 @@ namespace DS2S_META.Utils.Offsets
                 new(S103, new AbsoluteAOBCL("88 4D 20 49 8B CE")),
             }),
 
+            new("InfiniteGoodsAoB", new List<LocatorDefn> ()
+            {
+                new(S103, new AbsoluteAOBCL("66 29 73 20 48 8B D3")),
+            }),
+
             // Deprecated. Kept as reference.
             new("SpeedFactorAccelOffset", new List<LocatorDefn>()
             {
@@ -130,7 +135,7 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00")),
                 new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC"))
             }),
-        
+
             // BaseA ChildPointers:    
             new("PlayerTypeOffset", CPLD(ANYSOTFS, STRBASEA, 0xb0),
                                     CPLD(ANYVANILLA, STRBASEA, 0x90)),
