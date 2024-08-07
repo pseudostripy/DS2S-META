@@ -51,6 +51,14 @@ namespace DS2S_META.ViewModels
 
         public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
 
+        public bool EnInfiniteStamina => MetaFeature.FtInfiniteStamina;
+
+        public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
+
+        public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
+
+        public bool EnInfiniteGoods => MetaFeature.FtInfiniteGoods;
+
         // Other properties
         private Visibility _lblSearchVisibility = Visibility.Visible;
         public Visibility LblSearchVisibility
@@ -71,6 +79,19 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged(nameof(ChkNoDeath));
             }
         }
+
+        private bool _chkInfiniteStamina = false;
+        public bool ChkInfiniteStamina
+        {
+            get => _chkInfiniteStamina;
+            set
+            {
+                _chkInfiniteStamina = value;
+                Hook?.SetInfiniteStamina(value);
+                OnPropertyChanged(nameof(ChkInfiniteStamina));
+            }
+        }
+
         private bool _chkDisableAi = false;
         public bool ChkDisableAi { 
             get => _chkDisableAi;
@@ -137,7 +158,44 @@ namespace DS2S_META.ViewModels
             {
                 _chkDisableSkirtDamage = value;
                 Hook?.SetDisableSkirtDamage(value);
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
+            }
+        }
+
+        private bool _chkInfiniteSpells = false;
+        public bool ChkInfiniteSpells
+        {
+            get => _chkInfiniteSpells;
+            set
+            {
+                _chkInfiniteSpells = value;
+                Hook?.SetInfiniteSpells(value);
+                OnPropertyChanged(nameof(ChkInfiniteSpells));
+            }
+        }
+
+        private bool _chkDisablePartyWalkTimer = false;
+        public bool ChkDisablePartyWalkTimer
+        {
+
+           get => _chkDisablePartyWalkTimer;
+           set
+           {
+                _chkDisablePartyWalkTimer = value;
+                Hook?.SetDisablePartyWalkTimer(value);
+                OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
+           }
+        }
+
+        private bool _chkInfiniteGoods = false;
+        public bool ChkInfiniteGoods
+        {
+            get => _chkInfiniteGoods;
+            set
+            {
+                _chkInfiniteGoods = value;
+                Hook?.SetInfiniteGoods(value);
+                OnPropertyChanged(nameof(ChkInfiniteGoods));
             }
         }
 
@@ -268,6 +326,8 @@ namespace DS2S_META.ViewModels
                 OnPropertyChanged();
             }
         }
+
+
         public float PoiseCurr
         {
             get => PS?.CurrPoise ?? 0;
@@ -791,6 +851,9 @@ namespace DS2S_META.ViewModels
             // things that need to be reset on load:
             Hook?.SetNoDeath(ChkNoDeath);
             Hook?.SetDisableAI(ChkDisableAi);
+            Hook?.SetInfiniteStamina(ChkInfiniteStamina);
+            Hook?.SetInfiniteSpells(ChkInfiniteSpells);
+            Hook?.SetInfiniteGoods(ChkInfiniteGoods);
             
             if (Properties.Settings.Default.NoGravThroughLoads)
             {
@@ -828,6 +891,10 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
             OnPropertyChanged(nameof(EnDisableSkirtDamage));
+            OnPropertyChanged(nameof(EnInfiniteStamina));
+            OnPropertyChanged(nameof(EnInfiniteSpells));
+            OnPropertyChanged(nameof(EnDisablePartyWalkTimer));
+            OnPropertyChanged(nameof(EnInfiniteGoods));
         }
         public override void UpdateViewModel()
         {
@@ -855,6 +922,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
             BonfireLevelSync();
+            Hook?.SetDisablePartyWalkTimer(ChkDisablePartyWalkTimer);
         }
         
         private void BonfireLevelSync()

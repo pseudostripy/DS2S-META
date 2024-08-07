@@ -36,6 +36,10 @@ namespace DS2S_META.Utils
         RESETTOCLASSLEVELS,
         RESETSOULMEMORY,
         DISABLESKIRTDAMAGE,
+        INFINITESTAMINA,
+        INFINITESPELLS,
+        DISABLEPARTYWALKTIMER,
+        INFINITEGOODS,
     }
     public static class MetaFeature
     {
@@ -60,8 +64,8 @@ namespace DS2S_META.Utils
                 METAFEATURE.NOGRAVITY => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.DISABLEAI => Hook.IsSOTFS_CP && Hook.InGame,
-                METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame, 
+                METAFEATURE.DISABLEAI => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
+                METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.MADWARRIOR => Hook.IsSOTFS_CP, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
@@ -72,14 +76,18 @@ namespace DS2S_META.Utils
                 METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
                 METAFEATURE.MANAGEBFS => Hook.InGame,
-                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,        
-                METAFEATURE.RESETSOULMEMORY => Hook.IsValidVer && Hook.InGame,  
-                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,  
-                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame, 
+                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.RESETSOULMEMORY => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,
+                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.COVENANTINFO => Hook.IsSOTFS && Hook.InGame,
                 METAFEATURE.MAXLEVELS => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.RESETTOCLASSLEVELS => Hook.IsValidVer && Hook.InGame,
                 METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS && Hook.InGame,
+                METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
+                METAFEATURE.INFINITESPELLS => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
+                METAFEATURE.DISABLEPARTYWALKTIMER => Hook.InGame && Hook.IsSOTFS_CP,
+                METAFEATURE.INFINITEGOODS => Hook.InGame && Hook.IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -112,5 +120,14 @@ namespace DS2S_META.Utils
         public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
 
         public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
+
+        public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
+
+        public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
+
+        public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
+
+        public static bool FtInfiniteGoods => IsActive(METAFEATURE.INFINITEGOODS);
+
     }
 }

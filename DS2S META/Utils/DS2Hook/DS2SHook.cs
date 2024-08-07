@@ -90,6 +90,8 @@ namespace DS2S_META.Utils.DS2Hook
         //public static bool Reading { get; set; }
         public NoDmgMod? NoDmgMod;
         public NopableInject? DisableSkirtDamage;
+        public NopableInject? InfiniteSpells;
+        public NopableInject? InfiniteGoods;
 
 
 
@@ -1320,9 +1322,12 @@ namespace DS2S_META.Utils.DS2Hook
         
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
         public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
-        
-        
 
+        public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
+
+        public void UninstallInfiniteGoods() => InfiniteGoods?.Uninstall();
+        
+        
 
         // QoL Wrappers:
         public void GiveItem(ITEMID itemid, short amount = 1, byte upgrade = 0, byte infusion = 0,
@@ -1626,6 +1631,13 @@ namespace DS2S_META.Utils.DS2Hook
             if (MetaFeature.IsInactive(METAFEATURE.NODEATH)) return;
             DS2P.PlayerState.HealthMin = noDeath ? 1 : -99999;
         }
+
+        public void SetInfiniteStamina(bool infiniteStamina)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESTAMINA)) return;
+            DS2P.PlayerState.MinStamina = infiniteStamina ? DS2P.PlayerState.MaxStamina : 0;
+        }
+
         public void SetRapierOHKO(bool ohko)
         {
             if (MetaFeature.IsInactive(METAFEATURE.OHKO_RAPIER)) return;
@@ -1659,7 +1671,67 @@ namespace DS2S_META.Utils.DS2Hook
                 UninstallDisableSkirtDamage();
         }
 
-        
+        public void SetDisablePartyWalkTimer(bool disablePartyWalkTimer)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLEPARTYWALKTIMER)) return;
+            
+            if (disablePartyWalkTimer == true)
+            {
+                var grabParamId = DS2P?.MiscPtrs.DisablePartyWalkTimer?.ReadInt32(0x8); //Making sure that we only write the value for the player grab
+
+                if (grabParamId.Equals(30100) || grabParamId.Equals(30300) || grabParamId.Equals(30500))
+                {
+                    DS2P?.MiscPtrs.DisablePartyWalkTimer?.WriteSingle(0xC, 1);
+                    //Find a way to call the function to do another check in a few seconds
+                }
+
+
+            }
+            
+        }
+
+        private void EnsureInstalledInfiniteSpells()
+        {
+            if (InfiniteSpells?.IsInstalled == true)
+                return;
+
+            var injptr = DS2P?.Func.InfiniteSpells?.Resolve()
+                ?? throw new MetaMemoryException("InfiniteSpells function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITESPELLS);
+            InfiniteSpells ??= new NopableInject(this, injptr, origbytes);
+            InfiniteSpells.Install();
+
+        }
+
+        public void SetInfiniteSpells(bool infiniteSpells)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITESPELLS)) return;
+            if (infiniteSpells)
+                EnsureInstalledInfiniteSpells();
+            else
+                UninstallInfiniteSpells();
+        }
+
+        private void EnsureInstalledInfiniteGoods()
+        {
+            if (InfiniteGoods?.IsInstalled == true)
+                return;
+            var injptr = DS2P?.Func.InfiniteGoods?.Resolve()
+                ?? throw new MetaMemoryException("InfiniteGoods function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITEGOODS);
+            InfiniteGoods ??= new NopableInject(this, injptr, origbytes);
+            InfiniteGoods.Install();
+        }
+
+        public void SetInfiniteGoods(bool infiniteGoods)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.INFINITEGOODS)) return;
+            if (infiniteGoods)
+                EnsureInstalledInfiniteGoods();
+            else
+                UninstallInfiniteGoods();
+        }
+
 
         private void SetWeaponOHKO(ITEMID wpn, bool ohko)
         {

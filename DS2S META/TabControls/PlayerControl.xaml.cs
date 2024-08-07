@@ -43,5 +43,10 @@ namespace DS2S_META
         internal override void UpdateCtrl() 
         {
         }
+
+        private void CbxDisableSkirtDamage_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

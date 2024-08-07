@@ -103,6 +103,16 @@ namespace DS2S_META.Utils.Offsets
             {
                 new(S103, new AbsoluteAOBCL("89 84 8B C4 01 00 00")),
             }),
+            new("InfiniteSpellsAoB", new List<LocatorDefn> ()
+            {
+                new(V102, new AbsoluteAOBCL("88 43 18 E8 ? ? ? ? 8B 45")),
+                new(S103, new AbsoluteAOBCL("88 4D 20 49 8B CE")),
+            }),
+
+            new("InfiniteGoodsAoB", new List<LocatorDefn> ()
+            {
+                new(S103, new AbsoluteAOBCL("66 29 73 20 48 8B D3")),
+            }),
 
             // Deprecated. Kept as reference.
             new("SpeedFactorAccelOffset", new List<LocatorDefn>()
@@ -125,7 +135,7 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYSOTFS, new AbsoluteAOBCL("F3 0F 59 99 A8 02 00 00 F3 0F 10 12 F3 0F 10 42 04 48 8B 89 E8 03 00 00")),
                 new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC"))
             }),
-        
+
             // BaseA ChildPointers:    
             new("PlayerTypeOffset", CPLD(ANYSOTFS, STRBASEA, 0xb0),
                                     CPLD(ANYVANILLA, STRBASEA, 0x90)),
@@ -154,6 +164,7 @@ namespace DS2S_META.Utils.Offsets
             new("PlayerBaseMisc",   CPLD(ANYSOTFS, STRBASEA, 0xa8, 0xc0),
                                     CPLD(ANYVANILLA, STRBASEA, 0x60)),
             new("LoadedEnemiesTable", CPLD(S103, STRBASEA, 0x18)),
+            new("DisablePartyWalkTimer", CPLD(S103, STRBASEA, 0x18, 0xD70, 0x10)),
             new("ScalingBonusTableCtrl",    CPLD(S102, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170, 0x718),
                                             CPLD(S103, STRBASEA, 0x20, 0x28, 0x110, 0x70, 0xA0, 0x170)),
         };
@@ -173,7 +184,8 @@ namespace DS2S_META.Utils.Offsets
                                 OFLD(V112, STRBASEA, 0xb0, 0x7c, 0x44, 0xac8, 0x0, 0x4c, 0x730)),
             new("ForceQuit",    OFLD(ANYSOTFS, STRBASEA, 0x24b1),
                                 OFLD(ANYVANILLA, STRBASEA, 0xdf1)),
-            new("DisableAI",    OFLD(S103, STRBASEA, 0x28, 0x18)),
+            new("DisableAI",    OFLD(S103, STRBASEA, 0x28, 0x18),
+                                OFLD(V102, STRBASEA, 0x20, 0x18)),
             new("BIKP1Skip_Val1", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xe34)),
             new("BIKP1Skip_Val2", OFLD(S103, STRBASEA, 0x70, 0x20, 0x18, 0xd52)),
             new("ConnectionType", OFLD(ANYSOTFS, "BaseB", 0x38, 0x8)),
@@ -184,7 +196,7 @@ namespace DS2S_META.Utils.Offsets
             new("SoulLevel", OFLD(ANYSOTFS, "PlayerParam", 0xd0),
                             OFLD(ANYVANILLA, "PlayerParam", 0xcc)),
             new("Class",    OFLD(ANYSOTFS, "PlayerBaseMisc", 0x64),
-                            OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)),
+                            OFLD(ANYVANILLA, "PlayerBaseMisc", 0xe4)), 
         };
 
         public static readonly List<LeafLocatorGroup> LeafGroupDefns = new()
@@ -342,6 +354,7 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("HPCap", (ANYSOTFS, 0x174), (ANYVANILLA, 0x108)),
                 new DetachedLeaf("SP", (ANYSOTFS, 0x1ac), (ANYVANILLA, 0x140)),
                 new DetachedLeaf("SPMax", (ANYSOTFS, 0x1b4), (ANYVANILLA, 0x148)),
+                new DetachedLeaf("SPMin", (ANYSOTFS, 0x1b0), (ANYVANILLA, 0x144)),
                 new DetachedLeaf("SpeedModifier", (ANYSOTFS, 0x2a8), (ANYVANILLA, 0x208)),
                 new DetachedLeaf("CurrPoise", (ANYSOTFS, 0x218), (ANYVANILLA, 0x1ac))),
 

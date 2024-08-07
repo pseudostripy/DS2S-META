@@ -17,6 +17,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHPointer? WarpManager;
         public PHPointer? PHLoadedEnemiesTable;
         public PHPointer? PlayerParam;
+
+        public PHPointer? DisablePartyWalkTimer;
         
         public PHLeaf? PHBIKP1Skip_Val1;
         public PHLeaf? PHBIKP1Skip_Val2;
@@ -29,6 +31,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             SpEffectCtrl = HGO.ValOrNull(PHPDict, "SpEffectCtrl");
             WarpManager = HGO.ValOrNull(PHPDict, "WarpManager");
             PlayerParam = HGO.ValOrNull(PHPDict, "PlayerParam");
+
+            DisablePartyWalkTimer = HGO.ValOrNull(PHPDict, "DisablePartyWalkTimer");
 
             PHBIKP1Skip_Val1 = leafdict["BIKP1Skip_Val1"];
             PHBIKP1Skip_Val2 = leafdict["BIKP1Skip_Val2"];
