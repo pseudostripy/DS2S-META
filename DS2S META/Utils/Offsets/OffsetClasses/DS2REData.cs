@@ -137,14 +137,14 @@ namespace DS2S_META.Utils.Offsets
             }),
 
             // BaseA ChildPointers:    
-            new("PlayerTypeOffset", CPLD(ANYSOTFS, STRBASEA, 0xb0),
-                                    CPLD(ANYVANILLA, STRBASEA, 0x90)),
             new("AvailableItemBag", CPLD(ANYSOTFS, STRBASEA, 0xa8, 0x10, 0x10),
                                     CPLD(ANYVANILLA, STRBASEA, 0x60, 0x8, 0x8)),
             new("ItemGiveWindowPointer",    CPLD(ANYSOTFS, STRBASEA, 0x22e0),
                                             CPLD(ANYVANILLA, STRBASEA, 0xcc4)),
             new("PlayerCtrl",   CPLD(ANYSOTFS, STRBASEA, 0xd0),
                                 CPLD(ANYVANILLA, STRBASEA, 0x74)),
+            new("PlayerTypeOffset", CPLD(ANYSOTFS, "PlayerCtrl", 0xb0),
+                                    CPLD(ANYVANILLA, "PlayerCtrl", 0x90)),
             new("NetSvrBloodstainManager", CPLD(ANYVER, STRBASEA, 0x90, 0x28, 0x88)),
             new("PlayerParam",  CPLD(ANYSOTFS, "PlayerCtrl", 0x490),
                                 CPLD(ANYVANILLA, "PlayerCtrl", 0x378)),
