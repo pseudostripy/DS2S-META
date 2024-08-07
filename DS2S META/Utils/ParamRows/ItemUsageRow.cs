@@ -25,7 +25,7 @@ namespace DS2S_META.Utils
             set
             {
                 _usageBitfield = value;
-                WriteAtField(IndUsageBitfield, value.AsByteArray());
+                WriteAtField(IndUsageBitfield, BitConverter.GetBytes((short)value));
             }
         }
         public byte LadderUsageBitfield
