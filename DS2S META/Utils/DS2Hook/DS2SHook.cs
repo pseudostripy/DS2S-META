@@ -52,9 +52,6 @@ namespace DS2S_META.Utils.DS2Hook
             OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
         }
 
-        //public IntPtr ModuleAddress => Process?.MainModule?.BaseAddress ?? IntPtr.Zero;
-        public string ID => Process?.Id.ToString() ?? "Not Hooked";
-
         private string _version = "";
         public string Version
         {
@@ -706,7 +703,7 @@ namespace DS2S_META.Utils.DS2Hook
             DS2P?.UpdateProperties();
             //OnPropertyChanged(nameof(CharacterName));
             //OnPropertyChanged(nameof(ID));
-            //OnPropertyChanged(nameof(Online));
+            //OnPropertyChanged(nameof(ContentOnline));
         }
         public void UpdateStatsProperties()
         {

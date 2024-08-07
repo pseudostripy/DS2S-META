@@ -41,7 +41,7 @@ namespace DS2S_META.ViewModels
         {
             get
             {
-                if (Hook.ID != "Not Hooked")
+                if (ProcessID != "Not Hooked")
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
@@ -94,6 +94,8 @@ namespace DS2S_META.ViewModels
                 };
             }
         }
+        public string ProcessID => Hook?.Process?.Id.ToString() ?? "Not Hooked";
+
 
         public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
@@ -209,6 +211,7 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(ForegroundVersion));
             OnPropertyChanged(nameof(GameLoaded));
             OnPropertyChanged(nameof(DS2Loading)); // not used yet
+            OnPropertyChanged(nameof(ProcessID));
 
             foreach (var vm in ViewModels)
                 vm.UpdateViewModel();
