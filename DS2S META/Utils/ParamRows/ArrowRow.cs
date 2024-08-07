@@ -27,7 +27,7 @@ namespace DS2S_META.Utils
             set
             {
                 _ammunitionType = value;
-                WriteAtField(29, BitConverter.GetBytes(value));
+                WriteAtField(29, BitConverter.GetBytes((short)value));
             }
         }
         

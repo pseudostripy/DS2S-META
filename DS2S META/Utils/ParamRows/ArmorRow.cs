@@ -33,7 +33,7 @@ namespace DS2S_META.Utils.ParamRows
             set
             {
                 _SlotCategory = value;
-                WriteAtField(indSlotCategory, BitConverter.GetBytes(value));
+                WriteAtField(indSlotCategory, BitConverter.GetBytes((short)value));
             }
         }
         public int ReinforceID

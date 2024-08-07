@@ -65,7 +65,7 @@ namespace DS2S_META.Utils
             {
                 int i32 => BitConverter.GetBytes(i32),
                 uint u32 => BitConverter.GetBytes(u32),
-                byte b => BitConverter.GetBytes(b),
+                byte b => BitConverter.GetBytes((short)b),
                 short s16 => BitConverter.GetBytes(s16),
                 ushort u16 => BitConverter.GetBytes(u16),
                 _ => throw new Exception("Type not handled"),

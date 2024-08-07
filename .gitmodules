@@ -1,11 +1,9 @@
 [submodule "PropertyHook"]
 	path = PropertyHook
 	url = https://github.com/pseudostripy/PropertyHook.git
-[submodule "SoulsFormats"]
-	path = SoulsFormats
-	url = https://github.com/Nordgaren/SoulsFormats.git
-	branch = er
-
 [submodule "SpeedInjector"]
 	path = SpeedInjector
 	url = https://github.com/pseudostripy/SpeedInjector.git
+[submodule "SoulsFormats"]
+	path = SoulsFormats
+	url = https://github.com/StenniHub/SoulsFormats.git
