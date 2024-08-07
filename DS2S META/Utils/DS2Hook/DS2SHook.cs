@@ -1684,10 +1684,7 @@ namespace DS2S_META.Utils.DS2Hook
                     DS2P?.MiscPtrs.DisablePartyWalkTimer?.WriteSingle(0xC, 1);
                     //Find a way to call the function to do another check in a few seconds
                 }
-
-
             }
-            
         }
 
         private void EnsureInstalledInfiniteSpells()
@@ -1696,11 +1693,10 @@ namespace DS2S_META.Utils.DS2Hook
                 return;
 
             var injptr = DS2P?.Func.InfiniteSpells?.Resolve()
-                ?? throw new MetaMemoryException("InfiniteSpells function pointer not initialized correctly"); ;
+                ?? throw new MetaMemoryException("InfiniteSpells function pointer not initialized correctly");
             var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITESPELLS);
             InfiniteSpells ??= new NopableInject(this, injptr, origbytes);
             InfiniteSpells.Install();
-
         }
 
         public void SetInfiniteSpells(bool infiniteSpells)
@@ -1717,7 +1713,7 @@ namespace DS2S_META.Utils.DS2Hook
             if (InfiniteGoods?.IsInstalled == true)
                 return;
             var injptr = DS2P?.Func.InfiniteGoods?.Resolve()
-                ?? throw new MetaMemoryException("InfiniteGoods function pointer not initialized correctly"); ;
+                ?? throw new MetaMemoryException("InfiniteGoods function pointer not initialized correctly");
             var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.INFINITEGOODS);
             InfiniteGoods ??= new NopableInject(this, injptr, origbytes);
             InfiniteGoods.Install();
