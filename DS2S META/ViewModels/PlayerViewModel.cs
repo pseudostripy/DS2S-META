@@ -177,12 +177,10 @@ namespace DS2S_META.ViewModels
         private bool _chkDisablePartyWalkTimer = false;
         public bool ChkDisablePartyWalkTimer
         {
-
            get => _chkDisablePartyWalkTimer;
            set
            {
                 _chkDisablePartyWalkTimer = value;
-                Hook?.SetDisablePartyWalkTimer(value);
                 OnPropertyChanged(nameof(ChkDisablePartyWalkTimer));
            }
         }
@@ -922,7 +920,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(SelectedBf));
             OnPropertyChanged(nameof(SelectedBfHub));
             BonfireLevelSync();
-            Hook?.SetDisablePartyWalkTimer(ChkDisablePartyWalkTimer);
+            if (ChkDisablePartyWalkTimer)
+                Hook?.ResetPartyWalkTimer();
         }
         
         private void BonfireLevelSync()

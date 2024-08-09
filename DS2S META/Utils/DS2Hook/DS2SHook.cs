@@ -1339,20 +1339,22 @@ namespace DS2S_META.Utils.DS2Hook
                 UninstallDisableSkirtDamage();
         }
 
-        public void SetDisablePartyWalkTimer(bool disablePartyWalkTimer)
+        public void ResetPartyWalkTimer()
         {
-            if (MetaFeature.IsInactive(METAFEATURE.DISABLEPARTYWALKTIMER)) return;
-            
-            if (disablePartyWalkTimer == true)
-            {
-                var grabParamId = DS2P?.MiscPtrs.DisablePartyWalkTimer?.ReadInt32(0x8); //Making sure that we only write the value for the player grab
+            // Final sanity checks before dangerous operation:
+            var PHGrab = DS2P?.MiscPtrs.DisablePartyWalkTimer;
+            if (PHGrab == null || PHGrab.Resolve() == IntPtr.Zero)
+                throw new MetaMemoryException("Pointer to GrabStruct (required for DisablePartyWalkTimer) cannot be resolved.");
 
-                if (grabParamId.Equals(30100) || grabParamId.Equals(30300) || grabParamId.Equals(30500))
-                {
-                    DS2P?.MiscPtrs.DisablePartyWalkTimer?.WriteSingle(0xC, 1);
-                    //Find a way to call the function to do another check in a few seconds
-                }
-            }
+            // Only apply timer resets to specified (Player?) grab types
+            List<int> applicableGrabTypes = [30100, 30300, 30500];
+            var grabParamId = PHGrab.ReadInt32(0x8);
+            if (!applicableGrabTypes.Contains(grabParamId))
+                return; // no relevant timers to reset
+
+            // Reset timer back to 1s every time this function is called
+            int PartyWalkTimerOffset = 0xc;
+            PHGrab.WriteSingle(PartyWalkTimerOffset, 1);
         }
 
         private void EnsureInstalledInfiniteSpells()
