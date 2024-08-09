@@ -6,24 +6,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
-using DS2S_META.Utils;
-using System.Reflection;
-using DS2S_META.Utils.Offsets;
-using Xceed.Wpf.Toolkit;
-using Keystone;
 using System.Threading.Tasks;
-using static DS2S_META.Utils.ItemRow;
-using DS2S_META.Randomizer;
-using Octokit;
-using System.CodeDom;
-using System.Security.Cryptography;
-using DS2S_META.Utils.Offsets.CodeLocators;
-using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.Offsets.OffsetClasses;
-using System.Windows.Controls;
-using System.Windows.Threading;
 using DS2S_META.Dialog;
 using DS2S_META.Utils.DS2Hook.MemoryMods;
 
@@ -31,13 +16,6 @@ namespace DS2S_META.Utils.DS2Hook
 {
     public class DS2SHook : PHook, INotifyPropertyChanged
     {
-        //public static readonly string ExeDir = Environment.CurrentDirectory;
-        //private List<Inject> InstalledInjects = new();
-        //private bool DmgModInstalled => DmgModInj1 != null;
-        //private IntPtr DmgModCodeAddr = IntPtr.Zero;
-        //private Inject? DmgModInj1 = null;
-        //private Inject? DmgModInj2 = null;
-
         public MainWindow MW { get; set; }
 
         // Event Handling:
@@ -52,18 +30,9 @@ namespace DS2S_META.Utils.DS2Hook
             OnGameStateHandler?.Invoke(this, new GameStateEventArgs(this, oldstate, newstate));
         }
 
-        private string _version = "";
-        public string Version
-        {
-            get => _version;
-            private set
-            {
-                _version = value;
-                OnPropertyChanged(nameof(Version));
-            }
-        }
-        public DS2VER DS2Ver;
-        public BBJTYPE BBJType;
+        
+        public DS2VER DS2Ver => VerMan.DS2Ver;
+        public DS2Versions VerMan;
 
         //internal DS2HookOffsets Offsets;
         public bool InGame => DS2P?.CGS.InGame ?? false; // wrapper (toremove?)
@@ -84,7 +53,6 @@ namespace DS2S_META.Utils.DS2Hook
         public void SetSpeedhackSpeed(double value) => SpeedhackMan?.SetSpeed(value);
 
         // Utility Info
-        //public static bool Reading { get; set; }
         public NoDmgMod? NoDmgMod;
         public NopableInject? DisableSkirtDamage;
         public NopableInject? InfiniteSpells;
@@ -93,105 +61,16 @@ namespace DS2S_META.Utils.DS2Hook
 
 
         public bool IsLoading => DS2P.CGS.IsLoading;
-
-        //private int _gamestate;
-        //public int GameState
-        //{
-        //    get => _gamestate;
-        //    set
-        //    {
-        //        if (value == _gamestate) return;
-        //        var oldstate = _gamestate;
-        //        _gamestate = value; // needs to be read during event
-        //        RaiseGameStateChange(oldstate, value);
-        //    }
-        //}
-        //public bool InGame => GameState == (int)GAMESTATE.LOADEDINGAME;
-        //public bool InMainMenu => GameState == (int)GAMESTATE.MAINMENU;
-
-        //public bool 
         public bool Focused => Hooked && User32.GetForegroundProcessID() == Process.Id;
-        public bool IsInitialized = false;
-
-        // Pointer Setups
-        //private PHPointer GiveSoulsFunc;
-        //private PHPointer RemoveSoulsFunc;
-        //private PHPointer ItemGiveFunc;
-        //private PHPointer ItemStruct2dDisplay;
-        //private PHPointer phpDisplayItem;
-        //private PHPointer SetWarpTargetFunc;
-        //private PHPointer WarpManager;
-        //private PHPointer WarpFunc;
-        //private PHPointer? SomePlayerStats;
-
-        //public PHPointer BaseA;
-
-        //private PHPointer PlayerName;
-        //private PHPointer AvailableItemBag;
-        //private PHPointer ItemGiveWindow;
-        //private PHPointer PlayerBaseMisc;
-        //private PHPointer PlayerCtrl;
-        //private PHPointer PlayerPosition;
-        //private PHPointer PlayerGravity;
-        //private PHPointer PlayerParam;
-        //private PHPointer PlayerType;
-        //private PHPointer SpEffectCtrl;
-        //private PHPointer ApplySpEffect;
-        //private PHPointer PlayerMapData;
-        //private PHPointer EventManager;
-        //private PHPointer BonfireLevels;
-        //private PHPointer NetSvrBloodstainManager;
-
-        //private PHPointer BaseASetup;
-        //private PHPointer BaseBSetup;
-        //private PHPointer BaseB;
-        //private PHPointer Connection;
-
-        //private PHPointer Camera;
-        //private PHPointer Camera2;
-        //private PHPointer Camera3;
-        //private PHPointer Camera4;
-        //private PHPointer Camera5;
-
-        //private PHPointer SpeedFactorAccel;
-        //private PHPointer SpeedFactorAnim;
-        //private PHPointer SpeedFactorJump;
-        //private PHPointer SpeedFactorBuildup;
-
-        //public PHPointer LoadingState;
-        //public PHPointer phDisableAI; // pointer head (missing final offset)
-        //public PHPointer phBIKP1SkipVals; // pointer head (missing final offset)
-
-
+        
+        
         public DS2SHook(int refreshInterval, int minLifetime) :
             base(refreshInterval, minLifetime, p => p.MainWindowTitle == "DARK SOULS II")
         {
-            Version = "Not Hooked";
             OnHooked += DS2Hook_OnHooked;
             OnUnhooked += DS2Hook_OnUnhooked;
+            VerMan = new DS2Versions(this);
         }
-
-        //public void RegisterAOBs()
-        //{
-        //if (Offsets?.Func == null)
-        //    throw new Exception("Func structure null");
-
-        //BaseBSetup = RegisterAbsoluteAOB(Offsets.Func.BaseBAoB);
-        //SpeedFactorAccel = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAccelOffset);
-        //SpeedFactorAnim = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorAnimOffset);
-        //SpeedFactorJump = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorJumpOffset);
-        //SpeedFactorBuildup = RegisterAbsoluteAOB(Offsets.Func.SpeedFactorBuildupOffset);
-        //GiveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.GiveSoulsFuncAoB);
-        //RemoveSoulsFunc = RegisterAbsoluteAOB(Offsets.Func.RemoveSoulsFuncAoB);
-        //ItemGiveFunc = RegisterAbsoluteAOB(Offsets.Func.ItemGiveFunc);
-        //ItemStruct2dDisplay = RegisterAbsoluteAOB(Offsets.Func.ItemStruct2dDisplay);
-        //SetWarpTargetFunc = RegisterAbsoluteAOB(Offsets.Func.SetWarpTargetFuncAoB);
-        //WarpFunc = RegisterAbsoluteAOB(Offsets.Func.WarpFuncAoB);
-
-        // Version Specific AOBs:
-        //ApplySpEffect = RegisterAbsoluteAOB(Offsets.Func.ApplySpEffectAoB);
-        //phpDisplayItem = RegisterAbsoluteAOB(Offsets.Func.DisplayItem); // CAREFUL WITH THIS!
-        //}
 
         public enum WARPOPTIONS
         {
@@ -200,40 +79,14 @@ namespace DS2S_META.Utils.DS2Hook
             WARPONLY,
         }
 
-        // DS2 & BBJ Process Info Data
-        private enum BYTECODES
-        {
-            // used for sotfs differentiation:
-            NOBBJBYTE = 0xF3,
-            NEWBBJBYTE = 0x49,
-
-            // used for vanilla differentiation:
-            JUMPREL32 = 0xE9,
-            MOV_ECX_EAX = 0x8B,
-            MOV_EAX_DWORTPTR = 0x8B,
-            MOVSS = 0xF3,
-        }
-        public enum BBJTYPE
-        {
-            NOBBJ,
-            OLDBBJ_VANILLA,
-            NEWBBJ_VANILLA,
-            OLDBBJ_SOTFS,
-            NEWBBJ_SOTFS,
-            UNKN_VANILLA,
-        }
-        private static readonly DS2VER[] ValidVanillaVers = new DS2VER[] { DS2VER.VANILLA_V102, DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 };
-        private static readonly DS2VER[] ValidSotfsVers = new DS2VER[] { DS2VER.SOTFS_V102, DS2VER.SOTFS_V103 };
-        public bool IsOldPatch => DS2Ver == DS2VER.VANILLA_V102;
-        public bool IsSOTFS_CP => DS2Ver == DS2VER.SOTFS_V103;
-        public bool IsSOTFS => ValidSotfsVers.Contains(DS2Ver);
-        public bool IsVanilla => ValidVanillaVers.Contains(DS2Ver);
-        public bool IsValidVer => IsSOTFS || IsVanilla;
+        
+        
 
         // Hook setup / cleanup
         private void DS2Hook_OnHooked(object? sender, PHEventArgs e)
         {
-            DS2Ver = GetDS2Ver();
+            VerMan.OnHooked();
+            //DS2Ver =  GetDS2Ver();
             //IsValidVer = CheckValidVer();
 
             // Initial Setup & Version Checks:
@@ -243,7 +96,7 @@ namespace DS2S_META.Utils.DS2Hook
 
             // TODO!!
             //BBJType = GetBBJType(isOldBbj);
-            BBJType = GetBBJType(false);
+            //BBJType = GetBBJType(false);
 
             //RegisterAOBs(); // Absolute AoBs
             //RescanAOB();
@@ -256,21 +109,16 @@ namespace DS2S_META.Utils.DS2Hook
             ParamMan.Initialise(this);
             
             UpdateStatsProperties();
-            Version = GetStringVersion();
             SpeedhackMan?.Setup();
-
-            IsInitialized = true;
             OnPropertyChanged(nameof(Hooked));
         }
         private void DS2Hook_OnUnhooked(object? sender, PHEventArgs e) => Cleanup();
         public void Cleanup()
         {
-            Version = "Not Hooked";
             HandleRivaAndSpeedhackUnhooking();
             ParamMan.Uninitialise();
             MW.HKM.ClearHooks();
             OnPropertyChanged(nameof(Hooked));
-            IsInitialized = false;
         }
         private enum UNHOOKINGSTYLE
         {
@@ -307,7 +155,7 @@ namespace DS2S_META.Utils.DS2Hook
         private UNHOOKINGSTYLE GetUnhookStyle()
         {
             // Logic for deciding which Riva/Speedhack unhooking process to use
-            if (IsVanilla) return UNHOOKINGSTYLE.VANILLA;
+            if (VerMan.IsVanilla) return UNHOOKINGSTYLE.VANILLA;
             if (SpeedhackMan?.SpeedhackEverEnabled != true) return UNHOOKINGSTYLE.SOTFS_NOSH;
             if (!Properties.Settings.Default.RestartRivaOnClose) return UNHOOKINGSTYLE.SOTFS_SH_NORIVA_RESTART;
             return UNHOOKINGSTYLE.SOTFS_SH_RIVA_RESTART;
@@ -358,182 +206,7 @@ namespace DS2S_META.Utils.DS2Hook
         }
 
         // Major setup functions:
-        internal DS2VER GetDS2Ver()
-        {
-            // Size of running DS2 application
-            var moduleSz = Process?.MainModule?.ModuleMemorySize;
-
-            if (Is64Bit)
-                return GetSotfsVer(moduleSz);
-
-            return GetVanillaVer(moduleSz);
-        }
-        //internal bool CheckValidVer()
-        //{
-        //    var validvers = new DS2VER[]
-        //    {
-        //        DS2VER.VANILLA_V102,
-        //        DS2VER.VANILLA_V111,
-        //        DS2VER.VANILLA_V112,
-        //        DS2VER.SOTFS_V102,
-        //        DS2VER.SOTFS_V103,
-        //    };
-        //    return validvers.Contains(DS2Ver);
-        //}
-        private static DS2VER GetVanillaVer(int? modulesz)
-        {
-            return modulesz switch
-            {
-                DS2ModuleInfo.ModuleSizes.VanillaV112 => DS2VER.VANILLA_V112,
-                DS2ModuleInfo.ModuleSizes.VanillaV111 => DS2VER.VANILLA_V111,
-                DS2ModuleInfo.ModuleSizes.VanillaV102 => DS2VER.VANILLA_V102,
-                _ => DS2VER.UNSUPPORTED,
-            };
-        }
-        private static DS2VER GetSotfsVer(int? modulesz)
-        {
-            return modulesz switch
-            {
-                DS2ModuleInfo.ModuleSizes.SotfsV102 => DS2VER.SOTFS_V102,
-                DS2ModuleInfo.ModuleSizes.SotfsV103 => DS2VER.SOTFS_V103,
-                _ => DS2VER.UNSUPPORTED,
-            };
-        }
-        internal BBJTYPE GetBBJType(bool isOldBbj)
-        {
-            // TODO VANILLA
-            if (IsVanilla)
-                return GetBBJTypeVanilla();
-
-            if (isOldBbj)
-                return BBJTYPE.OLDBBJ_SOTFS;
-
-
-            // check for new bbj
-            int jumpfcn_offset_V102 = 0x037B4BC;
-            int jumpfcn_offset_V103 = 0x0381E1C;
-            var jmpfcn_offset = IsSOTFS_CP ? jumpfcn_offset_V103 : jumpfcn_offset_V102;
-
-            var module_addr = Process?.MainModule?.BaseAddress;
-            if (module_addr == null)
-                throw new Exception("Unknown DS2 MainModule size");
-            var jmp_ptr = IntPtr.Add((IntPtr)module_addr, jmpfcn_offset);
-
-            // Read a byte to see if the bbj inject is there:
-            var jumpinj = CreateBasePointer(jmp_ptr);
-            byte testbyte = jumpinj.ReadByte(0);
-            return testbyte switch
-            {
-                (byte)BYTECODES.NOBBJBYTE => BBJTYPE.NOBBJ,
-                (byte)BYTECODES.NEWBBJBYTE => BBJTYPE.NEWBBJ_SOTFS,
-                _ => throw new Exception("Probably an issue with setting up the pointers/addresses"),
-            };
-        }
-        internal BBJTYPE GetBBJTypeVanilla()
-        {
-            var jmpfcn_offset = DS2Ver switch
-            {
-                DS2VER.VANILLA_V102 => 0x033A424,
-                DS2VER.VANILLA_V111 => 0x3A09C4,
-                DS2VER.VANILLA_V112 => 0x3A7364,
-                _ => throw new Exception("Shouldn't get here")
-            };
-
-            var module_addr = Process?.MainModule?.BaseAddress ??
-                    throw new Exception("Unknown DS2 MainModule size");
-            var jmp_ptr = IntPtr.Add(module_addr, jmpfcn_offset);
-
-            // Read a byte to see if the bbj inject is there:
-            var jumpinj = CreateBasePointer(jmp_ptr);
-            byte testbyte = jumpinj.ReadByte(0);
-            bool isInjected = testbyte switch
-            {
-                (byte)BYTECODES.MOV_ECX_EAX => false,
-                (byte)BYTECODES.JUMPREL32 => true,
-                _ => throw new Exception("Shouldn't happen for Vanilla?"),
-            };
-
-            // Split out easy bbj types:
-            if (!isInjected) return BBJTYPE.NOBBJ;
-            if (DS2Ver == DS2VER.VANILLA_V112) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
-            if (DS2Ver == DS2VER.VANILLA_V102) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
-
-            // Finally differentiate between V1.11 old/new bbj mods:
-            var reljump = jumpinj.ReadInt32(0x1); // read rel_jump (E9 XXXXXXXX LE)
-            var addr_inj_code = jumpinj.Resolve() + reljump + 5; // 5 for instruction length
-            var inj_code = CreateBasePointer(addr_inj_code);
-            var testbyte2 = inj_code.ReadByte(0xE); // first byte that is different between versions
-
-            // Differentiate:
-            return testbyte2 switch
-            {
-                (byte)BYTECODES.MOVSS => BBJTYPE.OLDBBJ_VANILLA,
-                (byte)BYTECODES.MOV_EAX_DWORTPTR => BBJTYPE.NEWBBJ_VANILLA,
-                _ => throw new Exception("Probably shouldn't get this, unknown bbj inject")
-            };
-        }
-        private string GetStringVersion()
-        {
-            if (!IsSOTFS && !IsVanilla)
-                return "Unknown game or version";
-
-            StringBuilder sb = new();
-
-            // get main version:
-            if (IsSOTFS)
-                sb.Append("Sotfs");
-            else
-                sb.Append("Vanilla");
-
-            // get sub-version
-            sb.Append(' ');
-            switch (DS2Ver)
-            {
-                case DS2VER.SOTFS_V102:
-                    sb.Append("V1.02");
-                    break;
-
-                case DS2VER.SOTFS_V103:
-                    sb.Append("V1.03");
-                    break;
-
-                case DS2VER.VANILLA_V102:
-                    sb.Append("V1.02 Old Patch");
-                    break;
-
-                case DS2VER.VANILLA_V111:
-                    sb.Append("V1.11");
-                    break;
-
-                case DS2VER.VANILLA_V112:
-                    sb.Append("V1.12");
-                    break;
-            }
-
-            // get mod versions:
-            sb.Append(Environment.NewLine);
-            switch (BBJType)
-            {
-                case BBJTYPE.NOBBJ:
-                    sb.Append("(unmodded)");
-                    break;
-
-                case BBJTYPE.OLDBBJ_VANILLA:
-                case BBJTYPE.OLDBBJ_SOTFS:
-                    sb.Append("(old bbj mod)");
-                    break;
-
-                case BBJTYPE.NEWBBJ_VANILLA:
-                case BBJTYPE.NEWBBJ_SOTFS:
-                    sb.Append("(bbj mod)");
-                    break;
-
-                default:
-                    sb.Append("(unknown mod)");
-                    break;
-            }
-            return sb.ToString();
-        }
+        
 
         //internal DS2HookOffsets GetOffsets()
         //{
@@ -1087,7 +760,7 @@ namespace DS2S_META.Utils.DS2Hook
         {
             if (Is64Bit)
                 ASM.ApplySpecialEffect64(spEffect);
-            else if (IsOldPatch)
+            else if (VerMan.IsOldPatch)
                 ASM.ApplySpecialEffect32OP(spEffect);
             else
                 ASM.ApplySpecialEffect32(spEffect);
@@ -1319,9 +992,7 @@ namespace DS2S_META.Utils.DS2Hook
         
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
         public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
-
         public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
-
         public void UninstallInfiniteGoods() => InfiniteGoods?.Uninstall();
         
         
@@ -1567,10 +1238,10 @@ namespace DS2S_META.Utils.DS2Hook
 
         internal bool GetIsDroppable(ItemRow item)
         {
-            if (!ParamMan.IsLoaded)
+            if (!Hooked || !ParamMan.IsLoaded)
                 return false;
 
-            if (!IsInitialized || ParamMan.ItemUsageParam == null)
+            if (ParamMan.ItemUsageParam == null)
                 return false;
 
             if (item == null)

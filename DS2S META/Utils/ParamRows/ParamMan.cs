@@ -149,10 +149,11 @@ namespace DS2S_META.Utils
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
-            GetParams(Hook.IsVanilla);
+            GetParams(Hook.VerMan.IsVanilla);
             IsLoaded = true;
 
             // Setup speedy lookups:
+            // ItemRows = [.. ItemParam.AsRows<ItemRow>() ]; // possible C# 12 improvement, to consider
             ItemRows = ItemParam.AsRows<ItemRow>().ToList();
             ItemLotOtherRows = ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
             ItemLotChrRows = ItemLotChrParam.AsRows<ItemDropRow>().ToList();

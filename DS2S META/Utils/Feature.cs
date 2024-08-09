@@ -49,6 +49,13 @@ namespace DS2S_META.Utils
             Hook = hook;
         }
 
+        // shorthand wrappers
+        private static bool IsValidVer => Hook?.VerMan.IsValidVer == true;
+        private static bool InGame => Hook?.InGame == true;
+        private static bool IsSOTFS_CP => Hook?.VerMan.IsSOTFS_CP == true;
+        private static bool IsSOTFS => Hook?.VerMan.IsSOTFS == true;
+        private static bool IsOldPatch => Hook?.VerMan.IsOldPatch == true;
+
         // Helpful query:
         public static bool IsActive(METAFEATURE feat)
         {
@@ -59,35 +66,35 @@ namespace DS2S_META.Utils
             // in certain versions, can veto here.
             return feat switch
             {
-                METAFEATURE.OHKO_FIST => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.OHKO_RAPIER => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.NOGRAVITY => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.NOCOLLISION => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.NODEATH => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.DISABLEAI => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
-                METAFEATURE.GIVE17KREWARD => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.GIVE3CHUNK1SLAB => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.MADWARRIOR => Hook.IsSOTFS_CP, // sotfs 1.03 only
+                METAFEATURE.OHKO_FIST => IsValidVer && InGame,
+                METAFEATURE.OHKO_RAPIER => IsValidVer && InGame,
+                METAFEATURE.NOGRAVITY => IsValidVer && InGame,
+                METAFEATURE.NOCOLLISION => IsValidVer && InGame,
+                METAFEATURE.NODEATH => IsValidVer && InGame,
+                METAFEATURE.DISABLEAI => InGame && (IsSOTFS || IsOldPatch),
+                METAFEATURE.GIVE17KREWARD => IsValidVer && InGame,
+                METAFEATURE.GIVE3CHUNK1SLAB => IsValidVer && InGame,
+                METAFEATURE.MADWARRIOR => IsSOTFS_CP, // sotfs 1.03 only
                 METAFEATURE.RUBBISHCHALLENGE => false, // not working in any versions atm
-                METAFEATURE.BIKP1SKIP => Hook.IsSOTFS_CP,
-                METAFEATURE.SPEEDHACK => Hook.IsValidVer,
-                METAFEATURE.STOREPOSITION => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.RESTOREPOSITION => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.WARP => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.DMGMOD => Hook.IsSOTFS_CP,
-                METAFEATURE.MANAGEBFS => Hook.InGame,
-                METAFEATURE.GIVESOULS => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.RESETSOULMEMORY => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.RESTOREHUMANITY => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.NEWTESTCHARACTER => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.COVENANTINFO => Hook.IsSOTFS && Hook.InGame,
-                METAFEATURE.MAXLEVELS => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.RESETTOCLASSLEVELS => Hook.IsValidVer && Hook.InGame,
-                METAFEATURE.DISABLESKIRTDAMAGE => Hook.IsSOTFS && Hook.InGame,
-                METAFEATURE.INFINITESTAMINA => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
-                METAFEATURE.INFINITESPELLS => Hook.InGame && (Hook.IsSOTFS || Hook.IsOldPatch),
-                METAFEATURE.DISABLEPARTYWALKTIMER => Hook.InGame && Hook.IsSOTFS_CP,
-                METAFEATURE.INFINITEGOODS => Hook.InGame && Hook.IsSOTFS_CP,
+                METAFEATURE.BIKP1SKIP => IsSOTFS_CP,
+                METAFEATURE.SPEEDHACK => IsValidVer,
+                METAFEATURE.STOREPOSITION => IsValidVer && InGame,
+                METAFEATURE.RESTOREPOSITION => IsValidVer && InGame,
+                METAFEATURE.WARP => IsValidVer && Hook.InGame,
+                METAFEATURE.DMGMOD => IsSOTFS_CP,
+                METAFEATURE.MANAGEBFS => InGame,
+                METAFEATURE.GIVESOULS => IsValidVer && InGame,
+                METAFEATURE.RESETSOULMEMORY => IsValidVer && InGame,
+                METAFEATURE.RESTOREHUMANITY => IsValidVer && InGame,
+                METAFEATURE.NEWTESTCHARACTER => IsValidVer && InGame,
+                METAFEATURE.COVENANTINFO => IsSOTFS && InGame,
+                METAFEATURE.MAXLEVELS => IsValidVer && InGame,
+                METAFEATURE.RESETTOCLASSLEVELS => IsValidVer && InGame,
+                METAFEATURE.DISABLESKIRTDAMAGE => IsSOTFS && InGame,
+                METAFEATURE.INFINITESTAMINA => InGame && (IsSOTFS || IsOldPatch),
+                METAFEATURE.INFINITESPELLS => InGame && (IsSOTFS || IsOldPatch),
+                METAFEATURE.DISABLEPARTYWALKTIMER => InGame && IsSOTFS_CP,
+                METAFEATURE.INFINITEGOODS => InGame && IsSOTFS_CP,
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -118,16 +125,10 @@ namespace DS2S_META.Utils
         public static bool FtCovenantInfo => IsActive(METAFEATURE.COVENANTINFO);
         public static bool FtMaxLevels => IsActive(METAFEATURE.MAXLEVELS);
         public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
-
         public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
-
         public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
-
         public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
-
         public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
-
         public static bool FtInfiniteGoods => IsActive(METAFEATURE.INFINITEGOODS);
-
     }
 }

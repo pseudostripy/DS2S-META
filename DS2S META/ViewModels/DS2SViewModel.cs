@@ -74,7 +74,7 @@ namespace DS2S_META.ViewModels
                 if (!Hook.Hooked)
                     return Brushes.Black;
 
-                if (Hook.IsValidVer)
+                if (Hook?.VerMan.IsValidVer == true)
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
@@ -95,7 +95,7 @@ namespace DS2S_META.ViewModels
             }
         }
         public string ProcessID => Hook?.Process?.Id.ToString() ?? "Not Hooked";
-
+        public string DS2VerInfoString => Hook?.VerMan.VerInfoString ?? "Not hooked";
 
         public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;

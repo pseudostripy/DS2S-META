@@ -151,7 +151,7 @@ namespace DS2S_META
         public static ItemRow AsItemRow(this DropInfo di) => ParamMan.ItemRowsDict[di.ItemID];
         public static IList<T> AsRows<T>(this Param? param)
         {
-            if (param == null) throw new ArgumentNullException(nameof(param));
+            ArgumentNullException.ThrowIfNull(param);
             return param.Rows.OfType<T>().ToList();
         }
 
