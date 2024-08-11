@@ -1,5 +1,4 @@
 ﻿using DS2S_META.Utils;
-using DS2S_META.ViewModels.Commands;
 using PropertyHook;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ using System.Windows.Media;
 using DS2S_META.Randomizer;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
 using DS2S_META.Utils.DS2Hook;
-using DS2S_META.Commands;
+using DS2S_META.DataClassHelpers.Commands;
 using System.Windows.Navigation;
 
 namespace DS2S_META.ViewModels
@@ -126,7 +125,7 @@ namespace DS2S_META.ViewModels
             ResetSoulMemoryCommand = new RelayCommand(ResetSoulMemoryExecute, ResetSoulMemoryCanExec);
             GiveSoulsCommand = new RelayCommand(GiveSoulsExecute, GiveSoulsCanExec);
         }
-        private void MaxLevelsExecute(object? parameter) => Hook?.SetMaxLevels();
+        private void MaxLevelsExecute(object? parameter) => Hook?.CGR.SetMaxLevels();
         private void ResetLevelsExecute(object? parameter) => ResetToClassLevels();
         private void ResetSoulMemoryExecute(object? parameter) => ResetToClassLevels();
         private void GiveSoulsExecute(object? parameter) => Hook?.AddSouls(GiveSoulsVal);

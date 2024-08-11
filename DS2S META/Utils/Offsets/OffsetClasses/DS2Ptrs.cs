@@ -14,44 +14,6 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
 {
     public class DS2Ptrs
     {
-        // Fields
-        //public PHPointer? BaseA;
-        //public PHPointer? GiveSoulsFunc;
-        //public PHPointer? RemoveSoulsFunc;
-        //public PHPointer? ItemGiveFunc;
-        //public PHPointer? ItemStruct2dDisplay;
-        //public PHPointer? phpDisplayItem;
-        //public PHPointer? SetWarpTargetFunc;
-        //public PHPointer? WarpManager;
-        //public PHPointer? WarpFunc;
-        //public PHPointer? SomePlayerStats;
-        //public PHPointer? PlayerName;
-        //public PHPointer? AvailableItemBag;
-        //public PHPointer? ItemGiveWindow;
-        //public PHPointer? PlayerBaseMisc;
-        //public PHPointer? PlayerCtrl;
-        //public PHPointer? PlayerPosition;
-        //public PHPointer? PlayerGravity;
-        //public PHPointer? PlayerParam;
-        //public PHPointer? PlayerType;
-        //public PHPointer? SpEffectCtrl;
-        //public PHPointer? ApplySpEffect;
-        //public PHPointer? PlayerMapData;
-        //public PHPointer? EventManager;
-        //public PHPointer? BonfireLevels;
-        //public PHPointer? NetSvrBloodstainManager;
-        //public PHPointer? BaseB;
-        //public PHPointer? Connection;
-        //public PHPointer? Camera;
-        //public PHPointer? Camera2;
-        //public PHPointer? SpeedFactorAccel;
-        //public PHPointer? SpeedFactorAnim;
-        //public PHPointer? SpeedFactorJump;
-        //public PHPointer? SpeedFactorBuildup;
-        //public PHPointer? LoadingState;
-        //public PHPointer? phDisableAI; // pointer head (missing final offset)
-        //public PHPointer? phBIKP1SkipVals; // pointer head (missing final offset)
-
         private REDataUnpacker _reDataUnpacker;
         public REDataUnpacker REDU => _reDataUnpacker;
         

@@ -1,5 +1,4 @@
 ﻿using DS2S_META.Utils;
-using DS2S_META.ViewModels.Commands;
 using PropertyHook;
 using System;
 using System.Collections.Generic;
@@ -15,12 +14,13 @@ using System.Windows.Media;
 using DS2S_META.Randomizer;
 using System.Diagnostics;
 using System.Windows.Controls;
-using DS2S_META.Commands;
-using static DS2S_META.State;
+using DS2S_META.DataClassHelpers.Commands;
+using static DS2S_META.DataClassHelpers.State;
 using DS2S_META.Utils.Offsets;
 using System.Diagnostics.Metrics;
 using Xceed.Wpf.Toolkit;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
+using DS2S_META.DataClassHelpers;
 
 namespace DS2S_META.ViewModels
 {

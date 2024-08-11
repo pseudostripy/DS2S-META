@@ -50,10 +50,7 @@ namespace DS2S_META
 
             //LoadSettingsAfterUpgrade();
             //ShowOnlineWarning();
-            //Hook.OnHooked += Hook_OnHooked;
             Hook.MW = this;
-
-
 
             // This is duplicated in the ViewModel until DS2ViewModel is fixed accordingly
             //DmgCalcViewModel = new DmgCalcViewModel();
@@ -75,27 +72,11 @@ namespace DS2S_META
         {
             ViewModel.CleanupAll();
             UpdateTimer.Stop();
-            SaveAllTabs();
 
             if (RandomizerControl.IsRandomized)
-            {
-                // Just fix the problem /shrug
                 metaRando.RM.Unrandomize();
 
-                if (Properties.Settings.Default.ShowWarnRandoExit)
-                {
-                    //var randoexit = new RandoExitWarning()
-                    //{
-                    //    Title = "Game Randomized Warning",
-                    //    Width = 375,
-                    //    Height = 195,
-                    //};
-                    //randoexit.ShowDialog();
-                }
-
-            }
-
-            Hook.Cleanup();
+            Hook.SetupCleanupMan.Cleanup();
             HKM.ClearHooks();
             Settings.Save();
         }
@@ -110,9 +91,6 @@ namespace DS2S_META
                 UpdateMainProperties();
                 if (!Hook.Hooked || !ParamMan.IsLoaded)
                     return;
-
-                // Hook will be initialized by now
-                UpdateProperties();     
             }));
         }
         private void UpdateTimeElapsed_4HzUpdates(object? sender, EventArgs e)
@@ -152,46 +130,8 @@ namespace DS2S_META
 
             // todo for each
             ViewModel.InitViewModels();
-            //ViewModel.DmgCalcViewModel.InitViewModel(Hook);
-            //ViewModel.CheatsViewModel.InitViewModel(Hook);
-            //ViewModel.RandoSettingsViewModel.InitViewModel(Hook);
-            //ViewModel.PlayerViewModel.InitViewModel(Hook);
         }
-        private void UpdateProperties()
-        {
-            //Hook.UpdateGameState();
-            Hook.UpdateStatsProperties();
-            Hook.UpdatePlayerProperties();
-            Hook.UpdateInternalProperties();
-            //Hook.UpdateBonfireProperties();
-            Hook.UpdateCovenantProperties();
-        }
-        //private void UpdateAllViewModels()
-        //{
-        //    foreach(var vm in ViewModels)
-        //        vm.UpdateViewModel();
-        //}
         
-        //private void ReloadAllTabs()
-        //{
-        //    metaPlayer.ReloadCtrl();
-        //    metaStats.ReloadCtrl();
-        //    metaItems.ReloadCtrl();
-        //    metatabDmgCalc.ReloadCtrl();
-        //}
-        //private void UpdateAllTabs()
-        //{
-        //    metaPlayer.UpdateCtrl();
-        //    metaStats.UpdateCtrl();
-        //    metaItems.UpdateCtrl();
-        //}
-
-        
-        private void SaveAllTabs()
-        {
-            //HKM.SaveHotkeys();
-            //HKM.UnregisterHotkeys();
-        }
         private void EnableStatEditing_Checked(object sender, RoutedEventArgs e)
         {
             metaStats.EnableCtrls(Hook.InGame);

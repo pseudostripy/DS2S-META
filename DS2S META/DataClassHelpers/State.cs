@@ -1,4 +1,4 @@
-﻿namespace DS2S_META
+﻿namespace DS2S_META.DataClassHelpers
 {
     public class State
     {

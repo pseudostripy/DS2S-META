@@ -1,16 +1,14 @@
 ﻿using DS2S_META.Utils;
 using DS2S_META.Utils.Offsets.HookGroupObjects;
-using DS2S_META.ViewModels.Commands;
-using PropertyHook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using DS2S_META.DataClassHelpers.Commands;
 
 namespace DS2S_META.ViewModels
 {

@@ -9,14 +9,14 @@ using System.Windows;
 using System.Windows.Xps.Serialization;
 using DS2S_META.Utils.DS2Hook;
 
-namespace DS2S_META.Utils
+namespace DS2S_META.Utils.DS2Hook.MemoryMods
 {
     internal class AllocatedAsm : MemoryModification
     {
         private readonly uint PageType = Kernel32.PAGE_READWRITE;
         private readonly uint AllocSize;
         private bool IsAllocated = false;
-        private IntPtr PtrAllocMem;
+        private nint PtrAllocMem;
         public byte[]? Asm;
 
 
@@ -26,11 +26,11 @@ namespace DS2S_META.Utils
             AllocSize = sz;
             if (exec) PageType = Kernel32.PAGE_EXECUTE_READWRITE;
         }
-        public IntPtr Allocate()
+        public nint Allocate()
         {
             if (IsAllocated) return PtrAllocMem;
             PtrAllocMem = Hook.Allocate(AllocSize, flProtect: PageType);
-            if (PtrAllocMem == IntPtr.Zero) throw new Exception("Issue allocating desired memory");
+            if (PtrAllocMem == nint.Zero) throw new Exception("Issue allocating desired memory");
             IsAllocated = true;
             return PtrAllocMem;
         }

@@ -1,8 +1,6 @@
-﻿using DS2S_META.Commands;
+﻿using DS2S_META.DataClassHelpers.Commands;
 using DS2S_META.Properties;
 using DS2S_META.Randomizer;
-using DS2S_META.Utils;
-using DS2S_META.ViewModels.Commands;
 using Octokit;
 using PropertyHook;
 using System;

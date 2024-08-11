@@ -115,8 +115,8 @@ namespace DS2S_META.ViewModels
         public DS2SHook Hook { get; private set; }
         
         public bool GameLoaded => Hook.InGame;
-        public bool DS2Loading => Hook.IsLoading;
-
+        public bool DS2Loading => Hook.DS2P.CGS.IsLoading;
+        
         public static MetaVersionInfo MVI = new();
 
         private static string DebugStr

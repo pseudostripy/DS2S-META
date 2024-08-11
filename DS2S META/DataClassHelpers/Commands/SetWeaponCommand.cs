@@ -1,4 +1,5 @@
 ﻿using DS2S_META.Utils;
+using DS2S_META.ViewModels;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.Toolkit.Primitives;
 
-namespace DS2S_META.ViewModels.Commands
+namespace DS2S_META.DataClassHelpers.Commands
 {
     public class SetWeaponCommand : ICommand
     {
@@ -24,7 +25,7 @@ namespace DS2S_META.ViewModels.Commands
         {
             _dcvm = dcvm;
         }
-        
+
         public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter)

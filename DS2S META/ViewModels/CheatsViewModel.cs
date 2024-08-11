@@ -1,5 +1,4 @@
 ﻿using DS2S_META.Utils;
-using DS2S_META.ViewModels.Commands;
 using PropertyHook;
 using System;
 using System.Collections.Generic;
@@ -12,8 +11,6 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using DS2S_META.Randomizer;
-using DS2S_META.Utils.Offsets;
 
 namespace DS2S_META.ViewModels
 {

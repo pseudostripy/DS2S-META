@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using System.Xml.Serialization;
+using DS2S_META.DataClassHelpers;
 
 namespace DS2S_META
 {

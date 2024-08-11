@@ -1,5 +1,4 @@
-﻿using DS2S_META.ViewModels.Commands;
-using PropertyHook;
+﻿using PropertyHook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,8 +9,8 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Controls;
-using DS2S_META.Commands;
-using static DS2S_META.State;
+using DS2S_META.DataClassHelpers.Commands;
+using static DS2S_META.DataClassHelpers.State;
 using Xceed.Wpf.Toolkit;
 using System.Threading;
 using DS2S_META.Utils.Offsets.HookGroupObjects;

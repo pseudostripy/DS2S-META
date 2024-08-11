@@ -6,17 +6,9 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using System.Windows.Media;
 using DS2S_META.Randomizer;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.Windows.Data;
-using Octokit;
-using System.ComponentModel;
 using DS2S_META.Properties;
 using DS2S_META.ViewModels;
-using static DS2S_META.State;
 
 namespace DS2S_META
 {

@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.DS2Hook;
+﻿using DS2S_META.DataClassHelpers;
+using DS2S_META.Utils.DS2Hook;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,9 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             { COV.COVENANTOFCHAMPIONS, "CompanyOfChampions" },
             { COV.PILGRIMSOFDARKNESS, "PilgrimsOfDarkness" },
         };
-        public Dictionary<COV, PHLeaf?> DiscovDict = new();
-        public Dictionary<COV, PHLeaf?> RankDict = new();
-        public Dictionary<COV, PHLeaf?> ProgressDict = new();
+        public Dictionary<COV, PHLeaf?> DiscovDict = [];
+        public Dictionary<COV, PHLeaf?> RankDict = [];
+        public Dictionary<COV, PHLeaf?> ProgressDict = [];
         public PHLeaf? PHCurrentCovenant;
 
         public CovenantHGO(DS2SHook hook, Dictionary<string, PHLeaf?> covGroup, Dictionary<string, PHLeaf?> leafdict) : base(hook)

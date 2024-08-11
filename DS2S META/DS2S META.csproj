@@ -122,6 +122,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bin\" />
     <Folder Include="Resources\ParamFiles\" />
     <Folder Include="Resources\Tools\SpeedInjector32\" />
   </ItemGroup>

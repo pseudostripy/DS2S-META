@@ -1,12 +1,11 @@
-﻿using DS2S_META.Utils.Offsets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 //namespace DS2S_META.Utils.Subhook
-namespace DS2S_META.Utils
+namespace DS2S_META.DataClassHelpers
 {
     public class Covenant
     {
@@ -15,7 +14,7 @@ namespace DS2S_META.Utils
             ID = id;
         }
 
-        public Covenant(COV id, bool discov, byte rank, short progress) 
+        public Covenant(COV id, bool discov, byte rank, short progress)
         {
             Discovered = discov;
             Rank = rank;

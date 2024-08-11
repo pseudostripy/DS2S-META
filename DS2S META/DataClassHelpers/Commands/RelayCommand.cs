@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace DS2S_META.Commands
+namespace DS2S_META.DataClassHelpers.Commands
 {
     public class RelayCommand : ICommand
     {
