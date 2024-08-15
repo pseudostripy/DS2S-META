@@ -144,10 +144,10 @@ namespace DS2S_META.Utils.DS2Hook
             NoDmgMod?.SetDmgModSettings(affectDealtDmg, affectRcvdDmg, dmgfacDealt, dmgfacRcvd);
         }
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
-        public void UninstallDisableSkirtDamage() => DisableSkirtDamage?.Uninstall();
+        public void UninstallDisablePoisonBuildup() => DisableSkirtDamage?.Uninstall();
         public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
         public void UninstallInfiniteGoods() => InfiniteGoods?.Uninstall();
-        private void EnsureInstalledDisableSkirtDamage()
+        private void EnsureInstalledDisablePoisonBuildup()
         {
             if (DisableSkirtDamage?.IsInstalled == true)
                 return;
@@ -159,13 +159,13 @@ namespace DS2S_META.Utils.DS2Hook
             DisableSkirtDamage ??= new NopableInject(this, injptr, origbytes);
             DisableSkirtDamage.Install();
         }
-        public void SetDisableSkirtDamage(bool disableSkirtDamage)
+        public void SetDisablePoisonBuildup(bool disableSkirtDamage)
         {
             if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE)) return;
             if (disableSkirtDamage)
-                EnsureInstalledDisableSkirtDamage();
+                EnsureInstalledDisablePoisonBuildup();
             else
-                UninstallDisableSkirtDamage();
+                UninstallDisablePoisonBuildup();
         }
         public void ResetPartyWalkTimer()
         {

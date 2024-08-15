@@ -149,15 +149,15 @@ namespace DS2S_META.ViewModels
             }
         }
 
-        private bool _chkDisableSkirtDamage = false;
-        public bool ChkDisableSkirtDamage
+        private bool _chkDisablePoisonBuildup = false;
+        public bool ChkDisablePoisonBuildup
         {
-            get => _chkDisableSkirtDamage;
+            get => _chkDisablePoisonBuildup;
             set
             {
-                _chkDisableSkirtDamage = value;
-                Hook?.SetDisableSkirtDamage(value);
-                OnPropertyChanged(nameof(ChkDisableSkirtDamage));
+                _chkDisablePoisonBuildup = value;
+                Hook?.SetDisablePoisonBuildup(value);
+                OnPropertyChanged(nameof(ChkDisablePoisonBuildup));
             }
         }
 
