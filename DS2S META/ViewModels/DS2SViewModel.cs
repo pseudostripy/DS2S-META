@@ -175,9 +175,9 @@ namespace DS2S_META.ViewModels
 
         private void AllTabsOnHooked(object? sender, PHEventArgs e)
         {
+            MetaFeature.Initialize(Hook);
             foreach (var vm in ViewModels)
                 vm.OnHooked();
-            MetaFeature.Initialize(Hook);
         }
         private void AllTabsOnUnHooked(object? sender, PHEventArgs e)
         {

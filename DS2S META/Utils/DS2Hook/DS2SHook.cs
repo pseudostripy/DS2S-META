@@ -105,7 +105,8 @@ namespace DS2S_META.Utils.DS2Hook
 
         // TODO ModMan
         public NoDmgMod? NoDmgMod;
-        public NopableInject? DisableSkirtDamage;
+        public NopableInject? DisablePoisonBuildupInj;
+        public NopableInject? DisableSkirtPoisonInj;
         public NopableInject? InfiniteSpells;
         public NopableInject? InfiniteGoods;
         public void UninstallBIKP1Skip()
@@ -144,28 +145,51 @@ namespace DS2S_META.Utils.DS2Hook
             NoDmgMod?.SetDmgModSettings(affectDealtDmg, affectRcvdDmg, dmgfacDealt, dmgfacRcvd);
         }
         public void UninstallDmgMod() => NoDmgMod?.Uninstall();
-        public void UninstallDisablePoisonBuildup() => DisableSkirtDamage?.Uninstall();
+        public void UninstallDisablePoisonBuildup() => DisablePoisonBuildupInj?.Uninstall();
+        public void UninstallDisableSkirtPoison() => DisableSkirtPoisonInj?.Uninstall();
         public void UninstallInfiniteSpells() => InfiniteSpells?.Uninstall();
         public void UninstallInfiniteGoods() => InfiniteGoods?.Uninstall();
-        private void EnsureInstalledDisablePoisonBuildup()
+        private void EnsureInstalledDisableSkirtPoison()
         {
-            if (DisableSkirtDamage?.IsInstalled == true)
+            // Disables all events that use the timer-based dmg (includes
+            // butterfly wings... and possibly other unknown?)
+            if (DisableSkirtPoisonInj?.IsInstalled == true)
                 return;
 
             // Create and install inject
-            var injptr = DS2P?.Func.DisableSkirtDamage?.Resolve()
-                ?? throw new MetaMemoryException("DisableSkirtDamage function pointer not initialized correctly"); ;
-            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.DISABLESKIRT);
-            DisableSkirtDamage ??= new NopableInject(this, injptr, origbytes);
-            DisableSkirtDamage.Install();
+            var injptr = DS2P?.Func.PHDisableSkirtPoison?.Resolve()
+                ?? throw new MetaMemoryException("DisableSkirtPoison function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.DISABLESKIRTPOISON);
+            DisableSkirtPoisonInj ??= new NopableInject(this, injptr, origbytes);
+            DisableSkirtPoisonInj.Install();
         }
-        public void SetDisablePoisonBuildup(bool disableSkirtDamage)
+        private void EnsureInstalledDisablePoisonBuildup()
         {
-            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTDAMAGE)) return;
-            if (disableSkirtDamage)
+            if (DisablePoisonBuildupInj?.IsInstalled == true)
+                return;
+
+            // Create and install inject
+            var injptr = DS2P?.Func.DisablePoisonBuildup?.Resolve()
+                ?? throw new MetaMemoryException("DisablePoisonBuildup function pointer not initialized correctly"); ;
+            var origbytes = Injects.GetDefinedBytes(DS2Ver, Injects.NOPINJECTS.DISABLEPOISONBUILDUP);
+            DisablePoisonBuildupInj ??= new NopableInject(this, injptr, origbytes);
+            DisablePoisonBuildupInj.Install();
+        }
+        public void SetDisablePoisonBuildup(bool disablePoisonBuildup)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLEPOISONBUILDUP)) return;
+            if (disablePoisonBuildup)
                 EnsureInstalledDisablePoisonBuildup();
             else
                 UninstallDisablePoisonBuildup();
+        }
+        public void SetDisableSkirtPoison(bool disableSkirtDamage)
+        {
+            if (MetaFeature.IsInactive(METAFEATURE.DISABLESKIRTPOISON)) return;
+            if (disableSkirtDamage)
+                EnsureInstalledDisableSkirtPoison();
+            else
+                UninstallDisableSkirtPoison();
         }
         public void ResetPartyWalkTimer()
         {

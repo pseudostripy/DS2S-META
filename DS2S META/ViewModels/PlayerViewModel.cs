@@ -47,15 +47,11 @@ namespace DS2S_META.ViewModels
         public bool EnMoneyBags => MetaFeature.FtGiveSouls;
         public bool EnRestoreHumanity => MetaFeature.FtRestoreHumanity;
         public bool EnNewTestCharacter => MetaFeature.FtNewTestCharacter;
-
-        public bool EnDisableSkirtDamage => MetaFeature.FtDisableSkirtDamage;
-
+        public bool EnDisablePoisonBuildup => MetaFeature.FtDisablePoisonBuildup;
+        public bool EnDisableSkirtPoison => MetaFeature.FtDisableSkirtPoison;
         public bool EnInfiniteStamina => MetaFeature.FtInfiniteStamina;
-
         public bool EnInfiniteSpells => MetaFeature.FtInfiniteSpells;
-
         public bool EnDisablePartyWalkTimer => MetaFeature.FtDisablePartyWalkTimer;
-
         public bool EnInfiniteGoods => MetaFeature.FtInfiniteGoods;
 
         // Other properties
@@ -158,6 +154,17 @@ namespace DS2S_META.ViewModels
                 _chkDisablePoisonBuildup = value;
                 Hook?.SetDisablePoisonBuildup(value);
                 OnPropertyChanged(nameof(ChkDisablePoisonBuildup));
+            }
+        }
+        private bool _chkDisableSkirtPoison = false;
+        public bool ChkDisableSkirtPoison
+        {
+            get => _chkDisableSkirtPoison;
+            set
+            {
+                _chkDisableSkirtPoison = value;
+                Hook?.SetDisableSkirtPoison(value);
+                OnPropertyChanged(nameof(ChkDisableSkirtPoison));
             }
         }
 
@@ -887,7 +894,8 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(EnMoneyBags));
             OnPropertyChanged(nameof(EnRestoreHumanity));
             OnPropertyChanged(nameof(EnNewTestCharacter));
-            OnPropertyChanged(nameof(EnDisableSkirtDamage));
+            OnPropertyChanged(nameof(EnDisablePoisonBuildup));
+            OnPropertyChanged(nameof(EnDisableSkirtPoison));
             OnPropertyChanged(nameof(EnInfiniteStamina));
             OnPropertyChanged(nameof(EnInfiniteSpells));
             OnPropertyChanged(nameof(EnDisablePartyWalkTimer));

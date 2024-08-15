@@ -35,11 +35,12 @@ namespace DS2S_META.Utils
         MAXLEVELS,
         RESETTOCLASSLEVELS,
         RESETSOULMEMORY,
-        DISABLESKIRTDAMAGE,
+        DISABLEPOISONBUILDUP,
         INFINITESTAMINA,
         INFINITESPELLS,
         DISABLEPARTYWALKTIMER,
         INFINITEGOODS,
+        DISABLESKIRTPOISON,
     }
     public static class MetaFeature
     {
@@ -90,7 +91,8 @@ namespace DS2S_META.Utils
                 METAFEATURE.COVENANTINFO => IsSOTFS && InGame,
                 METAFEATURE.MAXLEVELS => IsValidVer && InGame,
                 METAFEATURE.RESETTOCLASSLEVELS => IsValidVer && InGame,
-                METAFEATURE.DISABLESKIRTDAMAGE => IsSOTFS && InGame,
+                METAFEATURE.DISABLEPOISONBUILDUP => IsSOTFS && InGame,
+                METAFEATURE.DISABLESKIRTPOISON => IsSOTFS && InGame,
                 METAFEATURE.INFINITESTAMINA => InGame && (IsSOTFS || IsOldPatch),
                 METAFEATURE.INFINITESPELLS => InGame && (IsSOTFS || IsOldPatch),
                 METAFEATURE.DISABLEPARTYWALKTIMER => InGame && IsSOTFS_CP,
@@ -125,7 +127,8 @@ namespace DS2S_META.Utils
         public static bool FtCovenantInfo => IsActive(METAFEATURE.COVENANTINFO);
         public static bool FtMaxLevels => IsActive(METAFEATURE.MAXLEVELS);
         public static bool FtResetToClassLevels => IsActive(METAFEATURE.RESETTOCLASSLEVELS);
-        public static bool FtDisableSkirtDamage => IsActive(METAFEATURE.DISABLESKIRTDAMAGE);
+        public static bool FtDisablePoisonBuildup => IsActive(METAFEATURE.DISABLEPOISONBUILDUP);
+        public static bool FtDisableSkirtPoison => IsActive(METAFEATURE.DISABLESKIRTPOISON);
         public static bool FtInfiniteStamina => IsActive(METAFEATURE.INFINITESTAMINA);
         public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
         public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
