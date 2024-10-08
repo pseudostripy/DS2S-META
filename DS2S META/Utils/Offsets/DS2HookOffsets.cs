@@ -33,7 +33,7 @@ namespace DS2S_META.Utils.Offsets
         public PlayerParam PlayerParam { get; init; }
         public Attributes Attributes { get; init; }
         public Covenants Covenants { get; init; }
-        public Gravity Gravity { get; init; }
+        public Gravity Gravity { get; init; } 
         public PlayerMapData PlayerMapData { get; init; }
         public Bonfire Bonfire { get; init; }
         public BonfireLevels BonfireLevels { get; init; }
@@ -60,6 +60,7 @@ namespace DS2S_META.Utils.Offsets
         public int[]? LoadingState;
         public int[]? BIKP1Skip_Val1;
         public int[]? BIKP1Skip_Val2;
+        public int[]? DisablePartyWalkTimer;
         public int GameState;
     }
 }
