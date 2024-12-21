@@ -16,8 +16,8 @@ A
  YOU HAVE BEEN WARNED  
 
 ## Requirements 
-* Sotfs/Vanilla: [.NET 6] (https://dotnet.microsoft.com/en-us/download/dotnet/6.0)  
-* Vanilla with speedhack: [.NET 6 for x86] see above link and select x86
+* General support for SotFS/Vanilla: [.NET 8 for x64] (https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  
+* Speedhack support for Vanilla: [.NET 8 for x86] see above link and select x86. If you attempt to use SpeedHack in Vanilla without this, META will silently crash.
 
 ## Installing  
 * Extract contents of zip archive to it's own folder. 
@@ -46,6 +46,15 @@ Nord's fork of [Property Hook](https://github.com/Nordgaren/PropertyHook) by [TK
 [SpeedhackWithExports](https://github.com/Nordgaren/SpeedhackWithExports) - My fork of [Speedhack](https://github.com/absoIute/Speedhack) by [absoIute](https://github.com/absoIute)   
 
 # Change Log 
+#### v0.8.0 [.NET 8]
+ - All META projects have now been migrated to .NET 8. This will require you to install the .NET 8 runtimes (see above).
+ - MetaFeature: Infinite parrywalk timer
+ - MetaFeature: Inifnite goods
+ - MetaFeature: Inifnite spells
+ - MetaFeature: Option for disabling butterfly skirt poison damage
+ - MetaFeature: Disable AI added for old patch
+ - Various other bugfixes and improvements (I lost track)
+
 #### v0.7.4 [RivaOverlay]
  - MetaBugFix: Updated RivaHook dll to release to remove debug dependency on ucrtbased.dll which be unavailable
  - MetaUpdate: Upgraded the log dump on crash to remove build dependency directory paths
