@@ -35,7 +35,7 @@ namespace DS2S_META
         public readonly static List<DS2VER> V112 = [ DS2VER.VANILLA_V112 ];
         public readonly static List<DS2VER> S102 = [ DS2VER.SOTFS_V102 ];
         public readonly static List<DS2VER> S103 = [ DS2VER.SOTFS_V103 ];
-        public readonly static List<DS2VER> V111OR112 = [ DS2VER.VANILLA_V111, DS2VER.VANILLA_V111 ];
+        public readonly static List<DS2VER> V111OR112 = [ DS2VER.VANILLA_V111, DS2VER.VANILLA_V112 ];
 
         // Module sizes (size of game in bytes)
         private const int ModuleSizeS103 = 0x1D76000;  // _OnlineCPSotfs
