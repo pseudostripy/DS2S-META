@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 
+using System.IO;
+
 namespace DS2S_META.Utils
 {
 
@@ -25,15 +27,28 @@ namespace DS2S_META.Utils
         /// <param name="environmentStackTrace">Environment stack trace, for pulling additional stack frames.</param>
         public static string ToLogString(this Exception exception, string environmentStackTrace)
         {
+            String logMessage;
+
             List<string> environmentStackTraceLines = GetUserStackTraceLines(environmentStackTrace);
-            environmentStackTraceLines.RemoveAt(0);
+            
+            // BugFix in case there's further changes to stack trace internal things
+            // This was likely caused by the .net8 switch.
+            if (environmentStackTraceLines.Count == 0)
+            {
+                logMessage = exception?.Message + Environment.NewLine +
+                    "Please run META in debug mode for full error stack trace.";
+            }
+            else
+            {
+                environmentStackTraceLines.RemoveAt(0);
 
-            List<string> stackTraceLines = GetStackTraceLines(exception?.StackTrace);
-            stackTraceLines.AddRange(environmentStackTraceLines);
+                List<string> stackTraceLines = GetStackTraceLines(exception?.StackTrace);
+                stackTraceLines.AddRange(environmentStackTraceLines);
 
-            string fullStackTrace = string.Join(Environment.NewLine, stackTraceLines);
+                string fullStackTrace = string.Join(Environment.NewLine, stackTraceLines);
 
-            string logMessage = exception?.Message + Environment.NewLine + fullStackTrace;
+                logMessage = exception?.Message + Environment.NewLine + fullStackTrace;
+            }
             return RemoveBuildPaths(logMessage);
         }
 
