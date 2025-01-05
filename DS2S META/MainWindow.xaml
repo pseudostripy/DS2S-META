@@ -69,7 +69,7 @@
                     <Label Content="{Binding ContentOnline}" Margin="5,0,6,1" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
                     <Label Content="DS2 Version:" Grid.Row="1" Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                    <Label Content="{Binding DS2VerInfoString}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,1" Grid.Row="1" Grid.Column="4" Width="150" Grid.RowSpan="3" HorizontalAlignment="Left" />
+                    <Label Content="{Binding DS2VerInfoString}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,1" Grid.Row="1" Grid.Column="4" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
 
                     <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}" Grid.ColumnSpan="3" Margin="0,0,155,26" Grid.RowSpan="2"/>
