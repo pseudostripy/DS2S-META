@@ -199,7 +199,7 @@ namespace DS2S_META
             sb.Append(gametype);
             sb.Append(' ');
             sb.Append(calib);
-            sb.Append(Environment.NewLine);
+            sb.Append(' ');
             sb.Append(modtype);
             return sb.ToString();
         }

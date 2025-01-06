@@ -26,48 +26,48 @@ namespace DS2S_META.ViewModels
 {
     public class DS2SViewModel : ObservableObject
     {
-        // Binding Variables:
-        public string ContentLoaded
+        // Binding Variables (in order of appearance):
+        public string MetaStatus
         {
             get
             {
-                if (Hook.InGame)
-                    return "Yes";
-                return "No";
+                return MVI.UpdateStatus switch
+                {
+                    UPDATE_STATUS.UPTODATE => "Meta up to date",
+                    UPDATE_STATUS.OUTOFDATE => "New Meta update available!",
+                    UPDATE_STATUS.INDEVELOPMENT => "Meta in-development version",
+                    UPDATE_STATUS.UNCHECKABLE => "Unsure if up-to-date",
+                    UPDATE_STATUS.UNKNOWN_VER => "Unknown Meta version",
+                    _ => throw new Exception("Impossible case")
+                };
             }
         }
-        public string ContentOnline => Hook.DS2P?.CGS.Online ?? "Unhooked";
-        public Brush ForegroundID
-        {
-            get
-            {
-                if (ProcessID != "Not Hooked")
-                    return Brushes.GreenYellow;
-                return Brushes.IndianRed;
-            }
-        }
-        public Brush ForegroundLoaded
-        {
-            get
-            {
-                if (Hook.InGame)
-                    return Brushes.GreenYellow;
-                return Brushes.IndianRed;
-            }
-        }
-        public Brush ForegroundOnline
+        public Visibility VisMetaStatus => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
+        public Visibility VisNewVersionHyperlink => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
+
+        public string LblContentInGame => InGame.ToString();
+        public Brush FGColInGame => InGame ? Brushes.GreenYellow : Brushes.IndianRed;
+
+        public string LblContentOnline => Hook.DS2P?.CGS.Online.ToString() ?? "Unhooked";
+        public Visibility VisOnline => InGame ? Visibility.Visible : Visibility.Hidden;
+        public Brush FGColOnline
         {
             get
             {
                 if (!Hook.Hooked)
                     return Brushes.Black;
 
-                if (Hook.DS2P?.CGS.Online == "YES")
+                if (Hook.DS2P?.CGS.Online == true)
                     return Brushes.GreenYellow;
                 return Brushes.IndianRed;
             }
         }
-        public Brush ForegroundVersion
+
+        public string LblContentProcessID => Hook.Process?.Id.ToString() ?? "Not Hooked";
+        public Brush FGColProcessID => LblContentProcessID != "Not Hooked" ? Brushes.GreenYellow : Brushes.IndianRed;
+
+        public string DS2VerInfoString => Hook?.VerMan.VerInfoString ?? "Not hooked";
+        public Brush FGColDS2Version
         {
             get
             {
@@ -79,26 +79,7 @@ namespace DS2S_META.ViewModels
                 return Brushes.IndianRed;
             }
         }
-        public string CheckVer
-        {
-            get
-            {
-                return MVI.UpdateStatus switch
-                {
-                    UPDATE_STATUS.UPTODATE => "App up to date",
-                    UPDATE_STATUS.OUTOFDATE => "New update available!",
-                    UPDATE_STATUS.INDEVELOPMENT => "In-development version",
-                    UPDATE_STATUS.UNCHECKABLE => "Unsure if up-to-date",
-                    UPDATE_STATUS.UNKNOWN_VER => "Unknown Meta version",
-                    _ => throw new Exception("Impossible case")
-                };
-            }
-        }
-        public string ProcessID => Hook?.Process?.Id.ToString() ?? "Not Hooked";
-        public string DS2VerInfoString => Hook?.VerMan.VerInfoString ?? "Not hooked";
-
-        public Visibility CheckVerVis => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
-        public Visibility NewVerVis => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
+        
 
         // ViewModel helpers
         ObservableCollection<ViewModelBase> ViewModels = new();
@@ -114,7 +95,7 @@ namespace DS2S_META.ViewModels
         private Settings Settings = Settings.Default;
         public DS2SHook Hook { get; private set; }
         
-        public bool GameLoaded => Hook.InGame;
+        public bool InGame => Hook.InGame;
         public bool DS2Loading => Hook.DS2P.CGS.IsLoading;
         
         public static MetaVersionInfo MVI = new();
@@ -203,15 +184,19 @@ namespace DS2S_META.ViewModels
 
         public void UpdateMainProperties()
         {
-            OnPropertyChanged(nameof(ForegroundID));
-            OnPropertyChanged(nameof(ContentLoaded));
-            OnPropertyChanged(nameof(ForegroundLoaded));
-            OnPropertyChanged(nameof(ContentOnline));
-            OnPropertyChanged(nameof(ForegroundOnline));
-            OnPropertyChanged(nameof(ForegroundVersion));
-            OnPropertyChanged(nameof(GameLoaded));
+            OnPropertyChanged(nameof(InGame));
+
+            OnPropertyChanged(nameof(LblContentInGame));
+            OnPropertyChanged(nameof(FGColInGame));
+            OnPropertyChanged(nameof(LblContentProcessID));
+            OnPropertyChanged(nameof(FGColProcessID));
+            OnPropertyChanged(nameof(LblContentOnline));
+            OnPropertyChanged(nameof(FGColOnline));
+            OnPropertyChanged(nameof(DS2VerInfoString));
+            OnPropertyChanged(nameof(FGColDS2Version));
+            OnPropertyChanged(nameof(VisOnline));
             OnPropertyChanged(nameof(DS2Loading)); // not used yet
-            OnPropertyChanged(nameof(ProcessID));
+
 
             foreach (var vm in ViewModels)
                 vm.UpdateViewModel();
@@ -236,6 +221,14 @@ namespace DS2S_META.ViewModels
 
         private void OnGameStateChange(object? sender, GameStateEventArgs e)
         {
+            // Update some things immediately:
+            OnPropertyChanged(nameof(InGame));
+            OnPropertyChanged(nameof(LblContentInGame));
+            OnPropertyChanged(nameof(FGColInGame));
+            OnPropertyChanged(nameof(VisOnline));
+
+
+            // Update tab properties
             if (e.GameState == (int)GAMESTATE.MAINMENU)
                 AllTabsOnMainMenu();
             if (e.GameState == (int)GAMESTATE.LOADEDINGAME) // add more here
@@ -274,9 +267,9 @@ namespace DS2S_META.ViewModels
             await GetVersions();
             VersionUpdate();
             MVI.UpdateStatus = MVI.SyncUpdateStatus();
-            OnPropertyChanged(nameof(CheckVer));
-            OnPropertyChanged(nameof(CheckVerVis));
-            OnPropertyChanged(nameof(NewVerVis));
+            OnPropertyChanged(nameof(MetaStatus));
+            OnPropertyChanged(nameof(VisMetaStatus));
+            OnPropertyChanged(nameof(VisNewVersionHyperlink));
         }
 
         private async Task GetVersions()
@@ -311,7 +304,7 @@ namespace DS2S_META.ViewModels
 
             MVI.GitVersion = Version.Parse(latestRel.TagName.ToLower().Replace("v", ""));
             MVI.LatestReleaseURI = new Uri(latestRel.HtmlUrl);
-            OnPropertyChanged(nameof(CheckVer)); // required because async
+            OnPropertyChanged(nameof(MetaStatus)); // required because async
 
             MVI.UpdateStatus = MVI.SyncUpdateStatus();
         }

@@ -48,10 +48,9 @@
                 <Grid x:Name="TitleGrid" VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*" MinWidth="90"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -59,27 +58,24 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto" MaxHeight="{Binding Row3MaxH}"/>
                     </Grid.RowDefinitions>
-                    <Label Content="Process:" Grid.ColumnSpan="2" Margin="0,0,90,26" Grid.RowSpan="2" />
-                    <Label Content="{Binding ProcessID}" Foreground="{Binding ForegroundID}" Grid.Column="1" Margin="5,0,6,26" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-
-                    <Label Content="Loaded:" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,90,26" Grid.RowSpan="2" />
-                    <Label Name="lblLoaded" Content="{Binding GameLoaded}" Foreground="{Binding ForegroundLoaded}" Grid.Row="1" Grid.Column="1" Margin="5,0,6,26" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-
-                    <Label Content="Online:" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,90,1" Grid.RowSpan="2" />
-                    <Label Content="{Binding ContentOnline}" Margin="5,0,6,1" Foreground="{Binding ForegroundOnline}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-
-                    <Label Content="DS2 Version:" Grid.Row="1" Grid.Column="3" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                    <Label Content="{Binding DS2VerInfoString}" Foreground="{Binding ForegroundVersion}" x:Name="VersionText" Margin="5,0,0,1" Grid.Row="1" Grid.Column="4" Width="150" HorizontalAlignment="Left" VerticalAlignment="Center" />
-
-
-                    <Label x:Name="labelCheckVersion" Content="{Binding CheckVer}" Grid.Column="2" Visibility="{Binding CheckVerVis}" Grid.ColumnSpan="3" Margin="0,0,155,26" Grid.RowSpan="2"/>
-                    <Label x:Name="lblNewVersion" Grid.Column="2" Grid.ColumnSpan="3" Margin="5,0,0,26" Visibility="{Binding NewVerVis}" Grid.RowSpan="2">
+                    <Label Content="{Binding MetaStatus}" Visibility="{Binding VisMetaStatus}" Grid.ColumnSpan="4" HorizontalAlignment="Center" FontSize="14"/>
+                    <Label x:Name="lblNewVersion" Grid.ColumnSpan="4" Visibility="{Binding VisNewVersionHyperlink}" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Hyperlink x:Name="linkNewVersionAvail" Click="Link_NewUpdate_Click" >
                             New version available!
                         </Hyperlink>
                     </Label>
 
-                    <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Left" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Top" Margin="65,14,0,0" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}" Grid.Column="1" Grid.RowSpan="2"/>
+                    <Label Content="DS2 Version:" Grid.Row="1" Margin="3,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <Label Content="{Binding DS2VerInfoString}" Foreground="{Binding FGColDS2Version}" x:Name="VersionText" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <Label Content="Process ID:" Grid.Row="2" Margin="3,0,0,0" VerticalAlignment="Center" />
+                    <Label Content="{Binding LblContentProcessID}" Foreground="{Binding FGColProcessID}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
+                    <Label Content="In Game:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" />
+                    <Label Content="{Binding LblContentInGame}" Foreground="{Binding FGColInGame}" Grid.Row="1" Grid.Column="3"/>
+                    <Label Content="DS2 Online:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" Visibility="{Binding VisOnline}"/>
+                    <Label Content="{Binding LblContentOnline}" Foreground="{Binding FGColOnline}" Visibility="{Binding VisOnline}" Grid.Row="2" Grid.Column="3"/>
+                    
+
+                    <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Left" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Top" Margin="65,14,0,0" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}" Grid.Column="1"/>
                 </Grid>
 
                 <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center">
@@ -100,7 +96,7 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" GameLoaded="{Binding GameLoaded}" Grid.ColumnSpan="2"/>
+                            <local:ItemControl x:Name="metaItems" Hook="{Binding Hook}" Grid.ColumnSpan="2"/>
                         </Grid>
                     </TabItem>
                     <!--<TabItem Header="Bonfires">

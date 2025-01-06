@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace DS2S_META.Utils.Offsets.HookGroupObjects
 {
@@ -66,16 +67,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
                 Hook.RaiseGameStateChange(oldstate, value);
             }
         }
-        public string Online
-        {
-            get
-            {
-                if (!Hook.Hooked) return "Unhooked";
-                if (!InGame) return "";
-                if (PHConnectionType == null) return "unknown";
-                return ConnectionType > 0 ? "YES" : "NO";
-            }
-        }
+        public bool Online => ConnectionType > 0;
         public int ConnectionType => PHConnectionType?.ReadInt32() ?? 0;
 
 
