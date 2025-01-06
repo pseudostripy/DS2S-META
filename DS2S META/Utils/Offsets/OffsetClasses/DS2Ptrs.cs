@@ -43,7 +43,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             MiscPtrs = new(hook, REDU.PHPDict, REDU.Leaves);
             CGS = new(hook, REDU.Leaves);
             BonfiresHGO = new(hook, REDU.LeafGroups["BonfireLevelsGroup"], REDU.LeafGroups["LastBonfireGroup"]);
-            PlayerState = new(hook, REDU.LeafGroups["PlayerGroup"], REDU.LeafGroups["WarpGroup"]);
+            PlayerState = new(hook, REDU.LeafGroups["PlayerGroup"], REDU.LeafGroups["WarpGroup"], REDU.LeafGroups["PlayerPositionGroup"]);
             PlayerData = new(hook, REDU.LeafGroups["PlayerEquipmentGroup"],REDU.LeafGroups["AttributeGroup"],
                                     REDU.LeafGroups["PlayerParamGroup"],REDU.Leaves);
             CameraHGO = new(hook, REDU.LeafGroups["CameraGroup"]);

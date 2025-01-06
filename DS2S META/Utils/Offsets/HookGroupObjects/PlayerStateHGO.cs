@@ -29,9 +29,6 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
         public PHLeaf? PHAngX;
         public PHLeaf? PHAngY;
         public PHLeaf? PHAngZ;
-        public PHLeaf? PHStableX;
-        public PHLeaf? PHStableY;
-        public PHLeaf? PHStableZ;
         public Dictionary<string, PHLeaf?> PHWarpGroup;
 
         public float[] Pos
@@ -139,7 +136,8 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
 
 
         public PlayerStateHGO(DS2SHook hook, Dictionary<string, PHLeaf?> playerGrp, 
-                                Dictionary<string,PHLeaf?> warpGrp) : base(hook)
+                                Dictionary<string,PHLeaf?> warpGrp, 
+                                Dictionary<string,PHLeaf?> playerPositionGrp) : base(hook)
         {
             PHHP = playerGrp["HP"];
             PHHPMax = playerGrp["HPMax"];
@@ -149,6 +147,12 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
             PHSPMax = playerGrp["SPMax"];
             PHSPMin = playerGrp["SPMin"];
             PHCurrPoise = playerGrp["CurrPoise"];
+            PHPosX = playerPositionGrp["PosX"];
+            PHPosY = playerPositionGrp["PosY"];
+            PHPosZ = playerPositionGrp["PosZ"];
+            PHAngX = playerPositionGrp["AngX"];
+            PHAngY = playerPositionGrp["AngY"];
+            PHAngZ = playerPositionGrp["AngZ"];
 
             PHWarpGroup = warpGrp;
         }

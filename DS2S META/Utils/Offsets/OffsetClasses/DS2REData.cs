@@ -152,7 +152,7 @@ namespace DS2S_META.Utils.Offsets
             new("NetSvrBloodstainManager", CPLD(ANYVER, STRBASEA, 0x90, 0x28, 0x88)),
             new("PlayerParam",  CPLD(ANYSOTFS, "PlayerCtrl", 0x490),
                                 CPLD(ANYVANILLA, "PlayerCtrl", 0x378)),
-            new("PlayerPosition",   CPLD(ANYSOTFS, "PlayerCtrl", 0xf8, 0xf0),
+            new("PlayerPositionPtr",   CPLD(ANYSOTFS, "PlayerCtrl", 0xf8, 0xf0),
                                     CPLD(ANYVANILLA, "PlayerCtrl", 0xb4, 0xa8)),
             new("PlayerDataMapPtr", CPLD(ANYSOTFS, "PlayerCtrl", 0x100, 0x320, 0x20),
                                     CPLD(ANYVANILLA, "PlayerCtrl", 0xB8, 0x8, 0x14, 0x1B0, 0x10)),
@@ -313,6 +313,14 @@ namespace DS2S_META.Utils.Offsets
                 new DetachedLeaf("WarpY3", (ANYSOTFS, 0x1c0), (ANYVANILLA, 0x140)),
                 new DetachedLeaf("WarpZ3", (ANYSOTFS, 0x1c4), (ANYVANILLA, 0x144)),
                 new DetachedLeaf("WarpX3", (ANYSOTFS, 0x1c8), (ANYVANILLA, 0x148))),
+
+            new("PlayerPositionGroup", "PlayerPositionPtr",
+                new DetachedLeaf("PosY", (ANYVER, 0x20)),
+                new DetachedLeaf("PosZ", (ANYVER, 0x24)),
+                new DetachedLeaf("PosX", (ANYVER, 0x28)),
+                new DetachedLeaf("AngY", (ANYVER, 0x34)),
+                new DetachedLeaf("AngZ", (ANYVER, 0x38)),
+                new DetachedLeaf("AngX", (ANYVER, 0x3C))),
 
             new("AttributeGroup", "PlayerParam",
                 new DetachedLeaf("VGR", (ANYSOTFS, 0x8), (ANYVANILLA, 0x4)),
