@@ -26,6 +26,8 @@ namespace DS2S_META.ViewModels
 {
     public class DS2SViewModel : ObservableObject
     {
+        private const string UNHOOKED = "Unhooked";
+
         // Binding Variables (in order of appearance):
         public string MetaStatus
         {
@@ -45,10 +47,21 @@ namespace DS2S_META.ViewModels
         public Visibility VisMetaStatus => MVI.UpdateStatus != UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
         public Visibility VisNewVersionHyperlink => MVI.UpdateStatus == UPDATE_STATUS.OUTOFDATE ? Visibility.Visible : Visibility.Hidden;
 
-        public string LblContentInGame => InGame.ToString();
-        public Brush FGColInGame => InGame ? Brushes.GreenYellow : Brushes.IndianRed;
+        public string LblContentInGame => !Hook.Hooked ? UNHOOKED : InGame.ToString();
+        public Brush FGColInGame
+        {
+            get
+            {
+                if (!Hook.Hooked)
+                    return Brushes.Black;
 
-        public string LblContentOnline => Hook.DS2P?.CGS.Online.ToString() ?? "Unhooked";
+                if (InGame)
+                    return Brushes.GreenYellow;
+                return Brushes.IndianRed;
+            }
+        }
+
+        public string LblContentOnline => Hook.DS2P?.CGS.Online.ToString() ?? UNHOOKED;
         public Visibility VisOnline => InGame ? Visibility.Visible : Visibility.Hidden;
         public Brush FGColOnline
         {
@@ -63,10 +76,21 @@ namespace DS2S_META.ViewModels
             }
         }
 
-        public string LblContentProcessID => Hook.Process?.Id.ToString() ?? "Not Hooked";
-        public Brush FGColProcessID => LblContentProcessID != "Not Hooked" ? Brushes.GreenYellow : Brushes.IndianRed;
+        public string LblContentProcessID => Hook.Process?.Id.ToString() ?? UNHOOKED;
+        public Brush FGColProcessID => LblContentProcessID != UNHOOKED ? Brushes.GreenYellow : Brushes.Black;
 
-        public string DS2VerInfoString => Hook?.VerMan.VerInfoString ?? "Not hooked";
+        public string DS2VerInfoString
+        {
+            get
+            {
+                if (!Hook.Hooked)
+                    return UNHOOKED;
+                var verInfoTry = Hook.VerMan?.VerInfoString;
+                if (verInfoTry == null)
+                    return UNHOOKED;
+                return verInfoTry;
+            }
+        }
         public Brush FGColDS2Version
         {
             get
@@ -96,7 +120,7 @@ namespace DS2S_META.ViewModels
         public DS2SHook Hook { get; private set; }
         
         public bool InGame => Hook.InGame;
-        public bool DS2Loading => Hook.DS2P.CGS.IsLoading;
+        public bool DS2Loading => Hook.DS2P?.CGS?.IsLoading ?? false;
         
         public static MetaVersionInfo MVI = new();
 
@@ -162,6 +186,7 @@ namespace DS2S_META.ViewModels
         }
         private void AllTabsOnUnHooked(object? sender, PHEventArgs e)
         {
+            UpdateLabels();
             foreach (var vm in ViewModels) 
                 vm.OnUnHooked();
         }
@@ -180,12 +205,9 @@ namespace DS2S_META.ViewModels
         }
 
 
-        
-
-        public void UpdateMainProperties()
+        private void UpdateLabels()
         {
             OnPropertyChanged(nameof(InGame));
-
             OnPropertyChanged(nameof(LblContentInGame));
             OnPropertyChanged(nameof(FGColInGame));
             OnPropertyChanged(nameof(LblContentProcessID));
@@ -196,8 +218,11 @@ namespace DS2S_META.ViewModels
             OnPropertyChanged(nameof(FGColDS2Version));
             OnPropertyChanged(nameof(VisOnline));
             OnPropertyChanged(nameof(DS2Loading)); // not used yet
+        }
 
-
+        public void UpdateMainProperties()
+        {
+            UpdateLabels();
             foreach (var vm in ViewModels)
                 vm.UpdateViewModel();
             //DmgCalcViewModel.UpdateViewModel();
