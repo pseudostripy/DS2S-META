@@ -16,7 +16,7 @@
     <Grid>
         <StackPanel Margin="25,0,25,0">
             <Label Content="Update:" HorizontalAlignment="Center" FontSize="25" FontWeight="Black"/>
-            <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center"><Run Text="A new version has been released! Update automatically with &quot;Install&quot;, or find a link to a manual update below, or in the corner of the META app."/><LineBreak/><Run/><LineBreak/><Run Text="Note: After the update is successful, the first load may take up to one minute whilst Windows Defender scans it for safety. Subsequent META opens should be instant."/></TextBlock>
+            <TextBlock x:Name="txtUpdateMsg" TextWrapping="WrapWithOverflow" TextAlignment="Center"><Run Text="A new version has been released! Update automatically with &quot;Install&quot;, or find a link to a manual update below, or update later with the link in META app."/><LineBreak/><Run/><LineBreak/><Run Text="Note: After the update is successful, the first load may take up to one minute whilst Windows Defender scans it for safety. Subsequent META opens should be instant."/></TextBlock>
             <Label x:Name="lblNewVersion" Visibility="Visible" HorizontalContentAlignment="Center">
                 <Hyperlink x:Name="lnkInfoUpdateLink" RequestNavigate="link_RequestNavigate" >
                     New version available!

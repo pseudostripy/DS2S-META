@@ -75,7 +75,7 @@
                     <Label Content="{Binding LblContentOnline}" Foreground="{Binding FGColOnline}" Visibility="{Binding VisOnline}" Grid.Row="2" Grid.Column="3"/>
                     
 
-                    <CheckBox x:Name="cbxUpdateOK" Content="Update Successful" Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Left" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Top" Margin="65,14,0,0" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}" Grid.Column="1"/>
+                    <CheckBox x:Name="cbxUpdateOK" Content="Acknowledge Successful Update " Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" RenderTransformOrigin="0.509,1.246" HorizontalAlignment="Center" Checked="cbxUpdateOK_Checked" Background="#FFDDDDDD" Foreground="#FF15014C" FontWeight="Bold" VerticalAlignment="Center" Grid.ColumnSpan="4" Visibility="{Binding Row3Visibility}"/>
                 </Grid>
 
                 <TabControl x:Name="tabControls" Background="LightGray" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Center" ScrollViewer.CanContentScroll="True" TabStripPlacement="Top" HorizontalContentAlignment="Center">

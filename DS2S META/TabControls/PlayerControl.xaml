@@ -185,34 +185,34 @@
                     <RowDefinition MinHeight="30"/>
                     <RowDefinition MinHeight="30"/>
                     <RowDefinition MinHeight="30"/>
+                    <RowDefinition MinHeight="30"/>
+                    <RowDefinition MinHeight="30"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
-                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <CheckBox  IsChecked="{Binding ChkGravity}" Content="Gravity" x:Name="cbxGravity" IsEnabled="{Binding EnNoGravity}" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Padding="5,0,0,0" HorizontalAlignment="Left"/>
-                <CheckBox  IsChecked="{Binding ChkCollision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnNoCollision}" Grid.Row="1" VerticalContentAlignment="Center" Padding="5,0,0,0" Margin="0,0,0,0"/>
-                <CheckBox  IsChecked="{Binding ChkDisableAi}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" Grid.Row="2" VerticalContentAlignment="Center" Padding="5,0,0,0" Margin="0,0,0,0"/>
-                <CheckBox  IsChecked="{Binding ChkOHKO}" Content="OHKO" x:Name="CbxOHKO" IsEnabled="{Binding EnDmgMod}" VerticalContentAlignment="Center" Margin="0,0,0,0" Grid.Column="1" Padding="5,0,0,0"/>
-                <CheckBox  IsChecked="{Binding ChkRapierOHKO}" Content="Rapier OHKO" x:Name="CbxRapierOHKO" IsEnabled="{Binding EnRapierOHKO}" Padding="5,0,0,0" VerticalContentAlignment="Center" Margin="0,0,0,0" Grid.Row="1" Grid.Column="1"/>
-                <CheckBox  IsChecked="{Binding ChkFistOHKO}"  Content="Fist OHKO" x:Name="CbxFistOHKO" IsEnabled="{Binding EnFistOHKO}" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,0,0" Padding="5,0,0,0"/>
-                <CheckBox  IsChecked="{Binding ChkNoDeath}" Content="No Death" x:Name="CbxNoDeath" IsEnabled="{Binding EnNoDeath}" Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" Margin="0,0,0,0" Padding="5,0,0,0"/>
+                <CheckBox  IsChecked="{Binding ChkCollision}" Content="Collision" x:Name="cbxCollision" IsEnabled="{Binding EnNoCollision}" VerticalContentAlignment="Center" Padding="5,0,0,0" Margin="0,0,0,0" Grid.Column="1"/>
+                <CheckBox  IsChecked="{Binding ChkDisableAi}" Content="Disable AI" x:Name="cbxDisableAI" IsEnabled="{Binding EnDisableAi}" VerticalContentAlignment="Center" Padding="5,0,0,0" Margin="0,0,0,0" Grid.Column="2"/>
+                <CheckBox  IsChecked="{Binding ChkNoDeath}" Content="No Death" x:Name="CbxNoDeath" IsEnabled="{Binding EnNoDeath}" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,0,0" Padding="5,0,0,0"/>
+                <CheckBox  IsChecked="{Binding ChkTakeNoDmg}" Content="Take No Dmg" x:Name="CbxTakeNoDmg" IsEnabled="{Binding EnDmgMod}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="1" Height="20" />
                 <CheckBox  IsChecked="{Binding ChkDealNoDmg}" Content="Deal No Dmg" x:Name="CbxDealNoDmg" IsEnabled="{Binding EnDmgMod}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="1" />
-                <CheckBox  IsChecked="{Binding ChkTakeNoDmg}" Content="Take No Dmg" x:Name="CbxTakeNoDmg" IsEnabled="{Binding EnDmgMod}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="2" Height="20" />
-                <CheckBox  IsChecked="{Binding ChkDisablePoisonBuildup}" Content="Disable Poison" IsEnabled="{Binding EnDisablePoisonBuildup}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="3" Height="20" />
-                <CheckBox  IsChecked="{Binding ChkInfiniteStamina}" Content="Infinite Stamina" IsEnabled="{Binding EnInfiniteStamina}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="3" Grid.Row="3" Height="20" />
-                <CheckBox  IsChecked="{Binding ChkInfiniteSpells}" Content="InfiniteSpells" IsEnabled="{Binding EnInfiniteSpells}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="4" Height="20"/>
-                <CheckBox  IsChecked="{Binding ChkDisablePartyWalkTimer}" Content="Inf Partywalk" IsEnabled="{Binding EnDisablePartyWalkTimer}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="4" Height="20"/>
-                <CheckBox  IsChecked="{Binding ChkInfiniteGoods}" Content="Infinite goods" IsEnabled="{Binding EnInfiniteGoods}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="4" Height="20"/>
-                <CheckBox  IsChecked="{Binding ChkDisableSkirtPoison}" Content="No Bfly Poison" IsEnabled="{Binding EnDisableSkirtPoison}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="3" Grid.Row="4" Height="20" />
-                
-                <Button Content="999999 Souls" IsEnabled="{Binding EnMoneyBags}" Command="{Binding BtnMoneybagsCommand}" Grid.Column="3" />
-                <Button Content="Restore Humanity" IsEnabled="{Binding EnRestoreHumanity}" Command="{Binding BtnRestoreHumanityCommand}" Grid.Row="1" Grid.Column="3"/>
-                <Button Content="New Test Character" IsEnabled="{Binding EnNewTestCharacter}" Command="{Binding BtnNewTestCharCommand}" Grid.Row="2" Grid.Column="3"/>
-                <CheckBox  IsChecked="{Binding ChkSpeedhack}" Content="Speedhack" x:Name="CbxSpeed" IsEnabled="{Binding EnSpeedhack}" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5,0,0,0"/>
-                <wpfTool:DecimalUpDown Value="{Binding SpeedhackFactor}" IsEnabled="{Binding EnSpeedhackFactor}" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" Grid.Row="3" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,0,0,0"/>
+                <CheckBox  IsChecked="{Binding ChkOHKO}" Content="OHKO" x:Name="CbxOHKO" IsEnabled="{Binding EnDmgMod}" VerticalContentAlignment="Center" Margin="0,0,0,0" Padding="5,0,0,0" Grid.Row="2"/>
+                <CheckBox  IsChecked="{Binding ChkRapierOHKO}" Content="Rapier OHKO" x:Name="CbxRapierOHKO" IsEnabled="{Binding EnRapierOHKO}" Padding="5,0,0,0" VerticalContentAlignment="Center" Margin="0,0,0,0" Grid.Row="2" Grid.Column="1"/>
+                <CheckBox  IsChecked="{Binding ChkFistOHKO}"  Content="Fist OHKO" x:Name="CbxFistOHKO" IsEnabled="{Binding EnFistOHKO}" Grid.Column="2" Grid.Row="2" VerticalAlignment="Center" Margin="0,0,0,0" Padding="5,0,0,0"/>
+                <CheckBox  IsChecked="{Binding ChkInfiniteStamina}" Content="Infinite Stamina" IsEnabled="{Binding EnInfiniteStamina}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Row="3" Height="20" />
+                <CheckBox  IsChecked="{Binding ChkInfiniteSpells}" Content="Infinite Spells" IsEnabled="{Binding EnInfiniteSpells}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="3" Height="20"/>
+                <CheckBox  IsChecked="{Binding ChkInfiniteGoods}" Content="Infinite Goods" IsEnabled="{Binding EnInfiniteGoods}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="3" Height="20"/>
+                <CheckBox  IsChecked="{Binding ChkDisablePartyWalkTimer}" Content="Disable Partywalk Timer" IsEnabled="{Binding EnDisablePartyWalkTimer}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Row="4" Height="20"/>
+                <CheckBox  IsChecked="{Binding ChkDisableSkirtPoison}" Content="Disable Skirt Poison" IsEnabled="{Binding EnDisableSkirtPoison}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="1" Grid.Row="4" Height="20" />
+                <CheckBox  IsChecked="{Binding ChkDisablePoisonBuildup}" Content="Disable Poison" IsEnabled="{Binding EnDisablePoisonBuildup}" Padding="5,0,0,0" VerticalContentAlignment="Center" Grid.Column="2" Grid.Row="4" Height="20" />
+                <Button Content="Restore Humanity" IsEnabled="{Binding EnRestoreHumanity}" Command="{Binding BtnRestoreHumanityCommand}" Grid.Row="5" Margin="0,1,0,1"/>
+                <Button Content="999999 Souls" IsEnabled="{Binding EnMoneyBags}" Command="{Binding BtnMoneybagsCommand}" Grid.Row="5" Grid.Column="1" Margin="0,1,0,1" />
+                <Button Content="New Test Character" IsEnabled="{Binding EnNewTestCharacter}" Command="{Binding BtnNewTestCharCommand}" Grid.Row="5" Grid.Column="2" Margin="0,1,0,1"/>
+                <CheckBox  IsChecked="{Binding ChkSpeedhack}" Content="Speedhack" x:Name="CbxSpeed" IsEnabled="{Binding EnSpeedhack}" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5,0,0,0"/>
+                <wpfTool:DecimalUpDown Value="{Binding SpeedhackFactor}" IsEnabled="{Binding EnSpeedhackFactor}" FormatString="F2" Increment=".5" TextAlignment="Center" Name="nudSpeed" Grid.Row="6" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,2,0,2"/>
             </Grid>
         </Expander>
     </Grid>
