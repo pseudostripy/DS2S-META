@@ -60,9 +60,9 @@ namespace DS2S_META
         public enum BBJTYPE
         {
             NOBBJ,
-            OLDBBJ_VANILLA,
+            OLDBBJ_VANILLA, // deprecated
             NEWBBJ_VANILLA,
-            OLDBBJ_SOTFS,
+            OLDBBJ_SOTFS, // deprecated
             NEWBBJ_SOTFS,
             UNKN_VANILLA,
             TMPUNCHECKED,
@@ -87,7 +87,7 @@ namespace DS2S_META
             // Size of running DS2 application
             var moduleSz = hook.Process?.MainModule?.ModuleMemorySize;
             _ver = hook.Is64Bit ? GetSotfsVer(moduleSz) : GetVanillaVer(moduleSz);
-            _bbjtype = BBJTYPE.TMPUNCHECKED; // TODO GetBBJType();
+            _bbjtype = GetBBJType();
             _verInfoString = GetStringVersion();
         }
         
@@ -110,16 +110,9 @@ namespace DS2S_META
                 _ => DS2VER.UNSUPPORTED,
             };
         }
-        internal BBJTYPE GetBBJType(bool isOldBbj)
+        internal BBJTYPE GetBBJType() => IsSOTFS ? GetBBJTypeSotfs() : GetBBJTypeVanilla();
+        internal BBJTYPE GetBBJTypeSotfs()
         {
-            // TODO VANILLA
-            if (IsVanilla)
-                return GetBBJTypeVanilla();
-
-            if (isOldBbj)
-                return BBJTYPE.OLDBBJ_SOTFS;
-
-
             // check for new bbj
             int jumpfcn_offset_V102 = 0x037B4BC;
             int jumpfcn_offset_V103 = 0x0381E1C;
@@ -127,7 +120,7 @@ namespace DS2S_META
 
             var module_addr = hook.Process?.MainModule?.BaseAddress
                 ?? throw new Exception("Unknown DS2 MainModule size");
-            
+
             var jmp_ptr = IntPtr.Add(module_addr, jmpfcn_offset);
 
             // Read a byte to see if the bbj inject is there:
@@ -169,19 +162,21 @@ namespace DS2S_META
             if (DS2Ver == DS2VER.VANILLA_V112) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
             if (DS2Ver == DS2VER.VANILLA_V102) return BBJTYPE.NEWBBJ_VANILLA; // only new version available
 
-            // Finally differentiate between V1.11 old/new bbj mods:
-            var reljump = jumpinj.ReadInt32(0x1); // read rel_jump (E9 XXXXXXXX LE)
-            var addr_inj_code = jumpinj.Resolve() + reljump + 5; // 5 for instruction length
-            var inj_code = hook.CreateBasePointer(addr_inj_code);
-            var testbyte2 = inj_code.ReadByte(0xE); // first byte that is different between versions
+            // Deprecated support to OldBbj mod
+            //// Finally differentiate between V1.11 old/new bbj mods:
+            //var reljump = jumpinj.ReadInt32(0x1); // read rel_jump (E9 XXXXXXXX LE)
+            //var addr_inj_code = jumpinj.Resolve() + reljump + 5; // 5 for instruction length
+            //var inj_code = hook.CreateBasePointer(addr_inj_code);
+            //var testbyte2 = inj_code.ReadByte(0xE); // first byte that is different between versions
 
-            // Differentiate:
-            return testbyte2 switch
-            {
-                (byte)BYTECODES.MOVSS => BBJTYPE.OLDBBJ_VANILLA,
-                (byte)BYTECODES.MOV_EAX_DWORTPTR => BBJTYPE.NEWBBJ_VANILLA,
-                _ => throw new Exception("Probably shouldn't get this, unknown bbj inject")
-            };
+            //// Differentiate:
+            //return testbyte2 switch
+            //{
+            //    (byte)BYTECODES.MOVSS => BBJTYPE.OLDBBJ_VANILLA,
+            //    (byte)BYTECODES.MOV_EAX_DWORTPTR => BBJTYPE.NEWBBJ_VANILLA,
+            //    _ => throw new Exception("Probably shouldn't get this, unknown bbj inject")
+            //};
+            return BBJTYPE.NEWBBJ_VANILLA;
         }
 
         private string GetStringVersion()
