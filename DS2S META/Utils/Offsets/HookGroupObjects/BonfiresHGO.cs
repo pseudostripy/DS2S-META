@@ -130,6 +130,7 @@ namespace DS2S_META.Utils.Offsets.HookGroupObjects
                 throw new Exception("Bonfire Level must fit in byte");
 
             byte rawval = level > 0 ? (byte)(level * 2 - 1) : (byte)0;
+            var testing = PHBonfires[bfname];
             PHBonfires[bfname]?.WriteByte(rawval);
         }
         public void SetBonfireLevelById(int bfid, int level) => SetBonfireLevel(BfNames[bfid], level);

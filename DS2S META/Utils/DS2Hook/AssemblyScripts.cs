@@ -196,11 +196,11 @@ namespace DS2S_META.Utils.DS2Hook
         {
             // Last resort elegant crash checks (this func needs all the following hooks)
             if (DS2P.Func.SetWarpTargetFunc == null)
-                throw new MetaFeatureException("Warp64.SetWarpTargetFunc");
+                throw new MetaFeatureException("Warp32.SetWarpTargetFunc");
             if (DS2P.Core.BaseA == null)
-                throw new MetaFeatureException("Warp64.BaseA");
+                throw new MetaFeatureException("Warp32.BaseA");
             if (DS2P.Func.WarpFunc == null)
-                throw new MetaFeatureException("Warp64.WarpFunc");
+                throw new MetaFeatureException("Warp32.WarpFunc");
 
             // area default means warp to the 0,0 part of the map (like a wrong warp)
             // areadefault = false is a normal "warp to bonfire"
