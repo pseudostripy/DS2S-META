@@ -102,7 +102,7 @@ namespace DS2S_META.ViewModels
             get => _giveSoulsVal;
             set
             {
-                _giveSoulsVal |= value;
+                _giveSoulsVal = value;
                 OnPropertyChanged();
             }
         }
