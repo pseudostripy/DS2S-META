@@ -35,8 +35,44 @@ namespace DS2S_META.ViewModels
 
             WeaponCollectionView.Filter += FilterWeapons;
             SetWeapon = new SetWeaponCommand(this);
+
+            // initialize commands
+            QueryExecuteCommand = new RelayCommand(QueryExecuteExecute, QueryExecuteCanExec);
+
+
         }
-        
+        public ICommand QueryExecuteCommand { get; set; }
+        private bool QueryExecuteCanExec(object? parameter) => MetaFeature.FtQueryExecute;
+        private void QueryExecuteExecute(object? parameter) => PopulateItemRowsTest();
+
+        public ObservableCollection<ItemRow> ItemRowsTest { get; set; } = [];
+
+        public void PopulateItemRowsTest()
+        {
+            //var testrows = ParamMan.ItemRows?.Where(ir => ir.MetaItemName.ToLower().Contains("e"))
+            //    .ToList() ?? []; // default empty
+            //ItemRowsTest.Clear();
+            //ItemRowsTest.AddRange(testrows);
+
+            var successItemRows = ParamMan.ItemLotOtherRows?.Where(ilr => 
+                    ilr.Items.Where(ir => ir.AsItemRow().MetaItemName.ToLower().Contains("ee")).Count() > 1)
+                    .ToList() ?? []; // default empty
+
+            List<ItemRow> testrows = [];
+            for (int i = 0; i < successItemRows.Count; i++)
+            {
+                var ilr = successItemRows[i];
+                var eeItems = ilr.Items.Select(i => i.AsItemRow()).Where(ir => ir.MetaItemName.ToLower().Contains("ee")).ToList();
+                testrows.AddRange(eeItems);
+            }
+            
+            ItemRowsTest.Clear();
+            ItemRowsTest.AddRange(testrows);
+
+
+        }
+
+
         public WeaponRow? WepSel { get; set; }
 
         public string hModString

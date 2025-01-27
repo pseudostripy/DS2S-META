@@ -41,6 +41,7 @@ namespace DS2S_META.Utils
         DISABLEPARTYWALKTIMER,
         INFINITEGOODS,
         DISABLESKIRTPOISON,
+        QUERYEXECUTE,
     }
     public static class MetaFeature
     {
@@ -97,6 +98,7 @@ namespace DS2S_META.Utils
                 METAFEATURE.INFINITESPELLS => InGame && (IsSOTFS || IsOldPatch),
                 METAFEATURE.DISABLEPARTYWALKTIMER => InGame && IsSOTFS_CP,
                 METAFEATURE.INFINITEGOODS => InGame && IsSOTFS_CP,
+                METAFEATURE.QUERYEXECUTE => IsSOTFS_CP, // (for now) todo: test others
                 _ => throw new NotImplementedException("Add many more here!")
             };
         }
@@ -133,5 +135,6 @@ namespace DS2S_META.Utils
         public static bool FtInfiniteSpells => IsActive(METAFEATURE.INFINITESPELLS);
         public static bool FtDisablePartyWalkTimer => IsActive(METAFEATURE.DISABLEPARTYWALKTIMER);
         public static bool FtInfiniteGoods => IsActive(METAFEATURE.INFINITEGOODS);
+        public static bool FtQueryExecute => IsActive(METAFEATURE.QUERYEXECUTE);
     }
 }

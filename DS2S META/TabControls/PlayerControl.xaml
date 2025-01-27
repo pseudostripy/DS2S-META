@@ -156,6 +156,7 @@
                     <ComboBox x:Name="CmbBonfire" ItemsSource="{Binding BonfireList, Mode=TwoWay}" SelectedItem="{Binding SelectedBf}" Grid.Row="1" Grid.ColumnSpan="2" VerticalContentAlignment="Stretch" MinHeight="25" Margin="0,2,0,2" Grid.Column="1"/>
                     <Button x:Name="BtnWarp" Content="Warp" Command="{Binding BtnWarpCommand}" IsEnabled="{Binding EnWarp}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,2,5,2" Grid.RowSpan="2" VerticalContentAlignment="Center"/>
                     <ToggleButton x:Name="BtnManageBfs" Content="Manage" IsChecked="{Binding ChkTogManageBfs}" IsEnabled="{Binding EnManageBfs}" Grid.Column="3" HorizontalContentAlignment="Center" Margin="5,0,5,0" VerticalContentAlignment="Center" Grid.Row="2"/>
+                    <!-- defaults to CanExecute override unless enable is explicitly set -->
                     <Button Content="Unlock All Bonfires" Command="{Binding BtnUnlockBfsCommand}" Grid.Row="3" Grid.ColumnSpan="2" Margin="0,5,0,5" Grid.Column="1"/>
                     <ItemsControl Grid.Row="4" Grid.Column="1" ItemsSource="{Binding BonfireControlList}" Grid.ColumnSpan="2">
                         <ItemsControl.ItemTemplate>

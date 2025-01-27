@@ -31,7 +31,7 @@ namespace DS2S_META
         // Constructor
         public DmgCalcControl()
         {
-            InitializeComponent();
+            InitializeComponent(); 
         }
 
         // Initialisation

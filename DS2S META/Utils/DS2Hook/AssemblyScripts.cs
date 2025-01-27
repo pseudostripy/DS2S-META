@@ -117,7 +117,7 @@ namespace DS2S_META.Utils.DS2Hook
             }
 
             // Store const float for later reference            
-            var pfloat_store = Hook.Allocate(sizeof(float));
+            var pfloat_store = Hook.Allocate(sizeof(float)); // TODO BUG. THIS IS NOT A FLOAT, just getting lucky with page size
             Kernel32.WriteBytes(Hook.Handle, pfloat_store, BitConverter.GetBytes(6.0f));
 
             // Setup assembly fields for substitution

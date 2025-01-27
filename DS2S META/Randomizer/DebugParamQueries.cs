@@ -16,6 +16,7 @@ namespace DS2S_META.Randomizer
     /// </summary>
     internal class DebugParamQueries
     {
+
         internal static Dictionary<int, RandoInfo2> ActiveDropDescriptions()
         {
             // An "ActiveDrop" is a character defined in GeneratorParam
@@ -128,6 +129,10 @@ namespace DS2S_META.Randomizer
 
         }
 
+        internal static String DynamicQuery()
+        {
+            return "";
+        }
         internal static void QueryTesting()
         {
             //var temp = ParamMan.ItemRows?.Where(it => it.ItemTypeParamId == 1300).ToList();
@@ -155,6 +160,8 @@ namespace DS2S_META.Randomizer
             //var test4 = LTR_flatlist.Where(di => di.Infusion != 0).ToList();
             //var test5 = AllP.Where(rdz => rdz.Flatlist.Any(di => di.Infusion != 0)).ToList();
         }
+
+
         internal static void QuickPrint()
         {
             var wtype130 = ParamMan.ItemRows?.Where(it => it.WeaponID != -1)

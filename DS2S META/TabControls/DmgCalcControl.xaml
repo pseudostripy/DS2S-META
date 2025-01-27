@@ -7,79 +7,136 @@
              xmlns:wpfTool="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:DS2S_META" xmlns:viewmodels="clr-namespace:DS2S_META.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="425" Background="LightGray"
+             d:DesignHeight="800" d:DesignWidth="425" Background="LightGray"
              d:DataContext="{d:DesignInstance viewmodels:DmgCalcViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0" Margin="5">
-            <Grid Margin="10,10,10,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.75*"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="0.75*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Label Content="Infusion" HorizontalContentAlignment="Center" Grid.ColumnSpan="3" Grid.Column="1"/>
-                <ComboBox x:Name="cmbInfusion" ItemsSource="{Binding InfusionCollectionView}" SelectedItem="{Binding SelectedInfusion}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" />
-                <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" Grid.Row="2" Grid.ColumnSpan="4" Margin="0,5,0,0" Grid.Column="1"/>
-                <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,5,5,0" IsHitTestVisible="False" Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="1"/>
-                <Label Content="Upgrade" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,0,3,0" HorizontalContentAlignment="Center" />
-                <wpfTool:IntegerUpDown x:Name="nudUpgrade" Value="{Binding UpgradeVal}" Minimum="0" Maximum="{Binding NudUpgrMax}" ClipValueToMinMax="True" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0"/>
-                <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
-                <Label x:Name="lblSelectedWeapon" Content="{Binding SetWepLabel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" />
-                <CheckBox x:Name="cbxLeftHand" Grid.Row="4" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
-            </Grid>
-        </StackPanel>
-
-        <ListBox x:Name="lbxWeapons" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" ItemsSource="{Binding WeaponCollectionView}" SelectedItem="{Binding SelectedItem}" PreviewKeyDown="KeyPressed" MaxHeight="200" />
-        <StackPanel Grid.Row="2">
-            <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
+        <Expander Grid.Row="0" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="False">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Damage Calculation"/></TextBlock>
+            </Expander.Header>
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Label x:Name="lblHmodText" Content="{Binding hModString}" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
-                <Label x:Name="lblHmodValue" Content="{Binding hMod}" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" VerticalContentAlignment="Center"/>
-                <Label x:Name="lblpMod" Content="pMod" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
-                <Label x:Name="lblpModValue" Content="6.0 ??todo??" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
-                <Label x:Name="lblpBase" Content="pBase" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblpBaseValue" Content="{Binding pBase}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblpScale" Content="pScale" Grid.Row="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblpScaleValue" Content="{Binding pScale}" Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblpAR" Content="pAR" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="4"/>
-                <Label x:Name="lblpARValue" Content="{Binding pAR}" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblC" Content="Cm" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center"/>
-                <Label x:Name="lblCmValue" Content="{Binding CounterDmg}" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                <StackPanel Grid.Column="0" Margin="5">
+                    <Grid Margin="10,10,10,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.75*"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="0.75*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Content="Infusion" HorizontalContentAlignment="Center" Grid.ColumnSpan="3" Grid.Column="1"/>
+                        <ComboBox x:Name="cmbInfusion" ItemsSource="{Binding InfusionCollectionView}" SelectedItem="{Binding SelectedInfusion}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="1" />
+                        <TextBox x:Name="txtSearch" Height="20" TextChanged="txtSearch_TextChanged" PreviewKeyDown="KeyPressed" PreviewMouseLeftButtonDown="txtSearch_PreviewMouseLeftButtonDown" Grid.Row="2" Grid.ColumnSpan="4" Margin="0,5,0,0" Grid.Column="1"/>
+                        <Label x:Name="lblSearch" Foreground="LightSlateGray" Content="Search..." IsEnabled="False" Margin="5,5,5,0" IsHitTestVisible="False" Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="1"/>
+                        <Label Content="Upgrade" Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3,0,3,0" HorizontalContentAlignment="Center" />
+                        <wpfTool:IntegerUpDown x:Name="nudUpgrade" Value="{Binding UpgradeVal}" Minimum="0" Maximum="{Binding NudUpgrMax}" ClipValueToMinMax="True" Grid.Column="4" Grid.Row="1" Margin="3,0,3,0"/>
+                        <CheckBox x:Name="cbxMax" Content="Max" IsChecked="True" Checked="cbxMaxUpgrade_Checked" Unchecked="cbxMaxUpgrade_Checked" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left" Padding="4,0,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Margin="8,0,0,0" />
+                        <Label x:Name="lblSelectedWeapon" Content="{Binding SetWepLabel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Center" FontWeight="Bold" VerticalContentAlignment="Center" />
+                        <CheckBox x:Name="cbxLeftHand" Grid.Row="4" Grid.Column="1" Content="Left Hand" Margin="0,10,0,10" IsChecked="{Binding LeftHandSelected}"/>
+                    </Grid>
+                </StackPanel>
+
+                <ListBox x:Name="lbxWeapons" Grid.Row="1" Grid.ColumnSpan="3" Margin="5" ItemsSource="{Binding WeaponCollectionView}" SelectedItem="{Binding SelectedItem}" PreviewKeyDown="KeyPressed" MaxHeight="200" />
+                <StackPanel Grid.Row="2">
+                    <Button x:Name="btnCalculate" Content="Calculate" Click="btnCalculate_Click" PreviewKeyDown="KeyPressed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,10,0,0" Grid.Column="1"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label x:Name="lblHmodText" Content="{Binding hModString}" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1"/>
+                        <Label x:Name="lblHmodValue" Content="{Binding hMod}" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" VerticalContentAlignment="Center"/>
+                        <Label x:Name="lblpMod" Content="pMod" Grid.Row="1" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
+                        <Label x:Name="lblpModValue" Content="6.0 ??todo??" Grid.Row="2" HorizontalContentAlignment="Center" Grid.ColumnSpan="1" Grid.Column="1"/>
+                        <Label x:Name="lblpBase" Content="pBase" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblpBaseValue" Content="{Binding pBase}" Grid.Row="2" Grid.Column="2" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblpScale" Content="pScale" Grid.Row="1" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblpScaleValue" Content="{Binding pScale}" Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblpAR" Content="pAR" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="4"/>
+                        <Label x:Name="lblpARValue" Content="{Binding pAR}" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblC" Content="Cm" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                        <Label x:Name="lblCmValue" Content="{Binding CounterDmg}" Grid.Row="4" Grid.Column="0" HorizontalContentAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
             </Grid>
-        </StackPanel>
+        </Expander>
+        <Expander Grid.Row="1" HorizontalContentAlignment="Stretch" Margin="10,10,0,0" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Custom Param Querying"/></TextBlock>
+            </Expander.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBox  VerticalAlignment="Center" x:Name="SearchTermTextBox" Margin="5" MinHeight="120" HorizontalContentAlignment="Stretch" Width="NaN" Padding="6,6,0,0"/>
+                <TextBlock IsHitTestVisible="False" Text="Enter parameter query C# code here" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,-90,0,0" Foreground="DarkGray" Padding="6,0,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <Button Content="Execute Query" Command="{Binding QueryExecuteCommand}" Grid.Row="1" HorizontalAlignment="Center" Margin="5,0,5,0" Padding="30,5,30,5" Foreground="Black" Background="#FFFBFBFB" BorderBrush="#FF2106E4" BorderThickness="2,2,2,2"/>
+            </Grid>
+        </Expander>
+
+        <DockPanel Grid.Row="2" MaxHeight="600">
+            <ScrollViewer  VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ItemRowsTest}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.8*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{Binding MetaItemName}" Grid.Column="0" Margin="20,0,0,0"/>
+                                <Label Content="{Binding ItemID}" Grid.Column="1" Margin="20,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
     </Grid>
 </local:METAControl>
