@@ -72,7 +72,7 @@ namespace DS2S_META.Randomizer
             Placer = new PlacementManager(Scope, Restrictions, IsRaceMode);
             Placer.Randomize();
             CharCreation.Randomize();
-
+            
             // Printout the current shuffled lots:
             PrintKeysNeat();
             PrintAllRdz();

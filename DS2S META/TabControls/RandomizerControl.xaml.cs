@@ -9,6 +9,7 @@ using DS2S_META.Randomizer;
 using System.Threading.Tasks;
 using DS2S_META.Properties;
 using DS2S_META.ViewModels;
+using DS2S_META.Utils;
 
 namespace DS2S_META
 {
@@ -89,24 +90,41 @@ namespace DS2S_META
 
             //RM.SetSeed(seed);
 
-            var tasks = new List<Task>();
-            switch (rpt)
+            try
             {
-                case RANDOPROCTYPE.Rand:
-                    await Task.Run(() => RM.Randomize(seed));
-                    break;
-                case RANDOPROCTYPE.Unrand:
-                    await Task.Run(() => RM.Unrandomize());
-                    break;
-                case RANDOPROCTYPE.Rerand:
-                    if (IsRandomized)
+                var tasks = new List<Task>();
+                switch (rpt)
+                {
+                    case RANDOPROCTYPE.Rand:
+                        await Task.Run(() => RM.Randomize(seed));
+                        break;
+                    case RANDOPROCTYPE.Unrand:
                         await Task.Run(() => RM.Unrandomize());
-                    await Task.Run(() => RM.Randomize(seed));
-                    break;
+                        break;
+                    case RANDOPROCTYPE.Rerand:
+                        if (IsRandomized)
+                            await Task.Run(() => RM.Unrandomize());
+                        await Task.Run(() => RM.Randomize(seed));
+                        break;
+                }
             }
+            catch (RandoLogicException)
+            {
+                RestoreRandoTabAfterCompletion(); // escape when incomplete
+                throw; //rethrow to show meta exception to user and for logging
+            }
+            catch (Exception)
+            {
+                RestoreRandoTabAfterCompletion();
+                throw;
+            }
+            
+            // No errors:
             IsRandomized = RM.IsRandomized;
-
-
+            RestoreRandoTabAfterCompletion();
+        }
+        private void RestoreRandoTabAfterCompletion()
+        {
             // Update UI:
             btnRandomize.Content = IsRandomized ? "Unrandomize!" : "Randomize!";
             Color bkg = IsRandomized ? LIGHTPURPLE : LIGHTGREEN;

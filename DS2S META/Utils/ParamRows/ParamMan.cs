@@ -16,6 +16,10 @@ namespace DS2S_META.Utils
 {
     public static class ParamMan
     {
+        public static List<int> TestListParam = new List<int>() { 10, 20, 40 };
+
+        public static int TestInt = 3;
+
         // Top-level Fields
         private static bool _loaded = false;
         public static bool IsLoaded
@@ -146,6 +150,9 @@ namespace DS2S_META.Utils
         public static List<ShopRow>? ShopLineupRows { get; private set; }
         public static List<PlayerStatusClassRow>? PlayerStatusClassRows { get; private set; }
 
+        public static List<MyTestClass>? MyTestClasses { get; private set; }
+
+
         public static void Initialise(DS2SHook hook)
         {
             Hook = hook; // needed?
@@ -161,6 +168,12 @@ namespace DS2S_META.Utils
             PlayerStatusClassRows = PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
 
             ItemRowsDict = ItemRows.ToDictionary(ir => ir.ItemID, ir => ir);
+
+
+            MyTestClasses = new List<MyTestClass>();
+            MyTestClasses.Add(new MyTestClass(11));
+            MyTestClasses.Add(new MyTestClass(12));
+
         }
         public static void Uninitialise()
         {

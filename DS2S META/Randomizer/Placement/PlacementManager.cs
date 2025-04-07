@@ -1,6 +1,7 @@
 ﻿using DS2S_META.Utils;
 using DS2S_META.ViewModels;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
@@ -152,7 +153,7 @@ namespace DS2S_META.Randomizer.Placement
             };
         }
         private bool IsRestrictedItem(int itemid) => Restrictions.Any(rs => rs.ItemId == itemid);
-        private bool IsVanillaRestricted(int itemid) => Restrictions.FilterByType(RestrType.Vanilla).Any(rs => rs.ItemId != itemid);
+        private bool IsVanillaRestricted(int itemid) => Restrictions.FilterByType(RestrType.Vanilla).Any(rs => rs.ItemId == itemid);
         private static bool IsRequiredType(int itemid) => RequiredTypes.Contains(itemid.AsItemRow().ItemType);
         
 
@@ -196,16 +197,28 @@ namespace DS2S_META.Randomizer.Placement
             // Slightly extra logic when diset.IsKeys is true. See updatefornewkey
             // Get fresh copies
             var ld = new List<DropInfo>(diset.Data); // ld: list of DropInfos (list of stuff to place for this set)
-            var availrdzs = GetRemainingRdz();
+            var remainingrdzs = GetRemainingRdz();
+            List<Randomization>? availrdzs = new();
 
             // speed things up
             if (IsRaceMode && diset.IsTrueKeys)
                 availrdzs = RdzMajors;
             else if ((diset.IsTrueKeys && !IsRaceMode) || diset.IsTrashKeys)
-                availrdzs = availrdzs.FilterByPickupType(FullySafeFlags).ToList();
+                availrdzs = remainingrdzs.FilterByPickupType(FullySafeFlags).ToList();
             else if (diset.IsReqs)
-                availrdzs = availrdzs.FilterByPickupType(HalfSafe).ToList();
+                availrdzs = remainingrdzs.FilterByPickupType(HalfSafe).ToList();
+            else
+                availrdzs = remainingrdzs;
 
+            // need to make the vanilla ones available for the vanilla placement:
+            // note that other things can't place there because of the placement restriction logic.
+            var vanrests = Restrictions.FilterByType(RestrType.Vanilla);
+            foreach (var restr in vanrests)
+            {
+                var vanrdzs = remainingrdzs.Where(rdz => !rdz.IsHandled && rdz.HasVanillaItemID(restr.ItemId));
+                availrdzs.AddRange(vanrdzs.ToList());
+            }    
+            
             // for resolving key softlocks only
             List<DropInfo> delayitems = new();
 
@@ -215,20 +228,14 @@ namespace DS2S_META.Randomizer.Placement
                 var di = ld.RandomElement();
 
 
-                // Special case logic (removes from avail after completion)
-                if (!diset.IsGens)
+                // Forced-Vanilla items
+                if (IsVanillaRestricted(di.ItemID))
                 {
-                    if (HandledAsVanilla(di, availrdzs, diset.IsKeys, out var vanrdzs))
-                    {
-                        foreach (var vanrdz in vanrdzs)
-                        {
-                            if (vanrdz.IsSaturated())
-                                availrdzs.Remove(vanrdz);
-                            continue;
-                        }
-                    }
+                    HandleVanilla(availrdzs, di, ld, diset);
+                    continue; // vanilla item handled appropriately go next DropInfo
                 }
 
+                
                 // Normal key logic:
                 // manual logic helper override...
                 if (IsRaceMode && diset.IsTrueKeys && ld.Count < 30 && ld.FilterByItem(ITEMID.ROTUNDALOCKSTONE).Count > 0)
@@ -255,14 +262,32 @@ namespace DS2S_META.Randomizer.Placement
                 // Solution found (or compromise reached)
                 var bsaturated = PlaceIt(rdz, di, diset.IsKeys);
                 ld.Remove(di); // placed
-                if (bsaturated)
-                {
-                    // rdz complete:
-                    rdz.MarkHandled();
-                    availrdzs.Remove(rdz);
-                }
+                RemoveIfSaturated(availrdzs, rdz);
             }
         }
+
+        private void HandleVanilla(List<Randomization> availrdzs, DropInfo di, List<DropInfo>ld, Diset diset)
+        {
+            if (diset.IsKeys)
+            {
+                bool didPlace = PlaceVanillaKey(di, availrdzs); // may or may not be placed dependent on current logic
+                if (didPlace)
+                {
+                    ld.Remove(di); // placed
+                }
+                else
+                {
+                    if (ld.All(di => IsVanillaRestricted(di.ItemID)))
+                        throw new RandoLogicException("Logic Softlock: only vanilla items left to place and putting them there is invalid");
+                }
+            }
+            else
+            {
+                PlaceVanillaItem(di, availrdzs);
+                ld.Remove(di); // placed
+            }
+        }
+
         //
         // Miscellaneous post-processing
         private void HandleTrivialities()
@@ -384,25 +409,74 @@ namespace DS2S_META.Randomizer.Placement
                 lot.MarkHandled();
             }
         }
-        //
-        private bool HandledAsVanilla(DropInfo di, List<Randomization> availrdzs, bool iskey, out List<Randomization> rdzs)
+        
+        private void PlaceVanillaItem(DropInfo di, List<Randomization> availrdzs)
         {
-            rdzs = new();
-            if (!IsVanillaRestricted(di.ItemID))
-                return false;
+            // This function tries to place a non-key item that is
+            // declared to be Vanilla location in the UI.
+            //
+            // 1. It returns true if placement occurs
+            // 2. It errors if the Vanilla placement is unavailable in the list.
 
-            rdzs = availrdzs.FilterByVanillaItem(di.ItemID);
+            // Get all the Vanilla item lots to fill
+            var rdzs = availrdzs.FilterByVanillaItem(di.ItemID).Where(rdz => !rdz.HasShuffledItemId(di.ItemID)).ToList();
+
+            // Case 3: nowhere to go
+            if (rdzs.Count == 0)
+                throw new RandoLogicException($"No Vanilla placement left for this DropInfo ({di.ItemID})");
+            if (rdzs.All(rdz => rdz.IsSaturated()))
+                throw new RandoLogicException($"All valid Vanilla lots reserved for non-key item placement are saturated ({di.ItemID})");
+
+            // Just place it in the first (the others will be placed in others in due course)
+            var chosenVanRdz = rdzs.First();
+            PlaceItem(chosenVanRdz, di);
+            RemoveIfSaturated(availrdzs, chosenVanRdz);
+        }
+
+        private bool PlaceVanillaKey(DropInfo di, List<Randomization> availrdzs)
+        {
+            // This function tries to place a (true) key item that is
+            // declared to be Vanilla location in the UI.
+            //
+            // 1. It returns true if placement occurs
+            // 2. It returns false if placement cannot be guaranteed yet due to
+            //     potential softlock. Delay and try again later.
+            // 3. Errors if the Vanilla placement is unavailable in the list.
+
+            // Get all the Vanilla item lots that should be filled, but are not yet done so. There should (usually)
+            // be one lot per item
+            var rdzs = availrdzs.FilterByVanillaItem(di.ItemID).Where(rdz => !rdz.HasShuffledItemId(di.ItemID)).ToList();
+            
+            // Case 3: nowhere to go
+            if (rdzs.Count == 0)
+                throw new RandoLogicException("No Vanilla placement left for this DropInfo (itemId)");
+            if (rdzs.All(rdz => rdz.IsSaturated()))
+                throw new Exception("Lot reserved for Vanilla key item placement is saturated.");
+
+            // Check softlock logic
             bool canplaceall = rdzs.All(r => CanPlaceVanillaKey(r, di));
 
             // This is the "DELAY_VANLOCKED" situation. Kept in list for future reattempt.
             if (!canplaceall)
-                return true;
+                return false;
 
-            // Can place key in (all its) Vanilla locations
-            foreach (var r in rdzs)
-                PlaceIt(r, di, iskey); // remove from availrdz
+            // Just place it in the first (any duplicate keys will be placed in others in due course)
+            var chosenVanRdz = rdzs.First();
+            PlaceKey(chosenVanRdz, di);
+            RemoveIfSaturated(availrdzs, chosenVanRdz);
             return true;
         }
+
+        private void RemoveIfSaturated(List<Randomization> availrdzs, Randomization rdz)
+        {
+            if (!rdz.IsSaturated())
+                return;
+
+            // rdz complete:
+            rdz.MarkHandled();
+            availrdzs.Remove(rdz);
+        }
+
         private List<Randomization> GetRemainingRdz()
         {
             // see what's left and get a copy of that list
@@ -500,7 +574,7 @@ namespace DS2S_META.Randomizer.Placement
 
             if (bestPlaceRes?.IsDistanceSoftFail == true)
             {
-                if (RecentBestRdz == null) throw new Exception("Cannot happen");
+                if (RecentBestRdz == null) throw new RandoLogicException("Cannot happen");
                 return RecentBestRdz;
             }
 
@@ -512,7 +586,7 @@ namespace DS2S_META.Randomizer.Placement
                 return availrdzs.First(); // see if we can place it later after more keys are unlocked
             }
 
-            throw new Exception("True softlock: nowhere to place without breaking conditions");
+            throw new RandoLogicException("True softlock: nowhere to place without breaking conditions");
         }
         private static void ResetMinMaxElligible()
         {

@@ -124,7 +124,7 @@ namespace DS2S_META.Utils.DS2Hook
             if (!SpeedhackInitialised)
                 SetupSpeedhack();
 
-            MetaExceptionStaticHandler.Raise("SetupSpeedhack complete");
+            //MetaExceptionStaticHandler.Raise("SetupSpeedhack complete");
 
             // Update speed:
             SetSpeed((double)Properties.Settings.Default.SpeedValue);
@@ -144,12 +144,12 @@ namespace DS2S_META.Utils.DS2Hook
                 return Hook.InjectDLL(SpeedhackDllPathX64);
             else
             {
-                bool test = System.IO.File.Exists(SpeedhackDllPathX64);
-                MetaExceptionStaticHandler.Raise($"TestPath: SpeedhackDllPathX86 = {SpeedhackDllPathX86}. Path exists? = {test}");
+                //bool test = System.IO.File.Exists(SpeedhackDllPathX64);
+                //MetaExceptionStaticHandler.Raise($"TestPath: SpeedhackDllPathX86 = {SpeedhackDllPathX86}. Path exists? = {test}");
                 var bitinj = Run32BitInjector(SpeedhackDllPathX86, out INJECTOR_ERRCODE errcode);
 
                 var injloc = (IntPtr)bitinj;
-                MetaExceptionStaticHandler.Raise($"Injector errcode = {errcode.ToString()}, injloc = {injloc:X8}");
+                //MetaExceptionStaticHandler.Raise($"Injector errcode = {errcode.ToString()}, injloc = {injloc:X8}");
 
                 if (errcode != 0)
                     return IntPtr.Zero;
@@ -180,7 +180,7 @@ namespace DS2S_META.Utils.DS2Hook
 
             string fileNameTest = $"{ExeDir}\\Resources\\Tools\\SpeedInjector32\\SpeedInjector.exe";
             var filetestExists = File.Exists(fileNameTest);
-            MetaExceptionStaticHandler.Raise($"filename search = {fileNameTest}, exists = {filetestExists}");
+            //MetaExceptionStaticHandler.Raise($"filename search = {fileNameTest}, exists = {filetestExists}");
 
             // Run the above batch file in new thread
             ProcessStartInfo PSI = new()
@@ -199,17 +199,17 @@ namespace DS2S_META.Utils.DS2Hook
                 exeProcess?.WaitForExit();
                 if (exeProcess?.ExitCode == null)
                 {
-                    MetaExceptionStaticHandler.Raise($"NULL exit code!");
+                    //MetaExceptionStaticHandler.Raise($"NULL exit code!");
                     err = INJECTOR_ERRCODE.PROCESS_NOT_START;
                     return 0; // fail
                 }
-                MetaExceptionStaticHandler.Raise($"non null exit code: {exeProcess.ExitCode}");
+                //MetaExceptionStaticHandler.Raise($"non null exit code: {exeProcess.ExitCode}");
                 return exeProcess.ExitCode; // -1 on null?
             }
             catch
             {
                 // Log error.
-                MetaExceptionStaticHandler.Raise("Probably cannot find .exe");
+                //MetaExceptionStaticHandler.Raise("Probably cannot find .exe");
                 err = INJECTOR_ERRCODE.FILENOTFOUND;
                 return 0; // fail
             }
@@ -224,7 +224,7 @@ namespace DS2S_META.Utils.DS2Hook
             
             IntPtr thread = Kernel32.CreateRemoteThread(Hook.Handle, IntPtr.Zero, 0, setSpeed, valueAddress, 0, IntPtr.Zero);
             _ = Kernel32.WaitForSingleObject(thread, uint.MaxValue);
-            MetaExceptionStaticHandler.Raise("Post-create Remote Thread");
+            //MetaExceptionStaticHandler.Raise("Post-create Remote Thread");
             Hook.Free(valueAddress);
         }
         private void DetachSpeedhack()

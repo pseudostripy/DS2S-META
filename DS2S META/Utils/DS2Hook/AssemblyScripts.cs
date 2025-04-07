@@ -52,6 +52,8 @@ namespace DS2S_META.Utils.DS2Hook
             for (int i = 0; i < itemids.Length; i++)
             {
                 var offi = i * 16; // length of one itemStruct
+                Kernel32.WriteBytes(Hook.Handle, itemStruct + offi + 0x0, BitConverter.GetBytes(3)); // TESTING
+
                 Kernel32.WriteBytes(Hook.Handle, itemStruct + offi + 0x4, BitConverter.GetBytes(itemids[i]));
                 Kernel32.WriteBytes(Hook.Handle, itemStruct + offi + 0x8, BitConverter.GetBytes(float.MaxValue));
                 Kernel32.WriteBytes(Hook.Handle, itemStruct + offi + 0xC, BitConverter.GetBytes(amounts[i]));

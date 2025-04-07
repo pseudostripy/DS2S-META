@@ -28,6 +28,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
         public PlayerStateHGO PlayerState;
         public PlayerDataHGO PlayerData;
         public CameraHGO CameraHGO;
+        public MapManager MapManager;
 
         // Use factory below to make object
         public DS2Ptrs(DS2SHook hook, DS2VER ver) 
@@ -47,6 +48,7 @@ namespace DS2S_META.Utils.Offsets.OffsetClasses
             PlayerData = new(hook, REDU.LeafGroups["PlayerEquipmentGroup"],REDU.LeafGroups["AttributeGroup"],
                                     REDU.LeafGroups["PlayerParamGroup"],REDU.Leaves);
             CameraHGO = new(hook, REDU.LeafGroups["CameraGroup"]);
+            MapManager = new(hook, REDU.PHPDict);
         }
 
         public void UpdateProperties()

@@ -8,6 +8,7 @@ using DS2S_META.Utils;
 using DS2S_META.Utils.Offsets.OffsetClasses;
 using DS2S_META.Utils.Offsets.CodeLocators;
 using DS2S_META.Utils.DS2Hook;
+using System.Windows.Automation;
 
 namespace DS2S_META.Utils.Offsets
 {
@@ -141,7 +142,9 @@ namespace DS2S_META.Utils.Offsets
                 new(ANYVANILLA, new AbsoluteAOBCL("F3 0F 10 8E 08 02 00 00 0F 5A C0 0F 5A C9 F2 0F 59 C8 0F 57 C0 66 0F 5A C1 F3 0F 10 4D EC"))
             }),
 
-            // BaseA ChildPointers:    
+            // BaseA ChildPointers:
+            new("MapManager", CPLD(S103, STRBASEA, 0x38)),
+            new("MapItemPackManager",CPLD(S103, "MapManager",0x1c8)),
             new("AvailableItemBag", CPLD(ANYSOTFS, STRBASEA, 0xa8, 0x10, 0x10),
                                     CPLD(ANYVANILLA, STRBASEA, 0x60, 0x8, 0x8)),
             new("ItemGiveWindowPointer",    CPLD(ANYSOTFS, STRBASEA, 0x22e0),

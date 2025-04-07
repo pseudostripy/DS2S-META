@@ -9,6 +9,13 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Input;
 using DS2S_META.DataClassHelpers.Commands;
+using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Threading.Tasks;
+using System.Collections;
+using DS2S_META.Utils.ParamRows;
+using Basic.Reference.Assemblies;
 
 namespace DS2S_META.ViewModels
 {
@@ -43,7 +50,191 @@ namespace DS2S_META.ViewModels
         }
         public ICommand QueryExecuteCommand { get; set; }
         private bool QueryExecuteCanExec(object? parameter) => MetaFeature.FtQueryExecute;
-        private void QueryExecuteExecute(object? parameter) => PopulateItemRowsTest();
+        //private void QueryExecuteExecute(object? parameter) => PopulateItemRowsTest();
+        private void QueryExecuteExecute(object? parameter) => TestCustomCodeAttempt2();
+
+        private void TestCustomCodeAttempt2()
+        {
+            var query = ParamMan.ItemLotOtherRows.Where(ilr => ilr.NumDrops > 2).ToList();
+            var test = Hook.DS2P.MapManager.GetLootItemPack();
+            int debug = 1;
+        }
+
+        private async void TestCustomCodeAttempt()
+        {
+            StaticTest.initialize();
+            var ns = new Nonstatic(18);
+
+            ParamMan.TestInt = 5;
+            // see if we can compile a custom program and run it :O
+
+            string userCode = @"
+            using System;
+            using DS2S_META.Utils;
+            using System.Collections.Generic;
+            using DS2S_META;
+            using System.Collections;
+            using System.Collections.ObjectModel;
+            using System.Linq;
+
+            public class UserCode
+            {
+                public int Execute(Nonstatic ns)
+                {
+                    MyTestClass testclass = new MyTestClass(9);
+                    List<MyTestClass>? testclasses = new List<MyTestClass>();    
+                    testclasses.Add(testclass);
+                    var test = new List<int>() { 1, 2, 4 };
+                    //var test2 = ParamMan.TestListParam[2];
+                    var test3 = StaticTest.MyClasses.Where(f => f.MyField < 12).First().MyField;
+                    //return test3;
+                    var test4 = ns.MyClasses[0].MyField;
+                    var test5 = ns.testing;
+                    return test3;
+                    //return testclasses[0].MyField;
+                    //return test[2];
+                }
+            }";
+
+
+            //var test3 = StaticTest.MyClasses.Where(f => f.MyField < 12).First().MyField;
+            //MyTestClass testclass = new MyTestClass();
+            //List<MyTestClass> testclasses = new List<MyTestClass>();
+            //testclasses.Add(testclass);
+
+            //return ParamMan.ItemRows?.Where(ir => ir.MetaItemName.ToLower().Contains(""rapier"")).First();
+            //ParamMan.ItemRows;
+            object? result = null;
+
+            try
+            {
+                // Compile the user code
+                var assembly = await Task.Run(() => CompileCode(userCode));
+
+                // Load the UserCode type
+                var type = assembly.GetType("UserCode");
+
+                if (type != null)
+                {
+                    // Create an instance of the compiled class
+                    var instance = Activator.CreateInstance(type);
+                    var method = type.GetMethod("Execute");
+
+                    if (method != null)
+                    {
+                        // Invoke the ProcessData method with AppData as an argument
+                        //result = method.Invoke(instance, null);
+                        result = method.Invoke(instance, new object[] { ns });
+                    }
+                    else
+                    {
+                        Console.WriteLine("Method 'Execute' not found.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Failed to load the UserCode type.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+            var test = (int)(result ?? -1);
+            //var test = result as string;
+            var debug = 1;
+
+        }
+
+        static Assembly CompileCode(string code)
+        {
+            // Parse the code into a SyntaxTree
+            var syntaxTree = CSharpSyntaxTree.ParseText(code);
+
+            // Define assembly and module names
+            var assemblyName = "UserCodeAssembly";
+
+            // References to current and system assemblies
+            var references = new[]
+            {
+                //MetadataReference.CreateFromFile(typeof(object).Assembly.Location), // Mscorlib,
+                //MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(ParamMan).Assembly.Location), // Reference to current application
+                //MetadataReference.CreateFromFile(typeof(ItemLotRow).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(ItemRow).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(Param).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(MyTestClass).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(StaticTest).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Nonstatic).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
+
+                //MetadataReference.CreateFromFile("System.Collections.dll"),
+                //MetadataReference.CreateFromFile(typeof(List<>).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(System.Collections).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(System.Collections.Generic.List<>).Assembly.Location),
+                //MetadataReference.CreateFromFile(AppDomain.CurrentDomain
+                //    .GetAssemblies()
+                //    .Single(a => a.GetName().Name == "System.Runtime")
+                //    .Location)
+            };
+
+            //List<PortableExecutableReference> testrefall = new();
+            //var asms = AppDomain.CurrentDomain.GetAssemblies();
+            //foreach (Assembly? assembly in asms)
+            //{
+            //    if (assembly != null)
+            //    {
+            //        var test = assembly.Location;
+            //        if (test != null && !test.Contains("null"))
+            //        {
+            //            try
+            //            {
+            //                testrefall.Add(MetadataReference.CreateFromFile(assembly.Location));
+
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //            }
+
+            //        }
+
+            //    }
+            //}
+            //references.Concat(testrefall.ToArray());
+
+            //Compile the code
+            //var compilation = CSharpCompilation.Create(
+            //    assemblyName,
+            //    new[] { syntaxTree },
+            //    references,
+            //    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+
+            var compilation = CSharpCompilation.Create(
+                assemblyName,
+                new[] { syntaxTree },
+                references: ReferenceAssemblies.Net80)
+                    .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Debug, checkOverflow: true))
+                    .AddReferences(references);
+            
+
+            // Emit the assembly to memory
+            using var ms = new System.IO.MemoryStream();
+            var result = compilation.Emit(ms);
+
+            if (!result.Success)
+            {
+                // Capture and display errors
+                var errors = string.Join(Environment.NewLine, result.Diagnostics);
+                throw new InvalidOperationException($"Compilation failed: {errors}");
+            }
+
+            // Load the compiled assembly
+            ms.Seek(0, System.IO.SeekOrigin.Begin);
+            return Assembly.Load(ms.ToArray());
+        }
+
 
         public ObservableCollection<ItemRow> ItemRowsTest { get; set; } = [];
 
