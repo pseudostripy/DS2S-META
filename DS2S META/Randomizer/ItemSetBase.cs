@@ -22,10 +22,10 @@ namespace DS2S_META.Randomizer
     }
 
 
-    internal abstract class ItemSetBase
+    public abstract class ItemSetBase
     {
         // Other Logic related things:
-        internal static List<DropInfo> FillerItems = new()
+        public static List<DropInfo> FillerItems = new()
         {
             new DropInfo(0x0393AE10, 3), // Lifegem
             new DropInfo(0x0393D520), // Radiant Lifegem
@@ -127,7 +127,7 @@ namespace DS2S_META.Randomizer
             new DropInfo(0x03A51330), // Old Mundane Stone
             new DropInfo(0x03A53A40), // Palestone
         };
-        internal static Dictionary<int, int> SoulPriceList = new()
+        public static Dictionary<int, int> SoulPriceList = new()
         {
             { 60625000, 50 },       // Fading soul
             { 60630000, 200 },      // Soul of a Lost Undead 
@@ -189,7 +189,7 @@ namespace DS2S_META.Randomizer
         };
 
         // Purely for printing:
-        internal static List<KEYID> KeyOutputOrder = new()
+        public static List<KEYID> KeyOutputOrder = new()
         {
             // Actual Key Item IDs:
             KEYID.BLACKSMITH,
@@ -235,182 +235,182 @@ namespace DS2S_META.Randomizer
         };
         
         // Overloads for quick construction, single or no key requirements:
-        internal static RandoInfo ShopInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo ShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, kso);
         }
-        internal static RandoInfo EvShopInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EvShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // things which require an event
             return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, kso);
         }
-        internal static RandoInfo ShopSustain(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo ShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
-        internal static RandoInfo EvShopSustain(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EvShopSustain(MapArea area, string desc, List<KeySet> kso)
         {
             // turn off the disable event
             return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.SHOPSUSTAIN, kso);
         }
-        internal static RandoInfo TradeShopInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo TradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.UNLOCKTRADE, kso);
         }
-        internal static RandoInfo FreeTradeShopInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo FreeTradeShopInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.FREETRADE, kso);
         }
-        internal static RandoInfo TradeShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
+        public static RandoInfo TradeShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // awkward Ornifex things
             return new RandoInfo(area, desc, PICKUPTYPE.EVSHOP, RDZ_TASKTYPE.TRADE_SHOP_COPY, refid, kso);
         }
-        internal static RandoInfo ShopRemoveInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo ShopRemoveInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.SHOPREMOVE, kso);
         }
-        internal static RandoInfo ShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
+        public static RandoInfo ShopCopy(MapArea area, string desc, int refid, List<KeySet> kso)
         {
             // not randomized, just copied from copyfromID
             return new RandoInfo(area, desc, PICKUPTYPE.SHOP, RDZ_TASKTYPE.FILL_BY_COPY, refid, kso);
         }
-        internal static RandoInfo NpcInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo NpcInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.NPC, kso);
         }
-        internal static RandoInfo NpcSafeInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo NpcSafeInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.NPC, PICKUPTYPE.NONVOLATILE), kso);
         }
-        internal static RandoInfo CovInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo CovInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.COVENANTHARD, kso);
         }
-        internal static RandoInfo CovFineInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo CovFineInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.COVENANTEASY, kso);
         }
-        internal static RandoInfo WChestInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo WChestInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.WOODCHEST, kso);
         }
-        internal static RandoInfo MChestInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo MChestInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.METALCHEST, kso);
         }
-        internal static RandoInfo NGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo NGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.NGPLUS, kso);
         }
-        internal static RandoInfo WChestNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo WChestNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo MChestNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo MChestNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.METALCHEST, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo SafeInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo SafeInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.NONVOLATILE, kso);
         }
-        internal static RandoInfo VolInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo VolInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.VOLATILE, kso);
         }
-        internal static RandoInfo CrowsInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo CrowsInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.CROWS, RDZ_TASKTYPE.CROWS, kso);
         }
-        internal static RandoInfo UnresolvedInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo UnresolvedInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.UNRESOLVED, kso);
         }
-        internal static RandoInfo ExoticInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo ExoticInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.EXOTIC, kso);
         }
-        internal static RandoInfo CrammedInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo CrammedInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.CRAMMED, kso);
         }
-        internal static RandoInfo RemovedInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo RemovedInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, PICKUPTYPE.REMOVED, kso);
         }
-        internal static RandoInfo BossInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo BossInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, PICKUPTYPE.BOSS, kso);
         }
-        internal static RandoInfo BossVolInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo BossVolInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.VOLATILE), kso);
         }
-        internal static RandoInfo BossNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo BossNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // This is essentially a flag on top of safeinfo
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.BOSS, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo LinkedSlave(MapArea area, string desc, int refid, PICKUPTYPE pickuptype, List<KeySet> kso)
+        public static RandoInfo LinkedSlave(MapArea area, string desc, int refid, PICKUPTYPE pickuptype, List<KeySet> kso)
         {
             // See ShopCopy (but this is for non-shops)
             return new RandoInfo(area, desc, pickuptype, RDZ_TASKTYPE.LINKEDSLAVE, refid, kso);
         }
         //
-        internal static RandoInfo EnemyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyDropInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // these will be converted do GUARANTEEDENEMYDROP during Presanitization if required.
             return new RandoInfo(area, desc, PICKUPTYPE.ENEMYDROP, kso);
         }
-        internal static RandoInfo EnemyNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.WOODCHEST, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo EnemyRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // lots of enemies can share these tables
             return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTDROP, kso);
         }
-        internal static RandoInfo EnemyRegistNpc(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistNpc(MapArea area, string desc, List<KeySet> kso)
         {
             // lots of enemies can share these tables
             return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTNPC, kso);
         }
-        internal static RandoInfo EnemyRegistInvasion(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistInvasion(MapArea area, string desc, List<KeySet> kso)
         {
             // lots of enemies can share these tables
             return new RandoInfo(area, desc, PICKUPTYPE.ENEMYREGISTINVASION, kso);
         }
-        internal static RandoInfo EnemyRegistSummon(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistSummon(MapArea area, string desc, List<KeySet> kso)
         {
             // lots of enemies can share these tables
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTSUMMON, PICKUPTYPE.BADREGISTDROP), kso);
         }
-        internal static RandoInfo EnemyRegistNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistNGPlusInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // lots of enemies can share these tables
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.NGPLUS), kso);
         }
-        internal static RandoInfo EnemyRegistJourneyPlus(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo EnemyRegistJourneyPlus(MapArea area, string desc, List<KeySet> kso)
         {
             // For enemies that *only* spawn on second journey, not via ascetic
             return new RandoInfo(area, desc, TypeArray(PICKUPTYPE.ENEMYREGISTDROP, PICKUPTYPE.JOURNEYPLUS), kso);
         }
-        internal static RandoInfo UnreachableDropInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo UnreachableDropInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // for things the player isn't expected to be able to kill?
             return new RandoInfo(area, desc, PICKUPTYPE.BADENEMYDROP, kso);
         }
-        internal static RandoInfo UnreachableRegistInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo UnreachableRegistInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // for things the player isn't expected to be able to kill?
             return new RandoInfo(area, desc, PICKUPTYPE.BADREGISTDROP, kso);
         }
-        internal static RandoInfo MemeCopyDropInfo(MapArea area, string desc, List<KeySet> kso)
+        public static RandoInfo MemeCopyDropInfo(MapArea area, string desc, List<KeySet> kso)
         {
             // e.g things with identical enemies with identical drops, but in
             // different itemlot tables.
@@ -419,7 +419,7 @@ namespace DS2S_META.Randomizer
 
 
         // Utility shorthand methods (for common purposes):
-        internal static PICKUPTYPE[] TypeArray(params PICKUPTYPE[] types)
+        public static PICKUPTYPE[] TypeArray(params PICKUPTYPE[] types)
         {
             return types;
         }

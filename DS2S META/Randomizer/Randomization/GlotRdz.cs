@@ -10,23 +10,23 @@ namespace DS2S_META.Randomizer
     /// <summary>
     /// Generalized Lot Randomization
     /// </summary>
-    internal abstract class GLotRdz<T> : Randomization where T : ItemLotBaseRow
+    public abstract class GLotRdz<T> : Randomization where T : ItemLotBaseRow
     {
         // Subclass fields:
-        internal T VanillaLot { get; set; }
-        internal T ShuffledLot { get; set; }
-        internal bool IsDropTable = false; // by default
+        public T VanillaLot { get; set; }
+        public T ShuffledLot { get; set; }
+        public bool IsDropTable = false; // by default
 
         // Constructors:
-        internal GLotRdz(T vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot.ID, ri, status)
+        public GLotRdz(T vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot.ID, ri, status)
         {
             VanillaLot = vanlot;
             ShuffledLot = (T)VanillaLot.CloneBlank();
         }
 
         // Methods
-        internal override bool IsSaturated() => ShuffledLot != null && ShuffledLot.NumDrops == VanillaLot.NumDrops;
-        internal override List<DropInfo> Flatlist
+        public override bool IsSaturated() => ShuffledLot != null && ShuffledLot.NumDrops == VanillaLot.NumDrops;
+        public override List<DropInfo> Flatlist
         {
             get
             {
@@ -34,7 +34,7 @@ namespace DS2S_META.Randomizer
                 return flatlist;
             }
         }
-        internal override void AddShuffledItem(DropInfo di)
+        public override void AddShuffledItem(DropInfo di)
         {
             // Fix quantity:
             AdjustQuantity(di);
@@ -47,19 +47,19 @@ namespace DS2S_META.Randomizer
             if (ShuffledLot.NumDrops > VanillaLot?.NumDrops)
                 throw new Exception("Shouldn't be able to get here!");
         }
-        internal override bool HasShuffledItemId(int itemID)
+        public override bool HasShuffledItemId(int itemID)
         {
             if (ShuffledLot == null)
                 return false;
             return ShuffledLot.Items.Contains(itemID);
         }
-        internal override bool HasVanillaItemID(int itemID)
+        public override bool HasVanillaItemID(int itemID)
         {
             if (VanillaLot == null)
                 return false;
             return VanillaLot.Items.Contains(itemID);
         }
-        internal override int GetShuffledItemQuant(int itemID)
+        public override int GetShuffledItemQuant(int itemID)
         {
             if (ShuffledLot == null)
                 return -1;
@@ -69,7 +69,7 @@ namespace DS2S_META.Randomizer
                                 .Select(di => (int)di.Quantity)
                                 .Sum();
         }
-        internal override string GetNeatDescription()
+        public override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {VanillaLot?.ParamDesc}{Environment.NewLine}");
 
@@ -92,21 +92,21 @@ namespace DS2S_META.Randomizer
             return sb.ToString().TrimEnd('\r', '\n');
         }
                 
-        internal override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 5);
-        internal override string PrintData()
+        public override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 5);
+        public override string PrintData()
         {
             throw new NotImplementedException();
         }
-        internal override void ResetShuffled()
+        public override void ResetShuffled()
         {
             ShuffledLot = (T)VanillaLot.CloneBlank();
             PlaceDist = -1;
             IsHandled = false;
         }
-        internal override int UniqueParamID => IsDropTable ? ParamID + 80000000 : ParamID;
+        public override int UniqueParamID => IsDropTable ? ParamID + 80000000 : ParamID;
 
 
-        internal List<DropInfo> GetUniqueFlatlist(List<DropInfo> avoid_these)
+        public List<DropInfo> GetUniqueFlatlist(List<DropInfo> avoid_these)
         {
             // Return a flat list of drops that do not overlap with the supplied ones.
             // This is a way to remove the NGPlus duplicates which are unchanged.
@@ -121,7 +121,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Extra Utility:
-        internal bool IsEmpty => VanillaLot.IsEmpty; // Vanilla Lot has 0 drops
+        public bool IsEmpty => VanillaLot.IsEmpty; // Vanilla Lot has 0 drops
     }
 }
 

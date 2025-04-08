@@ -13,8 +13,8 @@ namespace DS2S_META.Utils
     public class PlayerStatusItemRow : Param.Row
     {
         // Fields:
-        internal FieldList<int> Items;
-        internal FieldList<short> Amounts;
+        public FieldList<int> Items;
+        public FieldList<short> Amounts;
         
 
         // Constructor:

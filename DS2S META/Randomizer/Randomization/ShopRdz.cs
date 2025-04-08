@@ -7,29 +7,29 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class ShopRdz : Randomization
+    public class ShopRdz : Randomization
     {
         // Subclass fields:
-        internal ShopRow VanillaShop;
-        internal ShopRow ShuffledShop;
+        public ShopRow VanillaShop;
+        public ShopRow ShuffledShop;
 
         // Constructors:
-        internal ShopRdz(ShopRow vanshop, RandoInfo ri, RDZ_TASKTYPE status) : base(vanshop.ID, ri, status)
+        public ShopRdz(ShopRow vanshop, RandoInfo ri, RDZ_TASKTYPE status) : base(vanshop.ID, ri, status)
         {
             VanillaShop = vanshop;
             ShuffledShop = VanillaShop.CloneBlank();
         }
 
         // Methods:
-        internal override bool IsSaturated() => ShuffledShop != null && ShuffledShop.ItemID != 0;
-        internal override string PrintData()
+        public override bool IsSaturated() => ShuffledShop != null && ShuffledShop.ItemID != 0;
+        public override string PrintData()
         {
             if (VanillaShop == null)
                 return "BLANK";
             int itemid = VanillaShop.ItemID;
             return $"{ParamID} [{"<insert_name>"}]: {itemid} ({itemid.AsMetaName()})";
         }
-        internal override List<DropInfo> Flatlist
+        public override List<DropInfo> Flatlist
         {
             get
             {
@@ -37,7 +37,7 @@ namespace DS2S_META.Randomizer
                 return flatlist ?? new();
             }
         }
-        internal override void AddShuffledItem(DropInfo di)
+        public override void AddShuffledItem(DropInfo di)
         {
             // Fix quantity:
             AdjustQuantity(di);
@@ -64,25 +64,25 @@ namespace DS2S_META.Randomizer
             // Update:
             ShuffledShop.SetValues(di, VanillaShop, pricerate);
         }
-        internal override bool HasShuffledItemId(int itemID)
+        public override bool HasShuffledItemId(int itemID)
         {
             if (ShuffledShop == null)
                 return false;
             return ShuffledShop.ItemID == itemID;
         }
-        internal override bool HasVanillaItemID(int itemID)
+        public override bool HasVanillaItemID(int itemID)
         {
             if (ShuffledShop == null)
                 return false;
             return VanillaShop?.ItemID == itemID;
         }
-        internal override int GetShuffledItemQuant(int itemID)
+        public override int GetShuffledItemQuant(int itemID)
         {
             if (ShuffledShop == null)
                 return -1;
             return ShuffledShop.Quantity;
         }
-        internal override string GetNeatDescription()
+        public override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {CasualItemSet.ShopData[ParamID].Description}{Environment.NewLine}");
 
@@ -93,7 +93,7 @@ namespace DS2S_META.Randomizer
             return sb.Append($"\t{ShuffledShop.ItemID.AsMetaName()} x{ShuffledShop.Quantity}").ToString();
         }
         public static Regex ShopMerchantRe = new(pattern: @"\[(?<name>.*?)(?=[-\]])");
-        internal override string GetNeatDescriptionNoId(int itemId, out string area)
+        public override string GetNeatDescriptionNoId(int itemId, out string area)
         {
             area = "[UNKNOWN META AREA]";
             var shpdesc = CasualItemSet.ShopData[ParamID].Description;
@@ -105,19 +105,19 @@ namespace DS2S_META.Randomizer
             var shopMerchant = CasualItemSet.ShopMerchantNames[shpnameSanitized];
             return $"[{shopMerchant}] Available from Merchant {shopMerchant}";
         }
-        internal override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 15);
-        internal override void ResetShuffled()
+        public override void AdjustQuantity(DropInfo di) => AdjustQuantityParameterized(di, 15);
+        public override void ResetShuffled()
         {
             ShuffledShop = VanillaShop.CloneBlank();
             PlaceDist = -1;
             IsHandled = false;
         }
-        internal void ZeroiseShuffledShop()
+        public void ZeroiseShuffledShop()
         {
             // Sets things so that the shop is removed from game
             ShuffledShop.ItemID = 0;
             ShuffledShop.Quantity = 0;
         }
-        internal override int UniqueParamID => ParamID;
+        public override int UniqueParamID => ParamID;
     }
 }

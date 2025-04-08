@@ -46,7 +46,7 @@ namespace DS2S_META.Utils
         private int _spellID;
         private int _gestureID;
         private int _sortId;
-        internal int _basebuyprice;
+        public int _basebuyprice;
         private int _sellPrice;
         private float _animationSpeed;
         private int _unk3C;
@@ -100,7 +100,7 @@ namespace DS2S_META.Utils
         }
 
         // Interfaces (Properties):
-        internal int IconID
+        public int IconID
         {
             get => _iconID;
             set
@@ -109,7 +109,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.ICONID, BitConverter.GetBytes(value));
             }
         }
-        internal int EffectId
+        public int EffectId
         {
             get => _effectId;
             set
@@ -118,7 +118,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.EFFECTID, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk08
+        public int Unk08
         {
             get => _unk08;
             set
@@ -127,7 +127,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.UNK08, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk0C
+        public int Unk0C
         {
             get => _unk0C;
             set
@@ -136,7 +136,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.UNK0C, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk10
+        public int Unk10
         {
             get => _unk10;
             set
@@ -145,7 +145,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.UNK10, BitConverter.GetBytes(value));
             }
         }
-        internal int WeaponID
+        public int WeaponID
         {
             get => _weaponID;
             set
@@ -154,7 +154,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.WEAPONID, BitConverter.GetBytes(value));
             }
         }
-        internal int ArmorID
+        public int ArmorID
         {
             get => _armorID;
             set
@@ -163,7 +163,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.ARMORID, BitConverter.GetBytes(value));
             }
         }
-        internal int AmmunitionID
+        public int AmmunitionID
         {
             get => _ammunitionID;
             set
@@ -172,7 +172,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.AMMUNITIONID, BitConverter.GetBytes(value));
             }
         }
-        internal int RingID
+        public int RingID
         {
             get => _ringID;
             set
@@ -181,7 +181,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.RINGID, BitConverter.GetBytes(value));
             }
         }
-        internal int SpellID
+        public int SpellID
         {
             get => _spellID;
             set
@@ -190,7 +190,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.SPELLID, BitConverter.GetBytes(value));
             }
         }
-        internal int GestureID
+        public int GestureID
         {
             get => _gestureID;
             set
@@ -199,7 +199,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.GESTUREID, BitConverter.GetBytes(value));
             }
         }
-        internal int SortId
+        public int SortId
         {
             get => _sortId;
             set
@@ -208,7 +208,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.SORTID, BitConverter.GetBytes(value));
             }
         }
-        internal int BaseBuyPrice
+        public int BaseBuyPrice
         {
             get => _basebuyprice;
             set
@@ -217,7 +217,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.BASEBUY, BitConverter.GetBytes(value));
             }
         }
-        internal int SellPrice
+        public int SellPrice
         {
             get => _sellPrice;
             set
@@ -226,7 +226,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.SELLPRICE, BitConverter.GetBytes(value));
             }
         }
-        internal float AnimationSpeed
+        public float AnimationSpeed
         {
             get => _animationSpeed;
             set
@@ -235,7 +235,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.ANIMSPEED, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk3C
+        public int Unk3C
         {
             get => _unk3C;
             set
@@ -244,7 +244,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.UNK3C, BitConverter.GetBytes(value));
             }
         }
-        internal int ItemTypeParamId
+        public int ItemTypeParamId
         {
             get => _itemTypeParamId;
             set
@@ -262,7 +262,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.ITEMUSAGEID, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk48
+        public int Unk48
         {
             get => _unk48;
             set
@@ -271,7 +271,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK48, _unk48);
             }
         }
-        internal int Unk49
+        public int Unk49
         {
             get => _unk49;
             set
@@ -280,7 +280,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK49, _unk49);
             }
         }
-        internal int MaxHeld
+        public int MaxHeld
         {
             get => _maxheld;
             set
@@ -289,7 +289,7 @@ namespace DS2S_META.Utils
                 WriteAtField(IFOFF.MAXHELD, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk4C
+        public int Unk4C
         {
             get => _unk4C;
             set
@@ -298,7 +298,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK4C, _unk4C);
             }
         }
-        internal int Unk4D
+        public int Unk4D
         {
             get => _unk4D;
             set
@@ -307,7 +307,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK4D, _unk4D);
             }
         }
-        internal int Unk4E
+        public int Unk4E
         {
             get => _unk4E;
             set
@@ -316,7 +316,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK4E, _unk4E);
             }
         }
-        internal eItemType ItemType
+        public eItemType ItemType
         {
             get => (eItemType)_itemtype;
             set
@@ -325,7 +325,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.ITEMTYPE, _itemtype);
             }
         }
-        internal int Unk50
+        public int Unk50
         {
             get => _unk50;
             set
@@ -334,7 +334,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.UNK50, _unk50);
             }
         }
-        internal int SpellSchool
+        public int SpellSchool
         {
             get => _spellSchool;
             set
@@ -343,7 +343,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.SPELLSCHOOL, _spellSchool);
             }
         }
-        internal int ItemState
+        public int ItemState
         {
             get => _itemState;
             set
@@ -352,7 +352,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(IFOFF.ITEMSTATE, _itemState);
             }
         }
-        internal int Unk53
+        public int Unk53
         {
             get => _unk53;
             set
@@ -363,15 +363,15 @@ namespace DS2S_META.Utils
         }
 
         // Helpful properties
-        internal bool HasName => MetaItemName != string.Empty;
-        internal bool IsWeaponType => ItemType == eItemType.WEAPON1 || ItemType == eItemType.WEAPON2;
+        public bool HasName => MetaItemName != string.Empty;
+        public bool IsWeaponType => ItemType == eItemType.WEAPON1 || ItemType == eItemType.WEAPON2;
 
         // Linked Params:
-        internal WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);
-        internal ArmorRow? ArmorRow => ParamMan.GetLink<ArmorRow>(ParamMan.ArmorParam, ArmorID);
-        internal ItemTypeRow? ItemTypeRow => ParamMan.GetLink<ItemTypeRow>(ParamMan.ItemTypeParam, ItemTypeParamId);
-        internal ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
-        internal ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
+        public WeaponRow? WeaponRow => ParamMan.GetLink<WeaponRow>(ParamMan.WeaponParam, WeaponID);
+        public ArmorRow? ArmorRow => ParamMan.GetLink<ArmorRow>(ParamMan.ArmorParam, ArmorID);
+        public ItemTypeRow? ItemTypeRow => ParamMan.GetLink<ItemTypeRow>(ParamMan.ItemTypeParam, ItemTypeParamId);
+        public ItemUsageRow? ItemUsageRow => ParamMan.GetLink<ItemUsageRow>(ParamMan.ItemUsageParam, ItemUsageID);
+        public ArrowRow? ArrowRow => ParamMan.GetLink<ArrowRow>(ParamMan.ArrowParam, AmmunitionID);
 
 
         // Constructor:
@@ -435,7 +435,7 @@ namespace DS2S_META.Utils
         }
 
         // To improve
-        internal int GetItemMaxUpgrade()
+        public int GetItemMaxUpgrade()
         {
             // Wrapper similar to the DS2Item class call in Hook.
             return ItemType switch

@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class DropRdz : GLotRdz<ItemDropRow>
+    public class DropRdz : GLotRdz<ItemDropRow>
     {
         // Constructors:
-        internal DropRdz(ItemDropRow vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot, ri, status)
+        public DropRdz(ItemDropRow vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot, ri, status)
         {
             IsDropTable = true;
         }
 
-        internal override string GetNeatDescription()
+        public override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {CasualItemSet.DropData[ParamID].Description}{Environment.NewLine}");
 
@@ -36,7 +36,7 @@ namespace DS2S_META.Randomizer
             return sb.ToString().TrimEnd('\r', '\n');
         }
         private static Regex SplitArea = new(@"(?<area>\[.*?\]) (?<desc>.*)");
-        internal override string GetNeatDescriptionNoId(int itemId, out string area)
+        public override string GetNeatDescriptionNoId(int itemId, out string area)
         {
             area = "[UNKNOWN META AREA]";
             var rawdesc = CasualItemSet.DropData[ParamID].Description;
@@ -56,7 +56,7 @@ namespace DS2S_META.Randomizer
 
             return $"{droptest} {quant}{desc}";
         }
-        internal bool IsGuaranteedDrop
+        public bool IsGuaranteedDrop
         {
             get
             {

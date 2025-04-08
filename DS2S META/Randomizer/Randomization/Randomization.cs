@@ -11,26 +11,26 @@ namespace DS2S_META.Randomizer
     /// <summary>
     /// Parent class combining Vanilla and Shuffled Data for Items/Shop subclasses
     /// </summary>
-    internal abstract class Randomization
+    public abstract class Randomization
     {
         public static double lowestPriceRate = 0.9;
 
         // Fields
-        internal int ParamID;
-        internal abstract List<DropInfo> Flatlist { get; }
-        internal RDZ_TASKTYPE Type // HandlingType for RandoMan
+        public int ParamID;
+        public abstract List<DropInfo> Flatlist { get; }
+        public RDZ_TASKTYPE Type // HandlingType for RandoMan
         {
             get => RandoInfo.RandoHandleType;
             set { RandoInfo.RandoHandleType = value; }
         }
-        internal bool IsHandled = false;
-        internal string RandoDesc = string.Empty;
-        internal string GUID;
-        internal RandoInfo RandoInfo;
-        internal int PlaceDist = -1;
+        public bool IsHandled = false;
+        public string RandoDesc = string.Empty;
+        public string GUID;
+        public RandoInfo RandoInfo;
+        public int PlaceDist = -1;
 
         // Constructors:
-        internal Randomization(int pid, RandoInfo ri, RDZ_TASKTYPE status)
+        public Randomization(int pid, RandoInfo ri, RDZ_TASKTYPE status)
         {
             GUID = Guid.NewGuid().ToString();
             ParamID = pid;
@@ -39,28 +39,28 @@ namespace DS2S_META.Randomizer
         }
 
         // Abstract Methods:
-        internal abstract string PrintData();
-        internal abstract bool IsSaturated();
-        internal abstract void AddShuffledItem(DropInfo item);
-        internal bool HasShuffledItemId(ITEMID itemid) => HasShuffledItemId((int)itemid);
-        internal abstract bool HasShuffledItemId(int itemID);
-        internal abstract bool HasVanillaItemID(int itemID);
-        internal bool HasVanillaItemID(ITEMID id) => HasVanillaItemID((int)id);
-        internal bool HasVanillaAnyItemID(IEnumerable<int> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
-        internal bool HasVanillaAnyItemID(IEnumerable<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
-        internal abstract int GetShuffledItemQuant(int itemID);
-        internal abstract string GetNeatDescription();
-        internal abstract string GetNeatDescriptionNoId(int itemId, out string area);
-        internal abstract void AdjustQuantity(DropInfo di);
-        internal abstract void ResetShuffled();
-        internal abstract int UniqueParamID { get; }
+        public abstract string PrintData();
+        public abstract bool IsSaturated();
+        public abstract void AddShuffledItem(DropInfo item);
+        public bool HasShuffledItemId(ITEMID itemid) => HasShuffledItemId((int)itemid);
+        public abstract bool HasShuffledItemId(int itemID);
+        public abstract bool HasVanillaItemID(int itemID);
+        public bool HasVanillaItemID(ITEMID id) => HasVanillaItemID((int)id);
+        public bool HasVanillaAnyItemID(IEnumerable<int> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
+        public bool HasVanillaAnyItemID(IEnumerable<ITEMID> itemlist) => itemlist.Any(i => HasVanillaItemID(i)); // true if any are found
+        public abstract int GetShuffledItemQuant(int itemID);
+        public abstract string GetNeatDescription();
+        public abstract string GetNeatDescriptionNoId(int itemId, out string area);
+        public abstract void AdjustQuantity(DropInfo di);
+        public abstract void ResetShuffled();
+        public abstract int UniqueParamID { get; }
 
         // Common Methods:
 
         // Wrappers to RandoInfo
-        internal bool HasPickupType(IEnumerable<PICKUPTYPE> types) => RandoInfo?.HasType(types) == true;
-        internal bool HasPickupType(PICKUPTYPE type) => RandoInfo?.HasType(type) == true;
-        internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytpes)
+        public bool HasPickupType(IEnumerable<PICKUPTYPE> types) => RandoInfo?.HasType(types) == true;
+        public bool HasPickupType(PICKUPTYPE type) => RandoInfo?.HasType(type) == true;
+        public bool ContainsOnlyTypes(List<PICKUPTYPE> onlytpes)
         {
             if (RandoInfo == null) return false; // TODO?
             return RandoInfo.ContainsOnlyTypes(onlytpes);
@@ -100,7 +100,7 @@ namespace DS2S_META.Randomizer
             // Otherwise:
             return Rng.RandomGammaInt(2000, 50);
         }
-        internal static void AdjustQuantityParameterized(DropInfo di, int maxconsumquant)
+        public static void AdjustQuantityParameterized(DropInfo di, int maxconsumquant)
         {
             if (maxconsumquant > 255) throw new Exception("Please use number <= 255");
 
@@ -130,9 +130,9 @@ namespace DS2S_META.Randomizer
 
         
 
-        internal bool IsStandardHT => Type == RDZ_TASKTYPE.STANDARD;
-        internal bool IsExcludedHT => Type == RDZ_TASKTYPE.EXCLUDE;
-        internal void MarkHandled()
+        public bool IsStandardHT => Type == RDZ_TASKTYPE.STANDARD;
+        public bool IsExcludedHT => Type == RDZ_TASKTYPE.EXCLUDE;
+        public void MarkHandled()
         {
             IsHandled = true;
         }

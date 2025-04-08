@@ -582,11 +582,11 @@ namespace DS2S_META.Utils
         }
 
         // Linked param:
-        internal WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.WeaponReinforceParam, WeaponReinforceId);
-        internal WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.WeaponTypeParam, WeaponTypeId);
+        public WeaponReinforceRow? ReinforceRow => ParamMan.GetLink<WeaponReinforceRow>(ParamMan.WeaponReinforceParam, WeaponReinforceId);
+        public WeaponTypeRow? WTypeRow => ParamMan.GetLink<WeaponTypeRow>(ParamMan.WeaponTypeParam, WeaponTypeId);
 
         // Wrappers
-        internal int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
+        public int MaxUpgrade => ReinforceRow == null ? 0 : ReinforceRow.MaxReinforce;
         public List<DS2SInfusion> GetInfusionList()
         {
             if (ReinforceRow == null)

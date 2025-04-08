@@ -13,45 +13,52 @@ namespace DS2S_META.Utils.ParamRows
     /// </summary>
     public abstract class ItemLotBaseRow : Param.Row
     {
-        internal abstract ItemLotBaseRow CloneBlank();
+        public abstract ItemLotBaseRow CloneBlank();
 
         // Fields:
-        internal string? ParamDesc { get; set; }
+        public string? ParamDesc { get; set; }
 
         // Behind Fields (explicitly declare that they will be set before usage)
-        internal List<int> _items = null!;
-        internal List<byte> _quantities = null!;
-        internal List<byte> _reinforcements = null!;
-        internal List<byte> _infusions = null!;
-        internal List<byte> _repeatables = null!;
-        internal List<float> _chances = null!;
-        internal List<byte>  _unknbytes = null!;
+        public List<int> _items = null!;
+        public List<byte> _quantities = null!;
+        public List<byte> _reinforcements = null!;
+        public List<byte> _infusions = null!;
+        public List<byte> _repeatables = null!;
+        public List<float> _chances = null!;
+        public List<byte>  _unknbytes = null!;
 
         // Property getters:
-        internal List<int> Items => _items;
-        internal List<byte> Quantities => _quantities;
-        internal List<byte> Reinforcements => _reinforcements;
-        internal List<byte> Infusions => _infusions;
-        internal List<byte> Repeatables => _repeatables; // currently not edited
-        internal List<float> Chances => _chances;
-        internal List<byte> UnknBytes => _unknbytes;
-        internal int UnknByte0x0 => UnknBytes.ElementAt(0);
-        internal int UnknByte0x1 => UnknBytes.ElementAt(1);
+        public List<int> Items => _items;
+        public List<byte> Quantities => _quantities;
+        public List<byte> Reinforcements => _reinforcements;
+        public List<byte> Infusions => _infusions;
+        public List<byte> Repeatables => _repeatables; // currently not edited
+        public List<float> Chances => _chances;
+        public List<byte> UnknBytes => _unknbytes;
+        public int UnknByte0x0 => UnknBytes.ElementAt(0);
+        public int UnknByte0x1 => UnknBytes.ElementAt(1);
 
-        internal abstract int NumDrops { get; }
-        internal List<DropInfo> Flatlist => GetFlatlist();
-        internal bool IsEmpty => NumDrops == 0;
+        public abstract int NumDrops { get; }
+        public List<DropInfo> Flatlist => GetFlatlist();
+        public bool IsEmpty => NumDrops == 0;
 
-        internal bool IsDropTable;
+        public bool IsDropTable;
 
+        public abstract string FindMetaDescription();
+        public string MetaDescription => FindMetaDescription();
+
+        //public override string ToString()
+        //{
+        //    StringBuilder sb = new();
+        //    for (int i = 0; i < NumDrops; i++)
+        //    {
+        //        sb.Append($"Item[{i}] x{Quantities[i]}: {Items[i]:X} / {Items[i]}\n");
+        //    }
+        //    return sb.ToString().TrimEnd('\n');
+        //}
         public override string ToString()
         {
-            StringBuilder sb = new();
-            for (int i = 0; i < NumDrops; i++)
-            {
-                sb.Append($"Item[{i}] x{Quantities[i]}: {Items[i]:X} / {Items[i]}\n");
-            }
-            return sb.ToString().TrimEnd('\n');
+            return $"{ID} : {MetaDescription}";
         }
         public enum MINILOTS {  // Note, these are in #fields not #bytes from start.
                                 UNKNBYTE = 0,
@@ -95,7 +102,7 @@ namespace DS2S_META.Utils.ParamRows
         public List<byte[]> ReadListAt(int fieldindex) => ReadListOfSizeAt(10, fieldindex);
 
         // Methods:
-        internal List<DropInfo> GetFlatlist()
+        public List<DropInfo> GetFlatlist()
         {
             List<DropInfo> flatlist = new();
             int legitdrops = 0;
@@ -120,18 +127,18 @@ namespace DS2S_META.Utils.ParamRows
             return flatlist;
         }
 
-        internal void CloneValuesFrom(ItemLotRow tocopy)
+        public void CloneValuesFrom(ItemLotRow tocopy)
         {
             // be a little careful if you haven't blanked it properly before!
             for (int i = 0; i < 10; i++)
                 AddDrop(tocopy.Items[i], tocopy.Quantities[i], tocopy.Reinforcements[i], tocopy.Infusions[i]);
         }
 
-        internal void AddDrop(int itemID, int quantity, int reinforce, int infusion)
+        public void AddDrop(int itemID, int quantity, int reinforce, int infusion)
         {
             AddDrop(new DropInfo(itemID, (byte)quantity, (byte)reinforce, (byte)infusion));
         }
-        internal void AddDrop(DropInfo DI)
+        public void AddDrop(DropInfo DI)
         {
             // This is the main way to adjust the fields in this class,
             // and handles the backend setting of the ParamRow bytes
@@ -151,7 +158,7 @@ namespace DS2S_META.Utils.ParamRows
             StoreReinforce(id, Reinforcements[id]);
             StoreInfusion(id, Infusions[id]);
         }
-        internal void SetDrop(DropInfo DI, int id)
+        public void SetDrop(DropInfo DI, int id)
         {
             // This is the main way to adjust the fields in this class,
             // and handles the backend setting of the ParamRow bytes
@@ -195,6 +202,7 @@ namespace DS2S_META.Utils.ParamRows
 
 
         // Query Utility
-        internal bool HasItem(int itemid) => Items.Contains(itemid);
+        public bool HasItem(int itemid) => Items.Contains(itemid);
+        public bool HasItem(ITEMID itemid) => Items.Contains((int)itemid);
     }
 }

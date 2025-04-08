@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DS2S_META.Randomizer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -65,7 +66,7 @@ namespace DS2S_META.Utils.ParamRows
             }
             UpdateLists();
         }
-        internal override int NumDrops
+        public override int NumDrops
         {
             get
             {
@@ -79,7 +80,7 @@ namespace DS2S_META.Utils.ParamRows
                 return c;
             }
         }
-        internal bool IsGuaranteedDrops()
+        public bool IsGuaranteedDrops()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -89,7 +90,7 @@ namespace DS2S_META.Utils.ParamRows
             return true;
         }
         
-        internal override ItemDropRow CloneBlank()
+        public override ItemDropRow CloneBlank()
         {
             // Performs a deep clone on the Lot object
             var chancesnew = new List<float>(_chances);
@@ -103,6 +104,14 @@ namespace DS2S_META.Utils.ParamRows
             };
 
             return ilclone;
+        }
+
+        public override string FindMetaDescription()
+        {
+            CasualItemSet.DropData.TryGetValue(ID, out var rinfo);
+            if (rinfo == null)
+                return "Description not found";
+            return rinfo.Description ?? string.Empty;
         }
     }
 }

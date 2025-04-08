@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal struct NodeKey
+    public struct NodeKey
     {
-        internal MapArea Area;
-        internal List<KeySet> KSO; // KeySet Options?
-        internal bool BadArea => Area == MapArea.Undefined || Area == MapArea.Quantum;
+        public MapArea Area;
+        public List<KeySet> KSO; // KeySet Options?
+        public bool BadArea => Area == MapArea.Undefined || Area == MapArea.Quantum;
 
         // TO TIDY!
-        internal bool IsKeyless => KSO.Count == 0
+        public bool IsKeyless => KSO.Count == 0
                         || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE))
                         || KSO.Count == 1 && KSO[0].Keys.Count == 0;
 
-        internal NodeKey(MapArea area, List<KeySet> kso)
+        public NodeKey(MapArea area, List<KeySet> kso)
         {
             Area = area;
             KSO = kso;
@@ -25,7 +25,7 @@ namespace DS2S_META.Randomizer
 
 
 
-        internal bool HasKeySet(KeySet querykso)
+        public bool HasKeySet(KeySet querykso)
         {
             foreach (KeySet ks in KSO) 
             {

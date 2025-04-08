@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class LotRdz : GLotRdz<ItemLotRow>
+    public class LotRdz : GLotRdz<ItemLotRow>
     {
         // Constructors:
-        internal LotRdz(ItemLotRow vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot, ri, status)
+        public LotRdz(ItemLotRow vanlot, RandoInfo ri, RDZ_TASKTYPE status) : base(vanlot, ri, status)
         {
             IsDropTable = false;
         }
 
-        internal override string GetNeatDescription()
+        public override string GetNeatDescription()
         {
             StringBuilder sb = new($"{ParamID}: {CasualItemSet.LotData[ParamID].Description}{Environment.NewLine}");
 
@@ -36,7 +36,7 @@ namespace DS2S_META.Randomizer
             // Remove final newline:
             return sb.ToString().TrimEnd('\r', '\n');
         }
-        internal override string GetNeatDescriptionNoId(int itemId, out string area)
+        public override string GetNeatDescriptionNoId(int itemId, out string area)
         {
             // return area and chopped desc
             area = "[UNKNOWN META AREA]";

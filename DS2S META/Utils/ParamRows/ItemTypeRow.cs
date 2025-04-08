@@ -30,8 +30,8 @@ namespace DS2S_META.Utils
     public class ItemTypeRow : Param.Row
     {
         // Misc Fields:
-        internal int ItemID;
-        internal string MetaItemName => ItemID.AsMetaName();
+        public int ItemID;
+        public string MetaItemName => ItemID.AsMetaName();
 
         // Behind-fields:
         private int _unk00;
@@ -64,7 +64,7 @@ namespace DS2S_META.Utils
         }
 
         // Interfaces (Properties):
-        internal int Unk00
+        public int Unk00
         {
             get => _unk00;
             set
@@ -73,7 +73,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK00, BitConverter.GetBytes(value));
             }
         }
-        internal float Unk04
+        public float Unk04
         {
             get => _unk04;
             set
@@ -82,7 +82,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK04, BitConverter.GetBytes(value));
             }
         }
-        internal float Unk08
+        public float Unk08
         {
             get => _unk08;
             set
@@ -91,7 +91,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK08, BitConverter.GetBytes(value));
             }
         }
-        internal float Unk0C
+        public float Unk0C
         {
             get => _unk0C;
             set
@@ -100,7 +100,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK0C, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk10
+        public int Unk10
         {
             get => _unk10;
             set
@@ -109,7 +109,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK10, BitConverter.GetBytes(value));
             }
         }
-        internal int Unk14
+        public int Unk14
         {
             get => _unk14;
             set
@@ -118,7 +118,7 @@ namespace DS2S_META.Utils
                 WriteAtField(ITFOFF.UNK14, BitConverter.GetBytes(value));
             }
         }
-        internal byte Unk18
+        public byte Unk18
         {
             get => _unk18;
             set
@@ -127,7 +127,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(ITFOFF.UNK18, _unk18);
             }
         }
-        internal byte Unk19
+        public byte Unk19
         {
             get => _unk19;
             set
@@ -136,7 +136,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(ITFOFF.UNK19, _unk19);
             }
         }
-        internal byte Unk1A
+        public byte Unk1A
         {
             get => _unk1A;
             set
@@ -145,7 +145,7 @@ namespace DS2S_META.Utils
                 WriteByteAtField(ITFOFF.UNK1A, _unk1A);
             }
         }
-        internal byte Unk1B
+        public byte Unk1B
         {
             get => _unk1B;
             set

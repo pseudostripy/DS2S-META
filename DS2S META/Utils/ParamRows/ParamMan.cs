@@ -147,7 +147,7 @@ namespace DS2S_META.Utils
         public static List<ItemRow>? ItemRows { get; private set; }
         public static List<ItemLotRow>? ItemLotOtherRows { get; private set; }
         public static List<ItemDropRow>? ItemLotChrRows { get; private set; }
-        public static List<ShopRow>? ShopLineupRows { get; private set; }
+        public static List<ShopRow>? ShopRows { get; private set; }
         public static List<PlayerStatusClassRow>? PlayerStatusClassRows { get; private set; }
 
         public static List<MyTestClass>? MyTestClasses { get; private set; }
@@ -164,7 +164,7 @@ namespace DS2S_META.Utils
             ItemRows = ItemParam.AsRows<ItemRow>().ToList();
             ItemLotOtherRows = ItemLotOtherParam.AsRows<ItemLotRow>().ToList();
             ItemLotChrRows = ItemLotChrParam.AsRows<ItemDropRow>().ToList();
-            ShopLineupRows = ShopLineupParam.AsRows<ShopRow>().ToList();
+            ShopRows = ShopLineupParam.AsRows<ShopRow>().ToList();
             PlayerStatusClassRows = PlayerStatusClassParam.AsRows<PlayerStatusClassRow>().ToList();
 
             ItemRowsDict = ItemRows.ToDictionary(ir => ir.ItemID, ir => ir);

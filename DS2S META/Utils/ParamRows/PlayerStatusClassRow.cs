@@ -30,7 +30,7 @@ namespace DS2S_META.Utils
         private int _armsArmor;
         private int _legsArmor;
 
-        internal short SoulLevel
+        public short SoulLevel
         {
             get => _soulLevel;
             set
@@ -39,7 +39,7 @@ namespace DS2S_META.Utils
                 WriteAtField(1, BitConverter.GetBytes(value));
             }
         }
-        internal short Vigor
+        public short Vigor
         {
             get => _vigor;
             set
@@ -48,7 +48,7 @@ namespace DS2S_META.Utils
                 WriteAtField(2, BitConverter.GetBytes(value));
             }
         }
-        internal short Endurance
+        public short Endurance
         {
             get => _endurance;
             set
@@ -57,7 +57,7 @@ namespace DS2S_META.Utils
                 WriteAtField(4, BitConverter.GetBytes(value));
             }
         }
-        internal short Attunement
+        public short Attunement
         {
             get => _attunement;
             set
@@ -66,7 +66,7 @@ namespace DS2S_META.Utils
                 WriteAtField(5, BitConverter.GetBytes(value));
             }
         }
-        internal short Vitality
+        public short Vitality
         {
             get => _vitality;
             set
@@ -75,7 +75,7 @@ namespace DS2S_META.Utils
                 WriteAtField(6, BitConverter.GetBytes(value));
             }
         }
-        internal short Strength
+        public short Strength
         {
             get => _strength;
             set
@@ -84,7 +84,7 @@ namespace DS2S_META.Utils
                 WriteAtField(7, BitConverter.GetBytes(value));
             }
         }
-        internal short Dexterity
+        public short Dexterity
         {
             get => _dexterity;
             set
@@ -93,7 +93,7 @@ namespace DS2S_META.Utils
                 WriteAtField(8, BitConverter.GetBytes(value));
             }
         }
-        internal short Intelligence
+        public short Intelligence
         {
             get => _intelligence;
             set
@@ -102,7 +102,7 @@ namespace DS2S_META.Utils
                 WriteAtField(9, BitConverter.GetBytes(value));
             }
         }
-        internal short Faith
+        public short Faith
         {
             get => _faith;
             set
@@ -111,7 +111,7 @@ namespace DS2S_META.Utils
                 WriteAtField(10, BitConverter.GetBytes(value));
             }
         }
-        internal short Adaptability
+        public short Adaptability
         {
             get => _adaptability;
             set
@@ -121,7 +121,7 @@ namespace DS2S_META.Utils
             }
         }
         //
-        internal int HeadArmor
+        public int HeadArmor
         {
             get => _headArmor;
             set
@@ -130,7 +130,7 @@ namespace DS2S_META.Utils
                 WriteAtField(52, BitConverter.GetBytes(value));
             }
         }
-        internal int BodyArmor 
+        public int BodyArmor 
         {
             get => _bodyArmor;
             set
@@ -139,7 +139,7 @@ namespace DS2S_META.Utils
                 WriteAtField(53, BitConverter.GetBytes(value));
             }
         }
-        internal int ArmsArmor
+        public int ArmsArmor
         {
             get => _armsArmor;
             set
@@ -148,7 +148,7 @@ namespace DS2S_META.Utils
                 WriteAtField(54, BitConverter.GetBytes(value));
             }
         }
-        internal int LegsArmor
+        public int LegsArmor
         {
             get => _legsArmor;
             set
@@ -227,7 +227,7 @@ namespace DS2S_META.Utils
             return objout;
         }
         
-        internal int CountItems()
+        public int CountItems()
         {
             var indItem1 = GetFieldIndex("Item 1 ID");
             var items = ReadListAt(indItem1).Select(obj => BitConverter.ToInt32(obj)).ToList();

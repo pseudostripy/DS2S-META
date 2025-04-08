@@ -21,6 +21,10 @@ namespace DS2S_META.ViewModels
 {
     public class DmgCalcViewModel : ViewModelBase
     {
+        public ObservableCollection<PropertyViewModel> QueryResults { get; set; } = [];
+        public string UserQueryText { get; set; } = "";
+        public const int QUERYERROR = -1;
+
         private ObservableCollection<DS2SItem> _weaponList;
         public ICollectionView? WeaponCollectionView { get; }
 
@@ -45,65 +49,71 @@ namespace DS2S_META.ViewModels
 
             // initialize commands
             QueryExecuteCommand = new RelayCommand(QueryExecuteExecute, QueryExecuteCanExec);
-
-
         }
         public ICommand QueryExecuteCommand { get; set; }
         private bool QueryExecuteCanExec(object? parameter) => MetaFeature.FtQueryExecute;
-        //private void QueryExecuteExecute(object? parameter) => PopulateItemRowsTest();
-        private void QueryExecuteExecute(object? parameter) => TestCustomCodeAttempt2();
+        private void QueryExecuteExecute(object? parameter) => UserQueryExecute();
 
-        private void TestCustomCodeAttempt2()
+        private string CreateUserCode()
         {
-            var query = ParamMan.ItemLotOtherRows.Where(ilr => ilr.NumDrops > 2).ToList();
-            var test = Hook.DS2P.MapManager.GetLootItemPack();
-            int debug = 1;
-        }
-
-        private async void TestCustomCodeAttempt()
-        {
-            StaticTest.initialize();
-            var ns = new Nonstatic(18);
-
-            ParamMan.TestInt = 5;
-            // see if we can compile a custom program and run it :O
-
-            string userCode = @"
+            string userCode = $@"
             using System;
+            using DS2S_META;            
             using DS2S_META.Utils;
+            using DS2S_META.Utils.ParamRows;
             using System.Collections.Generic;
-            using DS2S_META;
             using System.Collections;
             using System.Collections.ObjectModel;
             using System.Linq;
+            using DS2S_META.Randomizer; // has ShopRow for some reason
 
             public class UserCode
+            {{
+                public object Execute()
+                {{
+                    List<ItemLotRow> lots = ParamMan.ItemLotOtherRows;
+                    List<ItemDropRow> drops = ParamMan.ItemLotChrRows;
+                    List<ShopRow> shops = ParamMan.ShopRows;
+                    { UserQueryText }
+                    return query;
+                }}
+            }}";
+            return userCode;
+
+            // e.g.:
+            //object query = ParamMan.ItemLotOtherRows.Where(il => il.HasItem((int)ITEMID.FIREBOMB)).ToList();
+        }
+
+        private async void UserQueryExecute()
+        {
+            // see if we can compile a custom program and run it :O
+            string userCode = CreateUserCode();
+            var queryresult = await Task.Run(() => RunCustomCode(userCode));
+            if (queryresult is int iq && iq == QUERYERROR)
+                return;
+            UpdateResultsOutput(queryresult);
+        }
+
+        private void UpdateResultsOutput(object obj)
+        {
+            QueryResults.Clear();
+            if (obj is IEnumerable objvec && obj is not string)
             {
-                public int Execute(Nonstatic ns)
+                int i = 0;
+                foreach (var obji in objvec)
                 {
-                    MyTestClass testclass = new MyTestClass(9);
-                    List<MyTestClass>? testclasses = new List<MyTestClass>();    
-                    testclasses.Add(testclass);
-                    var test = new List<int>() { 1, 2, 4 };
-                    //var test2 = ParamMan.TestListParam[2];
-                    var test3 = StaticTest.MyClasses.Where(f => f.MyField < 12).First().MyField;
-                    //return test3;
-                    var test4 = ns.MyClasses[0].MyField;
-                    var test5 = ns.testing;
-                    return test3;
-                    //return testclasses[0].MyField;
-                    //return test[2];
+                    QueryResults.Add(new PropertyViewModel($"{i}", obji));
+                    i++;
                 }
-            }";
+            }
+            else
+            {
+                QueryResults.Add(new PropertyViewModel($"{obj}", obj));
+            }
+        }
 
-
-            //var test3 = StaticTest.MyClasses.Where(f => f.MyField < 12).First().MyField;
-            //MyTestClass testclass = new MyTestClass();
-            //List<MyTestClass> testclasses = new List<MyTestClass>();
-            //testclasses.Add(testclass);
-
-            //return ParamMan.ItemRows?.Where(ir => ir.MetaItemName.ToLower().Contains(""rapier"")).First();
-            //ParamMan.ItemRows;
+        private static async Task<object> RunCustomCode(string userCode)
+        {
             object? result = null;
 
             try
@@ -124,7 +134,7 @@ namespace DS2S_META.ViewModels
                     {
                         // Invoke the ProcessData method with AppData as an argument
                         //result = method.Invoke(instance, null);
-                        result = method.Invoke(instance, new object[] { ns });
+                        result = method.Invoke(instance, new object[] { });
                     }
                     else
                     {
@@ -139,13 +149,30 @@ namespace DS2S_META.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+                var cexp = new MetaException("Compilation Exception", ex.Message,ex);
+                MetaExceptionStaticHandler.Handle(cexp);
             }
+            return result ?? QUERYERROR;
+        } 
 
-            var test = (int)(result ?? -1);
-            //var test = result as string;
-            var debug = 1;
-
-        }
+        //private ExamplePassingNonStaticVariable()
+        //{
+        //    public int Execute(Nonstatic ns)
+        //    {
+        //        MyTestClass testclass = new MyTestClass(9);
+        //        List<MyTestClass>? testclasses = new List<MyTestClass>();
+        //        testclasses.Add(testclass);
+        //        var test = new List<int>() { 1, 2, 4 };
+        //        //var test2 = ParamMan.TestListParam[2];
+        //        var test3 = StaticTest.MyClasses.Where(f => f.MyField < 12).First().MyField;
+        //        //return test3;
+        //        var test4 = ns.MyClasses[0].MyField;
+        //        var test5 = ns.testing;
+        //        return test3;
+        //        //return testclasses[0].MyField;
+        //        //return test[2];
+        //    }
+        //}
 
         static Assembly CompileCode(string code)
         {
@@ -158,58 +185,11 @@ namespace DS2S_META.ViewModels
             // References to current and system assemblies
             var references = new[]
             {
-                //MetadataReference.CreateFromFile(typeof(object).Assembly.Location), // Mscorlib,
-                //MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(ParamMan).Assembly.Location), // Reference to current application
-                //MetadataReference.CreateFromFile(typeof(ItemLotRow).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(ItemRow).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(Param).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(MyTestClass).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(StaticTest).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Nonstatic).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
-
-                //MetadataReference.CreateFromFile("System.Collections.dll"),
-                //MetadataReference.CreateFromFile(typeof(List<>).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(System.Collections).Assembly.Location),
-                //MetadataReference.CreateFromFile(typeof(System.Collections.Generic.List<>).Assembly.Location),
-                //MetadataReference.CreateFromFile(AppDomain.CurrentDomain
-                //    .GetAssemblies()
-                //    .Single(a => a.GetName().Name == "System.Runtime")
-                //    .Location)
+                //MetadataReference.CreateFromFile(typeof(MyTestClass).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(StaticTest).Assembly.Location),
+                //MetadataReference.CreateFromFile(typeof(Nonstatic).Assembly.Location),
             };
-
-            //List<PortableExecutableReference> testrefall = new();
-            //var asms = AppDomain.CurrentDomain.GetAssemblies();
-            //foreach (Assembly? assembly in asms)
-            //{
-            //    if (assembly != null)
-            //    {
-            //        var test = assembly.Location;
-            //        if (test != null && !test.Contains("null"))
-            //        {
-            //            try
-            //            {
-            //                testrefall.Add(MetadataReference.CreateFromFile(assembly.Location));
-
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //            }
-
-            //        }
-
-            //    }
-            //}
-            //references.Concat(testrefall.ToArray());
-
-            //Compile the code
-            //var compilation = CSharpCompilation.Create(
-            //    assemblyName,
-            //    new[] { syntaxTree },
-            //    references,
-            //    new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
 
             var compilation = CSharpCompilation.Create(
                 assemblyName,
@@ -234,35 +214,6 @@ namespace DS2S_META.ViewModels
             ms.Seek(0, System.IO.SeekOrigin.Begin);
             return Assembly.Load(ms.ToArray());
         }
-
-
-        public ObservableCollection<ItemRow> ItemRowsTest { get; set; } = [];
-
-        public void PopulateItemRowsTest()
-        {
-            //var testrows = ParamMan.ItemRows?.Where(ir => ir.MetaItemName.ToLower().Contains("e"))
-            //    .ToList() ?? []; // default empty
-            //ItemRowsTest.Clear();
-            //ItemRowsTest.AddRange(testrows);
-
-            var successItemRows = ParamMan.ItemLotOtherRows?.Where(ilr => 
-                    ilr.Items.Where(ir => ir.AsItemRow().MetaItemName.ToLower().Contains("ee")).Count() > 1)
-                    .ToList() ?? []; // default empty
-
-            List<ItemRow> testrows = [];
-            for (int i = 0; i < successItemRows.Count; i++)
-            {
-                var ilr = successItemRows[i];
-                var eeItems = ilr.Items.Select(i => i.AsItemRow()).Where(ir => ir.MetaItemName.ToLower().Contains("ee")).ToList();
-                testrows.AddRange(eeItems);
-            }
-            
-            ItemRowsTest.Clear();
-            ItemRowsTest.AddRange(testrows);
-
-
-        }
-
 
         public WeaponRow? WepSel { get; set; }
 

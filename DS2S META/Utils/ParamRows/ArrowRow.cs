@@ -21,7 +21,7 @@ namespace DS2S_META.Utils
         // Behind-fields
         private byte _ammunitionType;
         
-        internal byte AmmunitionType
+        public byte AmmunitionType
         {
             get => _ammunitionType;
             set

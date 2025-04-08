@@ -12,7 +12,7 @@ using System.Net;
 
 namespace DS2S_META.Randomizer
 {
-    internal enum KEYID : int
+    public enum KEYID : int
     {
         // Area shorthands:
         NONE = 0x0,                 // default
@@ -143,9 +143,9 @@ namespace DS2S_META.Randomizer
         FLAMEBUTTERFLY  = 60430000,
     }
     
-    internal static class RandoLogicHelper
+    public static class RandoLogicHelper
     {
-        internal static readonly List<ITEMID> TRUEKEYS = new()
+        public static readonly List<ITEMID> TRUEKEYS = new()
         {
             ITEMID.SOLDIERKEY,
             ITEMID.FORGOTTENKEY,
@@ -175,7 +175,7 @@ namespace DS2S_META.Randomizer
             ITEMID.LENIGRASTKEY,
         };
 
-    internal static List<KeySet> AddToKSO(List<KeySet> kso, KEYID keyid)
+    public static List<KeySet> AddToKSO(List<KeySet> kso, KEYID keyid)
         {
             // Somewhat recursive.
             // Wrapper to make building this up a bit faster.
@@ -564,7 +564,7 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        internal static List<KeySet> KeyLogic(KEYID keyid)
+        public static List<KeySet> KeyLogic(KEYID keyid)
         {
             // Monster wrapper for defining key combinations as shorthand
             var kso = new List<KeySet>() { new KeySet() }; // initialise for filling
@@ -575,7 +575,7 @@ namespace DS2S_META.Randomizer
 
     
 
-    internal enum PICKUPTYPE : int
+    public enum PICKUPTYPE : int
     {
         ENEMYDROP,
         ENEMYREGISTDROP,
@@ -605,21 +605,21 @@ namespace DS2S_META.Randomizer
         CROWS,
     }
 
-    internal class RandoInfo
+    public class RandoInfo
     {
-        internal MapArea Area;
-        internal string? Description;
-        internal PICKUPTYPE[] PickupTypes;
-        internal List<KeySet> KSO; // KeySet Options
-        internal RDZ_TASKTYPE RandoHandleType { get; set; }
-        internal int RefInfoID = 0;
-        internal readonly NodeKey NodeKey;
-        internal bool IsKeyless => KSO.Count == 0 
+        public MapArea Area;
+        public string? Description;
+        public PICKUPTYPE[] PickupTypes;
+        public List<KeySet> KSO; // KeySet Options
+        public RDZ_TASKTYPE RandoHandleType { get; set; }
+        public int RefInfoID = 0;
+        public readonly NodeKey NodeKey;
+        public bool IsKeyless => KSO.Count == 0 
                         || (KSO.Count == 1 && KSO[0].HasKey(KEYID.NONE))
                         || KSO.Count == 1 && KSO[0].Keys.Count == 0;
 
         // Main class constructor
-        internal RandoInfo()
+        public RandoInfo()
         {
             // Default "Empty" RandoInfo
             Area = MapArea.Undefined;
@@ -629,7 +629,7 @@ namespace DS2S_META.Randomizer
             RandoHandleType = RDZ_TASKTYPE.UNDEFINED;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, List<KeySet> kso)
+        public RandoInfo(MapArea area, string desc, PICKUPTYPE type, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -638,7 +638,7 @@ namespace DS2S_META.Randomizer
             RandoHandleType = RDZ_TASKTYPE.STANDARD;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, List<KeySet> kso)
+        public RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -647,7 +647,7 @@ namespace DS2S_META.Randomizer
             RandoHandleType = RDZ_TASKTYPE.STANDARD;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, List<KeySet> kso)
+        public RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -656,7 +656,7 @@ namespace DS2S_META.Randomizer
             RandoHandleType = handletype;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, int refID, List<KeySet> kso)
+        public RandoInfo(MapArea area, string desc, PICKUPTYPE type, RDZ_TASKTYPE handletype, int refID, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -666,7 +666,7 @@ namespace DS2S_META.Randomizer
             RefInfoID = refID;
             NodeKey = new NodeKey(Area, KSO);
         }
-        internal RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_TASKTYPE handletype, List<KeySet> kso)
+        public RandoInfo(MapArea area, string desc, PICKUPTYPE[] types, RDZ_TASKTYPE handletype, List<KeySet> kso)
         {
             Area = area;
             Description = desc;
@@ -677,31 +677,31 @@ namespace DS2S_META.Randomizer
         }
 
 
-        internal bool HasType(IEnumerable<PICKUPTYPE> checklist)
+        public bool HasType(IEnumerable<PICKUPTYPE> checklist)
         {
             return PickupTypes.Any(checklist.Contains);
         }
-        internal bool AvoidsType(PICKUPTYPE bantype)
+        public bool AvoidsType(PICKUPTYPE bantype)
         {
             return !HasType(bantype);
         }
-        internal bool AvoidsTypes(List<PICKUPTYPE> bannedtypes)
+        public bool AvoidsTypes(List<PICKUPTYPE> bannedtypes)
         {
             return !HasType(bannedtypes);
         }
-        internal bool HasType(PICKUPTYPE checktype)
+        public bool HasType(PICKUPTYPE checktype)
         {
             return PickupTypes.Any(pt => pt == checktype);
         }
-        internal bool ContainsOnlyTypes(List<PICKUPTYPE> onlytypes)
+        public bool ContainsOnlyTypes(List<PICKUPTYPE> onlytypes)
         {
             return PickupTypes.All(onlytypes.Contains);
         }
     };
 
-    internal struct KeySet
+    public struct KeySet
     {
-        internal List<KEYID> Keys = new();
+        public List<KEYID> Keys = new();
 
         public KeySet()
         {
@@ -711,18 +711,18 @@ namespace DS2S_META.Randomizer
             Keys.Add(key);
         }
 
-        internal static KeySet Clone(KeySet ks)
+        public static KeySet Clone(KeySet ks)
         {
             return new KeySet
             {
                 Keys = new List<KEYID>(ks.Keys)
             };
         }
-        internal bool HasKey(KEYID keyid)
+        public bool HasKey(KEYID keyid)
         {
             return HasKey((int)keyid);
         }
-        internal bool HasKey(int itemid)
+        public bool HasKey(int itemid)
         {
             foreach (var key in Keys)
             {
@@ -730,7 +730,7 @@ namespace DS2S_META.Randomizer
             }
             return false;
         }
-        internal void Add(params KEYID[] newkeys)
+        public void Add(params KEYID[] newkeys)
         {
             foreach (var key in newkeys)
             {

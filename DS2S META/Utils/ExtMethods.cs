@@ -1,4 +1,6 @@
-﻿using DS2S_META.Utils.DS2Hook.MemoryMods;
+﻿using DS2S_META.Randomizer;
+using DS2S_META.Utils.DS2Hook.MemoryMods;
+using DS2S_META.Utils.ParamRows;
 using Octokit;
 using PropertyHook;
 using System;
@@ -35,5 +37,35 @@ namespace DS2S_META.Utils
         }
         
         public static byte AsByte(this bool val) => val ? (byte)1 : (byte)0;
+
+        public static List<ItemLotRow> FilterByItem(this List<ItemLotRow> ilrs, params int[] itemids)
+        {
+            return ilrs.Where(ilr => ilr.Items.Any(it => itemids.Contains(it))).ToList();
+        }
+        public static List<ItemDropRow> FilterByItem(this List<ItemDropRow> idrs, params int[] itemids)
+        {
+            return idrs.Where(idr => idr.Items.Any(it => itemids.Contains(it))).ToList();
+        }
+        public static List<ShopRow> FilterByItem(this List<ShopRow> idrs, params int[] itemids)
+        {
+            return idrs.Where(idr => itemids.Contains(idr.ItemID)).ToList();
+        }
+
+        public static List<ItemLotRow> FilterByItem(this List<ItemLotRow> ilrs, params ITEMID[] eitemids)
+        {
+            int[] itemids = eitemids.Cast<int>().ToArray();
+            return ilrs.Where(ilr => ilr.Items.Any(it => itemids.Contains(it))).ToList();
+        }
+        public static List<ItemDropRow> FilterByItem(this List<ItemDropRow> idrs, params ITEMID[] eitemids)
+        {
+            int[] itemids = eitemids.Cast<int>().ToArray();
+            return idrs.Where(idr => idr.Items.Any(it => itemids.Contains(it))).ToList();
+        }
+        public static List<ShopRow> FilterByItem(this List<ShopRow> idrs, params ITEMID[] eitemids)
+        {
+            int[] itemids = eitemids.Cast<int>().ToArray();
+            return idrs.Where(idr => itemids.Contains(idr.ItemID)).ToList();
+        }
+
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal enum RDZ_TASKTYPE
+    public enum RDZ_TASKTYPE
     {
         // Enum used to denote required further post-processing situations
         UNDEFINED,
@@ -35,24 +35,24 @@ namespace DS2S_META.Randomizer
     /// Likely need only be called once, but could change in future
     /// if adjustable UI settings affect reinitialization.
     /// </summary>
-    internal class Presanitizer
+    public class Presanitizer
     {
         // Sanitizer logic: inclusions/eclusions etc.
-        internal static List<PICKUPTYPE> BanFromBeingRandomized = new()
+        public static List<PICKUPTYPE> BanFromBeingRandomized = new()
         {
             // List of places where loot cannot come from:
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
         };
-        internal List<PICKUPTYPE> BanFromLoot = new()
+        public List<PICKUPTYPE> BanFromLoot = new()
         {
             // List of places where loot cannot come from:
             PICKUPTYPE.CRAMMED,
             PICKUPTYPE.UNRESOLVED,
             PICKUPTYPE.REMOVED,
         };
-        internal static List<int> CrowDuplicates = new()
+        public static List<int> CrowDuplicates = new()
         {
             // Prism: keep C loot:
             50000300, // B loot from prism
@@ -74,7 +74,7 @@ namespace DS2S_META.Randomizer
             50000201, // A loot from petrified
             50000203, // C loot from petrified
         };
-        internal static List<eItemType> WepSpellsArmour = new() // toimprove
+        public static List<eItemType> WepSpellsArmour = new() // toimprove
         { eItemType.WEAPON1,
           eItemType.WEAPON2,
           eItemType.HEADARMOUR,
@@ -83,14 +83,14 @@ namespace DS2S_META.Randomizer
           eItemType.LEGARMOUR,
           eItemType.SPELLS,
         };
-        internal static List<RDZ_TASKTYPE> ShopLootInclTasks = new()
+        public static List<RDZ_TASKTYPE> ShopLootInclTasks = new()
         {
             RDZ_TASKTYPE.STANDARD,
             RDZ_TASKTYPE.SHOPSUSTAIN,
             RDZ_TASKTYPE.FREETRADE,
             RDZ_TASKTYPE.UNLOCKTRADE,
         };
-        internal static Dictionary<int, int> AbnormalNgLinks = new() {
+        public static Dictionary<int, int> AbnormalNgLinks = new() {
             // Key = NG plus ID, Value = assoc NG ID 
             { 675010, 675000 },         // Fume Knight
             { 0x393A6AE, 0x393A6A4 }    // Betwixt Pursuer
@@ -98,23 +98,23 @@ namespace DS2S_META.Randomizer
 
         // Output fields:
         public List<Randomization> FullListRdz = new();
-        internal List<Randomization> AllPtf = new();
-        internal List<DropInfo> LTR_flatlist = new();
+        public List<Randomization> AllPtf = new();
+        public List<DropInfo> LTR_flatlist = new();
 
         // Constructor
-        internal Presanitizer()
+        public Presanitizer()
         {
             SetupAllPtf();          // AllPtf
             GetLootToRandomize();   // LTR_Flatlist
         }
-        internal void Reinitialize()
+        public void Reinitialize()
         {
             foreach (var rdz in AllPtf)
                 rdz.ResetShuffled();
         }
 
         // Core:
-        internal void SetupAllPtf()
+        public void SetupAllPtf()
         {
             // "Places To Fill"
             var lotptfs = DefineLotRdzs();
@@ -129,7 +129,7 @@ namespace DS2S_META.Randomizer
             AllPtf = FullListRdz.FilterByTaskType(RDZ_TASKTYPE.STANDARD, RDZ_TASKTYPE.UNLOCKTRADE,
                                                 RDZ_TASKTYPE.FREETRADE, RDZ_TASKTYPE.SHOPSUSTAIN).ToList();
         }
-        internal void GetLootToRandomize()
+        public void GetLootToRandomize()
         {
             // Apply rules to choose loot for placement
             // Remove globally banned stuff:
@@ -173,7 +173,7 @@ namespace DS2S_META.Randomizer
         }
 
         // AllPtf categorized logic:
-        internal static List<Randomization> DefineLotRdzs()
+        public static List<Randomization> DefineLotRdzs()
         {
             // Get copy of all VanillaLots
             List<LotRdz> all_lots = new(); // preallocate empty
@@ -189,7 +189,7 @@ namespace DS2S_META.Randomizer
             }
             return all_lots.Cast<Randomization>().ToList();
         }
-        internal static List<Randomization> DefineDropRdzs()
+        public static List<Randomization> DefineDropRdzs()
         {
             List<DropRdz> droprdzs = new(); // preallocate empty
             foreach (var droprow in  ParamMan.ItemLotChrRows)
@@ -209,14 +209,14 @@ namespace DS2S_META.Randomizer
             }
             return droprdzs.Cast<Randomization>().ToList();
         }
-        internal static List<Randomization> DefineShopRdzs()
+        public static List<Randomization> DefineShopRdzs()
         {
-            if (ParamMan.ShopLineupRows == null)
+            if (ParamMan.ShopRows == null)
                 throw new Exception("Null shop lineup param rows, should not have gotten here");
 
             List<ShopRdz> shoprdzs = new(); // preallocate empty
 
-            foreach (var shoprow in ParamMan.ShopLineupRows)
+            foreach (var shoprow in ParamMan.ShopRows)
             {
                 var ri = shoprow.ID.GetShopRandoInfo();
                 var status = CalcShopRdzStatus(shoprow, ri); // inherit-only for now
@@ -270,7 +270,7 @@ namespace DS2S_META.Randomizer
 
             return ldzsNg.Where(ldz => ldz.ParamID == assocNGid).First().VanillaLot;
         }
-        internal void FixFlatListBalance()
+        public void FixFlatListBalance()
         {
             // Ensure 5 SoaGs (game defines these weirdly)
             var soag = LTR_flatlist.FilterByItem(ITEMID.SOULOFAGIANT).First();

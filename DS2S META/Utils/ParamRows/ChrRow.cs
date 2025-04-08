@@ -13,13 +13,13 @@ namespace DS2S_META.Randomizer
     /// This class provides easier access to the shop substructure fields
     /// of ShopLineupParam
     /// </summary>
-    internal class ChrRow : Param.Row
+    public class ChrRow : Param.Row
     {
         // Behind-fields
         private int _itemlotid;
         
         // Properties
-        internal int ItemLotID 
+        public int ItemLotID 
         { 
             get => _itemlotid;
             set
@@ -30,7 +30,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Linked Params:
-        internal ItemDropRow? ItemLot => ParamMan.GetLink<ItemDropRow>(ParamMan.ItemLotChrParam, ItemLotID);
+        public ItemDropRow? ItemLot => ParamMan.GetLink<ItemDropRow>(ParamMan.ItemLotChrParam, ItemLotID);
 
         // Constructors:
         public ChrRow(Param param, string name, int id, int offset) : base(param, name, id, offset)

@@ -48,7 +48,7 @@ namespace DS2S_META.Utils.ParamRows
         
 
         // Linked param:
-        internal ArmorReinforceRow? ArmorReinforceRow => ParamMan.GetLink<ArmorReinforceRow>(ParamMan.ArmorReinforceParam, ReinforceID);
+        public ArmorReinforceRow? ArmorReinforceRow => ParamMan.GetLink<ArmorReinforceRow>(ParamMan.ArmorReinforceParam, ReinforceID);
         
         // Constructor:
         public ArmorRow(Param param, string name, int id, int offset) : base(param, name, id, offset)

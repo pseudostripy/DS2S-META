@@ -1,4 +1,5 @@
-﻿using DS2S_META.Utils.ParamRows;
+﻿using DS2S_META.Randomizer;
+using DS2S_META.Utils.ParamRows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace DS2S_META.Utils
         {
             IsDropTable = false;
         }
-        internal override int NumDrops => Quantities.Where(q => q != 0).Count();
-        internal override ItemLotRow CloneBlank()
+        public override int NumDrops => Quantities.Where(q => q != 0).Count();
+        public override ItemLotRow CloneBlank()
         {
             // Performs a deep clone on the Lot blanking all data
             var ilclone = new ItemLotRow(Param, Name, ID, ParamRowOffset)
@@ -32,6 +33,14 @@ namespace DS2S_META.Utils
                 ilclone.StoreQuantity(i, 0); // ancient dragon memes
 
             return ilclone;
+        }
+
+        public override string FindMetaDescription()
+        {
+            CasualItemSet.LotData.TryGetValue(ID, out var rinfo);
+            if (rinfo == null)
+                return "Description not found";
+            return rinfo.Description ?? string.Empty;
         }
     }
 }

@@ -10,32 +10,32 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class LinkedDrop
+    public class LinkedDrop
     {
         // Setup to link item drops to ensure just one in the pool,
         // and to link it with another drop if required
-        internal int MasterID;
-        internal List<int> SlaveIDs;
-        internal bool IsTrade = false;
-        internal bool FreeTrade = false;
-        internal int CopyID = 0;
-        internal bool IsCopy => CopyID != 0;
+        public int MasterID;
+        public List<int> SlaveIDs;
+        public bool IsTrade = false;
+        public bool FreeTrade = false;
+        public int CopyID = 0;
+        public bool IsCopy => CopyID != 0;
 
         // mainID: add this drop to the randomization table
         // copyID: don't add drop to table, just copy randomized result from mainID
-        internal LinkedDrop(int mainID, params int[] copyIDs)
+        public LinkedDrop(int mainID, params int[] copyIDs)
         {
             MasterID = mainID;
             SlaveIDs = copyIDs.ToList();
         }
     }
 
-    internal class CasualItemSet : ItemSetBase
+    public class CasualItemSet : ItemSetBase
     {
         // Inevitable memes with ParamId collisions. Gonna try to keep separate
         public static Dictionary<int, RandoInfo> LotData; // "GeneralisedLot" (loot or drops)
         public static Dictionary<int, RandoInfo> ShopData; // Shops
-        internal static Dictionary<int, RandoInfo> DropData { get; private set; } // Drops
+        public static Dictionary<int, RandoInfo> DropData { get; private set; } // Drops
 
 
         static CasualItemSet()
@@ -45,9 +45,9 @@ namespace DS2S_META.Randomizer
             ShopData = SetupShopsDictionary();      // Shops
         }
 
-        internal static List<KeySet> KL(KEYID keyid = KEYID.NONE) => RandoLogicHelper.KeyLogic(keyid);
+        public static List<KeySet> KL(KEYID keyid = KEYID.NONE) => RandoLogicHelper.KeyLogic(keyid);
 
-        internal static Dictionary<string, string> ShopMerchantNames = new()
+        public static Dictionary<string, string> ShopMerchantNames = new()
         {
             ["Head of Vengarl"] = "Head of Vengarl",
             ["Grave Warden Agdayne"] = "Agdayne",
@@ -74,7 +74,7 @@ namespace DS2S_META.Randomizer
             ["Cromwell the Pardoner"] = "Cromwell",
             ["Blue Sentinel Targray"] = "Targray",
         };
-        internal static Dictionary<int, RandoInfo> SetupShopsDictionary()
+        public static Dictionary<int, RandoInfo> SetupShopsDictionary()
         {
             Dictionary<int, RandoInfo> d = new()
             {
@@ -801,7 +801,7 @@ namespace DS2S_META.Randomizer
         }
 
         // Main info setup (no skips):
-        internal static Dictionary<int, RandoInfo> SetupLootInfoDictionary()
+        public static Dictionary<int, RandoInfo> SetupLootInfoDictionary()
         {
             Dictionary<int, RandoInfo> d = new()
             {
@@ -2334,7 +2334,7 @@ namespace DS2S_META.Randomizer
             return d;
         }
 
-        internal static Dictionary<int, RandoInfo> SetupDropsDictionary()
+        public static Dictionary<int, RandoInfo> SetupDropsDictionary()
         {
             Dictionary<int, RandoInfo> d = new()
             {

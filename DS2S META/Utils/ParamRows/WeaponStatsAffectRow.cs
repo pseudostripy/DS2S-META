@@ -27,7 +27,7 @@ namespace DS2S_META.Utils
         // Behind-fields
         private float _baseDmgMultiplier;
 
-        internal float BaseDmgMultiplier
+        public float BaseDmgMultiplier
         {
             get => _baseDmgMultiplier;
             set

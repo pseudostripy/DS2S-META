@@ -24,7 +24,7 @@ namespace DS2S_META.Randomizer
         private int _quantity;
 
         // Properties
-        internal int ItemID 
+        public int ItemID 
         { 
             get => _itemid;
             set
@@ -33,7 +33,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(0, BitConverter.GetBytes(value));
             }
         }
-        internal int EnableFlag 
+        public int EnableFlag 
         { 
             get => _enableflag;
             set
@@ -42,7 +42,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(2, BitConverter.GetBytes(value));
             }
         }
-        internal int DisableFlag 
+        public int DisableFlag 
         { 
             get => _disableflag;
             set
@@ -51,7 +51,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(3, BitConverter.GetBytes(value));
             }
         }
-        internal int MaterialID 
+        public int MaterialID 
         { 
             get => _materialid;
             set
@@ -60,7 +60,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(4, BitConverter.GetBytes(value));
             }
         }
-        internal int DuplicateItemID 
+        public int DuplicateItemID 
         { 
             get => _duplicateid;
             set
@@ -69,7 +69,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(5, BitConverter.GetBytes(value));
             }
         }
-        internal float PriceRate 
+        public float PriceRate 
         { 
             get => _pricerate;
             set
@@ -78,7 +78,7 @@ namespace DS2S_META.Randomizer
                 WriteAtField(7, BitConverter.GetBytes(value));
             }
         }
-        internal int Quantity
+        public int Quantity
         { 
             get => _quantity;
             set
@@ -88,9 +88,20 @@ namespace DS2S_META.Randomizer
             }
         }
 
-        internal string? ParamDesc => Desc;
+        public string? ParamDesc => Desc;
+        public string MetaDescription => GetMetaDescription();
 
-        internal int CopyShopFromParamID = 0;
+        public string GetMetaDescription()
+        {
+            CasualItemSet.ShopData.TryGetValue(ID, out var rinfo);
+            if (rinfo == null)
+                return "Description not found";
+            return rinfo.Description ?? string.Empty;
+        }
+
+        public override string ToString() => MetaDescription;
+
+        public int CopyShopFromParamID = 0;
 
         // Constructors:
         public ShopRow(Param param, string name, int id, int offset) : base(param, name, id, offset)
@@ -106,18 +117,18 @@ namespace DS2S_META.Randomizer
         }
 
         // Methods:
-        internal ShopRow Clone()
+        public ShopRow Clone()
         {
             return (ShopRow)MemberwiseClone();
         }
-        internal ShopRow CloneBlank()
+        public ShopRow CloneBlank()
         {
             var cl = Clone();
             cl.ItemID = 0;
             cl.Quantity = 0;
             return cl;
         }
-        internal void SetValues(DropInfo DI, ShopRow VanShop, float pricerate)
+        public void SetValues(DropInfo DI, ShopRow VanShop, float pricerate)
         {
             // Used to construct things from various information sources:
             ItemID          = DI.ItemID;
@@ -130,12 +141,12 @@ namespace DS2S_META.Randomizer
             //
             PriceRate = pricerate;
         }
-        internal List<DropInfo> ConvertToDropInfo()
+        public List<DropInfo> ConvertToDropInfo()
         {
             // Assume no infusion or reinforcement, to consider later.
             return new List<DropInfo>() { new DropInfo(ItemID, Quantity, 0, 0) };
         }
-        internal void CopyValuesFrom(ShopRow tocopy)
+        public void CopyValuesFrom(ShopRow tocopy)
         {
             // Apply the data of tocopy to this Row, but don't change the row pointer or ParamID fields
             CopyCoreValuesFrom(tocopy); // Item/Material/Price/Quantity
@@ -144,7 +155,7 @@ namespace DS2S_META.Randomizer
             DisableFlag = tocopy.DisableFlag;
             DuplicateItemID = tocopy.DuplicateItemID;
         }
-        internal void CopyCoreValuesFrom(ShopRow tocopy)
+        public void CopyCoreValuesFrom(ShopRow tocopy)
         {
             // Apply the data of tocopy to this Row, but don't change the row pointer or ParamID fields
             ItemID = tocopy.ItemID;
@@ -158,5 +169,7 @@ namespace DS2S_META.Randomizer
             Quantity = 0;
             StoreRow();
         }
+
+
     }
 }

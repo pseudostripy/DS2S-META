@@ -7,39 +7,39 @@ using System.Threading.Tasks;
 
 namespace DS2S_META.Randomizer
 {
-    internal class DropInfo
+    public class DropInfo
     {
         // Fields:
-        internal int ItemID { get; set; }
-        internal byte Quantity { get; set; }
-        internal byte Infusion { get; set; }
-        internal byte Reinforcement { get; set; }
-        internal bool IsPlaced { get; private set; } = false;
+        public int ItemID { get; set; }
+        public byte Quantity { get; set; }
+        public byte Infusion { get; set; }
+        public byte Reinforcement { get; set; }
+        public bool IsPlaced { get; private set; } = false;
 
         // Constructors:
-        internal DropInfo() { }
-        internal DropInfo(int itemID)
+        public DropInfo() { }
+        public DropInfo(int itemID)
         {
             ItemID = itemID;
             Quantity = 1;
             Reinforcement = 0;
             Infusion = 0;
         }
-        internal DropInfo(int itemID, int quantity)
+        public DropInfo(int itemID, int quantity)
         {
             ItemID = itemID;
             Quantity = (byte)quantity;
             Reinforcement = 0;
             Infusion = 0;
         }
-        internal DropInfo(int itemID, byte quantity, byte reinforce, byte infusion)
+        public DropInfo(int itemID, byte quantity, byte reinforce, byte infusion)
         {
             ItemID = itemID;
             Quantity = quantity;
             Reinforcement = reinforce;
             Infusion = infusion;
         }
-        internal DropInfo(int itemID, int quantity, int reinforce, int infusion)
+        public DropInfo(int itemID, int quantity, int reinforce, int infusion)
         {
             ItemID = itemID;
             Quantity = (byte)quantity;
@@ -47,23 +47,23 @@ namespace DS2S_META.Randomizer
             Infusion = (byte)infusion;
         }
 
-        internal DropInfo Clone()
+        public DropInfo Clone()
         {
             return (DropInfo)MemberwiseClone();
         }
-        internal void MarkPlaced() { IsPlaced = true; }
+        public void MarkPlaced() { IsPlaced = true; }
 
 
 
         // Properties:
-        internal bool IsKeyType => Enum.IsDefined(typeof(KEYID), ItemID);
+        public bool IsKeyType => Enum.IsDefined(typeof(KEYID), ItemID);
                 
         // Query Utility
-        internal bool HasItem(int itemid) => ItemID == itemid;
-        internal bool HasItem(ITEMID itemid) => HasItem((int)itemid);
+        public bool HasItem(int itemid) => ItemID == itemid;
+        public bool HasItem(ITEMID itemid) => HasItem((int)itemid);
         
         // Todo, improve properly
-        internal bool IsEqualTo(DropInfo di2)
+        public bool IsEqualTo(DropInfo di2)
         {
             return ItemID == di2.ItemID &&
                     Quantity == di2.Quantity &&

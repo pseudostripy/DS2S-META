@@ -10,6 +10,9 @@
              d:DesignHeight="800" d:DesignWidth="425" Background="LightGray"
              d:DataContext="{d:DesignInstance viewmodels:DmgCalcViewModel, IsDesignTimeCreatable=True}">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -99,12 +102,23 @@
                 <TextBlock FontSize="16" Margin="4" FontWeight="Bold"><Run Text="Custom Param Querying"/></TextBlock>
             </Expander.Header>
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TextBox  VerticalAlignment="Center" x:Name="SearchTermTextBox" Margin="5" MinHeight="120" HorizontalContentAlignment="Stretch" Width="NaN" Padding="6,6,0,0"/>
-                <TextBlock IsHitTestVisible="False" Text="Enter parameter query C# code here" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,-90,0,0" Foreground="DarkGray" Padding="6,0,0,0">
+                <TextBox AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Center" x:Name="SearchTermTextBox" Text="{Binding UserQueryText}" Margin="5" MinHeight="120" HorizontalContentAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch" Padding="6,6,0,0" MaxWidth="500"/>
+                <TextBlock IsHitTestVisible="False" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,-45,0,0" Foreground="DarkGray" Padding="6,0,0,0">
+                    <TextBlock.Inlines>
+                        <Run Text="Enter parameter query C# code here" />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="'lots', 'drops', and 'shops' variables are available for quick usage" />
+                        <LineBreak />
+                        <Run Text="end code with 'object query = yourstuffhere;'" />
+                    </TextBlock.Inlines>
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -119,24 +133,14 @@
                 <Button Content="Execute Query" Command="{Binding QueryExecuteCommand}" Grid.Row="1" HorizontalAlignment="Center" Margin="5,0,5,0" Padding="30,5,30,5" Foreground="Black" Background="#FFFBFBFB" BorderBrush="#FF2106E4" BorderThickness="2,2,2,2"/>
             </Grid>
         </Expander>
-
         <DockPanel Grid.Row="2" MaxHeight="600">
-            <ScrollViewer  VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding ItemRowsTest}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1.8*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Content="{Binding MetaItemName}" Grid.Column="0" Margin="20,0,0,0"/>
-                                <Label Content="{Binding ItemID}" Grid.Column="1" Margin="20,0,0,0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <TreeView ItemsSource="{Binding QueryResults}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
         </DockPanel>
     </Grid>
 </local:METAControl>
