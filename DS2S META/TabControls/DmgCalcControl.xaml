@@ -133,13 +133,18 @@
                 <Button Content="Execute Query" Command="{Binding QueryExecuteCommand}" Grid.Row="1" HorizontalAlignment="Center" Margin="5,0,5,0" Padding="30,5,30,5" Foreground="Black" Background="#FFFBFBFB" BorderBrush="#FF2106E4" BorderThickness="2,2,2,2"/>
             </Grid>
         </Expander>
-        <DockPanel Grid.Row="2" MaxHeight="600">
+        <DockPanel Grid.Row="2" MaxHeight="600" MaxWidth="550">
             <TreeView ItemsSource="{Binding QueryResults}">
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubProperties}">
                         <TextBlock Text="{Binding}" />
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                        <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
             </TreeView>
         </DockPanel>
     </Grid>

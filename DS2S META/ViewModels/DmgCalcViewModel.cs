@@ -56,6 +56,20 @@ namespace DS2S_META.ViewModels
 
         private string CreateUserCode()
         {
+            string[] lines = UserQueryText.Trim().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            string lastline = lines[lines.Length - 1];
+            if (!lastline.StartsWith("object query = "))
+            {
+                lastline = "object query = " + lastline; // prepend fix;
+            }
+            if (!lastline.Trim().EndsWith(';'))
+            {
+                lastline = lastline.Trim() + ";"; // ending fix
+            }
+            lines[lines.Length - 1] = lastline; // last line QOL fix
+            string fixed_string = string.Join(Environment.NewLine, lines);
+
+            // Setup template
             string userCode = $@"
             using System;
             using DS2S_META;            
@@ -74,7 +88,7 @@ namespace DS2S_META.ViewModels
                     List<ItemLotRow> lots = ParamMan.ItemLotOtherRows;
                     List<ItemDropRow> drops = ParamMan.ItemLotChrRows;
                     List<ShopRow> shops = ParamMan.ShopRows;
-                    { UserQueryText }
+                    { fixed_string }
                     return query;
                 }}
             }}";

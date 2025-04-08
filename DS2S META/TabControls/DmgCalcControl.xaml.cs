@@ -294,5 +294,23 @@ namespace DS2S_META
                 return;
             }
         }
+
+        private void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        {
+            // This method is triggered when any TreeViewItem is expanded.
+            var treeViewItem = sender as TreeViewItem;
+
+            if (treeViewItem != null)
+            {
+                var propertyViewModel = treeViewItem.DataContext as PropertyViewModel;
+
+                if (propertyViewModel != null && !propertyViewModel.AreSubPropertiesLoaded)
+                {
+                    // Trigger sub-property loading if not already loaded
+                    propertyViewModel.LoadSubProperties();
+                    propertyViewModel.AreSubPropertiesLoaded = true;
+                }
+            }
+        }
     }
 }
